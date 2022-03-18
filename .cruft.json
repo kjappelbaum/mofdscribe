@@ -1,0 +1,18 @@
+{
+  "template": "https://github.com/kjappelbaum/cookiecutter-snekpack",
+  "commit": "e0fe55062845f481677103047b385a44a72ab7c1",
+  "checkout": null,
+  "context": {
+    "cookiecutter": {
+      "package_name": "mofdscribe",
+      "package_name_stylized": "mofdscribe",
+      "short_description": "Compute features for MOFs",
+      "author_name": "Fergus, Kevin M. Jablonka",
+      "author_email": "f.mcilwaine@hw.ac.uk, mail@kjablonka.com",
+      "github_organization_name": "kjappelbaum",
+      "github_repository_name": "mof-dscribe",
+      "_template": "https://github.com/kjappelbaum/cookiecutter-snekpack"
+    }
+  },
+  "directory": null
+}
