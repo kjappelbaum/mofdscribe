@@ -1,6 +1,10 @@
 from matminer.featurizers.base import BaseFeaturizer
 
 
+def correlate_properties(graph, distance, properties):
+    ...
+
+
 class RACS(BaseFeaturizer):
     def __init__(self) -> None:
         ...
