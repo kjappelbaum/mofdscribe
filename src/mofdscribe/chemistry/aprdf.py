@@ -1,14 +1,22 @@
-"""Atomic-property labeled autocorrelation function."""
+"""Atomic-property weighted autocorrelation function.
+See original implementation by authors https://github.com/tomdburns/AP-RDF
+"""
 
 from matminer import BaseFeaturizer
+import numpy as np
 
 
 class APRDF(BaseFeaturizer):
-    def __init__(self):
-        ...
+    """
+    \operatorname{RDF}^{p}(R)=f \sum_{i, j}^{\text {all atom puirs }} P_{i} P_{j} \mathrm{e}^{-B\left(\tau_{j}-R\right)^{2}}
+    """
+
+    def __init__(self, cutoff: float = 20.0, bin_size: float = 0.1):
+        self.cutoff = cutoff
+        self.bin_size = bin_size
 
     def featurizer(self, s):
-        ...
+        neighbors_lst = s.get_all_neighbors(self.cutoff)
 
     def feature_labels(self):
         ...
