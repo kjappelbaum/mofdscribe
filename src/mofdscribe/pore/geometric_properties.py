@@ -171,9 +171,10 @@ class SurfaceArea(BaseFeaturizer):
     def featurize(self, s):
         command = ["-sa", f"{self.channel_radius}", f"{self.probe_radius}", f"{self.num_samples}"]
         results, _ = run_zeopp(s, command, _parse_sa_zeopp)
+        return results
 
     def feature_labels(self):
-        ...
+        return self.labels
 
     def citations(self):
         return [
@@ -197,8 +198,38 @@ class SurfaceArea(BaseFeaturizer):
 
 
 class AccessibleVolume(BaseFeaturizer):
-    def ___init___(self):
-        ...
+    def ___init___(
+        self,
+        probe_radius: Union[str, float] = 0.1,
+        num_samples: int = 100,
+        channel_radius: Union[str, float, None] = None,
+    ):
+        if probe_radius != channel_radius:
+            logger.warning(
+                "Probe radius and channel radius are different. This is a highly unusual setting."
+            )
+        if isinstance(probe_radius, str):
+            try:
+                probe_radius = PROBE_RADII[probe_radius]
+            except KeyError:
+                logger.error(f"Probe radius {probe_radius} not found in PROBE_RADII")
+
+        if channel_radius is None:
+            channel_radius = probe_radius
+
+        self.probe_radius = probe_radius
+        self.num_samples = num_samples
+        self.channel_radius = channel_radius
+        self.labels = [
+            "uc_volume",
+            "density",
+            "av_a^2",
+            "av_volume_fraction",
+            "av_cm^3_g",
+            "nav_a^3",
+            "nav_volume_fraction",
+            "nav_cm^3_g",
+        ]
 
     def featurize(self, s):
         ...
