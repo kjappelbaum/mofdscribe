@@ -74,7 +74,7 @@ def _parse_res_zeopp(filecontent: str) -> Tuple[List[float], List[str]]:
         "lifsp": float(parts[3]),  # largest included sphere along free sphere path
     }
 
-    return list(results.values()), list(results.keys())
+    return results
 
 
 def _parse_sa_zeopp(filecontent):

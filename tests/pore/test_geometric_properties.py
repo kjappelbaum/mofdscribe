@@ -7,6 +7,9 @@ ASA_A^2: 60.7713 ASA_m^2/cm^3: 1976.4 ASA_m^2/g: 1218.21
 NASA_A^2: 0 NASA_m^2/cm^3: 0 NASA_m^2/g: 0"""
 
 
+RES_SAMPLE_OUTPUT = "output_file.res    1.70107 0.95106  1.64805"
+
+
 def test_parse_sa():
     parsed = _parse_sa_zeopp(SA_SAMPLE_OUTPUT)
     assert parsed["unitcell_volume"] == 307.484
@@ -17,3 +20,12 @@ def test_parse_sa():
     assert parsed["nasa_a2"] == 0
     assert parsed["nasa_m2cm3"] == 0
     assert parsed["nasa_m2g"] == 0
+
+
+def test_parse_res():
+    res = _parse_res_zeopp(RES_SAMPLE_OUTPUT)
+    assert res == {
+        "lis": 1.70107,  # largest included sphere
+        "lifs": 0.95106,  # largest free sphere
+        "lifsp": 1.64805,  # largest included sphere along free sphere path
+    }
