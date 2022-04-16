@@ -4,11 +4,11 @@ See original implementation by authors https://github.com/tomdburns/AP-RDF
 
 from matminer import BaseFeaturizer
 import numpy as np
-import math
-from typing import Tuple, Union
+from typing import Tuple, Union, List
 from ..utils.aggregators import AGGREGATORS
 from collections import defaultdict
 from functools import cached_property
+from ..utils.histogram import get_rdf, smear_histogram
 
 
 class APRDF(BaseFeaturizer):
@@ -21,20 +21,32 @@ class APRDF(BaseFeaturizer):
     def __init__(
         self,
         cutoff: float = 20.0,
-        bin_size: float = 0.1,
         lower_lim: float = 2.0,
+        bin_size: float = 0.1,
         bw: Union[float, None] = 0.1,
         properties: Tuple[str, int] = ("X", "electron_affinity"),
         aggreations: Tuple[str] = ("avg", "product", "diff"),
-        property_prod: bool = True,
-        property_diff: bool = True,
     ):
+        """Set up an atomic property (AP) weighted radial distribution function.
+
+        Args:
+            cutoff (float, optional): Consider neighbors up to this value (in Angstrom). Defaults to 20.0.
+            lower_lim (float, optional): Lowest distance (in Angstrom) to consider. Defaults to 2.0.
+            bin_size (float, optional): Bin size for binning. Defaults to 0.1.
+            bw (Union[float, None], optional): Band width for Gaussian smearing.
+                If None, the unsmeared histogram is used. Defaults to 0.1.
+            properties (Tuple[str, int], optional): Properties used for calculation of the AP-RDF.
+                All properties of `pymatgen.core.Species` are available in addition to the integer `1` that will set P_i=P_j=1.
+                Defaults to ("X", "electron_affinity").
+            aggreations (Tuple[str], optional): Methods used to combine the properties. See `mofdscribe.utils.aggregators.AGGREGATORS`
+                for available options.
+                Defaults to ("avg", "product", "diff").
+        """
+        self.lower_lim = lower_lim
         self.cutoff = cutoff
         self.bin_size = bin_size
-        self.property_prod = property_prod
-        self.property_diff = property_diff
         self.properties = properties
-        self.lower_lim = lower_lim
+
         self.bw = bw
         self.aggregations = aggreations
 
@@ -47,14 +59,14 @@ class APRDF(BaseFeaturizer):
 
     def _get_feature_labels(self):
         labels = []
-        for property in self.properties:
+        for prop in self.properties:
             for aggregation in self.aggregations:
                 for _, bin in enumerate(self._bins):
-                    labels.append(f"{property}_{aggregation}_{bin}")
+                    labels.append(f"{prop}_{aggregation}_{bin}")
 
         return labels
 
-    def featurizer(self, s):
+    def featurizer(self, s) -> np.array:
         neighbors_lst = s.get_all_neighbors(self.cutoff)
 
         results = defaultdict(lambda: defaultdict(list))
@@ -77,7 +89,25 @@ class APRDF(BaseFeaturizer):
                             agg_func = AGGREGATORS[agg]
                             results[prop][agg].append(agg_func((p0, p1)) * n.nn_distance)
 
-    def feature_labels(self):
+        feature_vec = []
+        for prop in self.properties:
+            for aggregation in self.aggregations:
+                rdf = get_rdf(
+                    results[prop][aggregation],
+                    self.lower_lim,
+                    self.cutoff,
+                    self.bin_size,
+                    s.num_sites,
+                    s.volume,
+                )
+                if self.bw is not None:
+                    rdf = smear_histogram(rdf, self.bw, self.lower_lim, self.cutoff + self.bin_size)
+
+                feature_vec.append(rdf)
+
+        return feature_vec.flatten()
+
+    def feature_labels(self) -> List[str]:
         return self._get_feature_labels()
 
     def citations(self):
