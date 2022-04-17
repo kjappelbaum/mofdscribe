@@ -1,12 +1,24 @@
 from matminer.featurizers.base import BaseFeaturizer
+from typing import Tuple, Union
+import networkx as nx
 
 
-def correlate_properties(graph, distance, properties):
+def correlate_properties(pairs, aggregtations, properties):
+    ...
+
+
+def get_pairs(structure_graph):
+    # we could use nx.descendants_at_distance
     ...
 
 
 class RACS(BaseFeaturizer):
-    def __init__(self) -> None:
+    def __init__(
+        self,
+        attributes: Tuple[Union[int, str]] = ("X", "electron_affinity"),
+        scopes: Tuple[int] = (1, 2, 3),
+        prop_agg: Tuple[str] = ("avg", "product", "diff"),
+    ) -> None:
         ...
 
     def featurize(self, structure):

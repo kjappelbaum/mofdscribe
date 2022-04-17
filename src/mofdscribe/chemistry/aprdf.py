@@ -1,5 +1,5 @@
 """Atomic-property weighted autocorrelation function.
-See original implementation by authors https://github.com/tomdburns/AP-RDF
+See alternative implementation https://github.com/tomdburns/AP-RDF (likely faster as it also has a lower-level implementation)
 """
 
 from matminer import BaseFeaturizer
@@ -36,10 +36,11 @@ class APRDF(BaseFeaturizer):
             bw (Union[float, None], optional): Band width for Gaussian smearing.
                 If None, the unsmeared histogram is used. Defaults to 0.1.
             properties (Tuple[str, int], optional): Properties used for calculation of the AP-RDF.
-                All properties of `pymatgen.core.Species` are available in addition to the integer `1` that will set P_i=P_j=1.
+                All properties of `pymatgen.core.Species` are available
+                in addition to the integer `1` that will set P_i=P_j=1.
                 Defaults to ("X", "electron_affinity").
-            aggreations (Tuple[str], optional): Methods used to combine the properties. See `mofdscribe.utils.aggregators.AGGREGATORS`
-                for available options.
+            aggreations (Tuple[str], optional): Methods used to combine the properties.
+                See `mofdscribe.utils.aggregators.AGGREGATORS` for available options.
                 Defaults to ("avg", "product", "diff").
         """
         self.lower_lim = lower_lim
@@ -73,6 +74,7 @@ class APRDF(BaseFeaturizer):
 
         # ToDo: This is quite slow. We can, however, only use numba if we do not access the
         # pymatgen object
+        # for numba, we could make one "slow" loop where we store everything we need in one/two arrays and then we make the N*N loop
         for i, site in enumerate(s):
             site_neighbors = neighbors_lst[i]
             for n in site_neighbors:
