@@ -5,20 +5,22 @@ For alternative (slower) implementation see MOFfragmentor"""
 
 from pymatgen.core import Structure
 from pyymatgen.analysis.graphs import StructureGraph
+from mofdscribe.utils.substructures import get_metal_indices
+from mofdscribe.utils.structure_graph import get_connected_site_indices
 
 
 def get_node_atoms(structure_graph: StructureGraph):
-    metal_list = set(self.metal_atoms)
-    node_atom_set = set(metal_list)
+    metal_indices = get_metal_indices(structure_graph.structure)
+
     # make a set of all metals and atoms connected to them:
-    tmpset = set()
-    for metal_atom in metal_list:
-        tmpset.add(metal_atom)
-        bonded_to_metal = get_bonded_to_atom(self.adjacency_matrix, metal_atom)
-        tmpset.update(bonded_to_metal)
+    node_set = set()
+    for metal_index in metal_indices:
+        node_set.add(metal_index)
+        bonded_to_metal = get_connected_site_indices(structure_graph, metal_index)
+        node_set.update(bonded_to_metal)
 
     # add atoms that are only connected to metal or Hydrogen to the node list + hydrogen atoms connected to them
-    for atom in tmpset:
+    for atom in node_set:
         all_bonded_atoms = get_bonded_to_atom(self.adjacency_matrix, atom)
         only_bonded_metal_hydrogen = True
         for val in all_bonded_atoms:
