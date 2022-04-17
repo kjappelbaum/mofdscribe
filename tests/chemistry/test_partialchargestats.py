@@ -1,6 +1,4 @@
 from mofdscribe.chemistry.partialchargestats import PartialChargeStats
-import pytest
-from tests.conftest import hkust_structure, irmof_structure
 
 
 def test_partial_charge_stats(hkust_structure, irmof_structure):

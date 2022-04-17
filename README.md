@@ -32,7 +32,7 @@
     </a>
 </p>
 
-Compute features for MOFs
+Featurizing metal-organic frameworks (MOFs) made simple!
 
 ## 💪 Getting Started
 
@@ -53,14 +53,14 @@ by `sphinx`.
 
 ## 🚀 Installation
 
-<!-- Uncomment this section after your first ``tox -e finish``
+
 The most recent release can be installed from
 [PyPI](https://pypi.org/project/mofdscribe/) with:
 
 ```bash
 $ pip install mofdscribe
 ```
--->
+
 
 The most recent code and data can be installed directly from GitHub with:
 
@@ -102,15 +102,11 @@ This project has been supported by the following organizations (in alphabetical 
 
 -->
 
-<!--
+
 ### 💰 Funding
 
-This project has been supported by the following grants:
+The research was supported by the European Research Council (ERC) under the European Union’s Horizon 2020 research and innovation programme ([grant agreement 666983, MaGic](https://cordis.europa.eu/project/id/666983)), by the [NCCR-MARVEL](https://www.nccr-marvel.ch/), funded by the Swiss National Science Foundation, and by the Swiss National Science Foundation (SNSF) under Grant 200021_172759.
 
-| Funding Body                                             | Program                                                                                                                       | Grant           |
-|----------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------|-----------------|
-| DARPA                                                    | [Automating Scientific Knowledge Extraction (ASKE)](https://www.darpa.mil/program/automating-scientific-knowledge-extraction) | HR00111990009   |
--->
 
 ### 🍪 Cookiecutter
 
