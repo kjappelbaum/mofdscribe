@@ -1,7 +1,7 @@
 from functools import lru_cache
-from typing import List
+from typing import List, Union
 
-from pymatgen.core import IStructure, Structure
+from pymatgen.core import IStructure, Structure, Collection
 
 
 def get_metal_indices(structure: Structure) -> List[int]:
@@ -19,3 +19,7 @@ def select_elements(structure: Structure, element: str) -> Structure:
             sites.append(site)
 
     return Structure.from_sites(sites)
+
+
+def _not_relevant_structure_indices(structure: Union[Structure, IStructure], indices: Collection):
+    return [i for i in range(len(structure)) if i not in indices]

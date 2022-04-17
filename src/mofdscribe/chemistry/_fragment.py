@@ -9,8 +9,8 @@ from typing import Set
 from pymatgen.core import Structure
 from pyymatgen.analysis.graphs import StructureGraph
 
-from mofdscribe.utils.structure_graph import get_connected_site_indices
-from mofdscribe.utils.substructures import get_metal_indices
+from mofdscribe.utils.structure_graph import get_connected_site_indices, get_subgraphs_as_molecules
+from mofdscribe.utils.substructures import get_metal_indices, _not_relevant_structure_indices
 
 
 def get_node_atoms(structure_graph: StructureGraph) -> Set[int]:
@@ -46,4 +46,34 @@ def get_node_atoms(structure_graph: StructureGraph) -> Set[int]:
 
 
 def get_floating_indices(structure_graph: StructureGraph) -> Set[int]:
-    pass
+    _, _, idx, _, _ = get_subgraphs_as_molecules(structure_graph)
+    return set(idx)
+
+
+def get_bbs_from_indices(structure_graph: StructureGraph, indices: Set[int]):
+    graph_ = structure_graph.__copy__()
+    graph_.structure = Structure.from_sites(graph_.structure.sites)
+    to_delete = _not_relevant_structure_indices(graph_.structure, indices)
+    graph_.remove_nodes(to_delete)
+    mol, return_subgraphs, idx, centers, coordinates = get_subgraphs_as_molecules(graph_)
+    return mol, return_subgraphs, idx, centers, coordinates
+
+
+def fragment(structure_graph: StructureGraph):
+    node_atoms = get_node_atoms(structure_graph)
+    floating_indices = get_floating_indices(structure_graph)
+
+    all_atoms = set(list(range(len(structure_graph))))
+    linker_atoms = all_atoms - node_atoms - floating_indices
+
+    (
+        linker_mol,
+        linker_subgraph,
+        linker_idx,
+        linker_center,
+        linker_coordinates,
+    ) = get_bbs_from_indices(structure_graph, linker_atoms)
+
+    node_mol, node_subgraph, node_idx, node_center, node_coordinates = get_bbs_from_indices(
+        structure_graph, node_atoms
+    )

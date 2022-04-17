@@ -5,14 +5,14 @@ from typing import List, Tuple
 import networkx as nx
 import numpy as np
 from pymatgen.analysis.graphs import MoleculeGraph, StructureGraph
-from pymatgen.analysis.local_env import CrystalNN, IsayevNN, JMolNN
+from pymatgen.analysis.local_env import CrystalNN, IsayevNN, JmolNN
 from pymatgen.core import IStructure, Molecule, Structure
 
 
 def _get_local_env_strategy(name: str):
     n = name.lower()
     if n == "jmolnn":
-        return JMolNN()
+        return JmolNN()
     elif n == "crystalnn":
         return CrystalNN()
     elif n == "isayevnn":
@@ -29,6 +29,17 @@ def get_structure_graph(structure: IStructure, strategy: str) -> StructureGraph:
 def get_connected_site_indices(structure_graph: StructureGraph, site_index: int) -> List[int]:
     connected_sites = structure_graph.get_connected_sites(site_index)
     return [site.index for site in connected_sites]
+
+
+def _is_in_cell(frac_coords):
+    return all(frac_coords <= 1)
+
+
+def _is_any_atom_in_cell(frac_coords):
+    for row in frac_coords:
+        if _is_in_cell(row):
+            return True
+    return False
 
 
 def _select_parts_in_cell(  # pylint:disable=too-many-arguments, too-many-locals
