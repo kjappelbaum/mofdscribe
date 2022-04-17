@@ -1,4 +1,4 @@
-from matminer import BaseFeaturizer
+from matminer.featurizers.base import BaseFeaturizer
 from typing import List, Tuple
 
 

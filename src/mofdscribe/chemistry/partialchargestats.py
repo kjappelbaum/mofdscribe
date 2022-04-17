@@ -1,4 +1,4 @@
-from matminer import BaseFeaturizer
+from matminer.featurizers.base import BaseFeaturizer
 from typing import Tuple, List
 import numpy as np
 from pyeqeq import run_on_cif
@@ -15,7 +15,7 @@ class PartialChargeStats(BaseFeaturizer):
 
     def featurize(self, s) -> np.array:
 
-        with NamedTemporaryFile(suffix=".cif") as f:
+        with NamedTemporaryFile("w", suffix=".cif") as f:
             s.to("cif", f.name)
             results = run_on_cif(f.name)
 

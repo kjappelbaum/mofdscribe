@@ -2,7 +2,7 @@
 See alternative implementation https://github.com/tomdburns/AP-RDF (likely faster as it also has a lower-level implementation)
 """
 
-from matminer import BaseFeaturizer
+from matminer.featurizers.base import BaseFeaturizer
 import numpy as np
 from typing import Tuple, Union, List
 from ..utils.aggregators import AGGREGATORS
