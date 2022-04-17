@@ -10,7 +10,7 @@ from pymatgen.core import Structure
 from pyymatgen.analysis.graphs import StructureGraph
 
 from mofdscribe.utils.structure_graph import get_connected_site_indices, get_subgraphs_as_molecules
-from mofdscribe.utils.substructures import get_metal_indices, _not_relevant_structure_indices
+from mofdscribe.utils.substructures import _not_relevant_structure_indices, get_metal_indices
 
 
 def get_node_atoms(structure_graph: StructureGraph) -> Set[int]:
