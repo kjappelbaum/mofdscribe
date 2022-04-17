@@ -1,6 +1,7 @@
-from pymatgen.core import Structure, IStructure
 from pathlib import Path
 from typing import Union
+
+from pymatgen.core import IStructure, Structure
 
 
 class MOF:

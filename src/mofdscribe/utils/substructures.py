@@ -1,6 +1,7 @@
-from pymatgen.core import Structure, IStructure
-from typing import List
 from functools import lru_cache
+from typing import List
+
+from pymatgen.core import IStructure, Structure
 
 
 def get_metal_indices(structure: Structure) -> List[int]:

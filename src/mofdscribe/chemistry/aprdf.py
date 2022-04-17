@@ -2,12 +2,14 @@
 See alternative implementation https://github.com/tomdburns/AP-RDF (likely faster as it also has a lower-level implementation)
 """
 
-from matminer.featurizers.base import BaseFeaturizer
-import numpy as np
-from typing import Tuple, Union, List
-from ..utils.aggregators import AGGREGATORS
 from collections import defaultdict
 from functools import cached_property
+from typing import List, Tuple, Union
+
+import numpy as np
+from matminer.featurizers.base import BaseFeaturizer
+
+from ..utils.aggregators import AGGREGATORS
 from ..utils.histogram import get_rdf, smear_histogram
 
 

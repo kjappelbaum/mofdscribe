@@ -3,12 +3,14 @@ which does not require multiple loops over the graph.
 For alternative (slower) implementation see MOFfragmentor"""
 
 
-from pymatgen.core import Structure
-from pyymatgen.analysis.graphs import StructureGraph
-from mofdscribe.utils.substructures import get_metal_indices
-from mofdscribe.utils.structure_graph import get_connected_site_indices
 from copy import deepcopy
 from typing import Set
+
+from pymatgen.core import Structure
+from pyymatgen.analysis.graphs import StructureGraph
+
+from mofdscribe.utils.structure_graph import get_connected_site_indices
+from mofdscribe.utils.substructures import get_metal_indices
 
 
 def get_node_atoms(structure_graph: StructureGraph) -> Set[int]:
@@ -43,5 +45,5 @@ def get_node_atoms(structure_graph: StructureGraph) -> Set[int]:
     return final_node_atom_set
 
 
-def get_floating_indices() -> Set[int]:
+def get_floating_indices(structure_graph: StructureGraph) -> Set[int]:
     pass

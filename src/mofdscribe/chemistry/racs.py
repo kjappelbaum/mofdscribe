@@ -1,6 +1,7 @@
-from matminer.featurizers.base import BaseFeaturizer
 from typing import Tuple, Union
+
 import networkx as nx
+from matminer.featurizers.base import BaseFeaturizer
 
 
 def correlate_properties(pairs, aggregtations, properties):

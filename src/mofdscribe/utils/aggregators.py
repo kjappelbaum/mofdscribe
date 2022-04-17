@@ -1,4 +1,5 @@
 import math
+
 import numpy as np
 
 AGGREGATORS = {
@@ -19,4 +20,5 @@ ARRAY_AGGREGATORS = {
     "max": lambda x: max(x),
     "min": lambda x: min(x),
     "std": lambda x: np.std(x),
+    "range": lambda x: max(x) - min(x),
 }

@@ -1,12 +1,14 @@
-from matminer.featurizers.base import BaseFeaturizer
-from loguru import logger
-import subprocess
 import os
 import re
+import subprocess
 from tempfile import TemporaryDirectory
+from typing import List, Tuple, Union
+
+from loguru import logger
+from matminer.featurizers.base import BaseFeaturizer
 from pymatgen.core import Structure
+
 from ..utils import is_tool
-from typing import Union, List, Tuple
 
 ZEOPP_BASE_COMMAND = ["network", "-ha"]
 NO_ZEOPP_WARNING = "Did not find the zeo++ network binary in the path. \

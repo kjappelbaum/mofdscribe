@@ -1,8 +1,10 @@
-from matminer.featurizers.base import BaseFeaturizer
-from typing import Tuple, List
-import numpy as np
-from pyeqeq import run_on_cif
 from tempfile import NamedTemporaryFile
+from typing import List, Tuple
+
+import numpy as np
+from matminer.featurizers.base import BaseFeaturizer
+from pyeqeq import run_on_cif
+
 from mofdscribe.utils.aggregators import ARRAY_AGGREGATORS
 
 

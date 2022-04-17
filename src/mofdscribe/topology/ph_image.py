@@ -1,5 +1,6 @@
-from matminer.featurizers.base import BaseFeaturizer
 from typing import List, Tuple
+
+from matminer.featurizers.base import BaseFeaturizer
 
 
 class PHImage(BaseFeaturizer):
