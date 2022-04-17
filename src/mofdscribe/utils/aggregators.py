@@ -1,4 +1,5 @@
 import math
+import numpy as np
 
 AGGREGATORS = {
     "sum": lambda x: x[0] + x[1],
@@ -9,4 +10,13 @@ AGGREGATORS = {
     "last": lambda x: x[1],
     "product": lambda x: x[0] * x[1],
     "diff": lambda x: abs(x[1] - x[0]),
+}
+
+
+ARRAY_AGGREGATORS = {
+    "sum": lambda x: sum(x),
+    "avg": lambda x: sum(x) / len(x),
+    "max": lambda x: max(x),
+    "min": lambda x: min(x),
+    "std": lambda x: np.std(x),
 }
