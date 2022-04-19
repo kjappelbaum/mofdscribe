@@ -7,6 +7,7 @@ from typing import List, Tuple, Union
 from loguru import logger
 from matminer.featurizers.base import BaseFeaturizer
 from pymatgen.core import Structure
+import numpy as np
 
 from ..utils import is_tool
 
@@ -103,13 +104,17 @@ def _parse_sa_zeopp(filecontent):
     return d
 
 
+def _parse_volpo_zeopp(fileconent):
+    ...
+
+
 class PoreDiameters(BaseFeaturizer):
-    def ___init___(self):
+    def __init__(self):
         self.labels = ["lis", "lifs", "lifsp"]
 
     def featurize(self, s):
-        values, _ = run_zeopp(s, "-res", _parse_res_zeopp)
-        return values
+        result = run_zeopp(s, ["-res"], _parse_res_zeopp)
+        return np.array(list(result.values()))
 
     def feature_labels(self):
         return self.labels
@@ -136,7 +141,7 @@ class PoreDiameters(BaseFeaturizer):
 
 
 class SurfaceArea(BaseFeaturizer):
-    def ___init___(
+    def __init__(
         self,
         probe_radius: Union[str, float] = 0.1,
         num_samples: int = 100,
@@ -162,18 +167,18 @@ class SurfaceArea(BaseFeaturizer):
         self.labels = [
             "uc_volume",
             "density",
-            "asa_a^2",
-            "asa_m^2/cm^3",
-            "asa_m^2/g",
-            "nasa_a^2",
-            "nasa_m^2/cm^3",
-            "nasa_m^2/g",
+            "asa_a2",
+            "asa_m2cm3",
+            "asa_m2g",
+            "nasa_a2",
+            "nasa_m2cm3",
+            "nasa_m2g",
         ]
 
     def featurize(self, s):
         command = ["-sa", f"{self.channel_radius}", f"{self.probe_radius}", f"{self.num_samples}"]
-        results, _ = run_zeopp(s, command, _parse_sa_zeopp)
-        return results
+        results = run_zeopp(s, command, _parse_sa_zeopp)
+        return np.array(list(results.values()))
 
     def feature_labels(self):
         return self.labels
@@ -200,7 +205,7 @@ class SurfaceArea(BaseFeaturizer):
 
 
 class AccessibleVolume(BaseFeaturizer):
-    def ___init___(
+    def __init__(
         self,
         probe_radius: Union[str, float] = 0.1,
         num_samples: int = 100,
@@ -225,12 +230,12 @@ class AccessibleVolume(BaseFeaturizer):
         self.labels = [
             "uc_volume",
             "density",
-            "av_a^2",
+            "av_a2",
             "av_volume_fraction",
-            "av_cm^3_g",
-            "nav_a^3",
+            "av_cm3g",
+            "nav_a3",
             "nav_volume_fraction",
-            "nav_cm^3_g",
+            "nav_cm3g",
         ]
 
     def featurize(self, s):
