@@ -81,14 +81,14 @@ def _parse_res_zeopp(filecontent: str) -> Tuple[List[float], List[str]]:
 
 
 def _parse_sa_zeopp(filecontent):
-    regex_unitcell = re.compile("Unitcell_volume: ((\d+\.\d+)|\d+)")
-    regex_density = re.compile("Density: ((\d+\.\d+)|\d+)")
-    asa_a2 = re.compile("ASA_A\^2: ((\d+\.\d+)|\d+)")
-    asa_m2cm3 = re.compile("ASA_m\^2/cm\^3: ((\d+\.\d+)|\d+)")
-    asa_m2g = re.compile("ASA_m\^2/g: ((\d+\.\d+)|\d+)")
-    nasa_a2 = re.compile("NASA_A\^2: ((\d+\.\d+)|\d+)")
-    nasa_m2cm3 = re.compile("NASA_m\^2/cm\^3: ((\d+\.\d+)|\d+)")
-    nasa_m2g = re.compile("NASA_m\^2/g: ((\d+\.\d+)|\d+)")
+    regex_unitcell = re.compile("Unitcell_volume: ((\d+\.\d+)|\d+)|$")
+    regex_density = re.compile("Density: ((\d+\.\d+)|\d+)|$")
+    asa_a2 = re.compile("ASA_A\^2: ((\d+\.\d+)|\d+)|$")
+    asa_m2cm3 = re.compile("ASA_m\^2/cm\^3: ((\d+\.\d+)|\d+)|$")
+    asa_m2g = re.compile("ASA_m\^2/g: ((\d+\.\d+)|\d+)|$")
+    nasa_a2 = re.compile("NASA_A\^2: ((\d+\.\d+)|\d+)|$")
+    nasa_m2cm3 = re.compile("NASA_m\^2/cm\^3: ((\d+\.\d+)|\d+)|$")
+    nasa_m2g = re.compile("NASA_m\^2/g: ((\d+\.\d+)|\d+)|$")
 
     d = {
         "unitcell_volume": float(re.findall(regex_unitcell, filecontent)[0][0]),
@@ -104,8 +104,28 @@ def _parse_sa_zeopp(filecontent):
     return d
 
 
-def _parse_volpo_zeopp(fileconent):
-    ...
+def _parse_volpo_zeopp(filecontent):
+    regex_unitcell = re.compile("Unitcell_volume: ((\d+\.\d+)|\d+)|$")
+    regex_density = re.compile("Density: ((\d+\.\d+)|\d+)|$")
+    av_a3 = re.compile("AV_A\^3: ((\d+\.\d+)|\d+)|$")
+    av_volume_fraction = re.compile("AV_Volume_fraction: ((\d+\.\d+)|\d+)|$")
+    av_cm3g = re.compile("AV_cm\^3/g: ((\d+\.\d+)|\d+)|$")
+    nav_a3 = re.compile("NAV_A\^3: ((\d+\.\d+)|\d+)|$")
+    nav_volume_fraction = re.compile("NAV_Volume_fraction: ((\d+\.\d+)|\d+)|$")
+    nav_cm3g = re.compile("NAV_cm\^3/g: ((\d+\.\d+)|\d+)|$")
+
+    d = {
+        "unitcell_volume": float(re.findall(regex_unitcell, filecontent)[0][0]),
+        "density": float(re.findall(regex_density, filecontent)[0][0]),
+        "av_a3": float(re.findall(av_a3, filecontent)[0][0]),
+        "av_volume_fraction": float(re.findall(av_volume_fraction, filecontent)[0][0]),
+        "av_cm3g": float(re.findall(av_cm3g, filecontent)[0][0]),
+        "nav_a3": float(re.findall(nav_a3, filecontent)[0][0]),
+        "nav_volume_fraction": float(re.findall(nav_volume_fraction, filecontent)[0][0]),
+        "nav_cm3g": float(re.findall(nav_cm3g, filecontent)[0][0]),
+    }
+
+    return d
 
 
 class PoreDiameters(BaseFeaturizer):
@@ -147,10 +167,11 @@ class SurfaceArea(BaseFeaturizer):
         num_samples: int = 100,
         channel_radius: Union[str, float, None] = None,
     ):
-        if probe_radius != channel_radius:
-            logger.warning(
-                "Probe radius and channel radius are different. This is a highly unusual setting."
-            )
+        if channel_radius is not None:
+            if probe_radius != channel_radius:
+                logger.warning(
+                    "Probe radius and channel radius are different. This is a highly unusual setting."
+                )
         if isinstance(probe_radius, str):
             try:
                 probe_radius = PROBE_RADII[probe_radius]
@@ -211,10 +232,11 @@ class AccessibleVolume(BaseFeaturizer):
         num_samples: int = 100,
         channel_radius: Union[str, float, None] = None,
     ):
-        if probe_radius != channel_radius:
-            logger.warning(
-                "Probe radius and channel radius are different. This is a highly unusual setting."
-            )
+        if channel_radius is not None:
+            if probe_radius != channel_radius:
+                logger.warning(
+                    "Probe radius and channel radius are different. This is a highly unusual setting."
+                )
         if isinstance(probe_radius, str):
             try:
                 probe_radius = PROBE_RADII[probe_radius]
@@ -239,10 +261,12 @@ class AccessibleVolume(BaseFeaturizer):
         ]
 
     def featurize(self, s):
-        ...
+        command = ["-vol", f"{self.channel_radius}", f"{self.probe_radius}", f"{self.num_samples}"]
+        results = run_zeopp(s, command, _parse_volpo_zeopp)
+        return np.array(list(results.values()))
 
     def feature_labels(self):
-        ...
+        return self.labels
 
     def citations(self):
         return [
