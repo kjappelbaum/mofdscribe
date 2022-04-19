@@ -1,15 +1,15 @@
 import os
 import re
 import subprocess
+from io import StringIO
 from tempfile import TemporaryDirectory
 from typing import List, Tuple, Union
 
 import numpy as np
+import pandas as pd
 from loguru import logger
 from matminer.featurizers.base import BaseFeaturizer
 from pymatgen.core import Structure
-import pandas as pd
-from io import StringIO
 
 from ..utils import is_tool
 

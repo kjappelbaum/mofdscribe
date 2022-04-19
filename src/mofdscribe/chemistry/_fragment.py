@@ -6,8 +6,8 @@ For alternative (slower) implementation see MOFfragmentor"""
 from copy import deepcopy
 from typing import Set
 
-from pymatgen.core import Structure
 from pymatgen.analysis.graphs import StructureGraph
+from pymatgen.core import Structure
 
 from mofdscribe.utils.structure_graph import get_connected_site_indices, get_subgraphs_as_molecules
 from mofdscribe.utils.substructures import _not_relevant_structure_indices, get_metal_indices
