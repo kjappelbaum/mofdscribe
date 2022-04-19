@@ -1,5 +1,5 @@
 from functools import lru_cache
-from typing import List, Union, Collection
+from typing import Collection, List, Union
 
 from pymatgen.core import IStructure, Structure
 

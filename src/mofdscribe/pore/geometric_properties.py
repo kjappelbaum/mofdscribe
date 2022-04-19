@@ -4,10 +4,10 @@ import subprocess
 from tempfile import TemporaryDirectory
 from typing import List, Tuple, Union
 
+import numpy as np
 from loguru import logger
 from matminer.featurizers.base import BaseFeaturizer
 from pymatgen.core import Structure
-import numpy as np
 
 from ..utils import is_tool
 
@@ -128,6 +128,10 @@ def _parse_volpo_zeopp(filecontent):
     return d
 
 
+def _parse_ray_hist_zeopp(filecontent):
+    return filecontent.split("\n")[1:-1]
+
+
 class PoreDiameters(BaseFeaturizer):
     def __init__(self):
         self.labels = ["lis", "lifs", "lifsp"]
@@ -196,15 +200,20 @@ class SurfaceArea(BaseFeaturizer):
             "nasa_m2g",
         ]
 
-    def featurize(self, s):
-        command = ["-sa", f"{self.channel_radius}", f"{self.probe_radius}", f"{self.num_samples}"]
+    def featurize(self, s: Structure) -> np.ndarray:
+        command = [
+            "-sa",
+            f"{self.channel_radius}",
+            f"{self.probe_radius}",
+            f"{self.num_samples}",
+        ]
         results = run_zeopp(s, command, _parse_sa_zeopp)
         return np.array(list(results.values()))
 
-    def feature_labels(self):
+    def feature_labels(self) -> List[str]:
         return self.labels
 
-    def citations(self):
+    def citations(self) -> List[str]:
         return [
             "@article{Willems2012,"
             "doi = {10.1016/j.micromeso.2011.08.020},"
@@ -221,7 +230,7 @@ class SurfaceArea(BaseFeaturizer):
             "}"
         ]
 
-    def implementors(self):
+    def implementors(self) -> List[str]:
         return ["Kevin Maik Jablonka"]
 
 
@@ -260,15 +269,15 @@ class AccessibleVolume(BaseFeaturizer):
             "nav_cm3g",
         ]
 
-    def featurize(self, s):
+    def featurize(self, s: Structure) -> np.ndarray:
         command = ["-vol", f"{self.channel_radius}", f"{self.probe_radius}", f"{self.num_samples}"]
         results = run_zeopp(s, command, _parse_volpo_zeopp)
         return np.array(list(results.values()))
 
-    def feature_labels(self):
+    def feature_labels(self) -> List[str]:
         return self.labels
 
-    def citations(self):
+    def citations(self) -> List[str]:
         return [
             "@article{Willems2012,"
             "doi = {10.1016/j.micromeso.2011.08.020},"
@@ -283,6 +292,90 @@ class AccessibleVolume(BaseFeaturizer):
             "title = {Algorithms and tools for high-throughput geometry-based analysis of crystalline porous materials},"
             "journal = {Microporous and Mesoporous Materials}"
             "}"
+        ]
+
+    def implementors(self) -> List[str]:
+        return ["Kevin Maik Jablonka"]
+
+
+class RayTracingHistogram(BaseFeaturizer):
+    def __init__(
+        self,
+        probe_radius: Union[str, float] = 0.0,
+        num_samples: int = 50000,
+        channel_radius: Union[str, float, None] = None,
+    ) -> None:
+        """The algorithm (implemented in zeo++) shoots random rays through the accesible volume of the cell until the ray hits atoms, and it records their lenghts to provide the corresponding histogram.
+        Such ray histograms are supposed to encode the shape, topology, distribution and size of voids.
+
+        Currently, the histogram is hard-coded to be of length 1000 (in zeo++ itself).
+
+        Args:
+            probe_radius (Union[str, float], optional): Used to estimate the accessible volume.
+            Only the accessible volume is then considered for the histogram.
+            Defaults to 0.0.
+            num_samples (int, optional): Number of rays that are placed through sample.
+                Original publication used  1,000,000 sample points for IZA zeolites and 100,000 sample points for hypothetical zeolites. Larger numbers increase the runtime Defaults to 50000.
+            channel_radius (Union[str, float, None], optional):  Radius of a probe used to determine accessibility of the void space. Should typically equal the radius of the `probe_radius`. If set to `None`, we will use the `probe_radius`. Defaults to None.
+        """
+        if channel_radius is not None:
+            if probe_radius != channel_radius:
+                logger.warning(
+                    "Probe radius and channel radius are different. This is a highly unusual setting."
+                )
+        if isinstance(probe_radius, str):
+            try:
+                probe_radius = PROBE_RADII[probe_radius]
+            except KeyError:
+                logger.error(f"Probe radius {probe_radius} not found in PROBE_RADII")
+
+        if channel_radius is None:
+            channel_radius = probe_radius
+
+        self.probe_radius = probe_radius
+        self.num_samples = num_samples
+        self.channel_radius = channel_radius
+
+    def feature_labels(self):
+        return [f"ray_hist_{i}" for i in range(1000)]
+
+    def featurize(self, s):
+        command = [
+            "-ray_atom",
+            f"{self.channel_radius}",
+            f"{self.probe_radius}",
+            f"{self.num_samples}",
+        ]
+        results = run_zeopp(s, command, _parse_ray_hist_zeopp)
+        return np.array(results)
+
+    def citations(self):
+        return [
+            "@article{Jones2013,"
+            "doi = {10.1016/j.micromeso.2013.07.033},"
+            "url = {https://doi.org/10.1016/j.micromeso.2013.07.033},"
+            "year = {2013},"
+            "month = nov,"
+            "publisher = {Elsevier {BV}},"
+            "volume = {181},"
+            "pages = {208--216},"
+            "author = {Andrew J. Jones and Christopher Ostrouchov and Maciej Haranczyk and Enrique Iglesia},"
+            "title = {From rays to structures: Representation and selection of void structures in zeolites using stochastic methods},"
+            "journal = {Microporous and Mesoporous Materials}"
+            "}",
+            "@article{Willems2012,"
+            "doi = {10.1016/j.micromeso.2011.08.020},"
+            "url = {https://doi.org/10.1016/j.micromeso.2011.08.020},"
+            "year = {2012},"
+            "month = feb,"
+            "publisher = {Elsevier {BV}},"
+            "volume = {149},"
+            "number = {1},"
+            "pages = {134--141},"
+            "author = {Thomas F. Willems and Chris H. Rycroft and Michaeel Kazi and Juan C. Meza and Maciej Haranczyk},"
+            "title = {Algorithms and tools for high-throughput geometry-based analysis of crystalline porous materials},"
+            "journal = {Microporous and Mesoporous Materials}"
+            "}",
         ]
 
     def implementors(self):

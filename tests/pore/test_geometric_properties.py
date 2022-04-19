@@ -5,6 +5,7 @@ from mofdscribe.pore.geometric_properties import (
     PoreDiameters,
     SurfaceArea,
     AccessibleVolume,
+    RayTracingHistogram,
 )
 
 SA_SAMPLE_OUTPUT = """@ EDI.sa Unitcell_volume: 307.484   Density: 1.62239   
@@ -114,3 +115,11 @@ def test_accessible_volume(hkust_structure):
     assert result[5] == 0
     assert result[6] == 0
     assert result[7] == 0
+
+
+def test_raytracing_histogram(hkust_structure):
+    rth = RayTracingHistogram()
+    assert len(rth.feature_labels()) == 1000
+    assert len(rth.citations()) == 2
+    features = rth.featurize(hkust_structure)
+    assert len(features) == 1000
