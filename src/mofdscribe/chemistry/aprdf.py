@@ -16,8 +16,10 @@ from ..utils.histogram import get_rdf, smear_histogram
 class APRDF(BaseFeaturizer):
     """
     Generalization of descriptor described by Fernandez et al. In the article they describe the product of atomic properties
-    \operatorname{RDF}^{p}(R)=f \sum_{i, j}^{\text {all atom puirs }} P_{i} P_{j} \mathrm{e}^{-B\left(r_{ij}-R\right)^{2}}
-    Here, we also implement the difference.
+    .. math::
+        \operatorname{RDF}^{p}(R)=f \sum_{i, j}^{\text {all atom puirs }} P_{i} P_{j} \mathrm{e}^{-B\left(r_{ij}-R\right)^{2}}
+
+    Here, we allow for a wider choice of option for aggregation of properties :math:`P_{i}` and :math:`P_{j}` (not only the product).
     """
 
     def __init__(

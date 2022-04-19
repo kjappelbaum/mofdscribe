@@ -87,3 +87,7 @@ def fragment(structure_graph: StructureGraph):
         node_center,
         node_coordinates,
     )
+
+
+def _functional_group_atoms():
+    ...

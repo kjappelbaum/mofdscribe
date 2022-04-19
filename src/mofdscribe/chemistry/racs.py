@@ -18,8 +18,27 @@ class RACS(BaseFeaturizer):
         self,
         attributes: Tuple[Union[int, str]] = ("X", "electron_affinity"),
         scopes: Tuple[int] = (1, 2, 3),
-        prop_agg: Tuple[str] = ("avg", "product", "diff"),
+        prop_agg: Tuple[str] = ("product", "diff"),
+        corr_agg: Tuple[str] = ("sum"),
+        racs_agg: Tuple[str] = ("sum"),
     ) -> None:
+        """Modified version of the RACS for MOFs proposed by Moosavi et al.
+        In the original paper, RACs were computed as
+
+        .. math::
+            {}_{{\rm{scope}}}^{{\rm{start}}}{P}_{d}^{{\rm{diff}}}=\mathop{\sum }\limits_{i}^{{\rm{start}}}\mathop{\sum }\limits_{j}^{{\rm{scope}}}({P}_{i}-{P}_{j})\delta ({d}_{i,j},d).
+
+        Here, we allow to replace the double sum by different aggregations. We call this `corr_agg`. The default `sum` is equivalent to the original RACS. Moreover, the implementation here keeps track of different linker/node molecules and allows to compute and aggregate the RACS for each molecule separately. The default `sum` is equivalent to the original RACS (i.e. all applicable linker atoms would be added to the start/scope lists).
+
+        To use to original implementation, see `molSimplify <https://github.com/hjkgrp/molSimplify>`_.
+
+        Args:
+            attributes (Tuple[Union[int, str]], optional): _description_. Defaults to ("X", "electron_affinity").
+            scopes (Tuple[int], optional): _description_. Defaults to (1, 2, 3).
+            prop_agg (Tuple[str], optional): _description_. Defaults to ("avg", "product", "diff").
+            corr_agg (Tuple[str], optional): _description_. Defaults to ("avg", "product", "diff").
+            racs_agg (Tuple[str], optional): _description_. Defaults to ("avg", "product", "diff").
+        """
         ...
 
     def featurize(self, structure):
