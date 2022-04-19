@@ -7,7 +7,7 @@ from copy import deepcopy
 from typing import Set
 
 from pymatgen.core import Structure
-from pyymatgen.analysis.graphs import StructureGraph
+from pymatgen.analysis.graphs import StructureGraph
 
 from mofdscribe.utils.structure_graph import get_connected_site_indices, get_subgraphs_as_molecules
 from mofdscribe.utils.substructures import _not_relevant_structure_indices, get_metal_indices
@@ -55,7 +55,9 @@ def get_bbs_from_indices(structure_graph: StructureGraph, indices: Set[int]):
     graph_.structure = Structure.from_sites(graph_.structure.sites)
     to_delete = _not_relevant_structure_indices(graph_.structure, indices)
     graph_.remove_nodes(to_delete)
-    mol, return_subgraphs, idx, centers, coordinates = get_subgraphs_as_molecules(graph_)
+    mol, return_subgraphs, idx, centers, coordinates = get_subgraphs_as_molecules(
+        graph_, return_unique=False
+    )
     return mol, return_subgraphs, idx, centers, coordinates
 
 
@@ -76,4 +78,12 @@ def fragment(structure_graph: StructureGraph):
 
     node_mol, node_subgraph, node_idx, node_center, node_coordinates = get_bbs_from_indices(
         structure_graph, node_atoms
+    )
+
+    return (linker_mol, linker_subgraph, linker_idx, linker_center, linker_coordinates), (
+        node_mol,
+        node_subgraph,
+        node_idx,
+        node_center,
+        node_coordinates,
     )

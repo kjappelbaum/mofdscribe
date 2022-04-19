@@ -8,7 +8,7 @@ mofdscribe |release| Documentation
 
    installation
    usage
-   cli
+   api
 
 Indices and Tables
 ------------------

@@ -1,3 +1,4 @@
+from ctypes import Structure
 from tempfile import NamedTemporaryFile
 from typing import List, Tuple
 
@@ -10,13 +11,19 @@ from mofdscribe.utils.aggregators import ARRAY_AGGREGATORS
 
 class PartialChargeStats(BaseFeaturizer):
     def __init__(self, aggregtations: Tuple[str] = ("max", "min", "std")) -> None:
+        """Compute partial charges using the EqEq charge equilibration method.
+        Then derive a fix-length feature vector from the partial charges using aggregative statistics.
+
+        Args:
+            aggregtations (Tuple[str], optional): Aggregations to compute. For available methods,
+                see :py:met:`mofdscribe.utils.aggregators.ARRAY_AGGREGATORS`. Defaults to ("max", "min", "std").
+        """
         self.aggregations = aggregtations
 
     def feature_labels(self) -> List[str]:
         return [f"charge_{agg}" for agg in self.aggregations]
 
-    def featurize(self, s) -> np.array:
-
+    def featurize(self, s: Structure) -> np.ndarray:
         with NamedTemporaryFile("w", suffix=".cif") as f:
             s.to("cif", f.name)
             results = run_on_cif(f.name)
@@ -25,7 +32,7 @@ class PartialChargeStats(BaseFeaturizer):
 
         return np.array(aggregated)
 
-    def citations(self):
+    def citations(self) -> List[str]:
         return [
             "@article{Ongari2018,"
             "doi = {10.1021/acs.jctc.8b00669},"

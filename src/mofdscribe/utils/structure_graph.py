@@ -23,6 +23,11 @@ def _get_local_env_strategy(name: str):
 def get_structure_graph(structure: IStructure, strategy: str) -> StructureGraph:
     strategy = _get_local_env_strategy(strategy)
     sg = StructureGraph.with_local_env_strategy(structure, strategy)
+    nx.set_node_attributes(
+        sg.graph,
+        name="idx",
+        values=dict(zip(range(len(sg)), range(len(sg)))),
+    )
     return sg
 
 

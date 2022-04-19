@@ -8,6 +8,8 @@ import numpy as np
 from loguru import logger
 from matminer.featurizers.base import BaseFeaturizer
 from pymatgen.core import Structure
+import pandas as pd
+from io import StringIO
 
 from ..utils import is_tool
 
@@ -50,6 +52,7 @@ def run_zeopp(structure: Structure, command, parser) -> dict:
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             check=True,
+            cwd=tempdir,
         )
 
         with open(result_path, "r") as handle:
@@ -129,7 +132,16 @@ def _parse_volpo_zeopp(filecontent):
 
 
 def _parse_ray_hist_zeopp(filecontent):
-    return filecontent.split("\n")[1:-1]
+    return [float(i) for i in filecontent.split("\n")[1:-1]]
+
+
+def _parse_psd_zeopp(filecontent):
+    return pd.read_csv(
+        StringIO(filecontent),
+        skiprows=11,
+        names=["bin", "count", "cumulative", "derivative"],
+        sep="\s+",
+    )
 
 
 class PoreDiameters(BaseFeaturizer):
@@ -362,6 +374,102 @@ class RayTracingHistogram(BaseFeaturizer):
             "author = {Andrew J. Jones and Christopher Ostrouchov and Maciej Haranczyk and Enrique Iglesia},"
             "title = {From rays to structures: Representation and selection of void structures in zeolites using stochastic methods},"
             "journal = {Microporous and Mesoporous Materials}"
+            "}",
+            "@article{Willems2012,"
+            "doi = {10.1016/j.micromeso.2011.08.020},"
+            "url = {https://doi.org/10.1016/j.micromeso.2011.08.020},"
+            "year = {2012},"
+            "month = feb,"
+            "publisher = {Elsevier {BV}},"
+            "volume = {149},"
+            "number = {1},"
+            "pages = {134--141},"
+            "author = {Thomas F. Willems and Chris H. Rycroft and Michaeel Kazi and Juan C. Meza and Maciej Haranczyk},"
+            "title = {Algorithms and tools for high-throughput geometry-based analysis of crystalline porous materials},"
+            "journal = {Microporous and Mesoporous Materials}"
+            "}",
+        ]
+
+    def implementors(self):
+        return ["Kevin Maik Jablonka"]
+
+
+class PoreSizeDistribution(BaseFeaturizer):
+    def __init__(
+        self,
+        probe_radius: Union[str, float] = 0.0,
+        num_samples: int = 5000,
+        channel_radius: Union[str, float, None] = None,
+        hist_type: str = "derivative",
+    ) -> None:
+        """
+        The pore size distribution describes how much of the void space corresponds to certain pore sizes.
+        We use the implementation in zeo++ to calculate the pore size distribution.
+
+        The pore size distribution has been used by the group of Gómez-Gualdrón  as pore size standard deviation (PSSD) in, for example, 10.1021/acs.jctc.9b00940 and 10.1063/5.0048736.
+
+        Currently, the histogram is hard-coded to be of length 1000 between 0 and 100 Angstrom (in zeo++ itself).
+
+        Args:
+            probe_radius (Union[str, float], optional): Used to estimate the accessible volume.
+            Only the accessible volume is then considered for the histogram.
+            Defaults to 0.0.
+            num_samples (int, optional): Number of rays that are placed through sample.
+                Original publication used  1,000,000 sample points for IZA zeolites and 100,000 sample points for hypothetical zeolites. Larger numbers increase the runtime Defaults to 50000.
+            channel_radius (Union[str, float, None], optional):  Radius of a probe used to determine accessibility of the void space. Should typically equal the radius of the `probe_radius`. If set to `None`, we will use the `probe_radius`. Defaults to None.
+            hist_type (str, optional): Type of the histogram. Available options `count`, `cumulative`, `derivative` (The derivative distribution describes the change in the cumulative distribution with respect to pore size). Defaults to "derivative".
+        """
+        if channel_radius is not None:
+            if probe_radius != channel_radius:
+                logger.warning(
+                    "Probe radius and channel radius are different. This is a highly unusual setting."
+                )
+        if isinstance(probe_radius, str):
+            try:
+                probe_radius = PROBE_RADII[probe_radius]
+            except KeyError:
+                logger.error(f"Probe radius {probe_radius} not found in PROBE_RADII")
+
+        if channel_radius is None:
+            channel_radius = probe_radius
+
+        self.type = hist_type.lower()
+        assert self.type in [
+            "count",
+            "cumulative",
+            "derivative",
+        ], "Invalid histogram type, must be one of `count`, `cumulative`, `derivative`"
+
+        self.probe_radius = probe_radius
+        self.num_samples = num_samples
+        self.channel_radius = channel_radius
+
+    def feature_labels(self):
+        return [f"psd_hist_{i}" for i in range(1000)]
+
+    def featurize(self, s):
+        command = [
+            "-psd",
+            f"{self.channel_radius}",
+            f"{self.probe_radius}",
+            f"{self.num_samples}",
+        ]
+        results = run_zeopp(s, command, _parse_psd_zeopp)
+        return results[self.type].values
+
+    def citations(self):
+        return [
+            "@article{Pinheiro2013,"
+            "doi = {10.1016/j.jmgm.2013.05.007},"
+            "url = {https://doi.org/10.1016/j.jmgm.2013.05.007},"
+            "year = {2013},"
+            "month = jul,"
+            "publisher = {Elsevier {BV}},"
+            "volume = {44},"
+            "pages = {208--219},"
+            "author = {Marielle Pinheiro and Richard L. Martin and Chris H. Rycroft and Andrew Jones and Enrique Iglesia and Maciej Haranczyk},"
+            "title = {Characterization and comparison of pore landscapes in crystalline porous materials},"
+            "journal = {Journal of Molecular Graphics and Modelling}"
             "}",
             "@article{Willems2012,"
             "doi = {10.1016/j.micromeso.2011.08.020},"

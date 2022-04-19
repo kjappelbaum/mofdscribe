@@ -23,8 +23,8 @@ sys.path.insert(0, os.path.abspath("../../src"))
 # -- Project information -----------------------------------------------------
 
 project = "mofdscribe"
-copyright = f"{date.today().year}, Fergus, Kevin M. Jablonka"
-author = "Fergus, Kevin M. Jablonka"
+copyright = f"{date.today().year}, Kevin M. Jablonka"
+author = "Kevin M. Jablonka"
 
 # The full version, including alpha/beta/rc tags.
 release = "0.0.1-dev"
@@ -207,7 +207,7 @@ texinfo_documents = [
         "mofdscribe",
         "mofdscribe Documentation",
         author,
-        "Fergus, Kevin M. Jablonka",
+        "Kevin M. Jablonka",
         "Compute features for MOFs",
         "Miscellaneous",
     ),
