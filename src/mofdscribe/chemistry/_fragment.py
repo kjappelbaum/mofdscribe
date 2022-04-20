@@ -113,8 +113,8 @@ def _linker_atom_types(indices, node_indices, structure_graph):
         connecting.append(connecting_)
 
     return {
-        "all": indices,
-        "functional_group": functional_group,
-        "scaffold": scaffold,
-        "connecting": connecting,
+        "linker_all": indices,
+        "linker_functional": functional_group,
+        "linker_scaffold": scaffold,
+        "linker_connecting": connecting,
     }

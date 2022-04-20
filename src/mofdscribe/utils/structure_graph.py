@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from collections import defaultdict
 from functools import lru_cache
-from typing import List, Tuple
+from typing import List, Tuple, Set
 
 import networkx as nx
 import numpy as np
@@ -10,8 +10,30 @@ from pymatgen.analysis.local_env import CrystalNN, IsayevNN, JmolNN
 from pymatgen.core import IStructure, Molecule, Structure
 
 
-def _get_local_env_strategy(name: str):
-    n = name.lower()
+def get_neighbors_at_distance(structure_graph: StructureGraph, start: int, scope: int) -> Set[int]:
+    # Todo: This code is stupid.
+    neighbors_at_last_level = [start]
+    all_neighbors = set()
+    neighbors_at_next_level = []
+    # print(structure_graph.get_connected_sites(start))
+    for _ in range(scope):
+        for n in neighbors_at_last_level:
+            neighbors_at_next_level.extend(get_connected_site_indices(structure_graph, n))
+
+        all_neighbors.update(neighbors_at_last_level)
+        neighbors_at_last_level = neighbors_at_next_level
+        neighbors_at_next_level = []
+    all_neighbors.remove(start)
+    neighbors_at_last_level = set(neighbors_at_last_level)
+    if start in neighbors_at_last_level:
+        neighbors_at_last_level.remove(start)
+
+    return all_neighbors, neighbors_at_last_level
+
+
+def _get_local_env_strategy(name: str = None):
+    n = "jmolnn" if name is None else name.lower()
+
     if n == "jmolnn":
         return JmolNN()
     elif n == "crystalnn":
@@ -21,7 +43,7 @@ def _get_local_env_strategy(name: str):
 
 
 @lru_cache()
-def get_structure_graph(structure: IStructure, strategy: str) -> StructureGraph:
+def get_structure_graph(structure: IStructure, strategy: str = None) -> StructureGraph:
     strategy = _get_local_env_strategy(strategy)
     sg = StructureGraph.with_local_env_strategy(structure, strategy)
     nx.set_node_attributes(

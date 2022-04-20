@@ -39,9 +39,9 @@ Featurizing metal-organic frameworks (MOFs) made simple! This package builds on 
 ```python
 
 from mofdscribe.chemistry import RACS
-from pymatgen.core import Structure
+from pymatgen.core import IStructure
 
-structure = Structure.from_file(<my_cif.cif>)
+structure = IStructure.from_file(<my_cif.cif>)
 featurizer = RACS()
 racs_features = featurizer.featurize(structure)
 ```
