@@ -1,5 +1,9 @@
+Getting started
+==================
+
+
 Installation
-============
+--------------
 The most recent release can be installed from
 `PyPI <https://pypi.org/project/mofdscribe>`_ with:
 
@@ -20,3 +24,8 @@ To install in development mode, use the following:
     $ git clone git+https://github.com/kjappelbaum/mof-dscribe.git
     $ cd mof-dscribe
     $ pip install -e .
+
+
+Featurizing a MOF 
+------------------
+

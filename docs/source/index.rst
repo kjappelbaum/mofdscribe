@@ -6,8 +6,8 @@ mofdscribe |release| Documentation
    :caption: Getting Started
    :name: start
 
-   installation
-   usage
+   getting_started
+   cli
    api
 
 Indices and Tables
