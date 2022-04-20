@@ -17,7 +17,7 @@ from ..utils.histogram import get_rdf, smear_histogram
 
 class APRDF(BaseFeaturizer):
     """
-    Generalization of descriptor described by Fernandez et al. (10.1021/jp404287t) In the article they describe the product of atomic properties
+    Generalization of descriptor described by `Fernandez et al. <https://pubs.acs.org/doi/10.1021/jp404287t>`_. In the article they describe the product of atomic properties
     as weightning of a "conventional" radiual distribution function "RDF".
 
     .. math::

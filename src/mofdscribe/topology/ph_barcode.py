@@ -6,12 +6,11 @@ from matminer.featurizers.base import BaseFeaturizer
 
 class PHBarcode(BaseFeaturizer):
     """
+
+    Persistent barcodes for materials discovery have been used several times in the literature:
+
     Computes persistent homology barcodes.
-    The implemention here also allows to do this for sets of atom types.
-    This approach is novel and allows to incorporate chemical information in the featurization
-    using persistent homology.
-
-
+    Typically, persistent barcodes are computed for all atoms in the structure. However, one can also compute persistent barcodes for a subset of atoms. This can be done by specifying the atom types in the constructor.
     """
 
     def __init__(self, atom_types=Tuple[str]) -> None:

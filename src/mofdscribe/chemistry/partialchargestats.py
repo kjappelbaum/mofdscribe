@@ -14,7 +14,7 @@ class PartialChargeStats(BaseFeaturizer):
     """Compute partial charges using the EqEq charge equilibration method.
     Then derive a fix-length feature vector from the partial charges using aggregative statistics.
 
-    They have, for instance, been used as "maximum positive charge" and "mininum negative charge" in 10.1038/s41467-020-17755-8
+    They have, for instance, been used as "maximum positive charge" and "mininum negative charge" in `Moosavi et al. (2020) <https://www.nature.com/articles/s41467-020-17755-8>`_
     """
 
     def __init__(self, aggregtations: Tuple[str] = ("max", "min", "std")) -> None:

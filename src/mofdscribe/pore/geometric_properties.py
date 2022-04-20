@@ -312,7 +312,7 @@ class AccessibleVolume(BaseFeaturizer):
 
 
 class RayTracingHistogram(BaseFeaturizer):
-    """The algorithm (implemented in zeo++) shoots random rays through the accesible volume of the cell until the ray hits atoms, and it records their lenghts to provide the corresponding histogram.
+    """The algorithm (implemented in `zeo++ <http://www.zeoplusplus.org/>`_) shoots random rays through the accesible volume of the cell until the ray hits atoms, and it records their lenghts to provide the corresponding histogram.
     Such ray histograms are supposed to encode the shape, topology, distribution and size of voids.
 
     Currently, the histogram is hard-coded to be of length 1000 (in zeo++ itself)."""
@@ -401,9 +401,9 @@ class PoreSizeDistribution(BaseFeaturizer):
     """The pore size distribution describes how much of the void space corresponds to certain pore sizes.
     Pinheiro et al. (2013) concluded that they are "sensitive to small changes in pore diameter" but do "not reflect subtle changes in features such as the surface texture of a pore".
 
-    We use the implementation in zeo++ to calculate the pore size distribution.
+    We use the implementation in `zeo++ <http://www.zeoplusplus.org/>`_ to calculate the pore size distribution.
 
-    The pore size distribution has been used by the group of Gómez-Gualdrón  as pore size standard deviation (PSSD) in, for example, 10.1021/acs.jctc.9b00940 and 10.1063/5.0048736.
+    The pore size distribution has been used by the group of Gómez-Gualdrón  as pore size standard deviation (PSSD) in, for example, `10.1021/acs.jctc.9b00940 <https://pubs.acs.org/doi/10.1021/acs.jctc.9b00940>`_ and `10.1063/5.0048736 <https://aip.scitation.org/doi/10.1063/5.0048736>`_.
 
     Currently, the histogram is hard-coded to be of length 1000 between 0 and 100 Angstrom (in zeo++ itself)."""
 
