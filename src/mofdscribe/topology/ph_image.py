@@ -4,7 +4,7 @@ from typing import List, Tuple, Union
 
 import numpy as np
 from matminer.featurizers.base import BaseFeaturizer
-from pymatgen.core import Structure, IStructure
+from pymatgen.core import IStructure, Structure
 
 from ._tda_helpers import get_persistent_images_for_structure
 

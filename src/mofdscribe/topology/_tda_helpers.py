@@ -1,6 +1,7 @@
 from collections import defaultdict
 from pathlib import Path
 from typing import List, Union
+
 import numpy as np
 from moltda.construct_pd import construct_pds
 from moltda.io import dump_json

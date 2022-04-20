@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from collections import defaultdict
 from functools import lru_cache
-from typing import List, Tuple, Set
+from typing import List, Set, Tuple
 
 import networkx as nx
 import numpy as np
