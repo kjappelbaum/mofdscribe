@@ -61,7 +61,7 @@ extensions = [
     "sphinx.ext.napoleon",
     "sphinx_autodoc_typehints",
     "sphinx.ext.githubpages",
-    "sphinx.ext.mathjax",
+    "sphinxcontrib.katex",
     "sphinx_copybutton",
     "sphinx.ext.viewcode",
     "sphinx.ext.autosectionlabel",
@@ -73,6 +73,8 @@ copybutton_prompt_is_regexp = True
 
 # generate autosummary pages
 autosummary_generate = True
+
+# katex_prerender = True
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]

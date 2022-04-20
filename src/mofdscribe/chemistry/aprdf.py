@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Atomic-property weighted autocorrelation function.
 See alternative implementation https://github.com/tomdburns/AP-RDF (likely faster as it also has a lower-level implementation)
 """
@@ -8,6 +9,7 @@ from typing import List, Tuple, Union
 
 import numpy as np
 from matminer.featurizers.base import BaseFeaturizer
+from pymatgen.core import IStructure, Structure
 
 from ..utils.aggregators import AGGREGATORS
 from ..utils.histogram import get_rdf, smear_histogram
@@ -15,7 +17,9 @@ from ..utils.histogram import get_rdf, smear_histogram
 
 class APRDF(BaseFeaturizer):
     """
-    Generalization of descriptor described by Fernandez et al. In the article they describe the product of atomic properties
+    Generalization of descriptor described by Fernandez et al. (10.1021/jp404287t) In the article they describe the product of atomic properties
+    as weightning of a "conventional" radiual distribution function "RDF".
+
     .. math::
         \operatorname{RDF}^{p}(R)=f \sum_{i, j}^{\text {all atom puirs }} P_{i} P_{j} \mathrm{e}^{-B\left(r_{ij}-R\right)^{2}}
 
@@ -71,7 +75,7 @@ class APRDF(BaseFeaturizer):
 
         return labels
 
-    def featurizer(self, s) -> np.array:
+    def featurizer(self, s: Union[Structure, IStructure]) -> np.array:
         neighbors_lst = s.get_all_neighbors(self.cutoff)
 
         results = defaultdict(lambda: defaultdict(list))
@@ -85,7 +89,7 @@ class APRDF(BaseFeaturizer):
                 if n.nn_distance > self.lower_lim:
                     print(n.nn_distance)
                     for prop in self.properties:
-                        if prop == 1:
+                        if (prop == "I") or (prop == 1):
                             p0 = 1
                             p1 = 1
                         else:

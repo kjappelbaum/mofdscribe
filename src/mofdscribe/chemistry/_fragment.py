@@ -1,10 +1,11 @@
-"""Naive fragmentation implementation following Moosavi et al. 
+# -*- coding: utf-8 -*-
+"""Naive fragmentation implementation following Moosavi et al.
 which does not require multiple loops over the graph.
 For alternative (slower) implementation see MOFfragmentor"""
 
 
 from copy import deepcopy
-from typing import Set
+from typing import Dict, List, Set
 
 from pymatgen.analysis.graphs import StructureGraph
 from pymatgen.core import Structure
@@ -61,7 +62,7 @@ def get_bbs_from_indices(structure_graph: StructureGraph, indices: Set[int]):
     return mol, return_subgraphs, idx, centers, coordinates
 
 
-def fragment(structure_graph: StructureGraph):
+def get_bb_indices(structure_graph: StructureGraph) -> Dict[str, List[List[int]]]:
     node_atoms = get_node_atoms(structure_graph)
     floating_indices = get_floating_indices(structure_graph)
 
@@ -80,14 +81,40 @@ def fragment(structure_graph: StructureGraph):
         structure_graph, node_atoms
     )
 
-    return (linker_mol, linker_subgraph, linker_idx, linker_center, linker_coordinates), (
-        node_mol,
-        node_subgraph,
-        node_idx,
-        node_center,
-        node_coordinates,
-    )
+    linker_atom_types = _linker_atom_types(linker_idx, node_idx, structure_graph)
+
+    linker_atom_types["nodes"] = node_idx
+
+    return linker_atom_types
 
 
-def _functional_group_atoms():
-    ...
+def _linker_atom_types(indices, node_indices, structure_graph):
+    """Group linker atoms in `connecting`, `functional_group` and `scaffold`"""
+    functional_group = []
+    scaffold = []
+    connecting = []
+
+    flat_node_indices = sum(node_indices, [])
+
+    for index_group in indices:
+        functional_group_ = []
+        scaffold_ = []
+        connecting_ = []
+        for index in index_group:
+            neighors = get_connected_site_indices(structure_graph, index)
+            if any(i in flat_node_indices for i in neighors):
+                connecting_.append(index)
+            elif structure_graph.structure[index].specie.symbol not in ("H", "C"):
+                functional_group_.append(index)
+            else:
+                scaffold_.append(index)
+        functional_group.append(functional_group_)
+        scaffold.append(scaffold_)
+        connecting.append(connecting_)
+
+    return {
+        "all": indices,
+        "functional_group": functional_group,
+        "scaffold": scaffold,
+        "connecting": connecting,
+    }

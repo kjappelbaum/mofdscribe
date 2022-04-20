@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from collections import defaultdict
 from functools import lru_cache
 from typing import List, Tuple

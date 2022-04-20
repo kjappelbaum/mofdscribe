@@ -13,7 +13,7 @@
         <img alt="Tests" src="https://github.com/kjappelbaum/mof-dscribe/workflows/Tests/badge.svg" />
     </a>
     <a href="https://github.com/cthoyt/cookiecutter-python-package">
-        <img alt="Cookiecutter template from @cthoyt" src="https://img.shields.io/badge/Cookiecutter-python--package-yellow" /> 
+        <img alt="Cookiecutter template from @cthoyt" src="https://img.shields.io/badge/Cookiecutter-python--package-yellow" />
     </a>
     <a href="https://pypi.org/project/mofdscribe">
         <img alt="PyPI" src="https://img.shields.io/pypi/v/mofdscribe" />
@@ -32,12 +32,19 @@
     </a>
 </p>
 
-Featurizing metal-organic frameworks (MOFs) made simple!
+Featurizing metal-organic frameworks (MOFs) made simple! This package builds on the power of [matminer](https://hackingmaterials.lbl.gov/matminer/) to make featurization of MOFs as easy as possible. Now, you can use features that are mostly used for porous materials in the same way as all other matminer featurizers.
 
 ## 💪 Getting Started
 
-> TODO show in a very small amount of space the **MOST** useful thing your package can do.
-Make it as short as possible! You have an entire set of docs for later.
+```python
+
+from mofdscribe.chemistry import RACS
+from pymatgen.core import Structure
+
+structure = Structure.from_file(<my_cif.cif>)
+featurizer = RACS()
+racs_features = featurizer.featurize(structure)
+```
 
 ### Command Line Interface
 
@@ -47,9 +54,6 @@ be used from the shell with the `--help` flag to show all subcommands:
 ```shell
 $ mofdscribe --help
 ```
-
-> TODO show the most useful thing the CLI does! The CLI will have documentation auto-generated
-by `sphinx`.
 
 ## 🚀 Installation
 
@@ -119,7 +123,7 @@ This package was created with [@audreyfeldroy](https://github.com/audreyfeldroy)
 <details>
   <summary>See developer instrutions</summary>
 
-  
+
 The final section of the README is for if you want to get involved by making a code contribution.
 
 ### ❓ Testing

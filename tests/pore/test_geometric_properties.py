@@ -1,23 +1,24 @@
+# -*- coding: utf-8 -*-
 from mofdscribe.pore.geometric_properties import (
+    AccessibleVolume,
+    PoreDiameters,
+    PoreSizeDistribution,
+    RayTracingHistogram,
+    SurfaceArea,
     _parse_res_zeopp,
     _parse_sa_zeopp,
     _parse_volpo_zeopp,
-    PoreDiameters,
-    SurfaceArea,
-    AccessibleVolume,
-    RayTracingHistogram,
-    PoreSizeDistribution,
 )
 
-SA_SAMPLE_OUTPUT = """@ EDI.sa Unitcell_volume: 307.484   Density: 1.62239   
+SA_SAMPLE_OUTPUT = """@ EDI.sa Unitcell_volume: 307.484   Density: 1.62239
 
-ASA_A^2: 60.7713 ASA_m^2/cm^3: 1976.4 ASA_m^2/g: 1218.21 
+ASA_A^2: 60.7713 ASA_m^2/cm^3: 1976.4 ASA_m^2/g: 1218.21
 
 NASA_A^2: 0 NASA_m^2/cm^3: 0 NASA_m^2/g: 0"""
 
-VOLPO_SAMPLE_OUTPUT = """@ EDI.vol Unitcell_volume: 307.484   Density: 1.62239   
+VOLPO_SAMPLE_OUTPUT = """@ EDI.vol Unitcell_volume: 307.484   Density: 1.62239
 
-AV_A^3: 22.6493 AV_Volume_fraction: 0.07366 AV_cm^3/g: 0.0454022 
+AV_A^3: 22.6493 AV_Volume_fraction: 0.07366 AV_cm^3/g: 0.0454022
 
 NAV_A^3: 0 NAV_Volume_fraction: 0 NAV_cm^3/g: 0"""
 

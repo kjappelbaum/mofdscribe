@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import os
 import re
 import subprocess
@@ -9,7 +10,7 @@ import numpy as np
 import pandas as pd
 from loguru import logger
 from matminer.featurizers.base import BaseFeaturizer
-from pymatgen.core import Structure
+from pymatgen.core import IStructure, Structure
 
 from ..utils import is_tool
 
@@ -212,7 +213,7 @@ class SurfaceArea(BaseFeaturizer):
             "nasa_m2g",
         ]
 
-    def featurize(self, s: Structure) -> np.ndarray:
+    def featurize(self, s: Union[Structure, IStructure]) -> np.ndarray:
         command = [
             "-sa",
             f"{self.channel_radius}",
@@ -281,7 +282,7 @@ class AccessibleVolume(BaseFeaturizer):
             "nav_cm3g",
         ]
 
-    def featurize(self, s: Structure) -> np.ndarray:
+    def featurize(self, s: Union[Structure, IStructure]) -> np.ndarray:
         command = ["-vol", f"{self.channel_radius}", f"{self.probe_radius}", f"{self.num_samples}"]
         results = run_zeopp(s, command, _parse_volpo_zeopp)
         return np.array(list(results.values()))
@@ -311,16 +312,18 @@ class AccessibleVolume(BaseFeaturizer):
 
 
 class RayTracingHistogram(BaseFeaturizer):
+    """The algorithm (implemented in zeo++) shoots random rays through the accesible volume of the cell until the ray hits atoms, and it records their lenghts to provide the corresponding histogram.
+    Such ray histograms are supposed to encode the shape, topology, distribution and size of voids.
+
+    Currently, the histogram is hard-coded to be of length 1000 (in zeo++ itself)."""
+
     def __init__(
         self,
         probe_radius: Union[str, float] = 0.0,
         num_samples: int = 50000,
         channel_radius: Union[str, float, None] = None,
     ) -> None:
-        """The algorithm (implemented in zeo++) shoots random rays through the accesible volume of the cell until the ray hits atoms, and it records their lenghts to provide the corresponding histogram.
-        Such ray histograms are supposed to encode the shape, topology, distribution and size of voids.
-
-        Currently, the histogram is hard-coded to be of length 1000 (in zeo++ itself).
+        """
 
         Args:
             probe_radius (Union[str, float], optional): Used to estimate the accessible volume.
@@ -348,10 +351,10 @@ class RayTracingHistogram(BaseFeaturizer):
         self.num_samples = num_samples
         self.channel_radius = channel_radius
 
-    def feature_labels(self):
+    def feature_labels(self) -> List[str]:
         return [f"ray_hist_{i}" for i in range(1000)]
 
-    def featurize(self, s):
+    def featurize(self, s: Union[Structure, IStructure]) -> np.ndarray:
         command = [
             "-ray_atom",
             f"{self.channel_radius}",
@@ -361,7 +364,7 @@ class RayTracingHistogram(BaseFeaturizer):
         results = run_zeopp(s, command, _parse_ray_hist_zeopp)
         return np.array(results)
 
-    def citations(self):
+    def citations(self) -> List[str]:
         return [
             "@article{Jones2013,"
             "doi = {10.1016/j.micromeso.2013.07.033},"
@@ -390,11 +393,20 @@ class RayTracingHistogram(BaseFeaturizer):
             "}",
         ]
 
-    def implementors(self):
+    def implementors(self) -> List[str]:
         return ["Kevin Maik Jablonka"]
 
 
 class PoreSizeDistribution(BaseFeaturizer):
+    """The pore size distribution describes how much of the void space corresponds to certain pore sizes.
+    Pinheiro et al. (2013) concluded that they are "sensitive to small changes in pore diameter" but do "not reflect subtle changes in features such as the surface texture of a pore".
+
+    We use the implementation in zeo++ to calculate the pore size distribution.
+
+    The pore size distribution has been used by the group of Gómez-Gualdrón  as pore size standard deviation (PSSD) in, for example, 10.1021/acs.jctc.9b00940 and 10.1063/5.0048736.
+
+    Currently, the histogram is hard-coded to be of length 1000 between 0 and 100 Angstrom (in zeo++ itself)."""
+
     def __init__(
         self,
         probe_radius: Union[str, float] = 0.0,
@@ -403,12 +415,6 @@ class PoreSizeDistribution(BaseFeaturizer):
         hist_type: str = "derivative",
     ) -> None:
         """
-        The pore size distribution describes how much of the void space corresponds to certain pore sizes.
-        We use the implementation in zeo++ to calculate the pore size distribution.
-
-        The pore size distribution has been used by the group of Gómez-Gualdrón  as pore size standard deviation (PSSD) in, for example, 10.1021/acs.jctc.9b00940 and 10.1063/5.0048736.
-
-        Currently, the histogram is hard-coded to be of length 1000 between 0 and 100 Angstrom (in zeo++ itself).
 
         Args:
             probe_radius (Union[str, float], optional): Used to estimate the accessible volume.
@@ -444,10 +450,10 @@ class PoreSizeDistribution(BaseFeaturizer):
         self.num_samples = num_samples
         self.channel_radius = channel_radius
 
-    def feature_labels(self):
+    def feature_labels(self) -> List[str]:
         return [f"psd_hist_{i}" for i in range(1000)]
 
-    def featurize(self, s):
+    def featurize(self, s: Union[Structure, IStructure]) -> np.ndarray:
         command = [
             "-psd",
             f"{self.channel_radius}",
@@ -457,7 +463,7 @@ class PoreSizeDistribution(BaseFeaturizer):
         results = run_zeopp(s, command, _parse_psd_zeopp)
         return results[self.type].values
 
-    def citations(self):
+    def citations(self) -> List[str]:
         return [
             "@article{Pinheiro2013,"
             "doi = {10.1016/j.jmgm.2013.05.007},"

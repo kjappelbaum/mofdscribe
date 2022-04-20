@@ -1,18 +1,24 @@
-from ctypes import Structure
+# -*- coding: utf-8 -*-
 from tempfile import NamedTemporaryFile
-from typing import List, Tuple
+from typing import List, Tuple, Union
 
 import numpy as np
 from matminer.featurizers.base import BaseFeaturizer
 from pyeqeq import run_on_cif
+from pymatgen.core import IStructure, Structure
 
 from mofdscribe.utils.aggregators import ARRAY_AGGREGATORS
 
 
 class PartialChargeStats(BaseFeaturizer):
+    """Compute partial charges using the EqEq charge equilibration method.
+    Then derive a fix-length feature vector from the partial charges using aggregative statistics.
+
+    They have, for instance, been used as "maximum positive charge" and "mininum negative charge" in 10.1038/s41467-020-17755-8
+    """
+
     def __init__(self, aggregtations: Tuple[str] = ("max", "min", "std")) -> None:
-        """Compute partial charges using the EqEq charge equilibration method.
-        Then derive a fix-length feature vector from the partial charges using aggregative statistics.
+        """
 
         Args:
             aggregtations (Tuple[str], optional): Aggregations to compute. For available methods,
@@ -23,7 +29,7 @@ class PartialChargeStats(BaseFeaturizer):
     def feature_labels(self) -> List[str]:
         return [f"charge_{agg}" for agg in self.aggregations]
 
-    def featurize(self, s: Structure) -> np.ndarray:
+    def featurize(self, s: Union[Structure, IStructure]) -> np.ndarray:
         with NamedTemporaryFile("w", suffix=".cif") as f:
             s.to("cif", f.name)
             results = run_on_cif(f.name)

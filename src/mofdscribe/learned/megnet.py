@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from matminer.featurizers.base import BaseFeaturizer
 from pymatgen.core import Structure
 

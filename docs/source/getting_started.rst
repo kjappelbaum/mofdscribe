@@ -26,6 +26,5 @@ To install in development mode, use the following:
     $ pip install -e .
 
 
-Featurizing a MOF 
+Featurizing a MOF
 ------------------
-

@@ -1,4 +1,6 @@
+# -*- coding: utf-8 -*-
 from pymatgen.core import Structure
+
 from mofdscribe.utils.substructures import get_metal_indices, select_elements
 
 

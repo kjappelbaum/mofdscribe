@@ -1,15 +1,15 @@
-API documentation 
+API documentation
 ===================
 
 
-Pore geometry featurization 
+Pore geometry featurization
 -----------------------------
 
 .. automodule:: mofdscribe.pore.geometric_properties
     :members:
 
 
-Topological featurization (persistent homology) 
+Topological featurization (persistent homology)
 -------------------------------------------------
 
 .. automodule:: mofdscribe.topology.ph_barcode
@@ -19,7 +19,7 @@ Topological featurization (persistent homology)
     :members:
 
 
-Chemistry-centred featurization 
+Chemistry-centred featurization
 -----------------------------------
 
 .. automodule:: mofdscribe.chemistry.racs
