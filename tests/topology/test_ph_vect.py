@@ -1,5 +1,7 @@
-from mofdscribe.topology.ph_vect import PHVect
+# -*- coding: utf-8 -*-
 import pytest
+
+from mofdscribe.topology.ph_vect import PHVect
 
 
 def test_ph_vect(hkust_structure, irmof_structure):

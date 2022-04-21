@@ -60,3 +60,17 @@ In this figure, we perform a filtration and record the result in a persistence d
 Vectorizing persistence diagrams
 ..................................
 For many machine learning models, fixed length vectors are required.  Persistence diagrams, however, are not fixed length. In `mofdscribe` we provide two methods to vectorize persistence diagrams.
+
+Persistence images
+~~~~~~~~~~~~~~~~~~~
+A method that has been used before for porous materials are persistence diagrams that have been introduced by Adams et al. in [Adams2017]_.
+The idea here is to replace the points on a persistence diagram by a Gaussian (and also add a weighting function).
+
+Gaussian mixture components
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Unexplored for porous materials is to use Gaussian mixture models to vectorize persistence diagrams. The idea is to train a Gaussian mixture model on a training set of persistence diagrams and then use the model to vectorize a test set of persistence diagrams (using the weighted maximum likelihood estimate of the mixture weights as vector components). [Perea]_ [Tymochko]_
+
+
+[Adams2017]_, `Journal of Machine Learning Research 18 (2017) 1-35 <https://jmlr.csail.mit.edu/papers/volume18/16-337/16-337.pdf>.`_
+[Perea]_, Jose A. Perea, Elizabeth Munch, Firas A. Khasawneh, Approximating Continuous Functions on Persistence Diagrams Using Template Functions, arXiv:1902.07190
+[Tymochko]_, Sarah Tymochko, Elizabeth Munch, Firas A. Khasawneh, Adaptive Partitioning for Template Functions on Persistence Diagrams, arXiv:1910.08506v1

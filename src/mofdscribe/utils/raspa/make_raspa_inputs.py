@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 RUN_SCRIPT = """"#! /bin/sh -f
 export RASPA_DIR=${RASPA_DIR}/RASPA/simulations/
 export DYLD_LIBRARY_PATH=${RASPA_DIR}/lib

@@ -3,11 +3,12 @@ from collections import defaultdict
 from typing import List, Tuple, Union
 
 import numpy as np
+from loguru import logger
 from matminer.featurizers.base import BaseFeaturizer
 from pervect import PersistenceVectorizer
 from pymatgen.core import IStructure, Structure
+
 from ._tda_helpers import get_diagrams_for_structure
-from loguru import logger
 
 
 def _fit_transform_structures(
