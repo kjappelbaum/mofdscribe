@@ -18,9 +18,9 @@ def filter_element(structure: Structure, elements: List[str]) -> Structure:
     elements_ = []
     for atom_type in elements:
         if "-" in atom_type:
-            elements_.append(atom_type.split("-"))
+            elements_.extend(atom_type.split("-"))
         else:
-            elements_.append([atom_type])
+            elements_.append(atom_type)
     keep_sites = []
     for site in structure.sites:
         if site.specie.symbol in elements_:

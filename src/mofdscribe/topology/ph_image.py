@@ -33,6 +33,7 @@ class PHImage(BaseFeaturizer):
             "F-Cl-Br-I",
             "Cu-Mn-Ni-Mo-Fe-Pt-Zn-Ca-Er-Au-Cd-Co-Gd-Na-Sm-Eu-Tb-V-Ag-Nd-U-Ba-Ce-K-Ga-Cr-Al-Li-Sc-Ru-In-Mg-Zr-Dy-W-Yb-Y-Ho-Re-Be-Rb-La-Sn-Cs-Pb-Pr-Bi-Tm-Sr-Ti-Hf-Ir-Nb-Pd-Hg-Th-Np-Lu-Rh-Pu",
         ),
+        dimensions: Tuple[int] = (0, 1, 2),
         compute_for_all_elements: bool = True,
         min_size: int = 10,
         image_size: Tuple[int] = (20, 20),
@@ -45,17 +46,19 @@ class PHImage(BaseFeaturizer):
         self.min_size = min_size
         self.image_size = image_size
         self.spread = spread
+        self.dimensions = dimensions
         self.weight = weight
 
     def _get_feature_labels(self) -> List[str]:
         labels = []
-        _elements = self.atom_types
+        _elements = list(self.atom_types)
         if self.compute_for_all_elements:
             _elements.append("all")
-        for element in self.atom_types:
-            for pixel_a in self.image_size[0]:
-                for pixel_b in self.image_size[1]:
-                    labels.append(f"pi_{element}_{pixel_a}_{pixel_b}")
+        for element in _elements:
+            for dim in self.dimensions:
+                for pixel_a in range(self.image_size[0]):
+                    for pixel_b in range(self.image_size[1]):
+                        labels.append(f"pi_{element}_{dim}_{pixel_a}_{pixel_b}")
 
         return labels
 
@@ -73,8 +76,13 @@ class PHImage(BaseFeaturizer):
             weighting=self.weight,
         )
         features = []
-        for element in self.atom_types:
-            features.append(results["image"][element].flatten())
+        elements = list(self.atom_types)
+        if self.compute_for_all_elements:
+            elements.append("all")
+        for element in elements:
+            for dim in self.dimensions:
+
+                features.append(np.array(results["image"][element][dim]).flatten())
         return np.concatenate(features)
 
     def citations(self) -> List[str]:

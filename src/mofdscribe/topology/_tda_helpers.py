@@ -1,7 +1,7 @@
 from collections import defaultdict
 from pathlib import Path
 from typing import List, Union
-
+from loguru import logger
 import numpy as np
 from moltda.construct_pd import construct_pds
 from moltda.io import dump_json
@@ -25,6 +25,9 @@ def get_persistent_images_for_structure(
     spread: float = 0.2,
     weighting: str = "identity",
     pixels: List[int] = [50, 50],
+    maxB: int = 18,
+    maxP: int = 18,
+    minB: int = 0,
 ) -> dict:
     """
     Get the persistent images for a structure.
@@ -36,6 +39,9 @@ def get_persistent_images_for_structure(
         spread (float): spread of kernel for construction of persistent images
         weighting (str): weighting scheme for construction of persistent images
         pixels (List[int]): size of the image in pixels
+        maxB (int): maximum birth time for construction of persistent images
+        maxP (int): maximum persistence time for construction of persistent images
+        minB (int): minimum birth time for construction of persistent images
     Returns:
         persistent_images (dict): dictionary of persistent images and their barcode representations
     """
@@ -47,11 +53,19 @@ def get_persistent_images_for_structure(
             coords = make_supercell(
                 filtered_structure.cart_coords, filtered_structure.lattice.matrix, min_size
             )
-            pd = diagrams_to_arrays(construct_pds(coords))
+            pds = construct_pds(coords)
+            pd = diagrams_to_arrays(pds)
 
-            images = get_images(pd, spread=spread, weighting=weighting, pixels=pixels)
-        except ValueError:
+            images = get_images(
+                pd,
+                spread=spread,
+                weighting=weighting,
+                pixels=pixels,
+                specs={"minBD": minB, "maxB": maxB, "maxP": maxP},
+            )
+        except ValueError as e:
             images = np.zeros((0, pixels[0], pixels[1]))
+            pd = np.zeros((0, maxP + 1))
 
         element_images["image"][element] = images
         element_images["array"][element] = pd
