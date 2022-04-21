@@ -8,8 +8,6 @@ from pervect import PersistenceVectorizer
 from pymatgen.core import IStructure, Structure
 from ._tda_helpers import get_diagrams_for_structure
 
-# ToDo: implement https://github.com/scikit-tda/pervect
-
 
 def _fit_transform_structures(
     transformers, structures, atom_types: Tuple[str], compute_for_all_elements: bool, min_size: int
@@ -55,6 +53,7 @@ class PHVect(BaseFeaturizer):
         self.atom_types = (
             list(atom_types) + ["all"] if compute_for_all_elements else list(atom_types)
         )
+        self.compute_for_all_elements = compute_for_all_elements
         self.min_size = min_size
         self.dimensions = dimensions
         self.transformers = defaultdict(lambda: defaultdict(dict))
@@ -74,6 +73,7 @@ class PHVect(BaseFeaturizer):
         self.umap_metric = umap_metric
         self.p = p
         self.random_state = random_state
+        self._fitted = False
 
     def _get_feature_labels(self) -> List[str]:
         labels = []
@@ -90,13 +90,36 @@ class PHVect(BaseFeaturizer):
         return self._get_feature_labels()
 
     def featurize(self, structure: Union[Structure, IStructure]) -> np.ndarray:
+        if not self._fitted:
+            raise ValueError("Must call fit before featurizing")
         return ...
 
-    def fit(self, structures: List[Structure, IStructure]):
+    def fit(self, structures: List[Structure, IStructure]) -> PHVect:
+        self.transformers, _fit_transform_structures(
+            self.transformers,
+            structures,
+            self.elements,
+            self.compute_for_all_elements,
+            self.min_size,
+        )
+        self._fitted = True
         return self
 
-    def fit_transform(self, structures: List[Structure, IStructure]):
-        return self
+    def fit_transform(self, structures: List[Structure, IStructure]) -> np.ndarray:
+        self.transformers, results = _fit_transform_structures(
+            self.transformers,
+            structures,
+            self.elements,
+            self.compute_for_all_elements,
+            self.min_size,
+        )
+        compiled_results = np.zeros((len(structures), len(self._get_feature_labels())))
+        n_col = 0
+        for _, element_results in results.items():
+            for _, result in element_results.items():
+                compiled_results[:, n_col : n_col + self.n_components] = result
+                n_col += self.n_components
+        return compiled_results
 
     def citations(self):
         return [
