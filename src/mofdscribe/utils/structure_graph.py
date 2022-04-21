@@ -150,7 +150,7 @@ def get_subgraphs_as_molecules(  # pylint:disable=too-many-locals
             molecule_subgraphs.append(nx.MultiDiGraph(subgraph))
         else:
             intersects_boundary = any(  # pylint: disable=use-a-generator
-                [d["to_jimage"] != (0, 0, 0) for u, v, d in subgraph.edges(data=True)]
+                d["to_jimage"] != (0, 0, 0) for u, v, d in subgraph.edges(data=True)
             )
             if not intersects_boundary:
                 molecule_subgraphs.append(nx.MultiDiGraph(subgraph))
