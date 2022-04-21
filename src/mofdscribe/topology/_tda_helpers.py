@@ -46,12 +46,15 @@ def get_persistent_images_for_structure(
         pixels (List[int]): size of the image in pixels
         maxB (int): maximum birth time for construction of persistent images
         maxP (int): maximum persistence time for construction of persistent images
-        minB (int): minimum birth time for construction of persistent images
     Returns:
         persistent_images (dict): dictionary of persistent images and their barcode representations
     """
 
     element_images = defaultdict(dict)
+    specs = []
+    for mB, mP in zip(maxB, maxP):
+        specs.append({"minBD": 0, "maxB": mB, "maxP": mP})
+    print(specs)
     for element in elements:
         try:
             filtered_structure = filter_element(structure, element)
@@ -66,7 +69,7 @@ def get_persistent_images_for_structure(
                 spread=spread,
                 weighting=weighting,
                 pixels=pixels,
-                specs={"minBD": minB, "maxB": maxB, "maxP": maxP},
+                specs=specs,
             )
         except ValueError as e:
             images = np.zeros((0, pixels[0], pixels[1]))
@@ -79,7 +82,7 @@ def get_persistent_images_for_structure(
         coords = make_supercell(structure.cart_coords, structure.lattice.matrix, min_size)
         pd = diagrams_to_arrays(construct_pds_cached(coords))
 
-        images = get_images(pd, spread=spread, weighting=weighting, pixels=pixels)
+        images = get_images(pd, spread=spread, weighting=weighting, pixels=pixels, specs=specs)
         element_images["image"]["all"] = images
         element_images["array"]["all"] = pd
 

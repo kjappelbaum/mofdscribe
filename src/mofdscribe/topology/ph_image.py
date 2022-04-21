@@ -7,7 +7,10 @@ import numpy as np
 from matminer.featurizers.base import BaseFeaturizer
 from pymatgen.core import IStructure, Structure
 
-from ._tda_helpers import get_persistent_images_for_structure
+from ._tda_helpers import (
+    get_persistent_images_for_structure,
+    get_persistence_image_limits_for_structure,
+)
 
 
 class PHImage(BaseFeaturizer):
@@ -47,6 +50,9 @@ class PHImage(BaseFeaturizer):
         image_size: Tuple[int] = (20, 20),
         spread: float = 0.2,
         weight: str = "identity",
+        max_B: Union[int, List[int]] = 18,
+        max_P: Union[int, List[int]] = 18,
+        max_fit_tolerence: float = 0.1,
     ) -> None:
 
         self.atom_types = atom_types
@@ -56,6 +62,30 @@ class PHImage(BaseFeaturizer):
         self.spread = spread
         self.dimensions = dimensions
         self.weight = weight
+        if isinstance(max_B, (list, tuple)):
+            assert len(max_B) == len(
+                dimensions
+            ), "max_B must be a list of length equal to the number of dimensions"
+        else:
+            max_B = [max_B] * len(dimensions)
+
+        if isinstance(max_P, (list, tuple)):
+            assert len(max_P) == len(
+                dimensions
+            ), "max_P must be a list of length equal to the number of dimensions"
+        else:
+            max_P = [max_P] * len(dimensions)
+
+        max_P_ = [0, 0, 0, 0]
+        max_B_ = [0, 0, 0, 0]
+        for dim in dimensions:
+            max_P_[dim] = max_P[dim]
+            max_B_[dim] = max_B[dim]
+
+        self.max_B = max_B_
+        self.max_P = max_P_
+
+        self.max_fit_tolerance = max_fit_tolerence
 
     def _get_feature_labels(self) -> List[str]:
         labels = []
@@ -82,6 +112,8 @@ class PHImage(BaseFeaturizer):
             pixels=self.image_size,
             spread=self.spread,
             weighting=self.weight,
+            maxB=self.max_B,
+            maxP=self.max_P,
         )
         features = []
         elements = list(self.atom_types)
@@ -105,6 +137,27 @@ class PHImage(BaseFeaturizer):
             structures = [structures]
 
         limits = defaultdict(list)
+
+        for structure in structures:
+            lim = get_persistence_image_limits_for_structure(
+                structure, self.atom_types, self.compute_for_all_elements, self.min_size
+            )
+            for k, v in lim.items():
+                limits[k].extend(v)
+
+        # birth min, max persistence min, max
+        maxP = []
+        maxB = []
+
+        for k, v in limits.items():
+            v = np.array(v)
+            mB = np.max(v[:, 1])
+            mP = np.max(v[:, 3])
+            maxB.append(mB + self.max_fit_tolerance * mB)
+            maxP.append(mP + self.max_fit_tolerance * mP)
+
+        self.max_B = maxB
+        self.max_P = maxP
 
     def citations(self) -> List[str]:
         return [
