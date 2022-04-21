@@ -51,7 +51,7 @@ class PHImage(BaseFeaturizer):
         max_P: Union[int, List[int]] = 18,
         max_fit_tolerence: float = 0.1,
     ) -> None:
-
+        atom_types = [] if atom_types is None else atom_types
         self.atom_types = atom_types
         self.compute_for_all_elements = compute_for_all_elements
         self.min_size = min_size
