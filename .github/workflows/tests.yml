@@ -57,6 +57,6 @@ jobs:
       - name: Install dependencies
         run: conda install raspa2 zeopp-lsmo -c conda-forge
       - name: Install dependencies
-        run: pip install tox &  pip install git+git@github.com:kjappelbaum/molecule-tda.git@refactor
+        run: pip install tox &  pip install git+https://github.com/kjappelbaum/molecule-tda.git@refactor
       - name: Test with pytest
         run: tox -e py

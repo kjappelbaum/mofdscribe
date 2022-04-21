@@ -28,10 +28,6 @@ GridTypes {grid_types}
 SpacingVDWGrid {vdw_spacing}
 """
 
-
-# https://aip.scitation.org/doi/10.1063/5.0050823 proposes to not use equally spaced bins
-
-
 # Bucior used 1 A spacing, the LJ site for H2 and no Coulomb grid
 # set raspa_dir to root dir of conda env, e.g., /Users/leopold/Applications/miniconda3/envs/simulations
 
@@ -67,7 +63,8 @@ def read_ascii_grid(filename: str) -> pd.DataFrame:
 
 
 class EnergyGridHistogram(BaseFeaturizer):
-    """Computes the energy grid histograms as originally proposed by Bucior et al.
+    """Computes the energy grid histograms
+    as originally proposed by `Bucior et al. (2018) <https://pubs.rsc.org/en/content/articlelanding/2019/ME/C8ME00050F>`_.
 
     Conventionally, energy grids can be used to speed up molecular simulations.
     The idea is that the interactions between the guest and host are pre-computed
@@ -75,6 +72,8 @@ class EnergyGridHistogram(BaseFeaturizer):
 
     Bucior et al. proposed (effectively) a dimensionality reduction of the energy grid by
     making a histogram of the energies.
+
+    This approach has also been used, for example, `Li et al. (2021) <https://aip.scitation.org/doi/10.1063/5.0050823>`_
     """
 
     def __init__(
@@ -94,6 +93,35 @@ class EnergyGridHistogram(BaseFeaturizer):
         shifted: bool = False,
         separate_interactions: bool = True,
     ):
+        """Constructor for the EnergyGridHistogram class.
+
+        Args:
+            raspa_dir (Union[str, Path, None], optional): Path to the raspa directory (with lib, bin, share) subdirectories.
+                If `None` we will look for the `RASPA_DIR` environment variable.
+                Defaults to None.
+            grid_spacing (float, optional): Spacing for the energy grids.
+                Bucior et al. (2018) used 1.0 A. Defaults to 1.0.
+            bin_size_vdw (float, optional): Size of bins for the energy histogram. Defaults to 1.
+            min_energy_vdw (float, optional): Minimum energy for the energy histogram (defining start of first bin).
+                Defaults to -10.
+            max_energy_vdw (float, optional): Maximum energy for energy histogram (defining last bin).
+                Defaults to 0.
+            cutoff (float, optional): Cutoff for the Van-der-Waals interaction. Defaults to 12.
+            mof_ff (str, optional): Name of the forcefield used for the framework. Defaults to "UFF".
+            mol_ff (str, optional): Name of the forcefield used for the guest molecule. Defaults to "TraPPE".
+            mol_name (str, optional): Name of the guest molecule. Defaults to "CO2".
+            sites (List[str], optional): Name of the Van-der-Waals sites for which the energy diagrams are computed.
+                Defaults to ["C_co2"].
+            tail_corrections (bool, optional): If true, use analytical tail-correction
+                for the contribution of the interaction potential after the cutoff. Defaults to True.
+            mixing_rule (str, optional): Mixing rule for framework and guest molecule force field. Available options are `Jorgenson` and `Lorentz-Berthelot`. Defaults to "Lorentz-Berthelot".
+            shifted (bool, optional): If true, shifts the potential to equal to zero at the cutoff. Defaults to False.
+            separate_interactions (bool, optional): If True use framework's force field for framework-molecule interactions.
+                Defaults to True.
+
+        Raises:
+            ValueError: If the `raspa_dir` is not a valid directory.
+        """
         self.raspa_dir = raspa_dir if raspa_dir else os.environ.get("RASPA_DIR", None)
         if self.raspa_dir is None:
             raise ValueError(
@@ -117,7 +145,7 @@ class EnergyGridHistogram(BaseFeaturizer):
         ...
 
     def fit(self, structure: Union[Structure, IStructure]):
-        return self
+        ...
 
     def _get_grid(self):
         return np.arange(self.min_energy_vdw, self.max_energy_vdw, self.bin_size_vdw)
