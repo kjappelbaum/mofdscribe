@@ -7,7 +7,10 @@ import numpy as np
 from matminer.featurizers.base import BaseFeaturizer
 from pymatgen.core import IStructure, Structure
 
-from ._tda_helpers import get_min_max_from_dia
+from ._tda_helpers import (
+    get_persistence_image_limits_for_structure,
+    get_persistent_images_for_structure,
+)
 
 
 class PHImage(BaseFeaturizer):
@@ -43,7 +46,7 @@ class PHImage(BaseFeaturizer):
         ),
         dimensions: Tuple[int] = (0, 1, 2),
         compute_for_all_elements: bool = True,
-        min_size: int = 10,
+        min_size: int = 20,
         image_size: Tuple[int] = (20, 20),
         spread: float = 0.2,
         weight: str = "identity",
@@ -51,6 +54,26 @@ class PHImage(BaseFeaturizer):
         max_P: Union[int, List[int]] = 18,
         max_fit_tolerence: float = 0.1,
     ) -> None:
+        """Constructor for PHImage.
+
+        Args:
+            atom_types (Tuple[str], optional): Atoms that are used to create substructures that are analysed using persistent homology.
+                If multiple atom types separated by hash are provided, e.g. "C-H-N-O", then the substructure consists of all atoms of type C, H, N, or O.
+                Defaults to ( "C-H-N-O", "F-Cl-Br-I", "Cu-Mn-Ni-Mo-Fe-Pt-Zn-Ca-Er-Au-Cd-Co-Gd-Na-Sm-Eu-Tb-V-Ag-Nd-U-Ba-Ce-K-Ga-Cr-Al-Li-Sc-Ru-In-Mg-Zr-Dy-W-Yb-Y-Ho-Re-Be-Rb-La-Sn-Cs-Pb-Pr-Bi-Tm-Sr-Ti-Hf-Ir-Nb-Pd-Hg-Th-Np-Lu-Rh-Pu", ).
+            dimensions (Tuple[int], optional): Dimensions of topological features to consider for persistence images. Defaults to (0, 1, 2).
+            compute_for_all_elements (bool, optional): If true, compute persistence images for full structure (i.e. with all elements). If false, it will only do it for the substructures specified with `atom_types`. Defaults to True.
+            min_size (int, optional): Minimum supercell size (in Angstrom). Defaults to 20.
+            image_size (Tuple[int], optional): Size of persistent image in pixel. Defaults to (20, 20).
+            spread (float, optional): "Smearing factor" for the Gaussians. Defaults to 0.2.
+            weight (str, optional): Weighting function for calculation of the persistence images.
+                Defaults to "identity".
+            max_B (Union[int, List[int]], optional): Maximum birth time. Defaults to 18.
+            max_P (Union[int, List[int]], optional): Maximum persistence. Defaults to 18.
+            max_fit_tolerence (float, optional): If `fit` method is used to find the limits of the persistent images,
+                one can appy a tolerance on the the found limits. The maximum will then be max + max_fit_tolerance * max.
+                Defaults to 0.1.
+        """
+
         atom_types = [] if atom_types is None else atom_types
         self.atom_types = atom_types
         self.compute_for_all_elements = compute_for_all_elements
