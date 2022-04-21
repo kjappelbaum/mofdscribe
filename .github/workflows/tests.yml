@@ -58,6 +58,9 @@ jobs:
         run: sudo apt-get install libcgal-dev -y & conda install raspa2 zeopp-lsmo cgal boost -c conda-forge -y
       - name: Install dependencies
         run: pip install pytest &  pip install git+https://github.com/kjappelbaum/molecule-tda.git@refactor & pip install -e .
+      - name: Set the value
+        run: |
+          echo $CONDA_PREFIX >> $RASPA_DIR
       - name: Test with pytest
         run: pytest tests/
         #run: tox -e py
