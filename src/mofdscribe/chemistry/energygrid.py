@@ -4,8 +4,9 @@ from typing import List, Union
 import numpy as np
 from matminer.featurizers.base import BaseFeaturizer
 from pymatgen.core import IStructure, Structure
+import pandas as pd
 
-GRID_INPUT_TEMPLATE = """SimulationType  MakeGrid
+GRID_INPUT_TEMPLATE = """SimulationType  MakeASCIGrid
 
 Forcefield      {forcefield}
 
@@ -30,15 +31,36 @@ SpacingCoulombGrid {coulomb_spacing}"""
 # https://aip.scitation.org/doi/10.1063/5.0050823 proposes to not use equally spaced bins
 
 
+# Bucior used 1 A spacing, the LJ site for H2 and no Coulomb grid
+
+
+def read_ascii_grid(filename: str) -> pd.DataFrame:
+    """
+    Read an ASCII grid file into a pandas DataFrame.
+
+    Args:
+        filename: The path to the file to read.
+
+    Returns:
+        A pandas DataFrame containing the grid data.
+    """
+    df = pd.read_csv(
+        filename,
+        sep="\s+",
+        header=None,
+        names=["x", "y", "z", "energy", "deriv_x", "deriv_y", "deriv_z"],
+    )
+    df = df.replace("?", np.nan)
+    df = df.astype(np.float)
+    return df
+
+
 class EnergyGrid(BaseFeaturizer):
     def __init__(
         self,
         bin_size_vdw: float = 1,
         min_energy_vdw: float = -10,
         max_energy_vdw: float = 0,
-        bin_size_el: float = 1,
-        min_energy_el: float = -10,
-        max_energy_el: float = 0,
     ) -> None:
         super().__init__()
 
@@ -79,3 +101,6 @@ class EnergyGrid(BaseFeaturizer):
             "journal = {Molecular Simulation}"
             "}",
         ]
+
+    def implementors(self):
+        return ["Kevin Maik Jablonka"]
