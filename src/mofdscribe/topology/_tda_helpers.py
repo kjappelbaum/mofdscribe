@@ -87,13 +87,14 @@ def get_persistent_images_for_structure(
     return element_images
 
 
-def get_min_max_from_dia(dia):
+def get_min_max_from_dia(dia, birth_persistence: bool = True):
     if len(dia) == 0:
         return [0, 0, 0, 0]
     d = np.array([[x["birth"], x["death"]] for x in dia])
 
-    # convert to birth - persistence
-    d[:, 1] -= d[:, 0]
+    if birth_persistence:
+        # convert to birth - persistence
+        d[:, 1] -= d[:, 0]
     d = np.ma.masked_invalid(d)
     return [d[:, 0].min(), d[:, 0].max(), d[:, 1].min(), d[:, 1].max()]
 

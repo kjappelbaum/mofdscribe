@@ -7,6 +7,7 @@ from matminer.featurizers.base import BaseFeaturizer
 from pymatgen.core import IStructure, Structure
 
 from ._tda_helpers import get_persistent_images_for_structure
+from collections import defaultdict
 
 
 class PHImage(BaseFeaturizer):
@@ -100,7 +101,10 @@ class PHImage(BaseFeaturizer):
         Args:
             structures (List[Union[Structure, IStructure]]): List of structures to find the limits for.
         """
-        pass
+        if not isinstance(structures, (list, tuple)):
+            structures = [structures]
+
+        limits = defaultdict(list)
 
     def citations(self) -> List[str]:
         return [
