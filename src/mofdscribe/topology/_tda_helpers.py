@@ -54,7 +54,6 @@ def get_persistent_images_for_structure(
     specs = []
     for mB, mP in zip(maxB, maxP):
         specs.append({"minBD": 0, "maxB": mB, "maxP": mP})
-    print(specs)
     for element in elements:
         try:
             filtered_structure = filter_element(structure, element)
@@ -89,6 +88,22 @@ def get_persistent_images_for_structure(
     return element_images
 
 
+def diagrams_to_bd_arrays(dgms):
+    """Convert persistence diagram objects to persistence diagram arrays."""
+    dgm_arrays = {}
+    for dim, dgm in enumerate(dgms):
+        if len(dgm) == 0:
+            dgm_arrays[f"dim{dim}"] = np.zeros((0, 2))
+        else:
+            arr = np.array([[np.sqrt(p.birth), np.sqrt(p.death)] for p in dgm])
+
+            mask = np.isfinite(arr).all(axis=1)
+
+            arr = arr[mask]
+            dgm_arrays[f"dim{dim}"] = arr
+    return dgm_arrays
+
+
 def get_min_max_from_dia(dia, birth_persistence: bool = True):
     if len(dia) == 0:
         return [0, 0, 0, 0]
@@ -99,6 +114,49 @@ def get_min_max_from_dia(dia, birth_persistence: bool = True):
         d[:, 1] -= d[:, 0]
     d = np.ma.masked_invalid(d)
     return [d[:, 0].min(), d[:, 0].max(), d[:, 1].min(), d[:, 1].max()]
+
+
+def diagrams_to_bd_arrays(dgms):
+    """Convert persistence diagram objects to persistence diagram arrays."""
+    dgm_arrays = {}
+    for dim, dgm in enumerate(dgms):
+        if len(dgm) == 0:
+            dgm_arrays[f"dim{dim}"] = np.zeros((0, 2))
+        else:
+            arr = np.array([[np.sqrt(p.birth), np.sqrt(p.death)] for p in dgm])
+
+            mask = np.isfinite(arr).all(axis=1)
+
+            arr = arr[mask]
+            dgm_arrays[f"dim{dim}"] = arr
+    return dgm_arrays
+
+
+def get_diagrams_for_structure(
+    structure,
+    elements: List[List[str]],
+    compute_for_all_elements: bool = True,
+    min_size: int = 20,
+):
+    element_dias = defaultdict(dict)
+    for element in elements:
+        try:
+            filtered_structure = filter_element(structure, element)
+            coords = make_supercell(
+                filtered_structure.cart_coords, filtered_structure.lattice.matrix, min_size
+            )
+            pds = construct_pds_cached(coords)
+            arrays = diagrams_to_bd_arrays(pds)
+        except Exception:
+            arrays = {f"dim{i}": np.zeros((0, 2)) for i in range(4)}
+        element_dias[element] = arrays
+
+    if compute_for_all_elements:
+        coords = make_supercell(structure.cart_coords, structure.lattice.matrix, min_size)
+        pds = construct_pds_cached(coords)
+        arrays = diagrams_to_bd_arrays(pds)
+        element_dias["all"] = arrays
+    return element_dias
 
 
 def get_persistence_image_limits_for_structure(

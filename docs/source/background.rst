@@ -26,7 +26,7 @@ Scalars describing the pore geometry
 For describing the pore geometry, we heavily rely on methods implemented in the `zeopp <http://www.zeoplusplus.org/>`_ package.
 
 The most commonly used pore-geometry descriptors (surface areas, probe accessible pore volumes, ...) are computed with a probe approach.
-By means of "simple" geometry analysis one can also extract pore radii. 
+By means of "simple" geometry analysis one can also extract pore radii.
 
 
 .. image:: http://www.zeoplusplus.org/spheres.png
@@ -34,7 +34,7 @@ By means of "simple" geometry analysis one can also extract pore radii.
   :alt: Pore diameters.
 
 
-Histograms 
+Histograms
 ...............
 
 
