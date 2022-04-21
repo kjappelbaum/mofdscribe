@@ -2,7 +2,7 @@
 from collections import defaultdict
 from functools import lru_cache
 from pathlib import Path
-from typing import List, Union
+from typing import List, Union, Tuple
 
 import numpy as np
 from loguru import logger
@@ -29,7 +29,7 @@ def get_persistent_images_for_structure(
     min_size: int = 20,
     spread: float = 0.2,
     weighting: str = "identity",
-    pixels: List[int] = [50, 50],
+    pixels: Tuple[int] = (50, 50),
     maxB: int = 18,
     maxP: int = 18,
     minB: int = 0,
@@ -43,7 +43,7 @@ def get_persistent_images_for_structure(
         min_size (int): minimum size of the cell for construction of persistent images
         spread (float): spread of kernel for construction of persistent images
         weighting (str): weighting scheme for construction of persistent images
-        pixels (List[int]): size of the image in pixels
+        pixels (Tuple[int]): size of the image in pixels
         maxB (int): maximum birth time for construction of persistent images
         maxP (int): maximum persistence time for construction of persistent images
     Returns:
