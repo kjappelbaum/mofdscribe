@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 from typing import List, Union
 
-from pymatgen.core import Structure, IStructure
 import numpy as np
 from matminer.featurizers.base import BaseFeaturizer
+from pymatgen.core import IStructure, Structure
 
 GRID_INPUT_TEMPLATE = """SimulationType  MakeGrid
 
