@@ -1,19 +1,25 @@
 from collections import defaultdict
 from pathlib import Path
 from typing import List, Union
-from loguru import logger
+
+
+from functools import lru_cache
+
 import numpy as np
+from loguru import logger
 from moltda.construct_pd import construct_pds
-from moltda.io import dump_json
 from moltda.read_file import make_supercell
 from moltda.vectorize_pds import diagrams_to_arrays, get_images, pd_vectorization
 from pymatgen.core import Structure
 
 from mofdscribe.utils.substructures import elements_in_structure, filter_element
+from mofdscribe.utils.np_cache import np_cache
 
-# specs =         "maxB": maxB,
-#     "maxP": maxP,
-#     "minBD":
+
+# @np_cache
+def construct_pds_cached(coords):
+    return construct_pds(coords)
+
 
 # ToDo: only do this for selected elements
 # ToDo: only do this for all if we want
@@ -53,7 +59,7 @@ def get_persistent_images_for_structure(
             coords = make_supercell(
                 filtered_structure.cart_coords, filtered_structure.lattice.matrix, min_size
             )
-            pds = construct_pds(coords)
+            pds = construct_pds_cached(coords)
             pd = diagrams_to_arrays(pds)
 
             images = get_images(
@@ -72,10 +78,49 @@ def get_persistent_images_for_structure(
 
     if compute_for_all_elements:
         coords = make_supercell(structure.cart_coords, structure.lattice.matrix, min_size)
-        pd = diagrams_to_arrays(construct_pds(coords))
+        pd = diagrams_to_arrays(construct_pds_cached(coords))
 
         images = get_images(pd, spread=spread, weighting=weighting, pixels=pixels)
         element_images["image"]["all"] = images
         element_images["array"]["all"] = pd
 
     return element_images
+
+
+def get_min_max_from_dia(dia):
+    if len(dia) == 0:
+        return [0, 0, 0, 0]
+    d = np.array([[x["birth"], x["death"]] for x in dia])
+
+    # convert to birth - persistence
+    d[:, 1] -= d[:, 0]
+    d = np.ma.masked_invalid(d)
+    return [d[:, 0].min(), d[:, 0].max(), d[:, 1].min(), d[:, 1].max()]
+
+
+def get_persistence_image_limits_for_structure(
+    structure: Structure,
+    elements: List[List[str]],
+    compute_for_all_elements: bool = True,
+    min_size: int = 20,
+) -> dict:
+    limits = defaultdict(list)
+    for element in elements:
+        try:
+            filtered_structure = filter_element(structure, element)
+            coords = make_supercell(
+                filtered_structure.cart_coords, filtered_structure.lattice.matrix, min_size
+            )
+            pds = construct_pds(coords)
+            pd = diagrams_to_arrays(pds)
+            for k, v in pd.items():
+                limits[k].append(get_min_max_from_dia(v))
+        except ValueError as e:
+            pass
+
+    if compute_for_all_elements:
+        coords = make_supercell(structure.cart_coords, structure.lattice.matrix, min_size)
+        pd = diagrams_to_arrays(construct_pds(coords))
+        for k, v in pd.items():
+            limits[k].append(get_min_max_from_dia(v))
+    return limits

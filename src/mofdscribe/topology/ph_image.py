@@ -11,9 +11,13 @@ from ._tda_helpers import get_persistent_images_for_structure
 
 class PHImage(BaseFeaturizer):
     """
-    `Adams et al. (2017) <https://www.jmlr.org/papers/volume18/16-337/16-337.pdf>`_ introduced a stable vector representation of persistent homology.
+    `Adams et al. (2017) <https://www.jmlr.org/papers/volume18/16-337/16-337.pdf>`_
+    introduced a stable vector representation of persistent homology.
 
-    In persistent images, one replaces birth–persistence pairs (b, d – b) by a Gaussians (to spread its influence across the neighborhood, since nearby points represent features of similar size). Additionally, one multiplies with special weighting function such that
+    In persistent images, one replaces birth–persistence pairs (b, d – b)
+    by a Gaussians (to spread its influence across the neighborhood,
+    since nearby points represent features of similar size).
+    Additionally, one multiplies with special weighting function such that
 
     .. math::
 
@@ -21,9 +25,12 @@ class PHImage(BaseFeaturizer):
 
     A common weighting function is the linear function :math:`w(y) = y`.
 
-    One application for porous materials has been reported by `Aditi S. Krishnapriyan et al. (2017) <https://pubs.acs.org/doi/full/10.1021/acs.jpcc.0c01167>`_.
+    One application for porous materials has been reported by
+    `Aditi S. Krishnapriyan et al. (2017) <https://pubs.acs.org/doi/full/10.1021/acs.jpcc.0c01167>`_.
 
-    Typically, persistent images are computed for all atoms in the structure. However, one can also compute persistent images for a subset of atoms. This can be done by specifying the atom types in the constructor.
+    Typically, persistent images are computed for all atoms in the structure.
+    However, one can also compute persistent images for a subset of atoms.
+    This can be done by specifying the atom types in the constructor.
     """
 
     def __init__(
@@ -84,6 +91,16 @@ class PHImage(BaseFeaturizer):
 
                 features.append(np.array(results["image"][element][dim]).flatten())
         return np.concatenate(features)
+
+    def fit(self, structures: List[Union[Structure, IStructure]]) -> None:
+        """
+        Find the limits (maximum/minimum birth/death and persistence)
+        for all the structures in the dataset and store them in the object.
+
+        Args:
+            structures (List[Union[Structure, IStructure]]): List of structures to find the limits for.
+        """
+        pass
 
     def citations(self) -> List[str]:
         return [
