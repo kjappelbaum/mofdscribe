@@ -12,7 +12,7 @@ Pore geometry featurization
 Topological featurization (persistent homology)
 -------------------------------------------------
 
-.. automodule:: mofdscribe.topology.ph_barcode
+.. automodule:: mofdscribe.topology.ph_vect
     :members:
 
 .. automodule:: mofdscribe.topology.ph_image

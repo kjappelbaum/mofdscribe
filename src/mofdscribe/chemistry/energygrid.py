@@ -1,18 +1,19 @@
 # -*- coding: utf-8 -*-
-from typing import List
+from typing import List, Union
 
+from pymatgen.core import Structure, IStructure
 import numpy as np
 from matminer.featurizers.base import BaseFeaturizer
 
 GRID_INPUT_TEMPLATE = """SimulationType  MakeGrid
 
-Forcefield      Dubbeldam2007FlexibleIRMOF-1
+Forcefield      {forcefield}
 
 Framework 0
 FrameworkName {mof_name}
 UnitCells {unit_cells}
 
-UseChargesFromCIFFile   yes
+UseChargesFromCIFFile   {use_charges}
 
 CutOff                        {cutoff}
 
@@ -26,9 +27,23 @@ SpacingVDWGrid {vdw_spacing}
 SpacingCoulombGrid {coulomb_spacing}"""
 
 
+# https://aip.scitation.org/doi/10.1063/5.0050823 proposes to not use equally spaced bins
+
+
 class EnergyGrid(BaseFeaturizer):
-    def __init__(self) -> None:
+    def __init__(
+        self,
+        bin_size_vdw: float = 1,
+        min_energy_vdw: float = -10,
+        max_energy_vdw: float = 0,
+        bin_size_el: float = 1,
+        min_energy_el: float = -10,
+        max_energy_el: float = 0,
+    ) -> None:
         super().__init__()
+
+    def fit(self, structures: Union[Structure, IStructure]):
+        return self
 
     def feature_labels(self) -> List[str]:
         return ["EnergyGrid"]
