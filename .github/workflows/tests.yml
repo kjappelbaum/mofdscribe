@@ -55,7 +55,7 @@ jobs:
           auto-update-conda: true
           python-version: ${{ matrix.python-version }}
       - name: Install dependencies
-        run: conda install raspa2 zeopp-lsmo -c conda forge
+        run: conda install raspa2 zeopp-lsmo -c conda-forge
       - name: Install dependencies
         run: pip install tox
       - name: Test with pytest
