@@ -47,7 +47,7 @@ def _compute_racs(
 
                     n = structure_graph.structure[neighbor]
                     for prop in properties:
-                        if (prop == "I") or (prop == 1):
+                        if prop in ("I", 1):
                             p0 = 1
                             p1 = 1
                         elif prop == "T":
