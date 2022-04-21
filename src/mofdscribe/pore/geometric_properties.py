@@ -304,7 +304,20 @@ class AccessibleVolume(BaseFeaturizer):
             "author = {Thomas F. Willems and Chris H. Rycroft and Michaeel Kazi and Juan C. Meza and Maciej Haranczyk},"
             "title = {Algorithms and tools for high-throughput geometry-based analysis of crystalline porous materials},"
             "journal = {Microporous and Mesoporous Materials}"
-            "}"
+            "}",
+            "@article{Ongari2017,"
+            "doi = {10.1021/acs.langmuir.7b01682},"
+            "url = {https://doi.org/10.1021/acs.langmuir.7b01682},"
+            "year = {2017},"
+            "month = jul,"
+            "publisher = {American Chemical Society ({ACS})},"
+            "volume = {33},"
+            "number = {51},"
+            "pages = {14529--14538},"
+            "author = {Daniele Ongari and Peter G. Boyd and Senja Barthel and Matthew Witman and Maciej Haranczyk and Berend Smit},"
+            "title = {Accurate Characterization of the Pore Volume in Microporous Crystalline Materials},"
+            "journal = {Langmuir}"
+            "}",
         ]
 
     def implementors(self) -> List[str]:

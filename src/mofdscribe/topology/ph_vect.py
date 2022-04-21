@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 from collections import defaultdict
-from typing import List, Tuple
+from typing import List, Tuple, Union
 from pervect import PersistenceVectorizer
 from matminer.featurizers.base import BaseFeaturizer
 from pymatgen.core import Structure, IStructure
+import numpy as np
 
 # ToDo: implement https://github.com/scikit-tda/pervect
 
@@ -36,6 +37,9 @@ class PHVect(BaseFeaturizer):
         self.random_state = random_state
 
     def feature_labels(self) -> List[str]:
+        return ...
+
+    def featurize(self, structure: Union[Structure, IStructure]) -> np.ndarray:
         return ...
 
     def fit(self, structures: List[Structure, IStructure]):
