@@ -7,6 +7,7 @@ mofdscribe |release| Documentation
    :name: start
 
    getting_started
+   background
    cli
    api
 

@@ -2,7 +2,7 @@
 from collections import defaultdict
 from functools import lru_cache
 from pathlib import Path
-from typing import List, Union, Tuple
+from typing import List, Tuple, Union
 
 import numpy as np
 from loguru import logger
