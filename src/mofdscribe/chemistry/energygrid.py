@@ -67,7 +67,15 @@ def read_ascii_grid(filename: str) -> pd.DataFrame:
 
 
 class EnergyGridHistogram(BaseFeaturizer):
-    """Computes the energy grid histograms as originally proposed by Bucior et al."""
+    """Computes the energy grid histograms as originally proposed by Bucior et al.
+
+    Conventionally, energy grids can be used to speed up molecular simulations.
+    The idea is that the interactions between the guest and host are pre-computed
+    on a fine grid and then only need to be looked up (instead of re-computed all the time).
+
+    Bucior et al. proposed (effectively) a dimensionality reduction of the energy grid by
+    making a histogram of the energies.
+    """
 
     def __init__(
         self,
