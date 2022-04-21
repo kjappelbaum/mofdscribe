@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
-from mofdscribe.chemistry.racs import RACS, _get_racs_for_bbs
-from mofdscribe.chemistry._fragment import get_bb_indices
-from mofdscribe.utils.structure_graph import get_structure_graph
 from pymatgen.core import IStructure
+
+from mofdscribe.chemistry._fragment import get_bb_indices
+from mofdscribe.chemistry.racs import RACS, _get_racs_for_bbs
+from mofdscribe.utils.structure_graph import get_structure_graph
 
 
 def test_racs(hkust_structure, irmof_structure):

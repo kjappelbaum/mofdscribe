@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
-"""FF Builder taken from aiida-lsmo
+"""RASPA force-field builder taken from aiida-lsmo
 #ToDo: move this to a standalone-package that can be imported here and in aiida-lsmo
 """
 import os
 from math import sqrt
-import ruamel.yaml as yaml
 
+import ruamel.yaml as yaml
 
 THISDIR = os.path.dirname(os.path.abspath(__file__))
 

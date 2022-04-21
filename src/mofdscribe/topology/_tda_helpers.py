@@ -1,9 +1,8 @@
+# -*- coding: utf-8 -*-
 from collections import defaultdict
+from functools import lru_cache
 from pathlib import Path
 from typing import List, Union
-
-
-from functools import lru_cache
 
 import numpy as np
 from loguru import logger
@@ -12,8 +11,8 @@ from moltda.read_file import make_supercell
 from moltda.vectorize_pds import diagrams_to_arrays, get_images, pd_vectorization
 from pymatgen.core import Structure
 
-from mofdscribe.utils.substructures import elements_in_structure, filter_element
 from mofdscribe.utils.np_cache import np_cache
+from mofdscribe.utils.substructures import elements_in_structure, filter_element
 
 
 # @np_cache

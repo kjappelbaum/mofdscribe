@@ -2,7 +2,8 @@
 import os
 
 import pytest
-from pymatgen.core import Structure, IStructure
+from pymatgen.core import IStructure, Structure
+
 from mofdscribe.utils.structure_graph import get_structure_graph
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))

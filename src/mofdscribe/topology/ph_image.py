@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 """Implements persistent homology images"""
+from collections import defaultdict
 from typing import List, Tuple, Union
 
 import numpy as np
@@ -7,7 +8,6 @@ from matminer.featurizers.base import BaseFeaturizer
 from pymatgen.core import IStructure, Structure
 
 from ._tda_helpers import get_persistent_images_for_structure
-from collections import defaultdict
 
 
 class PHImage(BaseFeaturizer):
@@ -117,6 +117,17 @@ class PHImage(BaseFeaturizer):
             "pages = {9360-9368},"
             "year = {2020},"
             "doi = {10.1021/acs.jpcc.0c01167},"
+            "}",
+            "@article{krishnapriyan_machine_2021,"
+            "title={Machine learning with persistent homology and chemical word embeddings improves prediction accuracy and interpretability in metal-organic frameworks},"
+            "author={Krishnapriyan, Aditi S and Montoya, Joseph and Haranczyk, Maciej and Hummelsh{\o}j, Jens and Morozov, Dmitriy},"
+            "journal = {Scientific Reports},"
+            "volume = {11},"
+            "numer = {1},"
+            "issn = {2045-2322},"
+            "pages = {8888},"
+            "year={2021},"
+            "doi = {10.1038/s41598-021-88027-8}"
             "}",
             "@article{adams2017persistence,"
             "title={Persistence images: A stable vector representation of persistent homology},"

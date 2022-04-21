@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
+from collections import defaultdict
 from typing import List, Tuple
 
 from matminer.featurizers.base import BaseFeaturizer
 
+# ToDo: implement https://github.com/scikit-tda/pervect
 
-class PHBarcode(BaseFeaturizer):
+
+class PHVect(BaseFeaturizer):
     """
-
-    Persistent barcodes for materials discovery have been used several times in the literature:
 
     Computes persistent homology barcodes.
     Typically, persistent barcodes are computed for all atoms in the structure.
@@ -16,7 +17,7 @@ class PHBarcode(BaseFeaturizer):
     """
 
     def __init__(self, atom_types=Tuple[str]) -> None:
-        ...
+        self.transformers = defaultdict(lambda: defaultdict(dict))
 
     def feature_labels(self) -> List[str]:
         return ...

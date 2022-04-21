@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from mofdscribe.topology.ph_image import PHImage
 
 

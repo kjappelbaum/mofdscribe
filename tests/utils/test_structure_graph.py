@@ -1,4 +1,5 @@
-from mofdscribe.utils.structure_graph import get_neighbors_at_distance, get_connected_site_indices
+# -*- coding: utf-8 -*-
+from mofdscribe.utils.structure_graph import get_connected_site_indices, get_neighbors_at_distance
 
 
 def test_get_neighbors_at_distance(hkust_structure_graph):
