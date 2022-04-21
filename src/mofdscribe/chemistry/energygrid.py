@@ -1,37 +1,48 @@
 # -*- coding: utf-8 -*-
+import os
+from glob import glob
+from pathlib import Path
 from typing import List, Union
 
 import numpy as np
+import pandas as pd
 from matminer.featurizers.base import BaseFeaturizer
 from pymatgen.core import IStructure, Structure
-import pandas as pd
+
+from mofdscribe.utils.histogram import get_rdf
+from mofdscribe.utils.raspa.resize_uc import resize_unit_cell
+from mofdscribe.utils.raspa.run_raspa import run_raspa
 
 GRID_INPUT_TEMPLATE = """SimulationType  MakeASCIGrid
 
 Forcefield      {forcefield}
 
 Framework 0
-FrameworkName {mof_name}
+FrameworkName input
 UnitCells {unit_cells}
 
-UseChargesFromCIFFile   {use_charges}
-
 CutOff                        {cutoff}
-
-ChargeMethod                  Ewald
-EwaldPrecision                {ewald_precision}
-
 
 NumberOfGrids {num_grids}
 GridTypes {grid_types}
 SpacingVDWGrid {vdw_spacing}
-SpacingCoulombGrid {coulomb_spacing}"""
+"""
 
 
 # https://aip.scitation.org/doi/10.1063/5.0050823 proposes to not use equally spaced bins
 
 
 # Bucior used 1 A spacing, the LJ site for H2 and no Coulomb grid
+# set raspa_dir to root dir of conda env, e.g., /Users/leopold/Applications/miniconda3/envs/simulations
+
+
+def parse_energy_grids(directory: Union[str, Path]) -> dict:
+    grids = glob(os.path.join(directory, "*.grid"))
+    energies = {}
+    for grid in grids:
+        name = os.path.basename(grid).split(".")[0].replace("asci_grid_", "")
+        energies[name] = read_ascii_grid(grid)
+    return energies
 
 
 def read_ascii_grid(filename: str) -> pd.DataFrame:
@@ -55,23 +66,98 @@ def read_ascii_grid(filename: str) -> pd.DataFrame:
     return df
 
 
-class EnergyGrid(BaseFeaturizer):
+class EnergyGridHistogram(BaseFeaturizer):
+    """Computes the energy grid histograms as originally proposed by Bucior et al."""
+
     def __init__(
         self,
+        raspa_dir: Union[str, Path, None] = None,
+        grid_spacing: float = 1.0,
         bin_size_vdw: float = 1,
         min_energy_vdw: float = -10,
         max_energy_vdw: float = 0,
-    ) -> None:
-        super().__init__()
+        cutoff: float = 12,
+        mof_ff: str = "UFF",
+        mol_ff: str = "TraPPE",
+        mol_name: str = "CO2",
+        sites: List[str] = ["C_co2"],
+        tail_corrections: bool = True,
+        mixing_rule: str = "Lorentz-Berthelot",
+        shifted: bool = False,
+        separate_interactions: bool = True,
+    ):
+        self.raspa_dir = raspa_dir if raspa_dir else os.environ.get("RASPA_DIR", None)
+        if self.raspa_dir is None:
+            raise ValueError(
+                "Please set the RASPA_DIR environment variable or provide the path for the class initialization."
+            )
+        self.grid_spacing = grid_spacing
+        self.bin_size_vdw = bin_size_vdw
+        self.min_energy_vdw = min_energy_vdw
+        self.max_energy_vdw = max_energy_vdw
+        self.cutoff = cutoff
+        self.mof_ff = mof_ff
+        self.mol_ff = mol_ff
+        self.mol_name = mol_name
+        self.sites = sites
+        self.tail_corrections = tail_corrections
+        self.mixing_rule = mixing_rule
+        self.shifted = shifted
+        self.separate_interactions = separate_interactions
 
-    def fit(self, structures: Union[Structure, IStructure]):
+    def fit_transform(self, structures: List[Union[Structure, IStructure]]):
+        ...
+
+    def fit(self, structure: Union[Structure, IStructure]):
         return self
 
-    def feature_labels(self) -> List[str]:
-        return ["EnergyGrid"]
+    def _get_grid(self):
+        return np.arange(self.min_energy_vdw, self.max_energy_vdw, self.bin_size_vdw)
 
-    def featurize(self, s) -> np.array:
-        ...
+    def feature_labels(self) -> List[str]:
+        grid = self._get_grid()
+        labels = []
+        for site in self.sites:
+            for grid_point in grid:
+                labels.append(f"{site}_{grid_point}")
+        return labels
+
+    def featurize(self, s: Union[Structure, IStructure]) -> np.array:
+        ff_molecules = {self.mol_name: self.mol_ff}
+
+        parameters = {
+            "ff_framework": self.mof_ff,
+            "ff_molecules": ff_molecules,
+            "shifted": self.shifted,
+            "tail_corrections": self.tail_corrections,
+            "mixing_rule": self.mixing_rule,
+            "separate_interactions": self.separate_interactions,
+        }
+        ucells = " ".format(resize_unit_cell(s, self.cutoff))
+
+        simulation_script = GRID_INPUT_TEMPLATE.format(
+            forcefield=self.mof_ff,
+            unit_cells=ucells,
+            cutoff=self.cutoff,
+            num_grids=len(self.sites),
+            grid_types=" ".join(self.sites),
+            vdw_spacing=self.grid_spacing,
+        )
+        res = run_raspa(s, self.raspa_dir, simulation_script, parameters, parse_energy_grids)
+        output = []
+        for _, v in res.items():
+            output.append(
+                get_rdf(
+                    v["energy"].values,
+                    self.min_energy_vdw,
+                    self.max_energy_vdw,
+                    self.bin_size_vdw,
+                    None,
+                    None,
+                    normalized=False,
+                )
+            )
+        return np.concatenate(output)
 
     def citations(self) -> List[str]:
         return [

@@ -5,10 +5,10 @@ import numpy as np
 from scipy.stats import gaussian_kde
 
 
-def get_rdf(array, lower_lim, upoper_lim, bin_size, num_sites, volume, normalized: bool = True):
+def get_rdf(array, lower_lim, upper_lim, bin_size, num_sites, volume, normalized: bool = True):
     dist_hist, dist_bins = np.histogram(
         array,
-        bins=np.arange(lower_lim, upoper_lim + bin_size, bin_size),
+        bins=np.arange(lower_lim, upper_lim + bin_size, bin_size),
         density=False,
     )
 
