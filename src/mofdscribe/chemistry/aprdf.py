@@ -89,7 +89,7 @@ class APRDF(BaseFeaturizer):
                 if n.nn_distance > self.lower_lim:
                     print(n.nn_distance)
                     for prop in self.properties:
-                        if (prop == "I") or (prop == 1):
+                        if prop in ("I", 1):
                             p0 = 1
                             p1 = 1
                         else:
