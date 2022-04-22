@@ -101,6 +101,14 @@ By means of "simple" geometry analysis one can also extract pore radii.
 Histograms
 ...............
 
+An alternative to scaler descriptors are "summaries" of the pore geometry in histograms. 
+One approach for instance is to shoot random rays (orange in the figure below) through the structure and use the length of the ray between the points where it intersects the pores as ray length. If one performs this experiment often, one can summarize the observed ray lengths in a histogram.
+
+.. image:: figures/rays.png
+  :width: 100
+  :alt: Shooting rays through pores.
+
+Another, quite sparse, alternative is to use the pore size distribution of the structure.
 
 
 "Chemistry" descriptors
