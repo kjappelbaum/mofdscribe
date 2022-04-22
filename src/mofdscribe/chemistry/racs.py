@@ -2,6 +2,7 @@
 """Revised autocorrelation functions (RACs) for MOFs"""
 from collections import defaultdict
 from typing import Iterable, List, Tuple, Union
+
 import numpy as np
 from matminer.featurizers.base import BaseFeaturizer
 from pymatgen.analysis.graphs import StructureGraph
