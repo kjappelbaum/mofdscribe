@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from pytest import approx
+
 from mofdscribe.pore.geometric_properties import (
     AccessibleVolume,
     PoreDiameters,
@@ -9,7 +11,6 @@ from mofdscribe.pore.geometric_properties import (
     _parse_sa_zeopp,
     _parse_volpo_zeopp,
 )
-from pytest import approx
 
 SA_SAMPLE_OUTPUT = """@ EDI.sa Unitcell_volume: 307.484   Density: 1.62239
 
