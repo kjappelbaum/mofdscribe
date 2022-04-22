@@ -61,5 +61,5 @@ jobs:
       - name: Install package
         run: pip install -e .
       - name: Test with pytest
-        run: export RASPA_DIR="$CONDA_PREFIX"; export PATH="$CONDA_PREFIX:$PATH"; pytest tests/
+        run: echo $CONDA_PREFIX; export RASPA_DIR="$CONDA_PREFIX"; export PATH="$CONDA_PREFIX:$PATH"; pytest tests/
         #run: tox -e py
