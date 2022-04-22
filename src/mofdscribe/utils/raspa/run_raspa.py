@@ -10,8 +10,6 @@ import os
 import subprocess
 from tempfile import TemporaryDirectory
 
-from loguru import logger
-
 from .ff_builder import ff_builder
 
 
@@ -41,7 +39,7 @@ def run_raspa(structure, raspa_dir, simulation_script, ff_params, parser):
                 cwd=tempdir,
             )
         except subprocess.CalledProcessError as e:
-            logger.error(e.output, e.stderr)
+            raise ValueError(f"Error running RASPA. Output: {e.output}  stderr: {e.stderr}")
 
         results = parser(os.path.join(tempdir, "ASCI_Grids"))
 

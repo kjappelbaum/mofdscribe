@@ -1,16 +1,16 @@
 Background
 ===================
-.. Potential additional categories: High-dimensional? Models pores? 
+.. Potential additional categories: High-dimensional? Models pores?
 
 Many of the descriptors implemented in mofdscribe have been discussed in our `2020 Chem. Rev. article <https://pubs.acs.org/doi/10.1021/acs.chemrev.0c00004>`_.
 
 .. list-table:: Overview of implemented featurizers
-   :widths: 25 20 20 20 20 25 
+   :widths: 25 20 20 20 20 25
    :header-rows: 1
 
    * - Name
      - Assumes locality
-     - Contains chemistry information 
+     - Contains chemistry information
      - Derived using geometry information
      - Derived using structure graph
      - representative reference
@@ -19,7 +19,7 @@ Many of the descriptors implemented in mofdscribe have been discussed in our `20
      - ✅
      - ❌
      - ✅
-     - `Moosavi et al., Nature Communications, 2021 <https://www.nature.com/articles/s41467-020-17755-8>`_ 
+     - `Moosavi et al., Nature Communications, 2021 <https://www.nature.com/articles/s41467-020-17755-8>`_
    * - `APRDF <:py:class:`mofdscribe.chemistry.aprdf.APRDF>`_
      - ❌
      - ✅
@@ -37,50 +37,50 @@ Many of the descriptors implemented in mofdscribe have been discussed in our `20
      - ✅
      - ✅
      - ❌
-     - 
+     -
    * - `PoreDiameters <:py:class:`mofdscribe.pore.geometric_properties.PoreDiameters>`_
      - ❌
      - ❌
      - ✅
      - ❌
-     - 
+     -
    * - `SurfaceArea <:py:class:`mofdscribe.pore.geometric_properties.SurfaceArea>`_
      - ❌
      - ❌
      - ✅
      - ❌
-     - 
+     -
    * - `AccessibleVolume <:py:class:`mofdscribe.pore.geometric_properties.AccessibleVolume>`_
      - ❌
      - ❌
      - ✅
      - ❌
-     - 
+     -
    * - `RayTracingHistogram <:py:class:`mofdscribe.pore.geometric_properties.RayTracingHistogram>`_
      - ❌
      - ❌
      - ✅
      - ❌
-     - 
+     -
    * - `PoreSizeDistribution <:py:class:`mofdscribe.pore.geometric_properties.PoreSizeDistribution>`_
      - ❌
      - ❌
      - ✅
      - ❌
-     - 
+     -
    * - `PHImage <:py:class:`mofdscribe.topology.ph_image.PHImage>`_
      - ❌
      - ✅ (optionally)
-     - ✅ 
+     - ✅
      - ❌
-     - 
+     -
    * - `PHVect <:py:class:`mofdscribe.topology.ph_vect.PHVect>`_
      - ❌
      - ✅ (optionally)
-     - ✅ 
+     - ✅
      - ❌
-     - 
- 
+     -
+
 
 Pore descriptors
 -------------------

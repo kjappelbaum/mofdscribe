@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from mofdscribe.chemistry.aprdf import APRDF
 
 

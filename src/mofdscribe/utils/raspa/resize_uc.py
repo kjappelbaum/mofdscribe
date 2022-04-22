@@ -45,8 +45,8 @@ def resize_unit_cell(structure, threshold):  # pylint: disable=too-many-locals
     bxc3 = cell[1, 0] * cell[2, 1] - cell[1, 1] * cell[2, 0]
     det = fabs(cell[0, 0] * cell[1, 1] * cell[2, 2])
     perpwidth = np.zeros(3)
-    perpwidth[0] = det / sqrt(bxc1**2 + bxc2**2 + bxc3**2)
-    perpwidth[1] = det / sqrt(axc1**2 + axc2**2)
+    perpwidth[0] = det / sqrt(bxc1 ** 2 + bxc2 ** 2 + bxc3 ** 2)
+    perpwidth[1] = det / sqrt(axc1 ** 2 + axc2 ** 2)
     perpwidth[2] = cell[2, 2]
 
     # prevent from crashing if threshold value is zero

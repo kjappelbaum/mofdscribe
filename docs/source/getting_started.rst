@@ -6,7 +6,7 @@ Installation
 --------------
 Do to the external dependencies, we recommend installation via conda
 
-.. code-block:: shell 
+.. code-block:: shell
 
     $ conda install -c conda-forge mofdscribe
 
@@ -19,9 +19,9 @@ The most recent release can be installed from
 
 However, in this case, the following dependencies need to be manually installed (e.g. via conda):
 
-- RASPA2
-- zeo++
-- cgal 
+.. code-block:: shell
+
+    conda install -c conda-forge cgal zeopp-lsmo raspa2
 
 The most recent code and data can be installed directly from GitHub with:
 
@@ -41,10 +41,10 @@ To install in development mode, use the following:
 Featurizing a MOF
 ------------------
 
-.. code-block:: python 
+.. code-block:: python
 
     from mofdscribe.chemistry.racs import RACS
-    from pymatgen.core import IStructure 
+    from pymatgen.core import IStructure
 
     s = IStructure.from_file(<my_cif>)
     featurizer = RACS()
@@ -52,11 +52,11 @@ Featurizing a MOF
 
 It is also easy to combine multiple featurizers into a single pipeline:
 
-.. code-block:: python 
+.. code-block:: python
 
     from mofdscribe.chemistry.racs import RACS
     from mofdscribe.pore.geometric_properties import PoreDiameters
-    from pymatgen.core import IStructure 
+    from pymatgen.core import IStructure
     from matminer.featurizers.base import MultipleFeaturizer
 
     s = IStructure.from_file(<my_cif>)
@@ -65,8 +65,8 @@ It is also easy to combine multiple featurizers into a single pipeline:
 
 You can, of course, also pass multiple structures to the featurizer:
 
-.. code-block:: python 
-    
+.. code-block:: python
+
   s = IStructure.from_file(<my_cif>)
   s2 = IStructure.from_file(<my_cif2>)
-  features = featurizer.featurize_many([s, s2]) 
+  features = featurizer.featurize_many([s, s2])
