@@ -1,6 +1,8 @@
-Featurizing MOFs
+Background
 ===================
 .. Potential additional categories: High-dimensional? Models pores? 
+
+Many of the descriptors implemented in mofdscribe have been discussed in our `2020 Chem. Rev. article <https://pubs.acs.org/doi/10.1021/acs.chemrev.0c00004>`_.
 
 .. list-table:: Overview of implemented featurizers
    :widths: 25 20 20 20 20 25 
@@ -11,7 +13,7 @@ Featurizing MOFs
      - Contains chemistry information 
      - Derived using geometry information
      - Derived using structure graph
-     - Original reference
+     - representative reference
    * - `RACS <:py:class:`mofdscribe.chemistry.racs.RACS>`_
      - ✅
      - ✅

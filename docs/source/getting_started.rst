@@ -49,3 +49,24 @@ Featurizing a MOF
     s = IStructure.from_file(<my_cif>)
     featurizer = RACS()
     features = featurizer.featurize(s)
+
+It is also easy to combine multiple featurizers into a single pipeline:
+
+.. code-block:: python 
+
+    from mofdscribe.chemistry.racs import RACS
+    from mofdscribe.pore.geometric_properties import PoreDiameters
+    from pymatgen.core import IStructure 
+    from matminer.featurizers.base import MultipleFeaturizer
+
+    s = IStructure.from_file(<my_cif>)
+    featurizer = MultipleFeaturizer([RACS(), PoreDiameters()])
+    features = featurizer.featurize(s)
+
+You can, of course, also pass multiple structures to the featurizer:
+
+.. code-block:: python 
+    
+  s = IStructure.from_file(<my_cif>)
+  s2 = IStructure.from_file(<my_cif2>)
+  features = featurizer.featurize_many([s, s2]) 

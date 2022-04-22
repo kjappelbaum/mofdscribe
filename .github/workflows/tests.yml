@@ -49,16 +49,20 @@ jobs:
         python-version: ["3.8", "3.9", "3.10"]
     steps:
       - uses: actions/checkout@v2
-      - uses: conda-incubator/setup-miniconda@v2
+      - name: Setup conda
+        uses: s-weigand/setup-conda
         with:
-          auto-update-conda: true
+          update-conda: true
           python-version: ${{ matrix.python-version }}
+          conda-channels: anaconda, conda-forge
       - name: Install dependencies
-        run: sudo apt-get install libcgal-dev -y & conda install raspa2 zeopp-lsmo cgal boost -c conda-forge -y
-      - name: Install dependencies
-        run: pip install pytest &  pip install git+https://github.com/kjappelbaum/molecule-tda.git@refactor
-      - name: Install package
-        run: pip install -e .
+        run: |
+          sudo apt-get install libcgal-dev -y & conda install raspa2 zeopp-lsmo cgal boost -c conda-forge -y
+          pip install pytest &  pip install git+https://github.com/kjappelbaum/molecule-tda.git@refactor
+          pip install -e .
       - name: Test with pytest
-        run: export RASPA_DIR=/usr/share/miniconda/envs/base; export PATH=/usr/share/miniconda/envs/base:$PATH; pytest tests/
+        run: |
+          export RASPA_DIR=/usr/share/miniconda/envs/base
+          export PATH=/usr/share/miniconda/envs/base:$PATH
+          pytest tests/
         #run: tox -e py
