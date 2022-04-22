@@ -62,7 +62,7 @@ jobs:
         run: pip install -e .
       - name: Set the value
         run: |
-          echo "$CONDA_PREFIX" >> $RASPA_DIR
+          export RASPA_DIR="$CONDA_PREFIX"
       - name: Test with pytest
         run: pytest tests/
         #run: tox -e py
