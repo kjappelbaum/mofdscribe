@@ -112,7 +112,7 @@ def test_accessible_volume(hkust_structure):
     assert len(result) == 8
     assert result[0] == approx(1.82808e04, 0.1)
     assert result[1] == approx(8.79097e-01, 0.1)
-    assert result[2] == approx(1.35278e04, 0.1)
+    assert result[2] == approx(1.35278e04, 0.2)
     assert result[3] == approx(7.40000e-01, 0.1)
     assert result[4] == approx(8.41773e-01, 0.1)
     assert result[5] == 0

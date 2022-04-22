@@ -61,6 +61,9 @@ class PHVect(BaseFeaturizer):
     of persistence diagrams with Gaussian mixture models.
     The vectorization of a diagram is then the weighted maximum likelihood estimate
     of the mixture weights for the learned components given the diagram.
+
+    Importantly, the vectorizations can still be used to compute approximate
+    Wasserstein distances.
     """
 
     def __init__(
