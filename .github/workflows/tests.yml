@@ -61,5 +61,5 @@ jobs:
       - name: Install package
         run: pip install -e .
       - name: Test with pytest
-        run: export RASPA_DIR=/usr/share/miniconda/envs/mofdscribe; export PATH=/usr/share/miniconda/envs/mofdscribe:$PATH"; pytest tests/
+        run: export RASPA_DIR=/usr/share/miniconda/envs/mofdscribe; export PATH=/usr/share/miniconda/envs/mofdscribe:$PATH; pytest tests/
         #run: tox -e py
