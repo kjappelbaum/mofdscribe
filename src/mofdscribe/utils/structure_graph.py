@@ -7,7 +7,7 @@ import networkx as nx
 import numpy as np
 from pymatgen.analysis.graphs import MoleculeGraph, StructureGraph
 from pymatgen.analysis.local_env import CrystalNN, IsayevNN, JmolNN
-from pymatgen.core import IStructure, Molecule, Structure
+from pymatgen.core import IStructure, Molecule
 
 
 def get_neighbors_at_distance(structure_graph: StructureGraph, start: int, scope: int) -> Set[int]:

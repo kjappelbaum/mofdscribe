@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from functools import lru_cache
 from typing import Collection, List, Union
 
 from pymatgen.core import IStructure, Structure
