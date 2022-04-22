@@ -114,6 +114,13 @@ Another, quite sparse, alternative is to use the pore size distribution of the s
 "Chemistry" descriptors
 --------------------------
 
+Descriptors assuming locality
+....................................
+
+
+
+Non-local descriptors
+..........................
 
 
 Topological descriptors
