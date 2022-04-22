@@ -1,22 +1,84 @@
 Featurizing MOFs
 ===================
+.. Potential additional categories: High-dimensional? Models pores? 
 
-.. list-table:: Overview over implemented featurizers
-   :widths: 25 25 50
+.. list-table:: Overview of implemented featurizers
+   :widths: 25 20 20 20 20 25 
    :header-rows: 1
 
    * - Name
      - Assumes locality
-     - Contains chemistry information
-     - Contains explicit geometry information
-     - Works on structure graph
+     - Contains chemistry information 
+     - Derived using geometry information
+     - Derived using structure graph
      - Original reference
-   * - :py:class:`mofdscribe.chemistry.racs.RACS`
-     -
-     - Row 1, column 3
-   * - Row 2, column 1
-     - Row 2, column 2
-     - Row 2, column 3
+   * - `RACS <:py:class:`mofdscribe.chemistry.racs.RACS>`_
+     - ✅
+     - ✅
+     - ❌
+     - ✅
+     - `Moosavi et al., Nature Communications, 2021 <https://www.nature.com/articles/s41467-020-17755-8>`_ 
+   * - `APRDF <:py:class:`mofdscribe.chemistry.aprdf.APRDF>`_
+     - ❌
+     - ✅
+     - ✅
+     - ❌
+     - `Fernandez et al., J. Phys. Chem. C., 2013 <https://pubs.acs.org/doi/full/10.1021/jp404287t>`_
+   * - `EnergyGridHistogram <:py:class:`mofdscribe.chemistry.energygrid.EnergyGridHistogram>`_
+     - ❌
+     - ✅
+     - ✅
+     - ❌
+     - `Bucior et al.,  Mol. Syst. Des. Eng., 2019 <https://pubs.rsc.org/en/content/articlelanding/2019/me/c8me00050f>`_
+   * - `PartialChargeStats <:py:class:`mofdscribe.chemistry.partialchargestats.PartialChargeStats>`_
+     - ❌
+     - ✅
+     - ✅
+     - ❌
+     - 
+   * - `PoreDiameters <:py:class:`mofdscribe.pore.geometric_properties.PoreDiameters>`_
+     - ❌
+     - ❌
+     - ✅
+     - ❌
+     - 
+   * - `SurfaceArea <:py:class:`mofdscribe.pore.geometric_properties.SurfaceArea>`_
+     - ❌
+     - ❌
+     - ✅
+     - ❌
+     - 
+   * - `AccessibleVolume <:py:class:`mofdscribe.pore.geometric_properties.AccessibleVolume>`_
+     - ❌
+     - ❌
+     - ✅
+     - ❌
+     - 
+   * - `RayTracingHistogram <:py:class:`mofdscribe.pore.geometric_properties.RayTracingHistogram>`_
+     - ❌
+     - ❌
+     - ✅
+     - ❌
+     - 
+   * - `PoreSizeDistribution <:py:class:`mofdscribe.pore.geometric_properties.PoreSizeDistribution>`_
+     - ❌
+     - ❌
+     - ✅
+     - ❌
+     - 
+   * - `PHImage <:py:class:`mofdscribe.topology.ph_image.PHImage>`_
+     - ❌
+     - ✅ (optionally)
+     - ✅ 
+     - ❌
+     - 
+   * - `PHVect <:py:class:`mofdscribe.topology.ph_vect.PHVect>`_
+     - ❌
+     - ✅ (optionally)
+     - ✅ 
+     - ❌
+     - 
+ 
 
 Pore descriptors
 -------------------
