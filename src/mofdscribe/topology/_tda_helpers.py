@@ -1,18 +1,13 @@
 # -*- coding: utf-8 -*-
 from collections import defaultdict
-from functools import lru_cache
-from pathlib import Path
 from typing import List, Tuple, Union
 
 import numpy as np
-from loguru import logger
 from moltda.construct_pd import construct_pds
 from moltda.read_file import make_supercell
-from moltda.vectorize_pds import diagrams_to_arrays, get_images, pd_vectorization
+from moltda.vectorize_pds import diagrams_to_arrays, get_images
 from pymatgen.core import Structure
-
-from mofdscribe.utils.np_cache import np_cache
-from mofdscribe.utils.substructures import elements_in_structure, filter_element
+from mofdscribe.utils.substructures import filter_element
 
 
 # @np_cache
