@@ -200,7 +200,8 @@ class RACS(BaseFeaturizer):
     def feature_labels(self) -> List[str]:
         return self._get_feature_labels()
 
-    def citations(self) -> List[str]:
+    @staticmethod
+    def citations() -> List[str]:
         return [
             "@article{Moosavi2020,"
             "doi = {10.1038/s41467-020-17755-8},"
@@ -229,5 +230,6 @@ class RACS(BaseFeaturizer):
             "}",
         ]
 
-    def implementors(self):
+    @staticmethod
+    def implementors():
         return ["Kevin Maik Jablonka"]

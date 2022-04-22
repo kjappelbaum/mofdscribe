@@ -185,7 +185,8 @@ class PHVect(BaseFeaturizer):
         compiled_results = self._reshape_results(results, len(structures))
         return compiled_results
 
-    def citations(self):
+    @staticmethod
+    def citations():
         return [
             "@article{perea2019approximating,"
             "title   = {Approximating Continuous Functions on Persistence Diagrams Using Template Functions},"
@@ -201,5 +202,6 @@ class PHVect(BaseFeaturizer):
             "}",
         ]
 
-    def implementors(self):
+    @staticmethod
+    def implementors():
         return ["Kevin Maik Jablonka"]

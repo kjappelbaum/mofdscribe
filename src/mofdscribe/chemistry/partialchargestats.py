@@ -38,7 +38,8 @@ class PartialChargeStats(BaseFeaturizer):
 
         return np.array(aggregated)
 
-    def citations(self) -> List[str]:
+    @staticmethod
+    def citations() -> List[str]:
         return [
             "@article{Ongari2018,"
             "doi = {10.1021/acs.jctc.8b00669},"
@@ -68,5 +69,6 @@ class PartialChargeStats(BaseFeaturizer):
             "}",
         ]
 
-    def implementors(self):
+    @staticmethod
+    def implementors():
         return ["Kevin Maik Jablonka"]

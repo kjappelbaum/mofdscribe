@@ -149,14 +149,16 @@ class PoreDiameters(BaseFeaturizer):
     def __init__(self):
         self.labels = ["lis", "lifs", "lifsp"]
 
-    def featurize(self, s):
+    @staticmethod
+    def featurize(s):
         result = run_zeopp(s, ["-res"], _parse_res_zeopp)
         return np.array(list(result.values()))
 
     def feature_labels(self):
         return self.labels
 
-    def citations(self):
+    @staticmethod
+    def citations():
         return [
             "@article{Willems2012,"
             "doi = {10.1016/j.micromeso.2011.08.020},"
@@ -173,7 +175,8 @@ class PoreDiameters(BaseFeaturizer):
             "}"
         ]
 
-    def implementors(self):
+    @staticmethod
+    def implementors():
         return ["Kevin Maik Jablonka"]
 
 
@@ -226,7 +229,8 @@ class SurfaceArea(BaseFeaturizer):
     def feature_labels(self) -> List[str]:
         return self.labels
 
-    def citations(self) -> List[str]:
+    @staticmethod
+    def citations() -> List[str]:
         return [
             "@article{Willems2012,"
             "doi = {10.1016/j.micromeso.2011.08.020},"
@@ -243,7 +247,8 @@ class SurfaceArea(BaseFeaturizer):
             "}"
         ]
 
-    def implementors(self) -> List[str]:
+    @staticmethod
+    def implementors() -> List[str]:
         return ["Kevin Maik Jablonka"]
 
 
@@ -290,7 +295,8 @@ class AccessibleVolume(BaseFeaturizer):
     def feature_labels(self) -> List[str]:
         return self.labels
 
-    def citations(self) -> List[str]:
+    @staticmethod
+    def citations() -> List[str]:
         return [
             "@article{Willems2012,"
             "doi = {10.1016/j.micromeso.2011.08.020},"
@@ -320,7 +326,8 @@ class AccessibleVolume(BaseFeaturizer):
             "}",
         ]
 
-    def implementors(self) -> List[str]:
+    @staticmethod
+    def implementors() -> List[str]:
         return ["Kevin Maik Jablonka"]
 
 
@@ -364,7 +371,8 @@ class RayTracingHistogram(BaseFeaturizer):
         self.num_samples = num_samples
         self.channel_radius = channel_radius
 
-    def feature_labels(self) -> List[str]:
+    @staticmethod
+    def feature_labels() -> List[str]:
         return [f"ray_hist_{i}" for i in range(1000)]
 
     def featurize(self, s: Union[Structure, IStructure]) -> np.ndarray:
@@ -377,7 +385,8 @@ class RayTracingHistogram(BaseFeaturizer):
         results = run_zeopp(s, command, _parse_ray_hist_zeopp)
         return np.array(results)
 
-    def citations(self) -> List[str]:
+    @staticmethod
+    def citations() -> List[str]:
         return [
             "@article{Jones2013,"
             "doi = {10.1016/j.micromeso.2013.07.033},"
@@ -406,7 +415,8 @@ class RayTracingHistogram(BaseFeaturizer):
             "}",
         ]
 
-    def implementors(self) -> List[str]:
+    @staticmethod
+    def implementors() -> List[str]:
         return ["Kevin Maik Jablonka"]
 
 
@@ -463,7 +473,8 @@ class PoreSizeDistribution(BaseFeaturizer):
         self.num_samples = num_samples
         self.channel_radius = channel_radius
 
-    def feature_labels(self) -> List[str]:
+    @staticmethod
+    def feature_labels() -> List[str]:
         return [f"psd_hist_{i}" for i in range(1000)]
 
     def featurize(self, s: Union[Structure, IStructure]) -> np.ndarray:
@@ -476,7 +487,8 @@ class PoreSizeDistribution(BaseFeaturizer):
         results = run_zeopp(s, command, _parse_psd_zeopp)
         return results[self.type].values
 
-    def citations(self) -> List[str]:
+    @staticmethod
+    def citations() -> List[str]:
         return [
             "@article{Pinheiro2013,"
             "doi = {10.1016/j.jmgm.2013.05.007},"
@@ -505,5 +517,6 @@ class PoreSizeDistribution(BaseFeaturizer):
             "}",
         ]
 
-    def implementors(self):
+    @staticmethod
+    def implementors():
         return ["Kevin Maik Jablonka"]

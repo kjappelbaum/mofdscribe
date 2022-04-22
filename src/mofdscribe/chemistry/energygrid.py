@@ -195,7 +195,8 @@ class EnergyGridHistogram(BaseFeaturizer):
             )
         return np.concatenate(output)
 
-    def citations(self) -> List[str]:
+    @staticmethod
+    def citations() -> List[str]:
         return [
             "@article{Bucior2019,"
             "doi = {10.1039/c8me00050f},"
@@ -224,5 +225,6 @@ class EnergyGridHistogram(BaseFeaturizer):
             "}",
         ]
 
-    def implementors(self):
+    @staticmethod
+    def implementors():
         return ["Kevin Maik Jablonka"]

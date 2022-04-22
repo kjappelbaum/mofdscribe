@@ -179,7 +179,8 @@ class PHImage(BaseFeaturizer):
         self.max_B = maxB
         self.max_P = maxP
 
-    def citations(self) -> List[str]:
+    @staticmethod
+    def citations() -> List[str]:
         return [
             "@article{doi:10.1021/acs.jpcc.0c01167,"
             "author = {Krishnapriyan, Aditi S. and Haranczyk, Maciej and Morozov, Dmitriy},"
@@ -211,5 +212,6 @@ class PHImage(BaseFeaturizer):
             "}",
         ]
 
-    def implementors(self) -> List[str]:
+    @staticmethod
+    def implementors() -> List[str]:
         return ["Kevin Maik Jablonka"]

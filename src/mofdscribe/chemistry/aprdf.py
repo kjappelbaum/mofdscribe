@@ -120,7 +120,8 @@ class APRDF(BaseFeaturizer):
     def feature_labels(self) -> List[str]:
         return self._get_feature_labels()
 
-    def citations(self):
+    @staticmethod
+    def citations():
         return [
             "@article{Fernandez2013,"
             "doi = {10.1021/jp404287t},"
@@ -137,5 +138,6 @@ class APRDF(BaseFeaturizer):
             "}"
         ]
 
-    def implementors(self):
+    @staticmethod
+    def implementors():
         return ["Kevin Maik Jablonka"]
