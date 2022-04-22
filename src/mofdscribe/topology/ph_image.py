@@ -14,7 +14,7 @@ from ._tda_helpers import (
 
 
 class PHImage(BaseFeaturizer):
-    """
+    r"""
     `Adams et al. (2017) <https://www.jmlr.org/papers/volume18/16-337/16-337.pdf>`_
     introduced a stable vector representation of persistent homology.
 
@@ -193,7 +193,7 @@ class PHImage(BaseFeaturizer):
             "}",
             "@article{krishnapriyan_machine_2021,"
             "title={Machine learning with persistent homology and chemical word embeddings improves prediction accuracy and interpretability in metal-organic frameworks},"
-            "author={Krishnapriyan, Aditi S and Montoya, Joseph and Haranczyk, Maciej and Hummelsh{\o}j, Jens and Morozov, Dmitriy},"
+            r"author={Krishnapriyan, Aditi S and Montoya, Joseph and Haranczyk, Maciej and Hummelsh{\o}j, Jens and Morozov, Dmitriy},"
             "journal = {Scientific Reports},"
             "volume = {11},"
             "numer = {1},"
