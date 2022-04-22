@@ -11,7 +11,7 @@ Featurizing MOFs
      - Contains explicit geometry information
      - Works on structure graph
      - Original reference
-   * - Row 1, column 1
+   * - :py:class:`mofdscribe.chemistry.racs.RACS`
      -
      - Row 1, column 3
    * - Row 2, column 1

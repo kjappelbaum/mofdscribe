@@ -60,8 +60,6 @@ jobs:
         run: pip install pytest &  pip install git+https://github.com/kjappelbaum/molecule-tda.git@refactor
       - name: Install package
         run: pip install -e .
-      - name: Conda prefix
-        run: echo $CONDA_PREFIX
       - name: Test with pytest
-        run: echo $CONDA_PREFIX; export RASPA_DIR="$CONDA_PREFIX"; export PATH="$CONDA_PREFIX:$PATH"; pytest tests/
+        run: export RASPA_DIR=/usr/share/miniconda/envs/mofdscribe; export PATH=/usr/share/miniconda/envs/mofdscribe:$PATH"; pytest tests/
         #run: tox -e py
