@@ -62,7 +62,6 @@ jobs:
           pip install -e .
       - name: Test with pytest
         run: |
-          export RASPA_DIR=/usr/share/miniconda/envs/base
-          export PATH=/usr/share/miniconda/envs/base:$PATH
+          export RASPA_DIR=/usr/share/miniconda/envs/__setup_conda
           pytest tests/
         #run: tox -e py
