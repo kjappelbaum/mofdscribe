@@ -64,7 +64,7 @@ class APRDF(BaseFeaturizer):
 
     @cached_property
     def _bins(self):
-        return np.arange(self.lower_lim, self.cutoff + self.bin_size, self.bin_size)
+        return np.arange(self.lower_lim, self.cutoff, self.bin_size)
 
     def _get_feature_labels(self):
         labels = []
@@ -75,7 +75,7 @@ class APRDF(BaseFeaturizer):
 
         return labels
 
-    def featurizer(self, s: Union[Structure, IStructure]) -> np.array:
+    def featurize(self, s: Union[Structure, IStructure]) -> np.array:
         neighbors_lst = s.get_all_neighbors(self.cutoff)
 
         results = defaultdict(lambda: defaultdict(list))
@@ -87,7 +87,6 @@ class APRDF(BaseFeaturizer):
             site_neighbors = neighbors_lst[i]
             for n in site_neighbors:
                 if n.nn_distance > self.lower_lim:
-                    print(n.nn_distance)
                     for prop in self.properties:
                         if prop in ("I", 1):
                             p0 = 1
@@ -115,12 +114,12 @@ class APRDF(BaseFeaturizer):
 
                 feature_vec.append(rdf)
 
-        return feature_vec.flatten()
+        return np.concatenate(feature_vec)
 
     def feature_labels(self) -> List[str]:
         return self._get_feature_labels()
 
-    def citations(self):
+    def citations(self) -> List[str]:
         return [
             "@article{Fernandez2013,"
             "doi = {10.1021/jp404287t},"
