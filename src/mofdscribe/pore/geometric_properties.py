@@ -85,14 +85,14 @@ def _parse_res_zeopp(filecontent: str) -> Tuple[List[float], List[str]]:
 
 
 def _parse_sa_zeopp(filecontent):
-    regex_unitcell = re.compile("Unitcell_volume: ((\d+\.\d+)|\d+)|$")
-    regex_density = re.compile("Density: ((\d+\.\d+)|\d+)|$")
-    asa_a2 = re.compile("ASA_A\^2: ((\d+\.\d+)|\d+)|$")
-    asa_m2cm3 = re.compile("ASA_m\^2/cm\^3: ((\d+\.\d+)|\d+)|$")
-    asa_m2g = re.compile("ASA_m\^2/g: ((\d+\.\d+)|\d+)|$")
-    nasa_a2 = re.compile("NASA_A\^2: ((\d+\.\d+)|\d+)|$")
-    nasa_m2cm3 = re.compile("NASA_m\^2/cm\^3: ((\d+\.\d+)|\d+)|$")
-    nasa_m2g = re.compile("NASA_m\^2/g: ((\d+\.\d+)|\d+)|$")
+    regex_unitcell = re.compile(r"Unitcell_volume: ((\d+\.\d+)|\d+)|$")
+    regex_density = re.compile(r"Density: ((\d+\.\d+)|\d+)|$")
+    asa_a2 = re.compile(r"ASA_A\^2: ((\d+\.\d+)|\d+)|$")
+    asa_m2cm3 = re.compile(r"ASA_m\^2/cm\^3: ((\d+\.\d+)|\d+)|$")
+    asa_m2g = re.compile(r"ASA_m\^2/g: ((\d+\.\d+)|\d+)|$")
+    nasa_a2 = re.compile(r"NASA_A\^2: ((\d+\.\d+)|\d+)|$")
+    nasa_m2cm3 = re.compile(r"NASA_m\^2/cm\^3: ((\d+\.\d+)|\d+)|$")
+    nasa_m2g = re.compile(r"NASA_m\^2/g: ((\d+\.\d+)|\d+)|$")
 
     d = {
         "unitcell_volume": float(re.findall(regex_unitcell, filecontent)[0][0]),
@@ -109,14 +109,14 @@ def _parse_sa_zeopp(filecontent):
 
 
 def _parse_volpo_zeopp(filecontent):
-    regex_unitcell = re.compile("Unitcell_volume: ((\d+\.\d+)|\d+)|$")
-    regex_density = re.compile("Density: ((\d+\.\d+)|\d+)|$")
-    av_a3 = re.compile("AV_A\^3: ((\d+\.\d+)|\d+)|$")
-    av_volume_fraction = re.compile("AV_Volume_fraction: ((\d+\.\d+)|\d+)|$")
-    av_cm3g = re.compile("AV_cm\^3/g: ((\d+\.\d+)|\d+)|$")
-    nav_a3 = re.compile("NAV_A\^3: ((\d+\.\d+)|\d+)|$")
-    nav_volume_fraction = re.compile("NAV_Volume_fraction: ((\d+\.\d+)|\d+)|$")
-    nav_cm3g = re.compile("NAV_cm\^3/g: ((\d+\.\d+)|\d+)|$")
+    regex_unitcell = re.compile(r"Unitcell_volume: ((\d+\.\d+)|\d+)|$")
+    regex_density = re.compile(r"Density: ((\d+\.\d+)|\d+)|$")
+    av_a3 = re.compile(r"AV_A\^3: ((\d+\.\d+)|\d+)|$")
+    av_volume_fraction = re.compile(r"AV_Volume_fraction: ((\d+\.\d+)|\d+)|$")
+    av_cm3g = re.compile(r"AV_cm\^3/g: ((\d+\.\d+)|\d+)|$")
+    nav_a3 = re.compile(r"NAV_A\^3: ((\d+\.\d+)|\d+)|$")
+    nav_volume_fraction = re.compile(r"NAV_Volume_fraction: ((\d+\.\d+)|\d+)|$")
+    nav_cm3g = re.compile(r"NAV_cm\^3/g: ((\d+\.\d+)|\d+)|$")
 
     d = {
         "unitcell_volume": float(re.findall(regex_unitcell, filecontent)[0][0]),
@@ -141,7 +141,7 @@ def _parse_psd_zeopp(filecontent):
         StringIO(filecontent),
         skiprows=11,
         names=["bin", "count", "cumulative", "derivative"],
-        sep="\s+",
+        sep=r"\s+",
     )
 
 

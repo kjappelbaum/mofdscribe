@@ -53,7 +53,7 @@ def read_ascii_grid(filename: str) -> pd.DataFrame:
     """
     df = pd.read_csv(
         filename,
-        sep="\s+",
+        sep=r"\s+",
         header=None,
         names=["x", "y", "z", "energy", "deriv_x", "deriv_y", "deriv_z"],
     )
@@ -207,7 +207,7 @@ class EnergyGridHistogram(BaseFeaturizer):
             "pages = {162--174},"
             "author = {Benjamin J. Bucior and N. Scott Bobbitt and Timur Islamoglu and Subhadip Goswami and Arun Gopalan and Taner Yildirim and Omar K. Farha and Neda Bagheri and Randall Q. Snurr},"
             "title = {Energy-based descriptors to rapidly predict hydrogen storage in metal{\textendash}organic frameworks},"
-            "journal = {Molecular Systems Design {\&}amp$\mathsemicolon$ Engineering}"
+            r"journal = {Molecular Systems Design {\&}amp$\mathsemicolon$ Engineering}"
             "}",
             "@article{Dubbeldam2015,"
             "doi = {10.1080/08927022.2015.1010082},"
@@ -218,7 +218,7 @@ class EnergyGridHistogram(BaseFeaturizer):
             "volume = {42},"
             "number = {2},"
             "pages = {81--101},"
-            "author = {David Dubbeldam and Sof{'{\i}}a Calero and Donald E. Ellis and Randall Q. Snurr},"
+            r"author = {David Dubbeldam and Sof{'{\i}}a Calero and Donald E. Ellis and Randall Q. Snurr},"
             "title = {{RASPA}: molecular simulation software for adsorption and diffusion in flexible nanoporous materials},"
             "journal = {Molecular Simulation}"
             "}",

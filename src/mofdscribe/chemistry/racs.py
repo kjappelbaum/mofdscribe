@@ -112,7 +112,7 @@ def _get_racs_for_bbs(
 
 
 class RACS(BaseFeaturizer):
-    """Modified version of the revised autocorrelation functions (RACs) for MOFs proposed by Moosavi et al. (10.1038/s41467-020-17755-8)
+    r"""Modified version of the revised autocorrelation functions (RACs) for MOFs proposed by Moosavi et al. (10.1038/s41467-020-17755-8)
     In the original paper, RACs were computed as
 
     .. math::
