@@ -158,7 +158,7 @@ class PHVect(BaseFeaturizer):
         return compiled_results
 
     def fit(self, structures: Union[Structure, IStructure]) -> "PHVect":
-        self.transformers, _fit_transform_structures(
+        self.transformers, _ = _fit_transform_structures(
             self.transformers,
             structures,
             self.elements,
