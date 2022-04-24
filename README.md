@@ -2,8 +2,6 @@
 <p align="center">
   <img src="https://github.com/kjappelbaum/mofdscribe/raw/main/docs/source/figures/logo.png" height="300">
 </p>
-
-
 <p align="center">
     <a href="https://github.com/kjappelbaum/mofdscribe/actions?query=workflow%3ATests">
         <img alt="Tests" src="https://github.com/kjappelbaum/mofdscribe/workflows/Tests/badge.svg" />
