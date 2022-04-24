@@ -1,6 +1,6 @@
 
 <p align="center">
-  <img src="https://github.com/kjappelbaum/mofdscribe/raw/main/docs/source/logo.png" height="150">
+  <img src="https://github.com/kjappelbaum/mofdscribe/raw/main/docs/source/figures/logo.png" height="150">
 </p>
 
 

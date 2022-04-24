@@ -144,7 +144,7 @@ html_theme_options = {
 # of the sidebar.
 #
 if os.path.exists("figures/logo.png"):
-    html_logo = "logo.png"
+    html_logo = "figures/logo.png"
 
 # -- Options for HTMLHelp output ---------------------------------------------
 
