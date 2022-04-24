@@ -1,12 +1,8 @@
 
 <p align="center">
-  <img src="https://github.com/kjappelbaum/mofdscribe/raw/main/docs/source/figures/logo.png" height="150">
+  <img src="https://github.com/kjappelbaum/mofdscribe/raw/main/docs/source/figures/logo.png" height="300">
 </p>
 
-
-<h1 align="center">
-  mofdscribe
-</h1>
 
 <p align="center">
     <a href="https://github.com/kjappelbaum/mofdscribe/actions?query=workflow%3ATests">
