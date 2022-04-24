@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from mofdscribe.chemistry.partialchargehistogram import PartialChargeHistogram
 
 

@@ -143,7 +143,7 @@ html_theme_options = {
 # The name of an image file (relative to this directory) to place at the top
 # of the sidebar.
 #
-if os.path.exists("logo.png"):
+if os.path.exists("figures/logo.png"):
     html_logo = "logo.png"
 
 # -- Options for HTMLHelp output ---------------------------------------------

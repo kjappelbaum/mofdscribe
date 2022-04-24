@@ -1,16 +1,16 @@
-<!--
+
 <p align="center">
-  <img src="https://github.com/kjappelbaum/mof-dscribe/raw/main/docs/source/logo.png" height="150">
+  <img src="https://github.com/kjappelbaum/mofdscribe/raw/main/docs/source/logo.png" height="150">
 </p>
--->
+
 
 <h1 align="center">
   mofdscribe
 </h1>
 
 <p align="center">
-    <a href="https://github.com/kjappelbaum/mof-dscribe/actions?query=workflow%3ATests">
-        <img alt="Tests" src="https://github.com/kjappelbaum/mof-dscribe/workflows/Tests/badge.svg" />
+    <a href="https://github.com/kjappelbaum/mofdscribe/actions?query=workflow%3ATests">
+        <img alt="Tests" src="https://github.com/kjappelbaum/mofdscribe/workflows/Tests/badge.svg" />
     </a>
     <a href="https://github.com/cthoyt/cookiecutter-python-package">
         <img alt="Cookiecutter template from @cthoyt" src="https://img.shields.io/badge/Cookiecutter-python--package-yellow" />

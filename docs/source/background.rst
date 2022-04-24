@@ -107,14 +107,14 @@ By means of "simple" geometry analysis one can also extract pore radii.
 Histograms
 ...............
 
-An alternative to scaler descriptors are "summaries" of the pore geometry in histograms. 
+An alternative to scaler descriptors are "summaries" of the pore geometry in histograms.
 One approach for instance is to shoot random rays (orange in the figure below) through the structure and use the length of the ray between the points where it intersects the pores as ray length. If one performs this experiment often, one can summarize the observed ray lengths in a histogram.
 
 .. image:: figures/rays.png
   :width: 100
   :alt: Shooting rays through pores. Figure modified from http://iglesia.cchem.berkeley.edu/Publications/2013%20Pinheiro_PSD%20v%20Ray%20histograms_J%20Mol%20Graph%20Mod%2044%20(2013)%20208.pdf
 
-Another, quite sparse, alternative is to use the pore size distribution (PSD) of the structure. That is, PSD histograms measure what fraction of the void space volume corresponds to certain pore sizes. One might also use this as cumulative distribution or take the derivative. 
+Another, quite sparse, alternative is to use the pore size distribution (PSD) of the structure. That is, PSD histograms measure what fraction of the void space volume corresponds to certain pore sizes. One might also use this as cumulative distribution or take the derivative.
 
 
 
@@ -131,15 +131,15 @@ Descriptors assuming locality
 Revised autocorrelation functions (RACs)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Revised autocorrelation functions have originally been proposed for metal-complexes [Janet2017]_. Autocorrelation functions have been widely used as compact, fixed-length descriptors and are defined as 
+Revised autocorrelation functions have originally been proposed for metal-complexes [Janet2017]_. Autocorrelation functions have been widely used as compact, fixed-length descriptors and are defined as
 
-.. math:: 
+.. math::
 
     P_{d}=\sum_{i} \sum_{j} P_{i} P_{j} \delta\left(d_{i j}, d\right)
 
-where :math:`P_d` is the autocorrelation for property :math:`P` at depth :math:`d`, δ is the Dirac delta function, and :math:`d_{ij}` is the bondwise path distance between atoms :math:`i` and :math:`j`. Janet and Kulik proposed to constrain both the starting indices as well as the scopes of the autorcorrelation functions to account for the (potentially) greater importance of certain atoms such as the metal and its coordination sphere. 
+where :math:`P_d` is the autocorrelation for property :math:`P` at depth :math:`d`, δ is the Dirac delta function, and :math:`d_{ij}` is the bondwise path distance between atoms :math:`i` and :math:`j`. Janet and Kulik proposed to constrain both the starting indices as well as the scopes of the autorcorrelation functions to account for the (potentially) greater importance of certain atoms such as the metal and its coordination sphere.
 
-.. math:: 
+.. math::
 
   \underset{\text{ax / eq / all}}{\text{lc / mc}}  P_{d}^{\prime}=\sum_{i}^{l c \text {or mc scope }} \sum_{j}\left(P_{i}-P_{j}\right) \delta\left(d_{i j}, d\right)
 
@@ -151,10 +151,10 @@ Non-local descriptors
 Atomic-property labeled radial distribution function (APRDF)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Radial distribution function (RDF) are widely used in crystallography and molecular simulations. They describe the probability of finding a pair of atoms separated by a certain distance. For crystalline solids, the RDF is an infinite sequence of sharp peaks. 
+Radial distribution function (RDF) are widely used in crystallography and molecular simulations. They describe the probability of finding a pair of atoms separated by a certain distance. For crystalline solids, the RDF is an infinite sequence of sharp peaks.
 However, the RDF contains no information about the nature of the atoms. To introduce "chemistry" in this descriptor, Fernandez et al. [Fernandez2013]_ proposed to use the APRDF to describe the local environment of a given atom. The APRDF is defined as RDF weighted by the product of atomic properties.
 
-.. math:: 
+.. math::
 
   \operatorname{RDF}^{P}(R)=f \sum_{i, j}^{\text {all atom pairs }} P_{i} P_{j} \mathrm{e}^{-B\left(r_{i j}-R\right)^{2}}
 
@@ -163,7 +163,7 @@ Partial charge statistics and histogram
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The nature of the atoms and their coordination environment dictate the partial charge distribution in a structure.
-Hence, they can be used as a descriptor for the "c  hemistry" of a structure. Since the number of atoms in a structure is not fixed, the partial charges cannot directly be used as a (fixed-length) descriptor. [Moosavi2021]_ used the minimum and maximum partial charges in a structure, but one can also compute other statistics such as the mean, range, and standard deviation or create a histogram. 
+Hence, they can be used as a descriptor for the "c  hemistry" of a structure. Since the number of atoms in a structure is not fixed, the partial charges cannot directly be used as a (fixed-length) descriptor. [Moosavi2021]_ used the minimum and maximum partial charges in a structure, but one can also compute other statistics such as the mean, range, and standard deviation or create a histogram.
 
 
 Energy grid histogram
@@ -172,7 +172,7 @@ Energy grid histogram
 In molecular simulations, the interactions between atoms are described using intermolecular potentials such as the Lennard-Jones potential.
 Since this potential must be frequently evaluated one can save computational cost by pre-computing the potentials on a grid.
 The grids themselves are not necessarily fixed-length, and typically high-dimensional. Therefore, they are not directly used as descriptors.
-Again, one can solve this problem by "summarizing" the grid in form of a histogram. 
+Again, one can solve this problem by "summarizing" the grid in form of a histogram.
 
 
 .. figure:: figures/energygrid.svg
@@ -209,7 +209,7 @@ Gaussian mixture components
 Unexplored for porous materials is to use Gaussian mixture models to vectorize persistence diagrams. The idea is to train a Gaussian mixture model on a training set of persistence diagrams and then use the model to vectorize a test set of persistence diagrams (using the weighted maximum likelihood estimate of the mixture weights as vector components). [Perea]_ [Tymochko]_
 
 
-References 
+References
 --------------
 
 .. [Adams2017] `Journal of Machine Learning Research 18 (2017) 1-35 <https://jmlr.csail.mit.edu/papers/volume18/16-337/16-337.pdf>`_

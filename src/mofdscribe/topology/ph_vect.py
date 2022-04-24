@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from collections import defaultdict
+import re
 from typing import List, Tuple, Union
 
 import numpy as np
@@ -9,6 +10,22 @@ from pervect import PersistenceVectorizer
 from pymatgen.core import IStructure, Structure
 
 from ._tda_helpers import get_diagrams_for_structure
+
+
+def _apply_and_fill(transformer_func, diagrams):
+    applicable_diagrams = []
+    rows_to_be_filled = []
+    ok_rows = []
+    for i, diagram in enumerate(diagrams):
+        if len(diagram) > 0:
+            applicable_diagrams.append(diagram)
+            ok_rows.append(i)
+        else:
+            rows_to_be_filled.append(i)
+    results = transformer_func(applicable_diagrams)
+    complete_results = np.zeros((len(diagrams), results.shape[1]))
+    complete_results[ok_rows, :] = results
+    return complete_results
 
 
 def _fit_transform_structures(
@@ -27,7 +44,11 @@ def _fit_transform_structures(
             if len(diagrams[element][dim]) == 0:
                 raise ValueError(f"{element} dimension {dim} has no diagrams")
             try:
-                results[element][dim] = transformer.fit_transform(diagrams[element][dim])
+
+                results[element][dim] = _apply_and_fill(
+                    transformer.fit_transform, diagrams[element][dim]
+                )
+
             except Exception as e:
                 logger.error(
                     f"Error fitting transformer: {element} {dim} {diagrams[element][dim]}", e
@@ -50,7 +71,10 @@ def _transform_structures(
 
     for element, element_transformers in transformers.items():
         for dim, transformer in element_transformers.items():
-            results[element][dim] = transformer.transform(diagrams[element][dim])
+
+            results[element][dim] = _apply_and_fill(
+                transformer.fit_transform, diagrams[element][dim]
+            )
 
     return results
 
