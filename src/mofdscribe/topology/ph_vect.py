@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from collections import defaultdict
 import re
+from collections import defaultdict
 from typing import List, Tuple, Union
 
 import numpy as np
