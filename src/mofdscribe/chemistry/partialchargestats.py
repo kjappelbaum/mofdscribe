@@ -22,7 +22,7 @@ class PartialChargeStats(BaseFeaturizer):
 
         Args:
             aggregtations (Tuple[str], optional): Aggregations to compute. For available methods,
-                see :py:met:`mofdscribe.utils.aggregators.ARRAY_AGGREGATORS`. Defaults to ("max", "min", "std").
+                see :py:obj:`mofdscribe.utils.aggregators.ARRAY_AGGREGATORS`. Defaults to ("max", "min", "std").
         """
         self.aggregations = aggregtations
 

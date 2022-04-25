@@ -31,5 +31,8 @@ Chemistry-centred featurization
 .. automodule:: mofdscribe.chemistry.partialchargestats
     :members:
 
+.. automodule:: mofdscribe.chemistry.partialchargehistogram
+    :members:
+
 .. automodule:: mofdscribe.chemistry.energygrid
     :members:
