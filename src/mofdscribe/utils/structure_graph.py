@@ -64,10 +64,7 @@ def _is_in_cell(frac_coords):
 
 
 def _is_any_atom_in_cell(frac_coords):
-    for row in frac_coords:
-        if _is_in_cell(row):
-            return True
-    return False
+    return any(_is_in_cell(row) for row in frac_coords)
 
 
 def _select_parts_in_cell(  # pylint:disable=too-many-arguments, too-many-locals
