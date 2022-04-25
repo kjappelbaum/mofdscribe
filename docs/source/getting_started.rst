@@ -27,14 +27,14 @@ The most recent code and data can be installed directly from GitHub with:
 
 .. code-block:: shell
 
-    $ pip install git+https://github.com/kjappelbaum/mof-dscribe.git
+    $ pip install git+https://github.com/kjappelbaum/mofdscribe.git
 
 To install in development mode, use the following:
 
 .. code-block:: shell
 
-    $ git clone git+https://github.com/kjappelbaum/mof-dscribe.git
-    $ cd mof-dscribe
+    $ git clone git+https://github.com/kjappelbaum/mofdscribe.git
+    $ cd mofdscribe
     $ pip install -e .
 
 

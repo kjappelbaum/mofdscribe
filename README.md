@@ -6,16 +6,13 @@
     <a href="https://github.com/kjappelbaum/mofdscribe/actions?query=workflow%3ATests">
         <img alt="Tests" src="https://github.com/kjappelbaum/mofdscribe/workflows/Tests/badge.svg" />
     </a>
-    <a href="https://github.com/cthoyt/cookiecutter-python-package">
-        <img alt="Cookiecutter template from @cthoyt" src="https://img.shields.io/badge/Cookiecutter-python--package-yellow" />
-    </a>
     <a href="https://pypi.org/project/mofdscribe">
         <img alt="PyPI" src="https://img.shields.io/pypi/v/mofdscribe" />
     </a>
     <a href="https://pypi.org/project/mofdscribe">
         <img alt="PyPI - Python Version" src="https://img.shields.io/pypi/pyversions/mofdscribe" />
     </a>
-    <a href="https://github.com/kjappelbaum/mof-dscribe/blob/main/LICENSE">
+    <a href="https://github.com/kjappelbaum/mofdscribe/blob/main/LICENSE">
         <img alt="PyPI - License" src="https://img.shields.io/pypi/l/mofdscribe" />
     </a>
     <a href='https://mofdscribe.readthedocs.io/en/latest/?badge=latest'>
@@ -63,21 +60,21 @@ $ pip install mofdscribe
 The most recent code and data can be installed directly from GitHub with:
 
 ```bash
-$ pip install git+https://github.com/kjappelbaum/mof-dscribe.git
+$ pip install git+https://github.com/kjappelbaum/mofdscribe.git
 ```
 
 To install in development mode, use the following:
 
 ```bash
-$ git clone git+https://github.com/kjappelbaum/mof-dscribe.git
-$ cd mof-dscribe
+$ git clone git+https://github.com/kjappelbaum/mofdscribe.git
+$ cd mofdscribe
 $ pip install -e .
 ```
 
 ## 👐 Contributing
 
 Contributions, whether filing an issue, making a pull request, or forking, are appreciated. See
-[CONTRIBUTING.rst](https://github.com/kjappelbaum/mof-dscribe/blob/master/CONTRIBUTING.rst) for more information on getting involved.
+[CONTRIBUTING.rst](https://github.com/kjappelbaum/mofdscribe/blob/master/CONTRIBUTING.rst) for more information on getting involved.
 
 ## 👋 Attribution
 
@@ -129,7 +126,7 @@ run reproducibly with:
 $ tox
 ```
 
-Additionally, these tests are automatically re-run with each commit in a [GitHub Action](https://github.com/kjappelbaum/mof-dscribe/actions?query=workflow%3ATests).
+Additionally, these tests are automatically re-run with each commit in a [GitHub Action](https://github.com/kjappelbaum/mofdscribe/actions?query=workflow%3ATests).
 
 ### 📦 Making a Release
 

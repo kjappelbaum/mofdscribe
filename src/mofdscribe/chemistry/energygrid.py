@@ -2,7 +2,7 @@
 import os
 from glob import glob
 from pathlib import Path
-from typing import List, Union
+from typing import List, Union, Tuple
 
 import numpy as np
 import pandas as pd
@@ -87,7 +87,7 @@ class EnergyGridHistogram(BaseFeaturizer):
         mof_ff: str = "UFF",
         mol_ff: str = "TraPPE",
         mol_name: str = "CO2",
-        sites: List[str] = ["C_co2"],
+        sites: Tuple[str] = ("C_co2",),
         tail_corrections: bool = True,
         mixing_rule: str = "Lorentz-Berthelot",
         shifted: bool = False,
@@ -110,8 +110,8 @@ class EnergyGridHistogram(BaseFeaturizer):
             mof_ff (str, optional): Name of the forcefield used for the framework. Defaults to "UFF".
             mol_ff (str, optional): Name of the forcefield used for the guest molecule. Defaults to "TraPPE".
             mol_name (str, optional): Name of the guest molecule. Defaults to "CO2".
-            sites (List[str], optional): Name of the Van-der-Waals sites for which the energy diagrams are computed.
-                Defaults to ["C_co2"].
+            sites (Tuple[str], optional): Name of the Van-der-Waals sites for which the energy diagrams are computed.
+                Defaults to ("C_co2",).
             tail_corrections (bool, optional): If true, use analytical tail-correction
                 for the contribution of the interaction potential after the cutoff. Defaults to True.
             mixing_rule (str, optional): Mixing rule for framework and guest molecule force field. Available options are `Jorgenson` and `Lorentz-Berthelot`. Defaults to "Lorentz-Berthelot".

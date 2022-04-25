@@ -17,7 +17,7 @@ def _apply_and_fill(transformer_func, diagrams):
     rows_to_be_filled = []
     ok_rows = []
     for i, diagram in enumerate(diagrams):
-        if len(diagram) > 0:
+        if diagram.shape[0] > 0:
             applicable_diagrams.append(diagram)
             ok_rows.append(i)
         else:
@@ -25,12 +25,14 @@ def _apply_and_fill(transformer_func, diagrams):
     results = transformer_func(applicable_diagrams)
     complete_results = np.zeros((len(diagrams), results.shape[1]))
     complete_results[ok_rows, :] = results
+    assert len(complete_results) == len(diagrams)
     return complete_results
 
 
 def _fit_transform_structures(
     transformers, structures, atom_types: Tuple[str], compute_for_all_elements: bool, min_size: int
 ):
+    logger.info(f"Computing diagrams for {len(structures)} structures")
     diagrams = defaultdict(lambda: defaultdict(list))
     for structure in structures:
         res = get_diagrams_for_structure(structure, atom_types, compute_for_all_elements, min_size)
@@ -48,6 +50,11 @@ def _fit_transform_structures(
                 results[element][dim] = _apply_and_fill(
                     transformer.fit_transform, diagrams[element][dim]
                 )
+
+                if not len(results[element][dim]) == len(structures):
+                    raise ValueError(
+                        "Unexpected error. Number of feature vectors is not equal to number of structures"
+                    )
 
             except Exception as e:
                 logger.error(
@@ -197,6 +204,7 @@ class PHVect(BaseFeaturizer):
         n_col = 0
         for _, element_results in results.items():
             for _, result in element_results.items():
+                print(len(result))
                 compiled_results[:, n_col : n_col + self.n_components] = result
                 n_col += self.n_components
         return compiled_results

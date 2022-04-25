@@ -167,7 +167,6 @@ class RACS(BaseFeaturizer):
         sg = get_structure_graph(structure, self.bond_heuristic)
         racs = {}
         bb_indices = get_bb_indices(sg)
-        print(bb_indices["linker_functional"])
         for bb in self._bbs:
             racs.update(
                 _get_racs_for_bbs(

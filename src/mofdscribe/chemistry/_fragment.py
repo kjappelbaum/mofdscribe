@@ -27,7 +27,7 @@ def get_node_atoms(structure_graph: StructureGraph) -> Set[int]:
         bonded_to_metal = get_connected_site_indices(structure_graph, metal_index)
         tmp_node_set.update(bonded_to_metal)
 
-    # add atoms that are only connected to metal or Hydrogen to the node list + hydrogen atoms connected to them
+    # add atoms that are only connected to metal or hydrogen to the node list + hydrogen atoms connected to them
     for node_atom_index in tmp_node_set:
         all_bonded_atoms = get_connected_site_indices(structure_graph, node_atom_index)
         only_bonded_metal_hydrogen = True
@@ -35,7 +35,7 @@ def get_node_atoms(structure_graph: StructureGraph) -> Set[int]:
             if not ((str(structure_graph.structure[index].specie) == "H") or index in metal_names):
                 only_bonded_metal_hydrogen = False
         if only_bonded_metal_hydrogen:
-            node_set.add(index)
+            node_set.add(node_atom_index)
 
     final_node_atom_set = deepcopy(node_set)
     for atom_index in node_set:

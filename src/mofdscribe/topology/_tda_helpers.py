@@ -7,7 +7,7 @@ from moltda.construct_pd import construct_pds
 from moltda.read_file import make_supercell
 from moltda.vectorize_pds import diagrams_to_arrays, get_images
 from pymatgen.core import Structure
-
+from loguru import logger
 from mofdscribe.utils.substructures import filter_element
 
 
@@ -70,6 +70,7 @@ def get_persistent_images_for_structure(
             images = np.zeros((0, pixels[0], pixels[1]))
             pd = np.zeros((0, maxP + 1))
 
+        # ToDo: make sure that we have the correct length
         element_images["image"][element] = images
         element_images["array"][element] = pd
 
@@ -82,22 +83,6 @@ def get_persistent_images_for_structure(
         element_images["array"]["all"] = pd
 
     return element_images
-
-
-def diagrams_to_bd_arrays(dgms):
-    """Convert persistence diagram objects to persistence diagram arrays."""
-    dgm_arrays = {}
-    for dim, dgm in enumerate(dgms):
-        if len(dgm) == 0:
-            dgm_arrays[f"dim{dim}"] = np.zeros((0, 2))
-        else:
-            arr = np.array([[np.sqrt(p.birth), np.sqrt(p.death)] for p in dgm])
-
-            mask = np.isfinite(arr).all(axis=1)
-
-            arr = arr[mask]
-            dgm_arrays[f"dim{dim}"] = arr
-    return dgm_arrays
 
 
 def get_min_max_from_dia(dia, birth_persistence: bool = True):
@@ -134,6 +119,7 @@ def get_diagrams_for_structure(
     compute_for_all_elements: bool = True,
     min_size: int = 20,
 ):
+    keys = [f"dim{i}" for i in range(3)]
     element_dias = defaultdict(dict)
     for element in elements:
         try:
@@ -144,7 +130,11 @@ def get_diagrams_for_structure(
             pds = construct_pds_cached(coords)
             arrays = diagrams_to_bd_arrays(pds)
         except Exception:
-            arrays = {f"dim{i}": np.zeros((0, 2)) for i in range(4)}
+            arrays = {key: np.zeros((0, 2)) for key in keys}
+        if not len(arrays) == 4:
+            for key in keys:
+                if key not in arrays:
+                    arrays[key] = np.zeros((0, 2))
         element_dias[element] = arrays
 
     if compute_for_all_elements:
@@ -152,6 +142,11 @@ def get_diagrams_for_structure(
         pds = construct_pds_cached(coords)
         arrays = diagrams_to_bd_arrays(pds)
         element_dias["all"] = arrays
+        if not len(arrays) == 4:
+            for key in keys:
+                if key not in arrays:
+                    arrays[key] = np.zeros((0, 2))
+    assert len(element_dias) == len(elements) + int(compute_for_all_elements)
     return element_dias
 
 

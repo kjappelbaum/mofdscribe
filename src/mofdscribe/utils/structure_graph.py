@@ -15,7 +15,6 @@ def get_neighbors_at_distance(structure_graph: StructureGraph, start: int, scope
     neighbors_at_last_level = [start]
     all_neighbors = set()
     neighbors_at_next_level = []
-    # print(structure_graph.get_connected_sites(start))
     for _ in range(scope):
         for n in neighbors_at_last_level:
             neighbors_at_next_level.extend(get_connected_site_indices(structure_graph, n))
