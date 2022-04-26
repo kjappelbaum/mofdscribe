@@ -127,7 +127,7 @@ class PHVect(BaseFeaturizer):
             dimensions (Tuple[int], optional): Dimensions of topological features to consider for persistence images. Defaults to (1, 2).
             min_size (int, optional): Minimum supercell size (in Angstrom). Defaults to 20.
             n_components (int, optional): The number of components or dimensions to use in the vectorized representation. Defaults to 20.
-            apply_umap (bool, optional):  Whether to apply UMAP to the results to generate a low dimensional euclidean space representation of the diagrams. Defaults to False.
+            apply_umap (bool, optional):  Whether to apply UMAP to the results to generate a low dimensional Euclidean space representation of the diagrams. Defaults to False.
             umap_n_components (int, optional):  The number of dimensions of euclidean space to use when representing the diagrams via UMAP. Defaults to 2.
             umap_metric (str, optional):  What metric to use for the UMAP embedding if ``apply_umap`` is enabled (this option will be ignored if ``apply_umap`` is ``False``).
                 Should be one of:
@@ -208,7 +208,6 @@ class PHVect(BaseFeaturizer):
         n_col = 0
         for _, element_results in results.items():
             for _, result in element_results.items():
-                print(len(result))
                 compiled_results[:, n_col : n_col + self.n_components] = result
                 n_col += self.n_components
         return compiled_results
