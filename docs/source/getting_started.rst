@@ -63,7 +63,7 @@ It is also easy to combine multiple featurizers into a single pipeline:
     featurizer = MultipleFeaturizer([RACS(), PoreDiameters()])
     features = featurizer.featurize(s)
 
-You can, of course, also pass multiple structures to the featurizer:
+You can, of course, also pass multiple structures to the featurizer (and the featurization is automatically parallelized via matminer):
 
 .. code-block:: python
 
