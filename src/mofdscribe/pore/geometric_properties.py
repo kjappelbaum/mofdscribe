@@ -184,10 +184,7 @@ class SurfaceArea(BaseFeaturizer):
         num_samples: int = 100,
         channel_radius: Union[str, float, None] = None,
     ):
-        if (
-            channel_radius is not None
-            and probe_radius != channel_radius
-        ):
+        if channel_radius is not None and probe_radius != channel_radius:
             logger.warning(
                 "Probe radius and channel radius are different. This is a highly unusual setting."
             )
@@ -256,10 +253,7 @@ class AccessibleVolume(BaseFeaturizer):
         num_samples: int = 100,
         channel_radius: Union[str, float, None] = None,
     ):
-        if (
-            channel_radius is not None
-            and probe_radius != channel_radius
-        ):
+        if channel_radius is not None and probe_radius != channel_radius:
             logger.warning(
                 "Probe radius and channel radius are different. This is a highly unusual setting."
             )
@@ -350,10 +344,7 @@ class RayTracingHistogram(BaseFeaturizer):
                 Original publication used  1,000,000 sample points for IZA zeolites and 100,000 sample points for hypothetical zeolites. Larger numbers increase the runtime Defaults to 50000.
             channel_radius (Union[str, float, None], optional):  Radius of a probe used to determine accessibility of the void space. Should typically equal the radius of the `probe_radius`. If set to `None`, we will use the `probe_radius`. Defaults to None.
         """
-        if (
-            channel_radius is not None
-            and probe_radius != channel_radius
-        ):
+        if channel_radius is not None and probe_radius != channel_radius:
             logger.warning(
                 "Probe radius and channel radius are different. This is a highly unusual setting."
             )
@@ -444,10 +435,7 @@ class PoreSizeDistribution(BaseFeaturizer):
             channel_radius (Union[str, float, None], optional):  Radius of a probe used to determine accessibility of the void space. Should typically equal the radius of the `probe_radius`. If set to `None`, we will use the `probe_radius`. Defaults to None.
             hist_type (str, optional): Type of the histogram. Available options `count`, `cumulative`, `derivative` (The derivative distribution describes the change in the cumulative distribution with respect to pore size). Defaults to "derivative".
         """
-        if (
-            channel_radius is not None
-            and probe_radius != channel_radius
-        ):
+        if channel_radius is not None and probe_radius != channel_radius:
             logger.warning(
                 "Probe radius and channel radius are different. This is a highly unusual setting."
             )
