@@ -25,7 +25,8 @@ def _apply_and_fill(transformer_func, diagrams):
     results = transformer_func(applicable_diagrams)
     complete_results = np.zeros((len(diagrams), results.shape[1]))
     complete_results[ok_rows, :] = results
-    assert len(complete_results) == len(diagrams)
+    if len(complete_results) != len(diagrams):
+        raise AssertionError
     return complete_results
 
 

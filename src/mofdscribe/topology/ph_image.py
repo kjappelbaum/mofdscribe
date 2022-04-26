@@ -83,16 +83,18 @@ class PHImage(BaseFeaturizer):
         self.dimensions = dimensions
         self.weight = weight
         if isinstance(max_B, (list, tuple)):
-            assert len(max_B) == len(
+            if len(max_B) != len(
                 dimensions
-            ), "max_B must be a list of length equal to the number of dimensions"
+            ):
+                raise AssertionError("max_B must be a list of length equal to the number of dimensions")
         else:
             max_B = [max_B] * len(dimensions)
 
         if isinstance(max_P, (list, tuple)):
-            assert len(max_P) == len(
+            if len(max_P) != len(
                 dimensions
-            ), "max_P must be a list of length equal to the number of dimensions"
+            ):
+                raise AssertionError("max_P must be a list of length equal to the number of dimensions")
         else:
             max_P = [max_P] * len(dimensions)
 
