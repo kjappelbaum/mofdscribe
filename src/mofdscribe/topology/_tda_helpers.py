@@ -143,7 +143,7 @@ def get_diagrams_for_structure(
         pds = construct_pds_cached(coords)
         arrays = diagrams_to_bd_arrays(pds)
         element_dias["all"] = arrays
-        if not len(arrays) == 4:
+        if len(arrays) != 4:
             for key in keys:
                 if key not in arrays:
                     arrays[key] = np.zeros((0, 2))
