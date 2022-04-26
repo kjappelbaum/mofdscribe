@@ -122,7 +122,7 @@ class EnergyGridHistogram(BaseFeaturizer):
         Raises:
             ValueError: If the `raspa_dir` is not a valid directory.
         """
-        self.raspa_dir = raspa_dir if raspa_dir else os.environ.get("RASPA_DIR", None)
+        self.raspa_dir = raspa_dir if raspa_dir else os.environ.get("RASPA_DIR")
         if self.raspa_dir is None:
             raise ValueError(
                 "Please set the RASPA_DIR environment variable or provide the path for the class initialization."
