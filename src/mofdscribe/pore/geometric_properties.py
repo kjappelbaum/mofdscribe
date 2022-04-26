@@ -458,7 +458,7 @@ class PoreSizeDistribution(BaseFeaturizer):
             "cumulative",
             "derivative",
         ]:
-            raise AssertionError(
+            raise ValueError(
                 "Invalid histogram type, must be one of `count`, `cumulative`, `derivative`"
             )
 

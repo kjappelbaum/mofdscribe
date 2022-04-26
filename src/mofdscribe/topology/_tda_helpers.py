@@ -148,7 +148,7 @@ def get_diagrams_for_structure(
                 if key not in arrays:
                     arrays[key] = np.zeros((0, 2))
     if len(element_dias) != len(elements) + int(compute_for_all_elements):
-        raise AssertionError
+        raise ValueError("Something went wrong with the diagram extraction.")
     return element_dias
 
 
