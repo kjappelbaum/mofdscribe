@@ -449,11 +449,14 @@ class PoreSizeDistribution(BaseFeaturizer):
             channel_radius = probe_radius
 
         self.type = hist_type.lower()
-        assert self.type in [
+        if self.type not in [
             "count",
             "cumulative",
             "derivative",
-        ], "Invalid histogram type, must be one of `count`, `cumulative`, `derivative`"
+        ]:
+            raise ValueError(
+                "Invalid histogram type, must be one of `count`, `cumulative`, `derivative`"
+            )
 
         self.probe_radius = probe_radius
         self.num_samples = num_samples

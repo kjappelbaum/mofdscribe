@@ -25,7 +25,10 @@ def _apply_and_fill(transformer_func, diagrams):
     results = transformer_func(applicable_diagrams)
     complete_results = np.zeros((len(diagrams), results.shape[1]))
     complete_results[ok_rows, :] = results
-    assert len(complete_results) == len(diagrams)
+    if len(complete_results) != len(diagrams):
+        raise ValueError(
+            "Unexpected error. Number of feature vectors is not equal to number of structures"
+        )
     return complete_results
 
 
