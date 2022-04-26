@@ -70,3 +70,14 @@ You can, of course, also pass multiple structures to the featurizer:
   s = IStructure.from_file(<my_cif>)
   s2 = IStructure.from_file(<my_cif2>)
   features = featurizer.featurize_many([s, s2])
+
+
+And, clearly, you can also use the `mofdscribe` featurizers alongside ones from `matminer`:
+
+.. code-block:: python 
+
+    from matminer.featurizers.structure import LocalStructuralOrderParams
+    from mofdscribe.chemistry.racs import RACS
+
+    featurizer = MultipleFeaturizer([RACS(), LocalStructuralOrderParams()])
+    features = featurizer.featurize_many([s, s2])
