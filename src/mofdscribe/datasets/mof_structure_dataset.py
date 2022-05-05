@@ -1,7 +1,8 @@
 from abc import ABC, abstractmethod
-from typing import Iterator, Union, List, Tuple
-from pymatgen.core import IStructure
+from typing import Iterator, List, Tuple, Union
+
 import numpy as np
+from pymatgen.core import IStructure
 
 
 class MOFStructureDataset(ABC):
