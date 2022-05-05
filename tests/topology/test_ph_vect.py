@@ -15,7 +15,7 @@ def test_ph_vect(hkust_structure, irmof_structure):
     ph_vect.fit([hkust_structure, irmof_structure])
 
     feat = ph_vect.featurize(hkust_structure)
-    assert feat.shape[1] == len(ph_vect.feature_labels())
+    assert feat.shape[1] == len(set(ph_vect.feature_labels()))
 
     assert feat.shape[1] == 4 * 2 * 2
 
