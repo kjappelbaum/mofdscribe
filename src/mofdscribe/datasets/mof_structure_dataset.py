@@ -5,12 +5,17 @@ import numpy as np
 
 
 class MOFStructureDataset(ABC):
-    def __init__(self, version: str):
+    def __init__(
+        self,
+        labelnames: Tuple[str],
+        version: str,
+    ):
         pass
 
-    def get_structure(self, idx: int, name: str) -> IStructure:
-        pass
+    def get_structure(self, idx: int) -> IStructure:
+        return self._read_structure(self.files[idx])
 
+    @abstractmethod
     def __getitem__(self, idx: int) -> Tuple[IStructure, np.ndarray]:
         pass
 
@@ -29,14 +34,16 @@ class MOFStructureDataset(ABC):
             yield label
 
     def get_year(self, idx: int) -> int:
-        pass
+        return self.years[idx]
 
     def get_label(self, idx: int) -> np.ndarray:
         return self._get_label(idx)
 
+    @abstractmethod
     def get_time_based_split(self, year: int) -> Tuple[List[IStructure], np.ndarray]:
         pass
 
+    @abstractmethod
     def get_train_valid_test_split(
         self, train_size: float, valid_size: float = 0
     ) -> Tuple[
@@ -46,7 +53,13 @@ class MOFStructureDataset(ABC):
     ]:
         pass
 
+    @abstractmethod
     def __len__(self) -> int:
+        pass
+
+    @property
+    @abstractmethod
+    def available_labels(self) -> Tuple[str]:
         pass
 
     @property
