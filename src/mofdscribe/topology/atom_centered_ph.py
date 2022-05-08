@@ -1,7 +1,8 @@
-from matminer.base import BaseFeaturizer
-from typing import Tuple, Union, List
-from pymatgen.core import Structure, IStructure
+from typing import List, Tuple, Union
+
 import numpy as np
+from matminer.base import BaseFeaturizer
+from pymatgen.core import IStructure, Structure
 
 
 class AtomCenteredPH(BaseFeaturizer):
