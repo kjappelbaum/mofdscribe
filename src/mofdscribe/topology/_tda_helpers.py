@@ -10,8 +10,8 @@ from moltda.read_file import make_supercell
 from moltda.vectorize_pds import diagrams_to_arrays, get_images
 from pymatgen.core import Structure
 
-from mofdscribe.utils.substructures import filter_element
 from mofdscribe.utils.aggregators import MA_ARRAY_AGGREGATORS
+from mofdscribe.utils.substructures import filter_element
 
 
 # @np_cache
@@ -182,9 +182,18 @@ def get_persistence_image_limits_for_structure(
     return limits
 
 
-def persistent_diagram_stats(diagram, aggregrations: Tuple[str]) -> dict:
+def persistent_diagram_stats(diagram: np.ndarray, aggregrations: Tuple[str]) -> dict:
     """
     Compute statistics for a persistence diagram.
+
+    Args:
+        diagram (np.ndarray): The persistence diagram.
+        aggregrations (Tuple[str]): The name of the aggregations to compute.
+
+    Returns:
+        dict: nested dictionary with the following structure:
+            {'persistence_parameter': {'statistic': value}}
+        where persistence_parameter is one of ['birth', 'death', 'persistence']
     """
     stats = {
         "birth": {},
@@ -195,7 +204,7 @@ def persistent_diagram_stats(diagram, aggregrations: Tuple[str]) -> dict:
     d = np.array([[x["birth"], x["death"], x["death"] - x["birth"]] for x in diagram])
     d = np.ma.masked_invalid(d)
 
-    for aggregation in ["min", "max", "range", "mean", "median"]:
+    for aggregation in aggregrations:
         agg_func = MA_ARRAY_AGGREGATORS[aggregation]
         for i, key in enumerate(["birth", "death", "persistence"]):
             stats[key][aggregation] = agg_func(d[:, i])

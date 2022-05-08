@@ -74,7 +74,7 @@ You can, of course, also pass multiple structures to the featurizer (and the fea
 
 And, clearly, you can also use the `mofdscribe` featurizers alongside ones from `matminer`:
 
-.. code-block:: python 
+.. code-block:: python
 
     from matminer.featurizers.structure import LocalStructuralOrderParams
     from mofdscribe.chemistry.racs import RACS

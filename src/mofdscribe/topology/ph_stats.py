@@ -118,25 +118,7 @@ class PHStats(BaseFeaturizer):
             list(atom_types) + ["all"] if compute_for_all_elements else list(atom_types)
         )
         self.compute_for_all_elements = compute_for_all_elements
-        self.min_size = min_size
         self.dimensions = dimensions
-        self.transformers = defaultdict(lambda: defaultdict(dict))
-        for atom_type in self.atom_types:
-            for dim in self.dimensions:
-                self.transformers[atom_type][f"dim{dim}"] = PersistenceVectorizer(
-                    n_components=n_components,
-                    apply_umap=apply_umap,
-                    umap_n_components=umap_n_components,
-                    umap_metric=umap_metric,
-                    p=p,
-                    random_state=random_state,
-                )
-        self.n_components = n_components
-        self.apply_umap = apply_umap
-        self.umap_n_components = umap_n_components
-        self.umap_metric = umap_metric
-        self.random_state = random_state
-        self._fitted = False
 
     def _get_feature_labels(self) -> List[str]:
         labels = []

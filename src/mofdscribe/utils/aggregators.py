@@ -32,6 +32,6 @@ MA_ARRAY_AGGREGATORS = {
     "std": lambda x: np.ma.std(x),
     "range": lambda x: np.ma.max(x) - np.ma.min(x),
     "mean": lambda x: np.ma.mean(x),
-    "avg": lambda x: np.ma.mean(x), 
+    "avg": lambda x: np.ma.mean(x),
     "median": lambda x: np.ma.median(x),
 }

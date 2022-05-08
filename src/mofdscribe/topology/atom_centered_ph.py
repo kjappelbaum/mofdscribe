@@ -1,7 +1,10 @@
-from matminer.base import BaseFeaturizer
-from typing import Tuple, Union, List
-from pymatgen.core import Structure, IStructure
+# -*- coding: utf-8 -*-
+from typing import List, Tuple, Union
+
 import numpy as np
+from matminer.base import BaseFeaturizer
+from pymatgen.core import IStructure, Structure
+
 
 # Todo: allow doing this with cutoff and coordination shells
 # let's implement this as site-based featurizer for now

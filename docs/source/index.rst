@@ -17,7 +17,7 @@ why mofdscribe?
 
 Currently, machine learning practitioners in the field of reticular chemistry are using a wide variety of tools, and different scripts, to compute features as input for machine learning studies. The main goal of this project is to provide a unified interface for the featurization of MOFs.
 
-Since many featurizers are quite domain specific, and require external dependencies, the featurizers are currently not integrated in matminer itself. 
+Since many featurizers are quite domain specific, and require external dependencies, the featurizers are currently not integrated in matminer itself.
 
 .. toctree::
    :maxdepth: 2
