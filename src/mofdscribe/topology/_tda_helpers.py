@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from collections import defaultdict
+from turtle import st
 from typing import List, Tuple, Union
 
 import numpy as np
@@ -10,6 +11,7 @@ from moltda.vectorize_pds import diagrams_to_arrays, get_images
 from pymatgen.core import Structure
 
 from mofdscribe.utils.substructures import filter_element
+from mofdscribe.utils.aggregators import MA_ARRAY_AGGREGATORS
 
 
 # @np_cache
@@ -178,3 +180,24 @@ def get_persistence_image_limits_for_structure(
         for k, v in pd.items():
             limits[k].append(get_min_max_from_dia(v))
     return limits
+
+
+def persistent_diagram_stats(diagram, aggregrations: Tuple[str]) -> dict:
+    """
+    Compute statistics for a persistence diagram.
+    """
+    stats = {
+        "birth": {},
+        "death": {},
+        "persistence": {},
+    }
+
+    d = np.array([[x["birth"], x["death"], x["death"] - x["birth"]] for x in diagram])
+    d = np.ma.masked_invalid(d)
+
+    for aggregation in ["min", "max", "range", "mean", "median"]:
+        agg_func = MA_ARRAY_AGGREGATORS[aggregation]
+        for i, key in enumerate(["birth", "death", "persistence"]):
+            stats[key][aggregation] = agg_func(d[:, i])
+
+    return stats

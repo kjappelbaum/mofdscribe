@@ -3,7 +3,8 @@ from typing import Tuple, Union, List
 from pymatgen.core import Structure, IStructure
 import numpy as np
 
-
+# Todo: allow doing this with cutoff and coordination shells
+# let's implement this as site-based featurizer for now
 class AtomCenteredPH(BaseFeaturizer):
     def __init__(
         self,
@@ -15,7 +16,7 @@ class AtomCenteredPH(BaseFeaturizer):
     ) -> None:
         super().__init__()
 
-    def featurize(self, s: Union[Structure, IStructure]) -> np.ndarray:
+    def featurize(self, s: Union[Structure, IStructure], idx: int) -> np.ndarray:
         ...
 
     def implementors(self) -> List[str]:

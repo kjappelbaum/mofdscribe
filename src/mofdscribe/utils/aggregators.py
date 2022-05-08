@@ -20,4 +20,18 @@ ARRAY_AGGREGATORS = {
     "min": lambda x: min(x),
     "std": lambda x: np.std(x),
     "range": lambda x: max(x) - min(x),
+    "mean": lambda x: np.mean(x),
+    "median": lambda x: np.median(x),
+}
+
+
+MA_ARRAY_AGGREGATORS = {
+    "sum": lambda x: np.ma.sum(x),
+    "max": lambda x: np.ma.max(x),
+    "min": lambda x: np.ma.min(x),
+    "std": lambda x: np.ma.std(x),
+    "range": lambda x: np.ma.max(x) - np.ma.min(x),
+    "mean": lambda x: np.ma.mean(x),
+    "avg": lambda x: np.ma.mean(x), 
+    "median": lambda x: np.ma.median(x),
 }

@@ -195,6 +195,9 @@ In this figure, we perform a filtration and record the result in a persistence d
   :alt: Illustration of filtration of a point cloud.
 
 
+  .. Betti-0/1/2: isolated components, circles, cavities
+
+
 Vectorizing persistence diagrams
 ..................................
 For many machine learning models, fixed length vectors are required.  Persistence diagrams, however, are not fixed length. In `mofdscribe` we provide two methods to vectorize persistence diagrams.
