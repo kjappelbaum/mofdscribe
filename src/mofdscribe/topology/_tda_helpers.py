@@ -10,8 +10,8 @@ from moltda.read_file import make_supercell
 from moltda.vectorize_pds import diagrams_to_arrays, get_images
 from pymatgen.core import Structure
 
-from mofdscribe.utils.substructures import filter_element
 from mofdscribe.utils.aggregators import MA_ARRAY_AGGREGATORS
+from mofdscribe.utils.substructures import filter_element
 
 
 # @np_cache

@@ -1,5 +1,6 @@
-from mofdscribe.metrics.regression import top_n_in_top_k
 import numpy as np
+
+from mofdscribe.metrics.regression import top_n_in_top_k
 
 
 def test_top_n_in_top_k():
