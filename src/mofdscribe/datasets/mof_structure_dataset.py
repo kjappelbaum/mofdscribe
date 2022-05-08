@@ -39,18 +39,18 @@ class MOFStructureDataset(ABC):
     def get_label(self, idx: int) -> np.ndarray:
         return self._get_label(idx)
 
+    def get_structures_and_labels(self, indices: List[int]) -> Iterator:
+        for idx in indices:
+            yield self.get_structure(idx), self.get_label(idx)
+
     @abstractmethod
-    def get_time_based_split(self, year: int) -> Tuple[List[IStructure], np.ndarray]:
+    def get_time_based_split_indices(self, year: int) -> Tuple[np.ndarray, np.ndarray]:
         pass
 
     @abstractmethod
-    def get_train_valid_test_split(
+    def get_train_valid_test_split_indices(
         self, train_size: float, valid_size: float = 0
-    ) -> Tuple[
-        Tuple[List[IStructure], np.ndarray],
-        Tuple[List[IStructure], np.ndarray],
-        Tuple[List[IStructure], np.ndarray],
-    ]:
+    ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
         pass
 
     @abstractmethod
