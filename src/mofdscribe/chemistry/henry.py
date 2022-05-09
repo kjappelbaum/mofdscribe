@@ -45,7 +45,7 @@ def parse_widom(directory: Union[str, Path]) -> dict:
         raise ValueError("Expected one output file, got {}".format(len(outputs)))
     with open(outputs[0], "r") as handle:
         res = parse(handle.read())
-    return res["Average Henry coefficient"]["Henry"][0]
+    return [res["Average Henry coefficient"]["Henry"][0], res["HoA_K"]]
 
 
 class Henry(BaseFeaturizer):
@@ -140,10 +140,10 @@ class Henry(BaseFeaturizer):
             parse_widom,
             self.run_eqeq,
         )
-        return np.array([res])
+        return np.array(res)
 
     def feature_labels(self) -> List[str]:
-        return ["henry_coefficient_mol/kg/Pa"]
+        return ["henry_coefficient_mol/kg/Pa", "heat_of_adsorption_K"]
 
     def implementors(self) -> List[str]:
         return ["Kevin Maik Jablonka"]

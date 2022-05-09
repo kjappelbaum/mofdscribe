@@ -167,7 +167,7 @@ def parse(raspa_output):
                 d[parsed_data[0]] = parsed_data[1:]
         # Putting subdictionary back into main object
         info[key] = d
-
+    info["HoA_K"] = float(re.findall("\<U_gh\>_1-\<U_h\>_0:\s+([-\d]+.\d+)", raspa_output)[0])
     return info
 
 
