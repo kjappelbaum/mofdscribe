@@ -10,6 +10,8 @@ from pymatgen.core import IStructure, Structure
 
 from mofdscribe.utils.histogram import get_rdf
 
+__all__ = ["PartialChargeHistogram"]
+
 
 class PartialChargeHistogram(BaseFeaturizer):
     """Compute partial charges using the EqEq charge equilibration method.

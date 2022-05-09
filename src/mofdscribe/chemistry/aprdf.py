@@ -14,6 +14,8 @@ from pymatgen.core import IStructure, Structure
 from ..utils.aggregators import AGGREGATORS
 from ..utils.histogram import get_rdf, smear_histogram
 
+__all__ = ["APRDF"]
+
 
 class APRDF(BaseFeaturizer):
     r"""

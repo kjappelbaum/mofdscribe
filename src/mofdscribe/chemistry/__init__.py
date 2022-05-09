@@ -4,3 +4,4 @@ from .energygrid import EnergyGridHistogram
 from .partialchargehistogram import PartialChargeHistogram
 from .partialchargestats import PartialChargeStats
 from .racs import RACS
+from .henry import Henry

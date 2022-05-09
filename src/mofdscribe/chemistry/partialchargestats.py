@@ -9,6 +9,8 @@ from pymatgen.core import IStructure, Structure
 
 from mofdscribe.utils.aggregators import ARRAY_AGGREGATORS
 
+__all__ = ["PartialChargeStats"]
+
 
 class PartialChargeStats(BaseFeaturizer):
     """Compute partial charges using the EqEq charge equilibration method.

@@ -13,9 +13,10 @@ from mofdscribe.utils.histogram import get_rdf
 from mofdscribe.utils.raspa.resize_uc import resize_unit_cell
 from mofdscribe.utils.raspa.run_raspa import run_raspa
 
+__all__ = ["EnergyGridHistogram"]
 GRID_INPUT_TEMPLATE = """SimulationType  MakeASCIGrid
 
-Forcefield      {forcefield}
+Forcefield      Local
 
 Framework 0
 FrameworkName input
@@ -33,7 +34,7 @@ SpacingVDWGrid {vdw_spacing}
 
 
 def parse_energy_grids(directory: Union[str, Path]) -> dict:
-    grids = glob(os.path.join(directory, "*.grid"))
+    grids = glob(os.path.join(directory, "ASCI_Grids", "*.grid"))
     energies = {}
     for grid in grids:
         name = os.path.basename(grid).split(".")[0].replace("asci_grid_", "")
@@ -92,6 +93,7 @@ class EnergyGridHistogram(BaseFeaturizer):
         mixing_rule: str = "Lorentz-Berthelot",
         shifted: bool = False,
         separate_interactions: bool = True,
+        run_eqeq: bool = True,
     ):
         """Constructor for the EnergyGridHistogram class.
 
@@ -118,6 +120,7 @@ class EnergyGridHistogram(BaseFeaturizer):
             shifted (bool, optional): If true, shifts the potential to equal to zero at the cutoff. Defaults to False.
             separate_interactions (bool, optional): If True use framework's force field for framework-molecule interactions.
                 Defaults to True.
+            run_eqeq (bool, optional): If true, runs EqEq to compute charges. Defaults to True.
 
         Raises:
             ValueError: If the `raspa_dir` is not a valid directory.
@@ -140,6 +143,7 @@ class EnergyGridHistogram(BaseFeaturizer):
         self.mixing_rule = mixing_rule
         self.shifted = shifted
         self.separate_interactions = separate_interactions
+        self.run_eqeq = run_eqeq
 
     def fit_transform(self, structures: List[Union[Structure, IStructure]]):
         ...
@@ -172,14 +176,15 @@ class EnergyGridHistogram(BaseFeaturizer):
         ucells = " ".format(resize_unit_cell(s, self.cutoff))
 
         simulation_script = GRID_INPUT_TEMPLATE.format(
-            forcefield=self.mof_ff,
             unit_cells=ucells,
             cutoff=self.cutoff,
             num_grids=len(self.sites),
             grid_types=" ".join(self.sites),
             vdw_spacing=self.grid_spacing,
         )
-        res = run_raspa(s, self.raspa_dir, simulation_script, parameters, parse_energy_grids)
+        res = run_raspa(
+            s, self.raspa_dir, simulation_script, parameters, parse_energy_grids, self.run_eqeq
+        )
         output = []
         for _, v in res.items():
             output.append(
