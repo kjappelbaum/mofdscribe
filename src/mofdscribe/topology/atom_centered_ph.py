@@ -43,6 +43,14 @@ class AtomCenteredPHSite(BaseFeaturizer):
         cutoff: float = 12,
         dimensions: Tuple[int] = (1, 2),
     ) -> None:
+        """
+
+        Args:
+            aggregation_functions (Tuple[str], optional): Aggregations to compute on the persistence diagrams (over birth/death time and persistence). Defaults to ("min", "max", "mean", "std").
+            cutoff (float, optional): Consider neighbors of site within this radius (in Angstrom). Defaults to 12.
+            dimensions (Tuple[int], optional): Betti numbers of consider. 0 describes isolated components, 1 cycles and 2 cavities.
+                Defaults to (1, 2).
+        """
         self.aggregation_functions = aggregation_functions
         self.cutoff = cutoff
         self.dimensions = dimensions
@@ -102,7 +110,12 @@ class AtomCenteredPHSite(BaseFeaturizer):
 
 # ToDo: Leverage symmetry to do not recompute for symmetry-equivalent sites
 class AtomCenteredPH(BaseFeaturizer):
-    """ """
+    """Atom-centered featurizer for persistence diagrams.
+    It runs :class:`~mofdscribe.topology.atom_centered_ph.AtomCenteredPH` for every site.
+
+    It aggregates the results over atom types that are specified in the constructor
+    via aggregation functions specified in the constructor.
+    """
 
     def __init__(
         self,
@@ -116,6 +129,17 @@ class AtomCenteredPH(BaseFeaturizer):
         cutoff: float = 12,
         dimensions: Tuple[int] = (1, 2),
     ) -> None:
+        """
+
+        Args:
+            atom_types (tuple, optional): Atoms that are used to create substructures that are analysed using persistent homology.
+                If multiple atom types separated by hash are provided, e.g. "C-H-N-O", then the substructure consists of all atoms of type C, H, N, or O.Defaults to ( "C-H-N-O", "F-Cl-Br-I", "Cu-Mn-Ni-Mo-Fe-Pt-Zn-Ca-Er-Au-Cd-Co-Gd-Na-Sm-Eu-Tb-V-Ag-Nd-U-Ba-Ce-K-Ga-Cr-Al-Li-Sc-Ru-In-Mg-Zr-Dy-W-Yb-Y-Ho-Re-Be-Rb-La-Sn-Cs-Pb-Pr-Bi-Tm-Sr-Ti-Hf-Ir-Nb-Pd-Hg-Th-Np-Lu-Rh-Pu", ).
+            aggregation_functions (Tuple[str], optional): Aggregations to compute on the persistence diagrams (over birth/death time and persistence). Defaults to ("min", "max", "mean", "std").
+            species_aggregation_functions (Tuple[str], optional): Aggregations to use to combine features derived for sites of a specific atom type, e.g., the site features of all `C-H-N-O`. Defaults to ("min", "max", "mean", "std").
+            cutoff (float, optional): Consider neighbors of site within this radius (in Angstrom). Defaults to 12.
+            dimensions (Tuple[int], optional): Betti numbers of consider. 0 describes isolated components, 1 cycles and 2 cavities.
+                Defaults to (1, 2).
+        """
         self.aggregation_functions = aggregation_functions
         self.species_aggregation_functions = species_aggregation_functions
         self.cutoff = cutoff
