@@ -6,8 +6,10 @@ import numpy as np
 from loguru import logger
 from matminer.featurizers.base import BaseFeaturizer
 from pymatgen.core import IStructure, Structure
-from ._tda_helpers import get_diagrams_for_structure, persistent_diagram_stats
+
 from mofdscribe.utils import flatten
+
+from ._tda_helpers import get_diagrams_for_structure, persistent_diagram_stats
 
 
 class PHStats(BaseFeaturizer):
