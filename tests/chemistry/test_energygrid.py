@@ -17,5 +17,5 @@ def test_energygrid(hkust_structure):
     eg = EnergyGridHistogram()
     feats = eg.featurize(hkust_structure)
 
-    assert len(feats) == 10
-    assert len(eg.feature_labels()) == 10
+    assert len(feats) == 40
+    assert len(eg.feature_labels()) == 40
