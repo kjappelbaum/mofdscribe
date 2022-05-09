@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from re import A
 from typing import List, Tuple, Union
+from collections import defaultdict
 
 import numpy as np
 from matminer.featurizers.base import BaseFeaturizer
@@ -9,12 +9,12 @@ from moltda.vectorize_pds import diagrams_to_arrays
 from pymatgen.core import IStructure, Structure
 
 from mofdscribe.utils import flatten
+from mofdscribe.utils.aggregators import ARRAY_AGGREGATORS
 
 from ._tda_helpers import persistent_diagram_stats
 
 
 # Todo: allow doing this with cutoff and coordination shells
-# let's implement this as site-based featurizer for now
 class AtomCenteredPHSite(BaseFeaturizer):
     """Site featurizer for atom-centered statistics of persistence diagrams
 
@@ -65,6 +65,101 @@ class AtomCenteredPHSite(BaseFeaturizer):
             for parameter in ("birth", "death", "persistence"):
                 for aggregation in self.aggregation_functions:
                     names.append(f"{dim_key}_{parameter}_{aggregation}")
+        return names
+
+    def feature_labels(self) -> List[str]:
+        return self._get_feature_labels()
+
+    def implementors(self) -> List[str]:
+        return ["Kevin Maik Jablonka"]
+
+    def citations(self) -> List[str]:
+        return [
+            "@article{Jiang2021,"
+            "doi = {10.1038/s41524-021-00493-w},"
+            "url = {https://doi.org/10.1038/s41524-021-00493-w},"
+            "year = {2021},"
+            "month = feb,"
+            "publisher = {Springer Science and Business Media {LLC}},"
+            "volume = {7},"
+            "number = {1},"
+            "author = {Yi Jiang and Dong Chen and Xin Chen and Tangyi Li and Guo-Wei Wei and Feng Pan},"
+            "title = {Topological representations of crystalline compounds for the machine-learning prediction of materials properties},"
+            "journal = {npj Computational Materials}"
+            "}",
+            "@article{doi:10.1021/acs.jpcc.0c01167,"
+            "author = {Krishnapriyan, Aditi S. and Haranczyk, Maciej and Morozov, Dmitriy},"
+            "title = {Topological Descriptors Help Predict Guest Adsorption in Nanoporous Materials},"
+            "journal = {The Journal of Physical Chemistry C},"
+            "volume = {124},"
+            "number = {17},"
+            "pages = {9360-9368},"
+            "year = {2020},"
+            "doi = {10.1021/acs.jpcc.0c01167},"
+            "}",
+        ]
+
+
+# ToDo: Leverage symmetry to do not recompute for symmetry-equivalent sites
+class AtomCenteredPH(BaseFeaturizer):
+    """ """
+
+    def __init__(
+        self,
+        atom_types=(
+            "C-H-N-O",
+            "F-Cl-Br-I",
+            "Cu-Mn-Ni-Mo-Fe-Pt-Zn-Ca-Er-Au-Cd-Co-Gd-Na-Sm-Eu-Tb-V-Ag-Nd-U-Ba-Ce-K-Ga-Cr-Al-Li-Sc-Ru-In-Mg-Zr-Dy-W-Yb-Y-Ho-Re-Be-Rb-La-Sn-Cs-Pb-Pr-Bi-Tm-Sr-Ti-Hf-Ir-Nb-Pd-Hg-Th-Np-Lu-Rh-Pu",
+        ),
+        aggregation_functions: Tuple[str] = ("min", "max", "mean", "std"),
+        species_aggregation_functions: Tuple[str] = ("min", "max", "mean", "std"),
+        cutoff: float = 12,
+        dimensions: Tuple[int] = (1, 2),
+    ) -> None:
+        self.aggregation_functions = aggregation_functions
+        self.species_aggregation_functions = species_aggregation_functions
+        self.cutoff = cutoff
+        self.dimensions = dimensions
+        self.site_featurizer = AtomCenteredPHSite(
+            aggregation_functions=aggregation_functions, cutoff=cutoff, dimensions=dimensions
+        )
+        self.atom_types = atom_types
+
+    def _get_relevant_atom_type(self, element: str) -> str:
+        for atom_type in self.atom_types:
+            if element in atom_type:
+                return atom_type
+
+    def featurize(self, s: Union[Structure, IStructure]) -> np.ndarray:
+        results = defaultdict(list)
+        for idx, site in enumerate(s):
+            atom_type = self._get_relevant_atom_type(site.specie.symbol)
+            features = self.site_featurizer.featurize(s, idx)
+            results[atom_type].append(features)
+
+        long_results = []
+        for atom_type in self.atom_types:
+            if atom_type not in results:
+                long_results.extend(
+                    np.zeros(
+                        len(self.site_featurizer.feature_labels())
+                        * len(self.species_aggregation_functions)
+                    )
+                )
+            else:
+                v = np.array(results[atom_type])
+                for aggregation in self.species_aggregation_functions:
+                    agg_func = ARRAY_AGGREGATORS[aggregation]
+                    long_results.extend(agg_func(v, axis=0))
+
+        return np.array(long_results)
+
+    def _get_feature_labels(self) -> List[str]:
+        names = []
+        for atom_type in self.atom_types:
+            for aggregation in self.species_aggregation_functions:
+                for fl in self.site_featurizer.feature_labels():
+                    names.append(f"{atom_type}_{aggregation}_{fl}")
         return names
 
     def feature_labels(self) -> List[str]:

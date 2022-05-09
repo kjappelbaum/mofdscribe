@@ -14,24 +14,24 @@ AGGREGATORS = {
 
 
 ARRAY_AGGREGATORS = {
-    "sum": lambda x: sum(x),
-    "avg": lambda x: sum(x) / len(x),
-    "max": lambda x: max(x),
-    "min": lambda x: min(x),
-    "std": lambda x: np.std(x),
-    "range": lambda x: max(x) - min(x),
-    "mean": lambda x: np.mean(x),
-    "median": lambda x: np.median(x),
+    "sum": lambda x, **kwargs: np.sum(x, **kwargs),
+    "avg": lambda x, **kwargs: np.mean(x, **kwargs),
+    "max": lambda x, **kwargs: np.max(x, **kwargs),
+    "min": lambda x, **kwargs: np.min(x, **kwargs),
+    "std": lambda x, **kwargs: np.std(x, **kwargs),
+    "range": lambda x, **kwargs: np.max(x, **kwargs) - np.min(x, **kwargs),
+    "mean": lambda x, **kwargs: np.mean(x, **kwargs),
+    "median": lambda x, **kwargs: np.median(x, **kwargs),
 }
 
 
 MA_ARRAY_AGGREGATORS = {
-    "sum": lambda x: np.ma.sum(x),
-    "max": lambda x: np.ma.max(x),
-    "min": lambda x: np.ma.min(x),
-    "std": lambda x: np.ma.std(x),
-    "range": lambda x: np.ma.max(x) - np.ma.min(x),
-    "mean": lambda x: np.ma.mean(x),
-    "avg": lambda x: np.ma.mean(x),
-    "median": lambda x: np.ma.median(x),
+    "sum": lambda x, **kwargs: np.ma.sum(x, **kwargs),
+    "avg": lambda x, **kwargs: np.ma.mean(x, **kwargs),
+    "max": lambda x, **kwargs: np.ma.max(x, **kwargs),
+    "min": lambda x, **kwargs: np.ma.min(x, **kwargs),
+    "std": lambda x, **kwargs: np.ma.std(x, **kwargs),
+    "range": lambda x, **kwargs: np.ma.max(x, **kwargs) - np.ma.min(x, **kwargs),
+    "mean": lambda x, **kwargs: np.ma.mean(x, **kwargs),
+    "median": lambda x, **kwargs: np.ma.median(x, **kwargs),
 }
