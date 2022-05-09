@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from typing import List, Tuple, Union
 from collections import defaultdict
+from typing import List, Tuple, Union
 
 import numpy as np
 from matminer.featurizers.base import BaseFeaturizer
