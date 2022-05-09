@@ -5,6 +5,8 @@ from typing import Iterator, List, Tuple, Union
 import numpy as np
 from pymatgen.core import IStructure
 
+from .checks import check_all_file_exists, length_check
+
 
 class MOFStructureDataset(ABC):
     def __init__(
@@ -14,12 +16,15 @@ class MOFStructureDataset(ABC):
     ):
         pass
 
+    def _precheck(self) -> None:
+        length_check(self._df, self._structures, self._expected_length)
+        check_all_file_exists(self._structures)
+
     def get_structure(self, idx: int) -> IStructure:
         return self._read_structure(self.files[idx])
 
-    @abstractmethod
     def __getitem__(self, idx: int) -> Tuple[IStructure, np.ndarray]:
-        pass
+        return (self.get_structure(idx), self.get_label(idx))
 
     def _read_structure(self, filename) -> IStructure:
         return IStructure.from_file(filename)
@@ -45,11 +50,11 @@ class MOFStructureDataset(ABC):
         for idx in indices:
             yield self.get_structure(idx), self.get_label(idx)
 
-    @abstractmethod
+    # @abstractmethod
     def get_time_based_split_indices(self, year: int) -> Tuple[np.ndarray, np.ndarray]:
         pass
 
-    @abstractmethod
+    # @abstractmethod
     def get_train_valid_test_split_indices(
         self, train_size: float, valid_size: float = 0
     ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
@@ -59,7 +64,7 @@ class MOFStructureDataset(ABC):
     def __len__(self) -> int:
         pass
 
-    @property
+    @classmethod
     @abstractmethod
     def available_labels(self) -> Tuple[str]:
         pass

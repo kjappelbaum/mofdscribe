@@ -235,6 +235,16 @@ class PHVect(BaseFeaturizer):
             "year    = {2019},"
             "journal = {arXiv preprint arXiv: Arxiv-1910.08506}"
             "}",
+            "@article{doi:10.1021/acs.jpcc.0c01167,"
+            "author = {Krishnapriyan, Aditi S. and Haranczyk, Maciej and Morozov, Dmitriy},"
+            "title = {Topological Descriptors Help Predict Guest Adsorption in Nanoporous Materials},"
+            "journal = {The Journal of Physical Chemistry C},"
+            "volume = {124},"
+            "number = {17},"
+            "pages = {9360-9368},"
+            "year = {2020},"
+            "doi = {10.1021/acs.jpcc.0c01167},"
+            "}",
         ]
 
     def implementors(self):

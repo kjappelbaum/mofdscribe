@@ -1,4 +1,3 @@
 # -*- coding: utf-8 -*-
-import pystow
-
-MOFDSCRIBE_DATA_DIR = pystow.join("mofdscribe")
+from .core_gas import CoREGas
+from .qmof_electronic import QMOFElectronic

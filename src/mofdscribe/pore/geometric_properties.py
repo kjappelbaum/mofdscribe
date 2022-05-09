@@ -31,12 +31,22 @@ PROBE_RADII = {
     "H2S": 1.74,
 }
 
+__all__ = [
+    "AccessibleVolume",
+    "PoreDiameters",
+    "PoreSizeDistribution",
+    "RayTracingHistogram",
+    "SurfaceArea",
+]
+
 
 def run_zeopp(structure: Structure, command, parser) -> dict:
     """Run zeopp with network -ha  (http://www.zeoplusplus.org/examples.html)
     to find the pore diameters
+
     Args:
         structure (Structure): pymatgen Structure object
+
     Returns:
         dict: pore analysis results
     """

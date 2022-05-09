@@ -182,13 +182,16 @@ def get_persistence_image_limits_for_structure(
     return limits
 
 
-def persistent_diagram_stats(diagram: np.ndarray, aggregrations: Tuple[str]) -> dict:
+def persistent_diagram_stats(
+    diagram: np.ndarray, aggregrations: Tuple[str], nanfiller: float = 0
+) -> dict:
     """
     Compute statistics for a persistence diagram.
 
     Args:
         diagram (np.ndarray): The persistence diagram.
         aggregrations (Tuple[str]): The name of the aggregations to compute.
+        nanfiller (float): The value to use when a nan is encountered.
 
     Returns:
         dict: nested dictionary with the following structure:
@@ -207,6 +210,8 @@ def persistent_diagram_stats(diagram: np.ndarray, aggregrations: Tuple[str]) -> 
     for aggregation in aggregrations:
         agg_func = MA_ARRAY_AGGREGATORS[aggregation]
         for i, key in enumerate(["birth", "death", "persistence"]):
-            stats[key][aggregation] = agg_func(d[:, i])
-
+            try:
+                stats[key][aggregation] = agg_func(d[:, i])
+            except IndexError:
+                stats[key][aggregation] = nanfiller
     return stats
