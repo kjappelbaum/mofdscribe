@@ -65,16 +65,32 @@ def read_ascii_grid(filename: str) -> pd.DataFrame:
 
 class EnergyGridHistogram(BaseFeaturizer):
     """Computes the energy grid histograms
-    as originally proposed by `Bucior et al. (2018) <https://pubs.rsc.org/en/content/articlelanding/2019/ME/C8ME00050F>`_.
+    as originally proposed by Bucior et al. (2018) [1]_.
 
     Conventionally, energy grids can be used to speed up molecular simulations.
     The idea is that the interactions between the guest and host are pre-computed
     on a fine grid and then only need to be looked up (instead of re-computed all the time).
 
     Bucior et al. proposed (effectively) a dimensionality reduction of the energy grid by
-    making a histogram of the energies.
+    making a histogram of the energies. For H2 they used bins of a width of 1 kJ mol−1
+    ranging from −10 kJ mol−1 (attractive) to 0 kJ mol−1. For methane, they used bins
+    in 2 kJ mol−1 increments between −26 and 0 kJ mol−1, again with a repulsion bin.
 
     This approach has also been used, for example, `Li et al. (2021) <https://aip.scitation.org/doi/10.1063/5.0050823>`_
+
+    References
+    ----------
+
+    .. [1]  Bucior, B. J.; Bobbitt, N. S.; Islamoglu, T.; Goswami, S.; Gopalan, A.; Yildirim, T.; Farha, O. K.; Bagheri, N.; Snurr, R. Q.
+        Energy-Based Descriptors to Rapidly Predict Hydrogen Storage in Metal–Organic Frameworks.
+        Molecular Systems Design & Engineering 2019, 4 (1), 162–174. https://doi.org/10.1039/C8ME00050F.
+
+    .. [2]  Li, Z.; Bucior, B. J.; Chen, H.; Haranczyk, M.; Siepmann, J. I.; Snurr, R. Q.
+        Machine Learning Using Host/Guest Energy Histograms to Predict Adsorption in Metal–Organic Frameworks:
+        Application to Short Alkanes and Xe/Kr Mixtures.
+        J. Chem. Phys. 2021, 155 (1), 014701. https://doi.org/10.1063/5.0050823.
+
+
     """
 
     def __init__(
@@ -82,7 +98,7 @@ class EnergyGridHistogram(BaseFeaturizer):
         raspa_dir: Union[str, Path, None] = None,
         grid_spacing: float = 1.0,
         bin_size_vdw: float = 1,
-        min_energy_vdw: float = -10,
+        min_energy_vdw: float = -40,
         max_energy_vdw: float = 0,
         cutoff: float = 12,
         mof_ff: str = "UFF",

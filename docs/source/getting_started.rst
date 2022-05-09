@@ -95,6 +95,7 @@ To use a reference dataset, you simply need to instantiate the corresponding obj
         qmof_electronic = QMOFElectronic() # will use no labels and the latest version of the dataset
 
 Upon first use this will download the datasets into a folder `~/.data/mofdscribe` in your home directory.
+In case of corruption or problems you hence can also try removing the subfolders. The package should automatically download the missing files.
 Note that the currently implemented datasets are loaded completely into memory. On modern machines this should not be a problem, but it might be if you are resource constrained.
 
 :class:`MOFStructureDataSet` can be iterated over to get the structures and their labels:
