@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import numpy as np
 
-from mofdscribe.topology.atom_centered_ph import AtomCenteredPHSite, AtomCenteredPH
+from mofdscribe.topology.atom_centered_ph import AtomCenteredPH, AtomCenteredPHSite
 
 
 def test_atom_centered_ph_site(hkust_structure, irmof_structure):

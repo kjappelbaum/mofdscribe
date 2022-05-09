@@ -204,7 +204,10 @@ def persistent_diagram_stats(
         "persistence": {},
     }
 
-    d = np.array([[x["birth"], x["death"], x["death"] - x["birth"]] for x in diagram])
+    try:
+        d = np.array([[x["birth"], x["death"], x["death"] - x["birth"]] for x in diagram])
+    except IndexError:
+        d = np.array([[x[0], x[1], x[1] - x[0]] for x in diagram])
     d = np.ma.masked_invalid(d)
 
     for aggregation in aggregrations:
