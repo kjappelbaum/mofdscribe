@@ -122,8 +122,8 @@ class Henry(BaseFeaturizer):
             "mixing_rule": self.mixing_rule,
             "separate_interactions": self.separate_interactions,
         }
-        ucells = " ".format(resize_unit_cell(s, self.cutoff))
-
+        replicas = resize_unit_cell(s, self.cutoff)
+        ucells = f"{replicas[0]} {replicas[1]} {replicas[2]}"
         simulation_script = WIDOM_INPUT_TEMPLATE.format(
             cycles=self.cycles,
             unit_cells=ucells,
