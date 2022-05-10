@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import contextlib
+import os
 from functools import lru_cache
 from io import BytesIO
 from tempfile import NamedTemporaryFile
@@ -12,9 +14,11 @@ from pymatgen.io.ase import AseAtomsAdaptor
 
 @lru_cache(maxsize=32)
 def get_eqeq_charges(structure: IStructure) -> Tuple[str, List[float]]:
-    with NamedTemporaryFile("w", suffix=".cif") as f:
-        structure.to("cif", f.name)
-        charges = run_on_cif(f.name)
+    with open(os.devnull, "w") as devnull:
+        with contextlib.redirect_stdout(devnull):
+            with NamedTemporaryFile("w", suffix=".cif") as f:
+                structure.to("cif", f.name)
+                charges = run_on_cif(f.name)
 
     atoms = AseAtomsAdaptor().get_atoms(structure)
     charge_dict = dict(zip(range(len(atoms)), charges))
