@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from mofdscribe.chemistry.partialchargehistogram import PartialChargeHistogram
 
+from ..helpers import is_jsonable
+
 
 def test_partialchargehistogram(hkust_structure, irmof_structure):
     pch = PartialChargeHistogram()
@@ -9,3 +11,4 @@ def test_partialchargehistogram(hkust_structure, irmof_structure):
     for structure in [hkust_structure, irmof_structure]:
         features = pch.featurize(structure)
         assert len(features) == 16
+    assert is_jsonable(dict(zip(pch.feature_labels(), features)))

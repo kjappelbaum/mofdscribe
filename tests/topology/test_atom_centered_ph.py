@@ -3,6 +3,8 @@ import numpy as np
 
 from mofdscribe.topology.atom_centered_ph import AtomCenteredPH, AtomCenteredPHSite
 
+from ..helpers import is_jsonable
+
 
 def test_atom_centered_ph_site(hkust_structure, irmof_structure):
     for structure in [hkust_structure, irmof_structure]:
@@ -16,6 +18,7 @@ def test_atom_centered_ph_site(hkust_structure, irmof_structure):
         assert (features == features_1).all()
         features_not_metal = featurizer.featurize(structure, -1)
         assert np.abs(features - features_not_metal).sum() > 0
+    assert is_jsonable(dict(zip(featurizer.feature_labels(), features)))
 
 
 def test_atom_centered_ph(hkust_structure, irmof_structure):
@@ -28,3 +31,4 @@ def test_atom_centered_ph(hkust_structure, irmof_structure):
     features_hkust = featurizer.featurize(hkust_structure)
     features_irmof = featurizer.featurize(irmof_structure)
     assert (features_hkust != features_irmof).any()
+    assert is_jsonable(dict(zip(featurizer.feature_labels(), features)))

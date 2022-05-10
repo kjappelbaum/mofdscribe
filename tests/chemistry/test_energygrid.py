@@ -3,6 +3,8 @@ import os
 
 from mofdscribe.chemistry.energygrid import EnergyGridHistogram, read_ascii_grid
 
+from ..helpers import is_jsonable
+
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
@@ -19,3 +21,4 @@ def test_energygrid(hkust_structure):
 
     assert len(feats) == 40
     assert len(eg.feature_labels()) == 40
+    assert is_jsonable(dict(zip(eg.feature_labels(), feats)))

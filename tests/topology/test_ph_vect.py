@@ -3,6 +3,8 @@ import pytest
 
 from mofdscribe.topology.ph_vect import PHVect
 
+from ..helpers import is_jsonable
+
 
 def test_ph_vect(hkust_structure, irmof_structure):
     # should raise if not fitted
@@ -23,3 +25,4 @@ def test_ph_vect(hkust_structure, irmof_structure):
     ph_vect = PHVect(n_components=2)
     feat = ph_vect.fit_transform([hkust_structure, irmof_structure])
     assert feat.shape == (2, 4 * 2 * 2)
+    assert is_jsonable(dict(zip(ph_vect.feature_labels(), feat[0])))

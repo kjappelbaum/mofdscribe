@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from mofdscribe.chemistry.partialchargestats import PartialChargeStats
 
+from ..helpers import is_jsonable
+
 
 def test_partial_charge_stats(hkust_structure, irmof_structure):
     for structure in [hkust_structure, irmof_structure]:
@@ -9,3 +11,4 @@ def test_partial_charge_stats(hkust_structure, irmof_structure):
         assert len(feats) == 3
     assert len(featurizer.feature_labels()) == 3
     assert len(featurizer.citations()) == 2
+    assert is_jsonable(dict(zip(featurizer.feature_labels(), feats)))

@@ -5,6 +5,8 @@ from mofdscribe.chemistry._fragment import get_bb_indices
 from mofdscribe.chemistry.racs import RACS, _get_racs_for_bbs
 from mofdscribe.utils.structure_graph import get_structure_graph
 
+from ..helpers import is_jsonable
+
 
 def test_racs(hkust_structure, irmof_structure):
     for structure in [hkust_structure, irmof_structure]:
@@ -31,3 +33,4 @@ def test_racs(hkust_structure, irmof_structure):
 
     assert len(featurizer.feature_labels()) == 120
     assert len(featurizer.citations()) == 2
+    assert is_jsonable(dict(zip(featurizer.feature_labels(), feats)))

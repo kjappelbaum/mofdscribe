@@ -18,7 +18,7 @@ def get_rdf(array, lower_lim, upper_lim, bin_size, num_sites, volume, normalized
         rdf = dist_hist / shell_vol / number_density
         return rdf
 
-    return dist_hist
+    return dist_hist.astype(np.float64)
 
 
 def smear_histogram(histogram, bw, lower_lim, upper_lim):

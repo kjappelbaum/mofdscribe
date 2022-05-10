@@ -32,9 +32,14 @@ def run_raspa(structure, raspa_dir, simulation_script, ff_params, parser, run_eq
         if run_eqeq:
             try:
                 _ = subprocess.run(
-                    ["eqeq", "input.cif", "-o", "input.cif"],
+                    [
+                        "eqeq",
+                        "input.cif",
+                        "-o",
+                        "input.cif",
+                    ],
                     universal_newlines=True,
-                    stdout=subprocess.PIPE,
+                    stdout=subprocess.DEVNULL,  # send to /dev/null to avoid printing to stdout
                     stderr=subprocess.PIPE,
                     check=True,
                     cwd=tempdir,
@@ -46,7 +51,7 @@ def run_raspa(structure, raspa_dir, simulation_script, ff_params, parser, run_eq
             _ = subprocess.run(
                 ["sh", "run.sh"],
                 universal_newlines=True,
-                stdout=subprocess.PIPE,
+                stdout=subprocess.DEVNULL,
                 stderr=subprocess.PIPE,
                 check=True,
                 cwd=tempdir,
