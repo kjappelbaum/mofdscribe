@@ -12,6 +12,7 @@ def test_phimage(hkust_structure, irmof_structure):
 
     assert len(phi.feature_labels()) == 20 * 20 * 4 * 3
     assert is_jsonable(dict(zip(phi.feature_labels(), features)))
+    assert features.ndim == 1
 
 
 def test_phimage_fit(hkust_structure, irmof_structure):

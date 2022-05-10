@@ -12,3 +12,4 @@ def test_partial_charge_stats(hkust_structure, irmof_structure):
     assert len(featurizer.feature_labels()) == 3
     assert len(featurizer.citations()) == 2
     assert is_jsonable(dict(zip(featurizer.feature_labels(), feats)))
+    assert feats.ndim == 1

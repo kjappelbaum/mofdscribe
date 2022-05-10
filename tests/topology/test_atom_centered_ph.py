@@ -19,6 +19,7 @@ def test_atom_centered_ph_site(hkust_structure, irmof_structure):
         features_not_metal = featurizer.featurize(structure, -1)
         assert np.abs(features - features_not_metal).sum() > 0
     assert is_jsonable(dict(zip(featurizer.feature_labels(), features)))
+    assert features.ndim == 1
 
 
 def test_atom_centered_ph(hkust_structure, irmof_structure):
@@ -32,3 +33,4 @@ def test_atom_centered_ph(hkust_structure, irmof_structure):
     features_irmof = featurizer.featurize(irmof_structure)
     assert (features_hkust != features_irmof).any()
     assert is_jsonable(dict(zip(featurizer.feature_labels(), features)))
+    assert features.ndim == 1

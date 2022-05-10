@@ -187,7 +187,7 @@ class PHVect(BaseFeaturizer):
             self.compute_for_all_elements,
             self.min_size,
         )
-        compiled_results = self._reshape_results(res, 1)
+        compiled_results = self._reshape_results(res, 1).flatten()
         return compiled_results
 
     def fit(self, structures: Union[Structure, IStructure]) -> "PHVect":
@@ -219,6 +219,7 @@ class PHVect(BaseFeaturizer):
             self.min_size,
         )
         compiled_results = self._reshape_results(results, len(structures))
+        self._fitted = True
         return compiled_results
 
     def citations(self):

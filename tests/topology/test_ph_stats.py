@@ -15,3 +15,4 @@ def test_ph_stats(hkust_structure, irmof_structure):
     irmof_feats = featurizer.featurize(irmof_structure)
     assert (hkust_feats != irmof_feats).any()
     assert is_jsonable(dict(zip(featurizer.feature_labels(), features)))
+    assert features.ndim == 1

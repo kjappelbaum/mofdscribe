@@ -12,3 +12,4 @@ def test_partialchargehistogram(hkust_structure, irmof_structure):
         features = pch.featurize(structure)
         assert len(features) == 16
     assert is_jsonable(dict(zip(pch.feature_labels(), features)))
+    assert features.ndim == 1

@@ -34,3 +34,4 @@ def test_racs(hkust_structure, irmof_structure):
     assert len(featurizer.feature_labels()) == 120
     assert len(featurizer.citations()) == 2
     assert is_jsonable(dict(zip(featurizer.feature_labels(), feats)))
+    assert feats.ndim == 1

@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from re import I
+
 from pytest import approx
 
 from mofdscribe.pore.geometric_properties import (
@@ -11,6 +13,8 @@ from mofdscribe.pore.geometric_properties import (
     _parse_sa_zeopp,
     _parse_volpo_zeopp,
 )
+
+from ..helpers import is_jsonable
 
 SA_SAMPLE_OUTPUT = """@ EDI.sa Unitcell_volume: 307.484   Density: 1.62239
 
@@ -69,6 +73,8 @@ def test_pore_diameters(hkust_structure):
     assert result[0] == approx(13.21425, 0.1)
     assert result[1] == approx(6.66829, 0.1)
     assert result[2] == approx(13.21425, 0.1)
+    assert is_jsonable(dict(zip(pd.feature_labels(), result)))
+    assert result.ndim == 1
 
 
 def test_surface_area(hkust_structure):
@@ -94,6 +100,8 @@ def test_surface_area(hkust_structure):
     assert result[5] == 0
     assert result[6] == 0
     assert result[7] == 0
+    assert is_jsonable(dict(zip(sa.feature_labels(), result)))
+    assert result.ndim == 1
 
 
 def test_accessible_volume(hkust_structure):
@@ -119,6 +127,8 @@ def test_accessible_volume(hkust_structure):
     assert result[5] == 0
     assert result[6] == 0
     assert result[7] == 0
+    assert is_jsonable(dict(zip(av.feature_labels(), result)))
+    assert result.ndim == 1
 
 
 def test_raytracing_histogram(hkust_structure):
@@ -128,6 +138,8 @@ def test_raytracing_histogram(hkust_structure):
     features = rth.featurize(hkust_structure)
     assert len(features) == 1000
     assert features[0] >= 1.0
+    assert is_jsonable(dict(zip(rth.feature_labels(), features)))
+    assert features.ndim == 1
 
 
 def test_psd(hkust_structure):
@@ -137,3 +149,5 @@ def test_psd(hkust_structure):
     features = psd.featurize(hkust_structure)
     assert len(features) == 1000
     assert features[0] == 0
+    assert is_jsonable(dict(zip(psd.feature_labels(), features)))
+    assert features.ndim == 1

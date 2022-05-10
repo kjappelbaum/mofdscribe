@@ -12,3 +12,4 @@ def test_henryhoa(hkust_structure, irmof_structure):
     features_irmof = featurizer.featurize(irmof_structure)
     assert sum(abs(features - features_irmof)) > 0
     assert is_jsonable(dict(zip(featurizer.feature_labels(), features)))
+    assert features_irmof.ndim == 1

@@ -16,13 +16,16 @@ def test_ph_vect(hkust_structure, irmof_structure):
     ph_vect = PHVect(n_components=2)
     ph_vect.fit([hkust_structure, irmof_structure])
 
-    feat = ph_vect.featurize(hkust_structure)
-    assert feat.shape[1] == len(set(ph_vect.feature_labels()))
-
-    assert feat.shape[1] == 4 * 2 * 2
-
     # test fit_transform
     ph_vect = PHVect(n_components=2)
     feat = ph_vect.fit_transform([hkust_structure, irmof_structure])
     assert feat.shape == (2, 4 * 2 * 2)
     assert is_jsonable(dict(zip(ph_vect.feature_labels(), feat[0])))
+    assert feat.ndim == 2
+
+    feat = ph_vect.featurize(hkust_structure)
+    assert feat.ndim == 1
+
+    assert len(feat) == len(set(ph_vect.feature_labels()))
+
+    assert len(feat) == 4 * 2 * 2

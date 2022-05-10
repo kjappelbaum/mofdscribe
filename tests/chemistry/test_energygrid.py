@@ -22,3 +22,4 @@ def test_energygrid(hkust_structure):
     assert len(feats) == 40
     assert len(eg.feature_labels()) == 40
     assert is_jsonable(dict(zip(eg.feature_labels(), feats)))
+    assert feats.ndim == 1
