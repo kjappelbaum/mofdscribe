@@ -49,10 +49,3 @@ repos:
     rev: 6.1.1
     hooks:
       - id: pydocstyle
-
-  - repo: https://github.com/btford/write-good
-    rev: v1.0.4
-    hooks:
-      - id: write-good
-        files: "\\.(rst|md|markdown|mdown|mkdn)$"
-        exclude: docs/infra/gerrit.rst|docs/best-practices.rst

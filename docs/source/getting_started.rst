@@ -105,9 +105,9 @@ Note that the currently implemented datasets are loaded completely into memory. 
         for structure, label in qmof_electronic:
             print(structure, label)
 
-but you get also get a specific entry with 
+but you get also get a specific entry with
 
-.. code-block:: python 
+.. code-block:: python
 
     qmof_electronic.get_structure(1)
 
