@@ -4,10 +4,10 @@ from typing import List, Tuple, Union
 
 import numpy as np
 from matminer.featurizers.base import BaseFeaturizer
-from pyeqeq import run_on_cif
 from pymatgen.core import IStructure, Structure
 
 from mofdscribe.utils.aggregators import ARRAY_AGGREGATORS
+from mofdscribe.utils.eqeq import get_eqeq_charges
 
 __all__ = ["PartialChargeStats"]
 
@@ -32,10 +32,9 @@ class PartialChargeStats(BaseFeaturizer):
         return [f"charge_{agg}" for agg in self.aggregations]
 
     def featurize(self, s: Union[Structure, IStructure]) -> np.ndarray:
-        with NamedTemporaryFile("w", suffix=".cif") as f:
-            s.to("cif", f.name)
-            results = run_on_cif(f.name)
-
+        if isinstance(s, Structure):
+            s = IStructure.from_sites(s.sites)
+        _, results = get_eqeq_charges(s)
         aggregated = [ARRAY_AGGREGATORS[agg](results) for agg in self.aggregations]
 
         return np.array(aggregated)

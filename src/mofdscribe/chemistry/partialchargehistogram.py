@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
+from ast import Str
 from re import I
 from tempfile import NamedTemporaryFile
 from typing import List, Tuple, Union
 
 import numpy as np
 from matminer.featurizers.base import BaseFeaturizer
-from pyeqeq import run_on_cif
 from pymatgen.core import IStructure, Structure
 
+from mofdscribe.utils.eqeq import get_eqeq_charges
 from mofdscribe.utils.histogram import get_rdf
 
 __all__ = ["PartialChargeHistogram"]
@@ -39,9 +40,9 @@ class PartialChargeHistogram(BaseFeaturizer):
         return [f"charge_{val}" for val in self._get_grid()]
 
     def featurize(self, s: Union[Structure, IStructure]) -> np.ndarray:
-        with NamedTemporaryFile("w", suffix=".cif") as f:
-            s.to("cif", f.name)
-            results = run_on_cif(f.name)
+        if isinstance(s, Structure):
+            s = IStructure.from_sites(s.sites)
+        _, results = get_eqeq_charges(s)
 
         hist = get_rdf(results, self.min_charge, self.max_charge, self.bin_size, None, None, False)
         return hist
