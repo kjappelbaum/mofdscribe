@@ -143,7 +143,10 @@ class Henry(BaseFeaturizer):
         return np.array(res)
 
     def feature_labels(self) -> List[str]:
-        return ["henry_coefficient_mol/kg/Pa", "heat_of_adsorption_K"]
+        return [
+            f"henry_coefficient_{self.mol_name}_{self.temperature}_mol/kg/Pa",
+            f"heat_of_adsorption_{self.mol_name}_{self.temperature}_K",
+        ]
 
     def implementors(self) -> List[str]:
         return ["Kevin Maik Jablonka"]

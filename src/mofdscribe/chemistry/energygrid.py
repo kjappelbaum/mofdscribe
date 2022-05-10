@@ -175,7 +175,7 @@ class EnergyGridHistogram(BaseFeaturizer):
         labels = []
         for site in self.sites:
             for grid_point in grid:
-                labels.append(f"{site}_{grid_point}")
+                labels.append(f"{self.mol_name}_{site}_{grid_point}")
         return labels
 
     def featurize(self, s: Union[Structure, IStructure]) -> np.array:
