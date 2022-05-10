@@ -25,7 +25,6 @@ Since many featurizers are quite domain specific, and require external dependenc
 
    getting_started
    background
-   cli
    api
 
 Indices and Tables

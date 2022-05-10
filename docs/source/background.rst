@@ -32,6 +32,12 @@ Many of the descriptors implemented in mofdscribe have been discussed in our `20
      - ✅
      - ❌
      - [Bucior2019]_
+    * - `Henry <:py:class:`mofdscribe.chemistry.henry.Henry>`_
+     - ❌
+     - ✅
+     - ✅
+     - ❌
+     -
    * - `PartialChargeStats <:py:class:`mofdscribe.chemistry.partialchargestats.PartialChargeStats>`_
      - ❌
      - ✅
@@ -86,7 +92,17 @@ Many of the descriptors implemented in mofdscribe have been discussed in our `20
      - ✅
      - ❌
      - [Perea]_ [Tymochko]_
-
+   * - `PHStats <:py:class:`mofdscribe.topology.ph_stats.PHStats>`_
+     - ❌
+     - ✅ (optionally)
+     - ✅
+     - ❌
+   * - `AtomCenteredPH <:py:class:`mofdscribe.topology.atom_centered_ph.AtomCenteredPH>`_
+     - ❌
+     - ✅ (optionally)
+     - ✅
+     - ❌
+     - [Jiang2021]_
 
 Pore descriptors
 -------------------
@@ -195,9 +211,6 @@ In this figure, we perform a filtration and record the result in a persistence d
   :alt: Illustration of filtration of a point cloud.
 
 
-  .. Betti-0/1/2: isolated components, circles, cavities
-
-
 Vectorizing persistence diagrams
 ..................................
 For many machine learning models, fixed length vectors are required.  Persistence diagrams, however, are not fixed length. In `mofdscribe` we provide two methods to vectorize persistence diagrams.
@@ -242,3 +255,5 @@ References
 .. [Ongari2019] `Ongari et al., J. Chem. Theory Comput. 2019, 15, 1, 382–401 <https://doi.org/10.1021/acs.jctc.9b01096>`_
 
 .. [Wilmer2012] `Wilmer et al., J. Phys. Chem. Lett. 2012, 3, 17, 2506–2511 <https://pubs.acs.org/doi/abs/10.1021/jz3008485>`_
+
+.. [Jiang2021] `Jiang, Y.; Chen, D.; Chen, X.; Li, T.; Wei, G.-W.; Pan, F. Topological Representations of Crystalline Compounds for the Machine-Learning Prediction of Materials Properties. npj Computational Materials 2021, 7 (1), 1–8. <https://doi.org/10.1038/s41524-021-00493-w>`_
