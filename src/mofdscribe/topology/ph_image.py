@@ -53,6 +53,7 @@ class PHImage(BaseFeaturizer):
         max_B: Union[int, List[int]] = 18,
         max_P: Union[int, List[int]] = 18,
         max_fit_tolerence: float = 0.1,
+        periodic: bool = False,
     ) -> None:
         """Constructor for PHImage.
 
@@ -72,6 +73,7 @@ class PHImage(BaseFeaturizer):
             max_fit_tolerence (float, optional): If `fit` method is used to find the limits of the persistent images,
                 one can appy a tolerance on the the found limits. The maximum will then be max + max_fit_tolerance * max.
                 Defaults to 0.1.
+            periodic (bool, optional): If true, then periodic Euclidean is used in the analysis (experimental!). Defaults to False.
         """
 
         atom_types = [] if atom_types is None else atom_types
@@ -108,6 +110,7 @@ class PHImage(BaseFeaturizer):
         self.max_P = max_P_
 
         self.max_fit_tolerance = max_fit_tolerence
+        self.periodic = periodic
 
     def _get_feature_labels(self) -> List[str]:
         labels = []
@@ -136,6 +139,7 @@ class PHImage(BaseFeaturizer):
             weighting=self.weight,
             maxB=self.max_B,
             maxP=self.max_P,
+            periodic = self.periodic,
         )
         features = []
         elements = list(self.atom_types)
@@ -162,7 +166,7 @@ class PHImage(BaseFeaturizer):
 
         for structure in structures:
             lim = get_persistence_image_limits_for_structure(
-                structure, self.atom_types, self.compute_for_all_elements, self.min_size
+                structure, self.atom_types, self.compute_for_all_elements, self.min_size, periodic=self.periodic
             )
             for k, v in lim.items():
                 limits[k].extend(v)

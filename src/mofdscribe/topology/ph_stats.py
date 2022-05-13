@@ -31,6 +31,7 @@ class PHStats(BaseFeaturizer):
         dimensions: Tuple[int] = (1, 2),
         min_size: int = 20,
         aggregation_functions: Tuple[str] = ("min", "max", "mean", "std"),
+        periodic: bool = False
     ) -> None:
         """_summary_
 
@@ -40,6 +41,7 @@ class PHStats(BaseFeaturizer):
             dimensions (Tuple[int], optional): _description_. Defaults to (1, 2).
             min_size (int, optional): _description_. Defaults to 20.
             aggregation_functions (Tuple[str], optional): _description_. Defaults to ("min", "max", "mean", "std").
+            periodic (bool, optional): If true, then periodic Euclidean is used in the analysis (experimental!). Defaults to False.
         """
 
         atom_types = [] if atom_types is None else atom_types
@@ -51,6 +53,7 @@ class PHStats(BaseFeaturizer):
         self.dimensions = dimensions
         self.min_size = min_size
         self.aggregation_functions = aggregation_functions
+        self.periodic = periodic
 
     def _get_feature_labels(self) -> List[str]:
         labels = []
@@ -67,7 +70,7 @@ class PHStats(BaseFeaturizer):
 
     def featurize(self, structure: Union[Structure, IStructure]) -> np.ndarray:
         res = get_diagrams_for_structure(
-            structure, self.elements, self.compute_for_all_elements, self.min_size
+            structure, self.elements, self.compute_for_all_elements, self.min_size, periodic=self.periodic
         )
 
         flat_results = []

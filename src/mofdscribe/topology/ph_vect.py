@@ -33,12 +33,12 @@ def _apply_and_fill(transformer_func, diagrams):
 
 
 def _fit_transform_structures(
-    transformers, structures, atom_types: Tuple[str], compute_for_all_elements: bool, min_size: int
+    transformers, structures, atom_types: Tuple[str], compute_for_all_elements: bool, min_size: int, periodic: bool = False
 ):
     logger.info(f"Computing diagrams for {len(structures)} structures")
     diagrams = defaultdict(lambda: defaultdict(list))
     for structure in structures:
-        res = get_diagrams_for_structure(structure, atom_types, compute_for_all_elements, min_size)
+        res = get_diagrams_for_structure(structure, atom_types, compute_for_all_elements, min_size, periodic=periodic)
         for element, element_d in res.items():
             for dim, dim_d in element_d.items():
                 diagrams[element][dim].append(dim_d)
@@ -68,11 +68,11 @@ def _fit_transform_structures(
 
 
 def _transform_structures(
-    transformers, structures, atom_types: Tuple[str], compute_for_all_elements: bool, min_size: int
+    transformers, structures, atom_types: Tuple[str], compute_for_all_elements: bool, min_size: int, periodic: bool = False
 ):
     diagrams = defaultdict(lambda: defaultdict(list))
     for structure in structures:
-        res = get_diagrams_for_structure(structure, atom_types, compute_for_all_elements, min_size)
+        res = get_diagrams_for_structure(structure, atom_types, compute_for_all_elements, min_size, periodic=periodic)
         for element, element_d in res.items():
             for dim, dim_d in element_d.items():
                 diagrams[element][dim].append(dim_d)
@@ -116,6 +116,7 @@ class PHVect(BaseFeaturizer):
         umap_metric: str = "hellinger",
         p: int = 1,
         random_state=None,
+        periodic: bool = False,
     ) -> None:
         """Constructor for PHVect.
 
@@ -137,6 +138,7 @@ class PHVect(BaseFeaturizer):
                 Defaults to "hellinger".
 
             random_state (_type_, optional): random state propagated to the Gaussian mixture models (and UMAP). Defaults to None.
+            periodic (bool, optional): If true, then periodic Euclidean is used in the analysis (experimental!). Defaults to False.
         """
 
         atom_types = [] if atom_types is None else atom_types
@@ -164,6 +166,7 @@ class PHVect(BaseFeaturizer):
         self.umap_metric = umap_metric
         self.random_state = random_state
         self._fitted = False
+        self.periodic = periodic
 
     def _get_feature_labels(self) -> List[str]:
         labels = []
@@ -186,6 +189,7 @@ class PHVect(BaseFeaturizer):
             self.elements,
             self.compute_for_all_elements,
             self.min_size,
+            periodic=self.periodic,
         )
         compiled_results = self._reshape_results(res, 1).flatten()
         return compiled_results
@@ -197,6 +201,7 @@ class PHVect(BaseFeaturizer):
             self.elements,
             self.compute_for_all_elements,
             self.min_size,
+             periodic=self.periodic,
         )
         self._fitted = True
         return self
@@ -217,6 +222,7 @@ class PHVect(BaseFeaturizer):
             self.elements,
             self.compute_for_all_elements,
             self.min_size,
+            periodic=self.periodic,
         )
         compiled_results = self._reshape_results(results, len(structures))
         self._fitted = True
