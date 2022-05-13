@@ -31,7 +31,7 @@ class PHStats(BaseFeaturizer):
         dimensions: Tuple[int] = (1, 2),
         min_size: int = 20,
         aggregation_functions: Tuple[str] = ("min", "max", "mean", "std"),
-        periodic: bool = False
+        periodic: bool = False,
     ) -> None:
         """_summary_
 
@@ -70,7 +70,11 @@ class PHStats(BaseFeaturizer):
 
     def featurize(self, structure: Union[Structure, IStructure]) -> np.ndarray:
         res = get_diagrams_for_structure(
-            structure, self.elements, self.compute_for_all_elements, self.min_size, periodic=self.periodic
+            structure,
+            self.elements,
+            self.compute_for_all_elements,
+            self.min_size,
+            periodic=self.periodic,
         )
 
         flat_results = []

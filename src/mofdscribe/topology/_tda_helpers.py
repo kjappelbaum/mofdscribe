@@ -33,11 +33,11 @@ def get_persistent_images_for_structure(
     maxB: int = 18,
     maxP: int = 18,
     minB: int = 0,
-    periodic: bool = False
+    periodic: bool = False,
 ) -> dict:
     """
     Get the persistent images for a structure.
-    
+
     Args:
         structure (Structure): input structure
         elements (List[List[str]]): list of elements to compute for
@@ -48,7 +48,7 @@ def get_persistent_images_for_structure(
         pixels (Tuple[int]): size of the image in pixels
         maxB (int): maximum birth time for construction of persistent images
         maxP (int): maximum persistence time for construction of persistent images
-        periodic (bool): if True (experimental!), use the periodic Euclidean distance 
+        periodic (bool): if True (experimental!), use the periodic Euclidean distance
 
     Returns:
         persistent_images (dict): dictionary of persistent images and their barcode representations
@@ -62,7 +62,9 @@ def get_persistent_images_for_structure(
         try:
             filtered_structure = filter_element(structure, element)
             if periodic:
-                sc = CubicSupercellTransformation(min_size=min_size).apply_transformation(filtered_structure)
+                sc = CubicSupercellTransformation(min_size=min_size).apply_transformation(
+                    filtered_structure
+                )
                 coords = sc.frac_coords
             else:
                 coords = make_supercell(
@@ -89,7 +91,7 @@ def get_persistent_images_for_structure(
     if compute_for_all_elements:
         if periodic:
             sc = CubicSupercellTransformation(min_size=min_size).apply_transformation(structure)
-            coords = sc.frac_coords 
+            coords = sc.frac_coords
         else:
             coords = make_supercell(structure.cart_coords, structure.lattice.matrix, min_size)
         pd = diagrams_to_arrays(construct_pds_cached(coords))
@@ -142,12 +144,14 @@ def get_diagrams_for_structure(
         try:
             filtered_structure = filter_element(structure, element)
             if periodic:
-                sc = CubicSupercellTransformation(min_size=min_size).apply_transformation(filtered_structure)
+                sc = CubicSupercellTransformation(min_size=min_size).apply_transformation(
+                    filtered_structure
+                )
                 coords = sc.frac_coords
             else:
                 coords = make_supercell(
-                filtered_structure.cart_coords, filtered_structure.lattice.matrix, min_size
-            )
+                    filtered_structure.cart_coords, filtered_structure.lattice.matrix, min_size
+                )
             pds = construct_pds_cached(coords)
             arrays = diagrams_to_bd_arrays(pds)
         except Exception:
@@ -160,12 +164,14 @@ def get_diagrams_for_structure(
 
     if compute_for_all_elements:
         if periodic:
-            sc = CubicSupercellTransformation(min_size=min_size).apply_transformation(filtered_structure)
+            sc = CubicSupercellTransformation(min_size=min_size).apply_transformation(
+                filtered_structure
+            )
             coords = sc.frac_coords
         else:
             coords = make_supercell(
-            filtered_structure.cart_coords, filtered_structure.lattice.matrix, min_size
-        )
+                filtered_structure.cart_coords, filtered_structure.lattice.matrix, min_size
+            )
         pds = construct_pds_cached(coords)
         arrays = diagrams_to_bd_arrays(pds)
         element_dias["all"] = arrays
@@ -183,7 +189,7 @@ def get_persistence_image_limits_for_structure(
     elements: List[List[str]],
     compute_for_all_elements: bool = True,
     min_size: int = 20,
-    periodic: bool = False
+    periodic: bool = False,
 ) -> dict:
     limits = defaultdict(list)
     for element in elements:
@@ -191,12 +197,14 @@ def get_persistence_image_limits_for_structure(
             filtered_structure = filter_element(structure, element)
 
             if periodic:
-                sc = CubicSupercellTransformation(min_size=min_size).apply_transformation(filtered_structure)
+                sc = CubicSupercellTransformation(min_size=min_size).apply_transformation(
+                    filtered_structure
+                )
                 coords = sc.frac_coords
             else:
                 coords = make_supercell(
-                filtered_structure.cart_coords, filtered_structure.lattice.matrix, min_size
-            )
+                    filtered_structure.cart_coords, filtered_structure.lattice.matrix, min_size
+                )
             pds = construct_pds(coords)
             pd = diagrams_to_arrays(pds)
             for k, v in pd.items():
@@ -206,12 +214,14 @@ def get_persistence_image_limits_for_structure(
 
     if compute_for_all_elements:
         if periodic:
-            sc = CubicSupercellTransformation(min_size=min_size).apply_transformation(filtered_structure)
+            sc = CubicSupercellTransformation(min_size=min_size).apply_transformation(
+                filtered_structure
+            )
             coords = sc.frac_coords
         else:
             coords = make_supercell(
-            filtered_structure.cart_coords, filtered_structure.lattice.matrix, min_size
-        )
+                filtered_structure.cart_coords, filtered_structure.lattice.matrix, min_size
+            )
         pd = diagrams_to_arrays(construct_pds(coords))
         for k, v in pd.items():
             limits[k].append(get_min_max_from_dia(v))
