@@ -139,7 +139,7 @@ class PHImage(BaseFeaturizer):
             weighting=self.weight,
             maxB=self.max_B,
             maxP=self.max_P,
-            periodic = self.periodic,
+            periodic=self.periodic,
         )
         features = []
         elements = list(self.atom_types)
@@ -166,7 +166,11 @@ class PHImage(BaseFeaturizer):
 
         for structure in structures:
             lim = get_persistence_image_limits_for_structure(
-                structure, self.atom_types, self.compute_for_all_elements, self.min_size, periodic=self.periodic
+                structure,
+                self.atom_types,
+                self.compute_for_all_elements,
+                self.min_size,
+                periodic=self.periodic,
             )
             for k, v in lim.items():
                 limits[k].extend(v)

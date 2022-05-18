@@ -33,12 +33,19 @@ def _apply_and_fill(transformer_func, diagrams):
 
 
 def _fit_transform_structures(
-    transformers, structures, atom_types: Tuple[str], compute_for_all_elements: bool, min_size: int, periodic: bool = False
+    transformers,
+    structures,
+    atom_types: Tuple[str],
+    compute_for_all_elements: bool,
+    min_size: int,
+    periodic: bool = False,
 ):
     logger.info(f"Computing diagrams for {len(structures)} structures")
     diagrams = defaultdict(lambda: defaultdict(list))
     for structure in structures:
-        res = get_diagrams_for_structure(structure, atom_types, compute_for_all_elements, min_size, periodic=periodic)
+        res = get_diagrams_for_structure(
+            structure, atom_types, compute_for_all_elements, min_size, periodic=periodic
+        )
         for element, element_d in res.items():
             for dim, dim_d in element_d.items():
                 diagrams[element][dim].append(dim_d)
@@ -68,11 +75,18 @@ def _fit_transform_structures(
 
 
 def _transform_structures(
-    transformers, structures, atom_types: Tuple[str], compute_for_all_elements: bool, min_size: int, periodic: bool = False
+    transformers,
+    structures,
+    atom_types: Tuple[str],
+    compute_for_all_elements: bool,
+    min_size: int,
+    periodic: bool = False,
 ):
     diagrams = defaultdict(lambda: defaultdict(list))
     for structure in structures:
-        res = get_diagrams_for_structure(structure, atom_types, compute_for_all_elements, min_size, periodic=periodic)
+        res = get_diagrams_for_structure(
+            structure, atom_types, compute_for_all_elements, min_size, periodic=periodic
+        )
         for element, element_d in res.items():
             for dim, dim_d in element_d.items():
                 diagrams[element][dim].append(dim_d)
@@ -201,7 +215,7 @@ class PHVect(BaseFeaturizer):
             self.elements,
             self.compute_for_all_elements,
             self.min_size,
-             periodic=self.periodic,
+            periodic=self.periodic,
         )
         self._fitted = True
         return self
