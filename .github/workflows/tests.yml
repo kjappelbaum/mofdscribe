@@ -58,7 +58,8 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get install libcgal-dev -y & conda install raspa2 zeopp-lsmo cgal boost -c conda-forge -y
-          pip install pytest &  pip install git+https://github.com/kjappelbaum/molecule-tda.git@refactor & pip install average-minimum-distance
+          pip install pytest &  pip install git+https://github.com/kjappelbaum/molecule-tda.git@refactor 
+          pip install average-minimum-distance
           pip install -e .
       - name: Test with pytest
         run: |
