@@ -2,8 +2,6 @@
 from typing import List, Union
 
 import numpy as np
-from amd import AMD as AMDBase
-from amd import PeriodicSet
 from matminer.featurizers.base import BaseFeaturizer
 from pymatgen.core import IStructure, Structure
 
@@ -27,6 +25,13 @@ class AMD(BaseFeaturizer):
         ),
         compute_for_all_elements: bool = True,
     ) -> None:
+        """Initializes the AMD descriptor.
+
+        Args:
+            k (int, optional): controls the number of nearest neighbour atoms considered for each atom in the unit cell. Defaults to 100.
+            atom_types (tuple, optional): Atoms that are used to create substructures for which the AMD descriptor is computed. Defaults to ( 'C-H-N-O', 'F-Cl-Br-I', 'Cu-Mn-Ni-Mo-Fe-Pt-Zn-Ca-Er-Au-Cd-Co-Gd-Na-Sm-Eu-Tb-V-Ag-Nd-U-Ba-Ce-K-Ga-Cr-Al-Li-Sc-Ru-In-Mg-Zr-Dy-W-Yb-Y-Ho-Re-Be-Rb-La-Sn-Cs-Pb-Pr-Bi-Tm-Sr-Ti-Hf-Ir-Nb-Pd-Hg-Th-Np-Lu-Rh-Pu', ).
+            compute_for_all_elements (bool, optional): If True, compute the AMD descriptor for the original structure with all elements. Defaults to True.
+        """
         self.k = k
         atom_types = [] if atom_types is None else atom_types
         self.elements = atom_types
@@ -56,14 +61,30 @@ class AMD(BaseFeaturizer):
         Returns:
             A numpy array containing the AMD descriptor.
         """
+        from amd import AMD as AMDBase
+        from amd import PeriodicSet
+
         # ToDo: we can potentially parallelize this
         all_desc = []
-        for element in self.elements:
-            filtered_structure = filter_element(structure, element)
-            all_desc.extend(AMDBase(PeriodicSet(filtered_structure), self.k))
+        if len(self.elements) > 0:
+            for element in self.elements:
+                filtered_structure = filter_element(structure, element)
+                all_desc.extend(
+                    AMDBase(
+                        PeriodicSet(
+                            filtered_structure.cart_coords, filtered_structure.lattice.matrix
+                        ),
+                        self.k,
+                    )
+                )
 
         if self.compute_for_all_elements:
-            all_desc.extend(AMDBase(PeriodicSet(structure), self.k))
+            all_desc.extend(
+                AMDBase(
+                    PeriodicSet(structure.cart_coords, structure.lattice.matrix),
+                    self.k,
+                )
+            )
 
         return np.array(all_desc)
 

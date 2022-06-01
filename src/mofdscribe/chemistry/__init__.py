@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from .amd import AMD
 from .aprdf import APRDF
 from .energygrid import EnergyGridHistogram
 from .henry import Henry
