@@ -33,14 +33,15 @@ class PHStats(BaseFeaturizer):
         aggregation_functions: Tuple[str] = ("min", "max", "mean", "std"),
         periodic: bool = False,
     ) -> None:
-        """_summary_
+        """Initialize the PHStats object.
 
         Args:
-            atom_types (tuple, optional): _description_. Defaults to ( "C-H-N-O", "F-Cl-Br-I", "Cu-Mn-Ni-Mo-Fe-Pt-Zn-Ca-Er-Au-Cd-Co-Gd-Na-Sm-Eu-Tb-V-Ag-Nd-U-Ba-Ce-K-Ga-Cr-Al-Li-Sc-Ru-In-Mg-Zr-Dy-W-Yb-Y-Ho-Re-Be-Rb-La-Sn-Cs-Pb-Pr-Bi-Tm-Sr-Ti-Hf-Ir-Nb-Pd-Hg-Th-Np-Lu-Rh-Pu", ).
-            compute_for_all_elements (bool, optional): _description_. Defaults to True.
-            dimensions (Tuple[int], optional): _description_. Defaults to (1, 2).
-            min_size (int, optional): _description_. Defaults to 20.
-            aggregation_functions (Tuple[str], optional): _description_. Defaults to ("min", "max", "mean", "std").
+            atom_types (tuple, optional): Atoms that are used to create substructures for which the persistent homology statistics are computed. Defaults to ( "C-H-N-O", "F-Cl-Br-I", "Cu-Mn-Ni-Mo-Fe-Pt-Zn-Ca-Er-Au-Cd-Co-Gd-Na-Sm-Eu-Tb-V-Ag-Nd-U-Ba-Ce-K-Ga-Cr-Al-Li-Sc-Ru-In-Mg-Zr-Dy-W-Yb-Y-Ho-Re-Be-Rb-La-Sn-Cs-Pb-Pr-Bi-Tm-Sr-Ti-Hf-Ir-Nb-Pd-Hg-Th-Np-Lu-Rh-Pu", ).
+            compute_for_all_elements (bool, optional): Compute descriptor for original structure with all atoms. Defaults to True.
+            dimensions (Tuple[int], optional): Dimensions of topological features to consider. Defaults to (1, 2).
+            min_size (int, optional): Minimum supercell size (in Angstrom). Defaults to 20.
+            aggregation_functions (Tuple[str], optional): Methods used to combine the properties.
+                See `mofdscribe.utils.aggregators.ARRAY_AGGREGATORS` for available options. Defaults to ("min", "max", "mean", "std").
             periodic (bool, optional): If true, then periodic Euclidean is used in the analysis (experimental!). Defaults to False.
         """
 

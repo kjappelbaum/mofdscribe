@@ -50,6 +50,12 @@ Many of the descriptors implemented in mofdscribe have been discussed in our `20
      - ✅
      - ❌
      - [Ongari2019]_ [Wilmer2012]_
+   * - `AMD <:py:class:`mofdscribe.chemistry.amd.AMD>`_
+     - ❌
+     - (✅, optionally)
+     - ✅
+     - ❌
+     - [Widdowson2022]_
    * - `PoreDiameters <:py:class:`mofdscribe.pore.geometric_properties.PoreDiameters>`_
      - ❌
      - ❌
@@ -257,3 +263,5 @@ References
 .. [Wilmer2012] `Wilmer et al., J. Phys. Chem. Lett. 2012, 3, 17, 2506–2511 <https://pubs.acs.org/doi/abs/10.1021/jz3008485>`_
 
 .. [Jiang2021] `Jiang, Y.; Chen, D.; Chen, X.; Li, T.; Wei, G.-W.; Pan, F. Topological Representations of Crystalline Compounds for the Machine-Learning Prediction of Materials Properties. npj Computational Materials 2021, 7 (1), 1–8. <https://doi.org/10.1038/s41524-021-00493-w>`_
+
+.. [Widdowson2022] `Widdowson et al. Average minimum distances of periodic point sets – foundational invariants for mapping periodic crystals. MATCH Communications in Mathematical and in Computer Chemistry, 87(3), 529-559 (2022). <https://doi.org/10.46793/match.87-3.529W>`_

@@ -42,6 +42,8 @@ Chemistry-centred featurization
 .. automodule:: mofdscribe.chemistry.energygrid
     :members:
 
+.. automodule:: mofdscribe.chemistry.amd
+    :members:
 
 
 Datasets
