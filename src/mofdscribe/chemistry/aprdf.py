@@ -35,7 +35,7 @@ class APRDF(BaseFeaturizer):
         bin_size: float = 0.1,
         bw: Union[float, None] = 0.1,
         properties: Tuple[str, int] = ("X", "electron_affinity"),
-        aggreations: Tuple[str] = ("avg", "product", "diff"),
+        aggregations: Tuple[str] = ("avg", "product", "diff"),
     ):
         """Set up an atomic property (AP) weighted radial distribution function.
 
@@ -49,7 +49,7 @@ class APRDF(BaseFeaturizer):
                 All properties of `pymatgen.core.Species` are available
                 in addition to the integer `1` that will set P_i=P_j=1.
                 Defaults to ("X", "electron_affinity").
-            aggreations (Tuple[str], optional): Methods used to combine the properties.
+            aggregations (Tuple[str], optional): Methods used to combine the properties.
                 See `mofdscribe.utils.aggregators.AGGREGATORS` for available options.
                 Defaults to ("avg", "product", "diff").
         """
@@ -59,7 +59,7 @@ class APRDF(BaseFeaturizer):
         self.properties = properties
 
         self.bw = bw
-        self.aggregations = aggreations
+        self.aggregations = aggregations
 
     def precheck(self):
         pass

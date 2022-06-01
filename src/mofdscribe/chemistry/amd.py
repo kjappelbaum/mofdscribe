@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from typing import List, Union
+from typing import List, Union, Tuple
 
 import numpy as np
 from matminer.featurizers.base import BaseFeaturizer
@@ -12,7 +12,9 @@ __all__ = ["AMD"]
 
 class AMD(BaseFeaturizer):
     """
-    Implements the average minimum distance (AMD) isometry invariant.
+    Implements the average minimum distance (AMD) isometry invariant and its generalization to other aggregations of the PDD.
+    Note that it currently does not implement averages according to multiplicity of sites (as the original code supports).
+
     The AMD is the average of the point-wise distance distribution (PDD) of a crystal. The PDD lists distances to neighbouring atoms in order, closest first. Hence, the kth AMD value corresponds to the average distance to the kth nearest neighbour.
 
     The descriptors can be computed over the full structure or substructures of certain atom types.
@@ -27,6 +29,7 @@ class AMD(BaseFeaturizer):
             "Cu-Mn-Ni-Mo-Fe-Pt-Zn-Ca-Er-Au-Cd-Co-Gd-Na-Sm-Eu-Tb-V-Ag-Nd-U-Ba-Ce-K-Ga-Cr-Al-Li-Sc-Ru-In-Mg-Zr-Dy-W-Yb-Y-Ho-Re-Be-Rb-La-Sn-Cs-Pb-Pr-Bi-Tm-Sr-Ti-Hf-Ir-Nb-Pd-Hg-Th-Np-Lu-Rh-Pu",
         ),
         compute_for_all_elements: bool = True,
+        aggregations: Tuple[str] = ("mean",),
     ) -> None:
         """Initializes the AMD descriptor.
 
@@ -34,6 +37,7 @@ class AMD(BaseFeaturizer):
             k (int, optional): controls the number of nearest neighbour atoms considered for each atom in the unit cell. Defaults to 100.
             atom_types (tuple, optional): Atoms that are used to create substructures for which the AMD descriptor is computed. Defaults to ( 'C-H-N-O', 'F-Cl-Br-I', 'Cu-Mn-Ni-Mo-Fe-Pt-Zn-Ca-Er-Au-Cd-Co-Gd-Na-Sm-Eu-Tb-V-Ag-Nd-U-Ba-Ce-K-Ga-Cr-Al-Li-Sc-Ru-In-Mg-Zr-Dy-W-Yb-Y-Ho-Re-Be-Rb-La-Sn-Cs-Pb-Pr-Bi-Tm-Sr-Ti-Hf-Ir-Nb-Pd-Hg-Th-Np-Lu-Rh-Pu', ).
             compute_for_all_elements (bool, optional): If True, compute the AMD descriptor for the original structure with all elements. Defaults to True.
+            aggregations (tuple, optional): Aggregations of the AMD descriptor. The 'mean' is equivalent to the original AMD. Defaults to ('mean',).
         """
         self.k = k
         atom_types = [] if atom_types is None else atom_types
@@ -42,12 +46,14 @@ class AMD(BaseFeaturizer):
             list(atom_types) + ["all"] if compute_for_all_elements else list(atom_types)
         )
         self.compute_for_all_elements = compute_for_all_elements
+        self.aggregations = aggregations
 
     def _get_feature_labels(self) -> List[str]:
         labels = []
         for atom_type in self.atom_types:
-            for i in range(self.k):
-                labels.append(f"{atom_type}_{i}")
+            for agg in self.aggregations:
+                for i in range(self.k):
+                    labels.append(f"{atom_type}_{agg}_{i}")
 
         return labels
 
@@ -64,32 +70,32 @@ class AMD(BaseFeaturizer):
         Returns:
             A numpy array containing the AMD descriptor.
         """
-        from amd import AMD as AMDBase
+        from amd.calculate import _extract_motif_and_cell
+        from amd._nearest_neighbours import nearest_neighbours
         from amd import PeriodicSet
+
+        def get_pdd(structure, k):
+            motif, cell, asymmetric_unit, multiplicities = _extract_motif_and_cell(
+                PeriodicSet(structure.cart_coords, structure.lattice.matrix)
+            )
+            pdd, _, _ = nearest_neighbours(motif, cell, k, asymmetric_unit=asymmetric_unit)
+            return pdd
 
         # ToDo: we can potentially parallelize this
         all_desc = []
         if len(self.elements) > 0:
             for element in self.elements:
                 filtered_structure = filter_element(structure, element)
-                all_desc.extend(
-                    AMDBase(
-                        PeriodicSet(
-                            filtered_structure.cart_coords, filtered_structure.lattice.matrix
-                        ),
-                        self.k,
-                    )
-                )
+                pdd = get_pdd(filtered_structure, self.k)
+                for agg in self.aggregations:
+                    all_desc.append(getattr(np, agg)(pdd, axis=0))
 
         if self.compute_for_all_elements:
-            all_desc.extend(
-                AMDBase(
-                    PeriodicSet(structure.cart_coords, structure.lattice.matrix),
-                    self.k,
-                )
-            )
+            pdd = get_pdd(structure, self.k)
+            for agg in self.aggregations:
+                all_desc.append(getattr(np, agg)(pdd, axis=0))
 
-        return np.array(all_desc)
+        return np.concatenate(all_desc)
 
     def citations(self):
         return [
