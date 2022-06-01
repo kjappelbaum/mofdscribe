@@ -212,7 +212,7 @@ class SurfaceArea(BaseFeaturizer):
         self.num_samples = num_samples
         self.channel_radius = channel_radius
 
-        self.labels = [
+        labels = [
             "uc_volume",
             "density",
             "asa_a2",
@@ -222,6 +222,8 @@ class SurfaceArea(BaseFeaturizer):
             "nasa_m2cm3",
             "nasa_m2g",
         ]
+
+        self.labels = [f"{l}_{self.probe_radius}" for l in labels]
 
     def featurize(self, s: Union[Structure, IStructure]) -> np.ndarray:
         command = [
@@ -280,7 +282,7 @@ class AccessibleVolume(BaseFeaturizer):
         self.probe_radius = probe_radius
         self.num_samples = num_samples
         self.channel_radius = channel_radius
-        self.labels = [
+        labels = [
             "uc_volume",
             "density",
             "av_a2",
@@ -290,6 +292,7 @@ class AccessibleVolume(BaseFeaturizer):
             "nav_volume_fraction",
             "nav_cm3g",
         ]
+        self.labels = [f"{l}_{self.probe_radius}" for l in labels]
 
     def featurize(self, s: Union[Structure, IStructure]) -> np.ndarray:
         command = ["-vol", f"{self.channel_radius}", f"{self.probe_radius}", f"{self.num_samples}"]
@@ -373,7 +376,7 @@ class RayTracingHistogram(BaseFeaturizer):
         self.channel_radius = channel_radius
 
     def feature_labels(self) -> List[str]:
-        return [f"ray_hist_{i}" for i in range(1000)]
+        return [f"ray_hist_{self.probe_radius}_{i}" for i in range(1000)]
 
     def featurize(self, s: Union[Structure, IStructure]) -> np.ndarray:
         command = [
@@ -474,7 +477,7 @@ class PoreSizeDistribution(BaseFeaturizer):
         self.channel_radius = channel_radius
 
     def feature_labels(self) -> List[str]:
-        return [f"psd_hist_{i}" for i in range(1000)]
+        return [f"psd_hist_{self.probe_radiusgit }_{i}" for i in range(1000)]
 
     def featurize(self, s: Union[Structure, IStructure]) -> np.ndarray:
         command = [
