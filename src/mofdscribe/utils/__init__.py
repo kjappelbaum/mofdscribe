@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import collections
-from shutil import which
 import sys
+from shutil import which
 
 if sys.version_info.major == 3 and sys.version_info.minor >= 10:
     from collections.abc import MutableMapping
