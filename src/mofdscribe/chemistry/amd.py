@@ -86,7 +86,11 @@ class AMD(BaseFeaturizer):
         if len(self.elements) > 0:
             for element in self.elements:
                 filtered_structure = filter_element(structure, element)
-                pdd = get_pdd(filtered_structure, self.k)
+                if filtered_structure is not None:
+                    pdd = get_pdd(filtered_structure, self.k)
+                else:
+                    pdd = np.empty((1, self.k))
+                    pdd[:] = np.nan
                 for agg in self.aggregations:
                     all_desc.append(getattr(np, agg)(pdd, axis=0))
 

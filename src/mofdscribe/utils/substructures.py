@@ -24,6 +24,8 @@ def filter_element(structure: Structure, elements: List[str]) -> Structure:
     for site in structure.sites:
         if site.specie.symbol in elements_:
             keep_sites.append(site)
+    if len(keep_sites) == 0:
+        return None
     return Structure.from_sites(keep_sites)
 
 

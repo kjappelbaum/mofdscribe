@@ -82,7 +82,9 @@ def get_persistent_images_for_structure(
             )
         except ValueError as e:
             images = np.zeros((0, pixels[0], pixels[1]))
+            images[:] = np.nan
             pd = np.zeros((0, maxP + 1))
+            pd[:] = np.nan
 
         # ToDo: make sure that we have the correct length
         element_images["image"][element] = images
@@ -140,6 +142,8 @@ def get_diagrams_for_structure(
 ):
     keys = [f"dim{i}" for i in range(3)]
     element_dias = defaultdict(dict)
+    nan_array = np.zeros((0, 2))
+    nan_array[:] = np.nan
     for element in elements:
         try:
             filtered_structure = filter_element(structure, element)
@@ -155,30 +159,26 @@ def get_diagrams_for_structure(
             pds = construct_pds_cached(coords)
             arrays = diagrams_to_bd_arrays(pds)
         except Exception:
-            arrays = {key: np.zeros((0, 2)) for key in keys}
+            arrays = {key: nan_array for key in keys}
         if not len(arrays) == 4:
             for key in keys:
                 if key not in arrays:
-                    arrays[key] = np.zeros((0, 2))
+                    arrays[key] = nan_array
         element_dias[element] = arrays
 
     if compute_for_all_elements:
         if periodic:
-            sc = CubicSupercellTransformation(min_size=min_size).apply_transformation(
-                filtered_structure
-            )
+            sc = CubicSupercellTransformation(min_size=min_size).apply_transformation(structure)
             coords = sc.frac_coords
         else:
-            coords = make_supercell(
-                filtered_structure.cart_coords, filtered_structure.lattice.matrix, min_size
-            )
+            coords = make_supercell(structure.cart_coords, structure.lattice.matrix, min_size)
         pds = construct_pds_cached(coords)
         arrays = diagrams_to_bd_arrays(pds)
         element_dias["all"] = arrays
         if len(arrays) != 4:
             for key in keys:
                 if key not in arrays:
-                    arrays[key] = np.zeros((0, 2))
+                    arrays[key] = nan_array
     if len(element_dias) != len(elements) + int(compute_for_all_elements):
         raise ValueError("Something went wrong with the diagram extraction.")
     return element_dias
@@ -214,14 +214,10 @@ def get_persistence_image_limits_for_structure(
 
     if compute_for_all_elements:
         if periodic:
-            sc = CubicSupercellTransformation(min_size=min_size).apply_transformation(
-                filtered_structure
-            )
+            sc = CubicSupercellTransformation(min_size=min_size).apply_transformation(structure)
             coords = sc.frac_coords
         else:
-            coords = make_supercell(
-                filtered_structure.cart_coords, filtered_structure.lattice.matrix, min_size
-            )
+            coords = make_supercell(structure.cart_coords, structure.lattice.matrix, min_size)
         pd = diagrams_to_arrays(construct_pds(coords))
         for k, v in pd.items():
             limits[k].append(get_min_max_from_dia(v))
