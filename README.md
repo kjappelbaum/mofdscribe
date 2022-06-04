@@ -37,14 +37,6 @@ featurizer = RACS()
 racs_features = featurizer.featurize(structure)
 ```
 
-### Command Line Interface
-
-The mofdscribe command line tool is automatically installed. It can
-be used from the shell with the `--help` flag to show all subcommands:
-
-```shell
-$ mofdscribe --help
-```
 
 ## 🚀 Installation
 

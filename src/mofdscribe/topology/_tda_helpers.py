@@ -121,15 +121,20 @@ def diagrams_to_bd_arrays(dgms):
     """Convert persistence diagram objects to persistence diagram arrays."""
     dgm_arrays = {}
     for dim, dgm in enumerate(dgms):
-        if len(dgm) == 0:
-            dgm_arrays[f"dim{dim}"] = np.zeros((0, 2))
-        else:
-            arr = np.array([[np.sqrt(p.birth), np.sqrt(p.death)] for p in dgm])
+
+        if dgm:
+            arr = np.array(
+                [[np.sqrt(dgm[i].birth), np.sqrt(dgm[i].death)] for i in range(len(dgm))]
+            )
 
             mask = np.isfinite(arr).all(axis=1)
 
             arr = arr[mask]
             dgm_arrays[f"dim{dim}"] = arr
+
+        else:
+            dgm_arrays[f"dim{dim}"] = np.zeros((0, 2))
+
     return dgm_arrays
 
 
