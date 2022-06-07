@@ -16,6 +16,7 @@ from pymatgen.core import IStructure, Structure
 from mofdscribe.utils.eqeq import get_eqeq_charges
 
 from .ff_builder import ff_builder
+from ..tempdir import TEMPDIR
 
 
 def call_eqeq(structure, filename):
@@ -38,7 +39,7 @@ def run_raspa(
     run_eqeq: bool = False,
 ):
     ff_results = ff_builder(ff_params)
-    with TemporaryDirectory() as tempdir:
+    with TemporaryDirectory(dir=TEMPDIR) as tempdir:
         for k, v in ff_results.items():
             with open(
                 os.path.join(tempdir, k.replace("_def", ".def").replace("molecule_", "")), "w"
