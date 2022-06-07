@@ -83,6 +83,8 @@ And, clearly, you can also use the `mofdscribe` featurizers alongside ones from 
     features = featurizer.featurize_many([s, s2])
 
 
+If you use the `zeo++` or `raspa2` packages, you can customize the temporary directory used by the featurizers by exporting `MOFDSCRIBE_TEMPDIR`. If you do not specify the temporary directory, the default is the current working directory.
+
 Using a reference dataset
 --------------------------
 

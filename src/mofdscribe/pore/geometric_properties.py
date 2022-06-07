@@ -13,6 +13,7 @@ from matminer.featurizers.base import BaseFeaturizer
 from pymatgen.core import IStructure, Structure
 
 from ..utils import is_tool
+from ..utils.tempdir import TEMPDIR
 
 ZEOPP_BASE_COMMAND = ['network', '-ha']
 NO_ZEOPP_WARNING = 'Did not find the zeo++ network binary in the path. \
@@ -53,7 +54,7 @@ def run_zeopp(structure: Structure, command, parser) -> dict:
     """
     if not is_tool('network'):
         logger.error(NO_ZEOPP_WARNING)
-    with TemporaryDirectory() as tempdir:
+    with TemporaryDirectory(dir=TEMPDIR) as tempdir:
         structure_path = os.path.join(tempdir, 'structure.cif')
         result_path = os.path.join(tempdir, 'result.res')
         structure.to('cif', structure_path)
