@@ -477,7 +477,7 @@ class PoreSizeDistribution(BaseFeaturizer):
         self.channel_radius = channel_radius
 
     def feature_labels(self) -> List[str]:
-        return [f"psd_hist_{self.probe_radiusgit }_{i}" for i in range(1000)]
+        return [f"psd_hist_{self.probe_radius}_{i}" for i in range(1000)]
 
     def featurize(self, s: Union[Structure, IStructure]) -> np.ndarray:
         command = [
