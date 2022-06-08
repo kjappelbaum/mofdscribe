@@ -10,6 +10,11 @@ Pore geometry featurization
     :members:
 
 
+Voxelgrid
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. automodule:: mofdscribe.pore.voxelgrid
+    :members:
+
 Topological featurization (persistent homology)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
