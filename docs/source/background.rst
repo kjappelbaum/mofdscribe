@@ -86,6 +86,12 @@ Many of the descriptors implemented in mofdscribe have been discussed in our `20
      - ✅
      - ❌
      - [Willems2011]_ [Pinheiro2013]_
+   * - `VoxelGrid <:py:class:`mofdscribe.pore.voxelgrid.VoxelGrid>`_
+     - ❌
+     - ✅
+     - ✅
+     - ❌
+     -
    * - `PHImage <:py:class:`mofdscribe.topology.ph_image.PHImage>`_
      - ❌
      - ✅ (optionally)
