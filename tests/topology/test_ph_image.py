@@ -4,9 +4,9 @@ from mofdscribe.topology.ph_image import PHImage
 from ..helpers import is_jsonable
 
 
-def test_phimage(hkust_structure, irmof_structure):
+def test_phimage(hkust_structure, irmof_structure, cof_structure):
     phi = PHImage()
-    for structure in [hkust_structure, irmof_structure]:
+    for structure in [hkust_structure, irmof_structure, cof_structure]:
         features = phi.featurize(structure)
         assert len(features) == 20 * 20 * 4 * 3
 
