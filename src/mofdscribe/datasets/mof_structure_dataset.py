@@ -55,13 +55,13 @@ class MOFStructureDataset(ABC):
     ) -> Tuple[np.ndarray, np.ndarray]:
         if year_valid is None:
             if year_valid >= year:
-                raise ValueError("Year valid must be smaller than year.")
+                raise ValueError('Year valid must be smaller than year.')
 
-        train = np.where(self._df["year"] <= year)
-        test = np.where(self._df["year"] > year)
+        train = np.where(self._df['year'] <= year)
+        test = np.where(self._df['year'] > year)
 
         if year_valid is not None:
-            valid = np.where((self._df["year"] < year) & (self._df["year"] > year_valid))
+            valid = np.where((self._df['year'] < year) & (self._df['year'] > year_valid))
             return train, valid, test
 
         return train, test
