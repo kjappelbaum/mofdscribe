@@ -72,3 +72,10 @@ Metrics
 
 .. automodule:: mofdscribe.metrics.complexity
     :members:
+
+
+Splitters
+-----------
+
+.. automodule:: mofdscribe.splitters.splitter
+    :members:
