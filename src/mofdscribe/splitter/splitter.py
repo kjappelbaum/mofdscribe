@@ -43,3 +43,12 @@ class Splitter:
         Split the data into train, validation and test.
         """
         raise NotImplementedError
+
+
+class HashSplitter(Splitter):
+    def split(self, ds, frac_train, frac_valid, frac_test, **kwargs):
+        """
+        Split the data into train, validation and test.
+        """
+        train_inds = ds.get_indices_for_hash(frac_train)
+        valid_inds = ds.get_indices_for_hash(frac_valid)
