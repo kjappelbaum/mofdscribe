@@ -2,10 +2,10 @@
 from mofdscribe.datasets.core_dataset import CoREDataset
 from mofdscribe.splitters.splitters import (
     DensitySpliiter,
-    HashSplitter,
-    TimeSplitter,
-    RandomSplitter,
     FingerprintSplitter,
+    HashSplitter,
+    RandomSplitter,
+    TimeSplitter,
 )
 
 
