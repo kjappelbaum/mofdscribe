@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from mofdscribe.datasets.core_dataset import CoREDataset
-from mofdscribe.splitters.splitters import HashSplitter, TimeSplitter, DensitySpliiter
+from mofdscribe.splitters.splitters import DensitySpliiter, HashSplitter, TimeSplitter
 
 
 def test_hash_splitter():

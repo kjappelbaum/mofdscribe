@@ -12,4 +12,4 @@ def test_core():
     assert isinstance(core.get_years([1]), np.ndarray)
     assert len(core.get_years([1])) == 1
     assert len(core.get_years([1, 2, 4])) == 3
-    assert isinstance(core.get_labels([1], ['pure_methane_kH']), np.ndarray)
+    assert isinstance(core.get_labels([1], ["pure_methane_kH"]), np.ndarray)

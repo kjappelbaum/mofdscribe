@@ -12,4 +12,4 @@ def test_core():
     assert isinstance(qmof.get_years([1]), np.ndarray)
     assert len(qmof.get_years([1])) == 1
     assert len(qmof.get_years([1, 2, 4])) == 3
-    assert isinstance(qmof.get_labels([1], ['outputs.pbe.bandgap']), np.ndarray)
+    assert isinstance(qmof.get_labels([1], ["outputs.pbe.bandgap"]), np.ndarray)
