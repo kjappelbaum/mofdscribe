@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from functools import lru_cache
 from typing import Iterable, List, Optional, Tuple
 
@@ -32,7 +33,7 @@ class StructureDataset:
 
     def get_years(self, idx: int) -> int:
         if self._years is None:
-            raise ValueError("Years are not available.")
+            raise ValueError('Years are not available.')
         return self._years.iloc[idx].values
 
     # ToDo: think about how we can cache this in memory
@@ -45,22 +46,22 @@ class StructureDataset:
     # ToDo: compute if not already computed
     def get_decorated_graph_hashes(self, idx: Iterable[int]) -> str:
         if self._decorated_graph_hashes is None:
-            raise ValueError("Decorated graph hashes are not available.")
+            raise ValueError('Decorated graph hashes are not available.')
         return self._decorated_graph_hashes.iloc[idx]
 
     def get_undecorated_graph_hashes(self, idx: Iterable[int]) -> str:
         if self._undecorated_graph_hashes is None:
-            raise ValueError("Undecorated graph hashes are not available.")
+            raise ValueError('Undecorated graph hashes are not available.')
         return self._undecorated_graph_hashes.iloc[idx]
 
     def get_decorated_scaffold_hashes(self, idx: Iterable[int]) -> str:
         if self._decorated_graph_hashes is None:
-            raise ValueError("Decorated scaffold hashes are not available.")
+            raise ValueError('Decorated scaffold hashes are not available.')
         return self._decorated_scaffold_hashes.iloc[idx]
 
     def get_undecorated_scaffold_hashes(self, idx: Iterable[int]) -> str:
         if self._undecorated_scaffold_hashes is None:
-            raise ValueError("Undecorated scaffold hashes are not available.")
+            raise ValueError('Undecorated scaffold hashes are not available.')
         return self._undecorated_scaffold_hashes.iloc[idx]
 
     def get_densities(self, idx: Iterable[int]) -> np.ndarray:
