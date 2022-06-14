@@ -390,5 +390,5 @@ $RECYCLE.BIN/
 # End of https://www.toptal.com/developers/gitignore/api/linux,macos,python,pycharm,windows,vim,visualstudiocode,jupyternotebooks
 scratch/
 dev/
-datasets/
+datasets_dev/
 paper_figures/
