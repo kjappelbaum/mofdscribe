@@ -53,23 +53,23 @@ class Splitter:
 class HashSplitter(Splitter):
     def __init__(
         self,
-        hash_type: str = 'undecorated_scaffold_hash',
+        hash_type: str = "undecorated_scaffold_hash",
     ) -> None:
         self.hash_type = hash_type
         super().__init__()
 
     def get_hashes(self, ds):
         number_of_points = len(ds)
-        if self.hash_type == 'undecorated_scaffold_hash':
+        if self.hash_type == "undecorated_scaffold_hash":
             hashes = ds.get_undecorated_scaffold_hashes(range(number_of_points))
-        elif self.hash_type == 'decorated_graph_hash':
+        elif self.hash_type == "decorated_graph_hash":
             hashes = ds.get_decorated_graph_hashes(range(number_of_points))
-        elif self.hash_type == 'decorated_scaffold_hash':
+        elif self.hash_type == "decorated_scaffold_hash":
             hashes = ds.get_decorated_scaffold_hashes(range(number_of_points))
-        elif self.hash_type == 'undecorated_graph_hash':
+        elif self.hash_type == "undecorated_graph_hash":
             hashes = ds.get_undecorated_graph_hash(range(number_of_points))
         else:
-            raise ValueError(f'Unknown hash type: {self.hash_type}')
+            raise ValueError(f"Unknown hash type: {self.hash_type}")
 
         return hashes
 
@@ -97,7 +97,7 @@ class HashSplitter(Splitter):
         **kwargs,
     ):
         if sample_frac > 1.0:
-            raise ValueError('sample_frac must be <= 1.0')
+            raise ValueError("sample_frac must be <= 1.0")
         number_of_points = int(len(ds) * sample_frac)
         number_of_train_points = int(frac_train * number_of_points)
         number_of_valid_points = int(frac_valid * number_of_points)
