@@ -74,7 +74,6 @@ copybutton_prompt_is_regexp = True
 # generate autosummary pages
 autosummary_generate = True
 
-# katex_prerender = True
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']

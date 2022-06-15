@@ -244,7 +244,6 @@ class VoxelGrid:
             vector /= len(self.voxel_n)
 
         elif mode == 'TDF':
-            # truncation = np.linalg.norm(self.shape)
             kdt = cKDTree(self._points)
             vector, i = kdt.query(self.voxel_centers, n_jobs=-1)
 
