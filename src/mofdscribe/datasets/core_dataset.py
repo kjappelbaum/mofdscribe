@@ -73,22 +73,20 @@ class CoREDataset(StructureDataset):
         self._decorated_scaffold_hashes = self._df["scaffold_hash"]
         self._undecorated_scaffold_hashes = self._df["undecorated_scaffold_hash"]
         self._densities = self._df["density_x"]
-        self._labelnames = tuple(
-            [
-                "pure_CO2_kH",
-                "pure_CO2_widomHOA",
-                "pure_methane_kH",
-                "pure_methane_widomHOA",
-                "pure_uptake_CO2_298.00_15000",
-                "pure_uptake_CO2_298.00_1600000",
-                "pure_uptake_methane_298.00_580000",
-                "pure_uptake_methane_298.00_6500000",
-                "logKH_CO2",
-                "logKH_CH4",
-                "CH4DC",
-                "CH4HPSTP",
-                "CH4LPSTP",
-            ]
+        self._labelnames = (
+            "pure_CO2_kH",
+            "pure_CO2_widomHOA",
+            "pure_methane_kH",
+            "pure_methane_widomHOA",
+            "pure_uptake_CO2_298.00_15000",
+            "pure_uptake_CO2_298.00_1600000",
+            "pure_uptake_methane_298.00_580000",
+            "pure_uptake_methane_298.00_6500000",
+            "logKH_CO2",
+            "logKH_CH4",
+            "CH4DC",
+            "CH4HPSTP",
+            "CH4LPSTP",
         )
 
     @property
