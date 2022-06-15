@@ -6,8 +6,8 @@ import numpy as np
 import pandas as pd
 from loguru import logger
 
+from .checks import check_all_file_exists, length_check
 from .dataset import StructureDataset
-from .checks import length_check, check_all_file_exists
 from ..constants import MOFDSCRIBE_PYSTOW_MODULE
 
 
@@ -127,7 +127,7 @@ class CoREDataset(StructureDataset):
             "pages = {5985--5998},"
             "author = {Yongchul G. Chung and Emmanuel Haldoupis and Benjamin J. Bucior and Maciej Haranczyk and Seulchan Lee and Hongda Zhang and Konstantinos D. Vogiatzis and Marija Milisavljevic and Sanliang Ling and Jeffrey S. Camp and Ben Slater and J. Ilja Siepmann and David S. Sholl and Randall Q. Snurr},"
             "title = {Advances,  Updates,  and Analytics for the Computation-Ready,  Experimental Metal{\textendash}Organic Framework Database: {CoRE} {MOF} 2019},"
-            "journal = {Journal of Chemical {\&}amp$\mathsemicolon$ Engineering Data}"
+            r"journal = {Journal of Chemical {\&}amp$\mathsemicolon$ Engineering Data}"
             "}",
             "@article{Chung2014,"
             "doi = {10.1021/cm502594j},"
