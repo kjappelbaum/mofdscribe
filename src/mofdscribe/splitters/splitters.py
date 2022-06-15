@@ -8,12 +8,12 @@ import numpy as np
 from ..datasets.dataset import Dataset
 
 __all__ = (
-    'DensitySplitter',
-    'HashSplitter',
-    'TimeSplitter',
-    'Splitter',
-    'RandomSplitter',
-    'FingerprintSplitter',
+    "DensitySplitter",
+    "HashSplitter",
+    "TimeSplitter",
+    "Splitter",
+    "RandomSplitter",
+    "FingerprintSplitter",
 )
 
 
@@ -57,9 +57,9 @@ class Splitter:
         """
         for frac in [frac_train, frac_valid]:
             if frac >= 1.0:
-                raise ValueError('frac_train and frac_valid must be < 1.0')
+                raise ValueError("frac_train and frac_valid must be < 1.0")
         if sample_frac > 1.0:
-            raise ValueError('sample_frac must be <= 1.0')
+            raise ValueError("sample_frac must be <= 1.0")
         number_of_points = int(len(ds) * sample_frac)
         number_of_train_points = int(frac_train * number_of_points)
         number_of_valid_points = int(frac_valid * number_of_points)
@@ -108,10 +108,10 @@ class Splitter:
             Tuple[Iterable[int], Iterable[int]]: train, test indices
         """
         if frac_train >= 1.0:
-            raise ValueError('frac_train and frac_test must be < 1.0')
+            raise ValueError("frac_train and frac_test must be < 1.0")
 
         if sample_frac > 1.0:
-            raise ValueError('sample_frac must be <= 1.0')
+            raise ValueError("sample_frac must be <= 1.0")
         number_of_points = int(len(ds) * sample_frac)
         number_of_train_points = int(frac_train * number_of_points)
 
@@ -164,7 +164,7 @@ class HashSplitter(Splitter):
 
     def __init__(
         self,
-        hash_type: Optional[str] = 'undecorated_scaffold_hash',
+        hash_type: Optional[str] = "undecorated_scaffold_hash",
     ) -> None:
         """Initialize a HashSplitter.
 
@@ -197,16 +197,16 @@ class HashSplitter(Splitter):
             Iterable[str]: list of hashes
         """
         number_of_points = len(ds)
-        if self.hash_type == 'undecorated_scaffold_hash':
+        if self.hash_type == "undecorated_scaffold_hash":
             hashes = ds.get_undecorated_scaffold_hashes(range(number_of_points))
-        elif self.hash_type == 'decorated_graph_hash':
+        elif self.hash_type == "decorated_graph_hash":
             hashes = ds.get_decorated_graph_hashes(range(number_of_points))
-        elif self.hash_type == 'decorated_scaffold_hash':
+        elif self.hash_type == "decorated_scaffold_hash":
             hashes = ds.get_decorated_scaffold_hashes(range(number_of_points))
-        elif self.hash_type == 'undecorated_graph_hash':
+        elif self.hash_type == "undecorated_graph_hash":
             hashes = ds.get_undecorated_graph_hashes(range(number_of_points))
         else:
-            raise ValueError(f'Unknown hash type: {self.hash_type}')
+            raise ValueError(f"Unknown hash type: {self.hash_type}")
 
         return hashes
 

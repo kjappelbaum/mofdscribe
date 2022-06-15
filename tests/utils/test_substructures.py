@@ -17,7 +17,7 @@ def test_get_metal_indices(irmof_structure):
 def test_select_elements(irmof_structure):
     """Ensure that we can extract a correct substructure."""
     s = irmof_structure
-    s = select_elements(s, 'Zn')
+    s = select_elements(s, "Zn")
     assert isinstance(s, Structure)
     assert len(s) == 32
-    assert s[0].specie.symbol == 'Zn'
+    assert s[0].specie.symbol == "Zn"

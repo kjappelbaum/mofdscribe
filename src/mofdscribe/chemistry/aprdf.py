@@ -15,7 +15,7 @@ from pymatgen.core import IStructure, Structure
 from ..utils.aggregators import AGGREGATORS
 from ..utils.histogram import get_rdf, smear_histogram
 
-__all__ = ['APRDF']
+__all__ = ["APRDF"]
 
 
 class APRDF(BaseFeaturizer):
@@ -38,8 +38,8 @@ class APRDF(BaseFeaturizer):
         lower_lim: float = 2.0,
         bin_size: float = 0.1,
         bw: Union[float, None] = 0.1,
-        properties: Tuple[str, int] = ('X', 'electron_affinity'),
-        aggregations: Tuple[str] = ('avg', 'product', 'diff'),
+        properties: Tuple[str, int] = ("X", "electron_affinity"),
+        aggregations: Tuple[str] = ("avg", "product", "diff"),
     ):
         """Set up an atomic property (AP) weighted radial distribution function.
 
@@ -80,7 +80,7 @@ class APRDF(BaseFeaturizer):
         for prop in self.properties:
             for aggregation in self.aggregations:
                 for _, bin_ in enumerate(self._bins):
-                    labels.append(f'{prop}_{aggregation}_{bin_}')
+                    labels.append(f"{prop}_{aggregation}_{bin_}")
 
         return labels
 
@@ -97,7 +97,7 @@ class APRDF(BaseFeaturizer):
             for n in site_neighbors:
                 if n.nn_distance > self.lower_lim:
                     for prop in self.properties:
-                        if prop in ('I', 1):
+                        if prop in ("I", 1):
                             p0 = 1
                             p1 = 1
                         else:
@@ -130,20 +130,20 @@ class APRDF(BaseFeaturizer):
 
     def citations(self) -> List[str]:
         return [
-            '@article{Fernandez2013,'
-            'doi = {10.1021/jp404287t},'
-            'url = {https://doi.org/10.1021/jp404287t},'
-            'year = {2013},'
-            'month = jul,'
-            'publisher = {American Chemical Society ({ACS})},'
-            'volume = {117},'
-            'number = {27},'
-            'pages = {14095--14105},'
-            'author = {Michael Fernandez and Nicholas R. Trefiak and Tom K. Woo},'
-            'title = {Atomic Property Weighted Radial Distribution Functions Descriptors of Metal{\textendash}Organic Frameworks for the Prediction of Gas Uptake Capacity},'
-            'journal = {The Journal of Physical Chemistry C}'
-            '}'
+            "@article{Fernandez2013,"
+            "doi = {10.1021/jp404287t},"
+            "url = {https://doi.org/10.1021/jp404287t},"
+            "year = {2013},"
+            "month = jul,"
+            "publisher = {American Chemical Society ({ACS})},"
+            "volume = {117},"
+            "number = {27},"
+            "pages = {14095--14105},"
+            "author = {Michael Fernandez and Nicholas R. Trefiak and Tom K. Woo},"
+            "title = {Atomic Property Weighted Radial Distribution Functions Descriptors of Metal{\textendash}Organic Frameworks for the Prediction of Gas Uptake Capacity},"
+            "journal = {The Journal of Physical Chemistry C}"
+            "}"
         ]
 
     def implementors(self):
-        return ['Kevin Maik Jablonka']
+        return ["Kevin Maik Jablonka"]

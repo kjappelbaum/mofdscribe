@@ -27,7 +27,7 @@ def _apply_and_fill(transformer_func, diagrams):
     complete_results[ok_rows, :] = results
     if len(complete_results) != len(diagrams):
         raise ValueError(
-            'Unexpected error. Number of feature vectors is not equal to number of structures'
+            "Unexpected error. Number of feature vectors is not equal to number of structures"
         )
     return complete_results
 
@@ -40,7 +40,7 @@ def _fit_transform_structures(
     min_size: int,
     periodic: bool = False,
 ):
-    logger.info(f'Computing diagrams for {len(structures)} structures')
+    logger.info(f"Computing diagrams for {len(structures)} structures")
     diagrams = defaultdict(lambda: defaultdict(list))
     for structure in structures:
         res = get_diagrams_for_structure(
@@ -54,7 +54,7 @@ def _fit_transform_structures(
     for element, element_transformers in transformers.items():
         for dim, transformer in element_transformers.items():
             if len(diagrams[element][dim]) == 0:
-                raise ValueError(f'{element} dimension {dim} has no diagrams')
+                raise ValueError(f"{element} dimension {dim} has no diagrams")
             try:
 
                 results[element][dim] = _apply_and_fill(
@@ -63,12 +63,12 @@ def _fit_transform_structures(
 
                 if not len(results[element][dim]) == len(structures):
                     raise ValueError(
-                        'Unexpected error. Number of feature vectors is not equal to number of structures'
+                        "Unexpected error. Number of feature vectors is not equal to number of structures"
                     )
 
             except Exception as e:
                 logger.error(
-                    f'Error fitting transformer: {element} {dim} {diagrams[element][dim]}', e
+                    f"Error fitting transformer: {element} {dim} {diagrams[element][dim]}", e
                 )
 
     return transformers, results
@@ -117,9 +117,9 @@ class PHVect(BaseFeaturizer):
     def __init__(
         self,
         atom_types: Optional[Tuple[str]] = (
-            'C-H-N-O',
-            'F-Cl-Br-I',
-            'Cu-Mn-Ni-Mo-Fe-Pt-Zn-Ca-Er-Au-Cd-Co-Gd-Na-Sm-Eu-Tb-V-Ag-Nd-U-Ba-Ce-K-Ga-Cr-Al-Li-Sc-Ru-In-Mg-Zr-Dy-W-Yb-Y-Ho-Re-Be-Rb-La-Sn-Cs-Pb-Pr-Bi-Tm-Sr-Ti-Hf-Ir-Nb-Pd-Hg-Th-Np-Lu-Rh-Pu',
+            "C-H-N-O",
+            "F-Cl-Br-I",
+            "Cu-Mn-Ni-Mo-Fe-Pt-Zn-Ca-Er-Au-Cd-Co-Gd-Na-Sm-Eu-Tb-V-Ag-Nd-U-Ba-Ce-K-Ga-Cr-Al-Li-Sc-Ru-In-Mg-Zr-Dy-W-Yb-Y-Ho-Re-Be-Rb-La-Sn-Cs-Pb-Pr-Bi-Tm-Sr-Ti-Hf-Ir-Nb-Pd-Hg-Th-Np-Lu-Rh-Pu",
         ),
         compute_for_all_elements: Optional[bool] = True,
         dimensions: Optional[Tuple[int]] = (1, 2),
@@ -127,7 +127,7 @@ class PHVect(BaseFeaturizer):
         n_components: Optional[int] = 20,
         apply_umap: Optional[bool] = False,
         umap_n_components: Optional[int] = 2,
-        umap_metric: Optional[str] = 'hellinger',
+        umap_metric: Optional[str] = "hellinger",
         p: Optional[int] = 1,
         random_state: Optional[int] = None,
         periodic: Optional[bool] = False,
@@ -167,7 +167,7 @@ class PHVect(BaseFeaturizer):
         atom_types = [] if atom_types is None else atom_types
         self.elements = atom_types
         self.atom_types = (
-            list(atom_types) + ['all'] if compute_for_all_elements else list(atom_types)
+            list(atom_types) + ["all"] if compute_for_all_elements else list(atom_types)
         )
         self.compute_for_all_elements = compute_for_all_elements
         self.min_size = min_size
@@ -175,7 +175,7 @@ class PHVect(BaseFeaturizer):
         self.transformers = defaultdict(lambda: defaultdict(dict))
         for atom_type in self.atom_types:
             for dim in self.dimensions:
-                self.transformers[atom_type][f'dim{dim}'] = PersistenceVectorizer(
+                self.transformers[atom_type][f"dim{dim}"] = PersistenceVectorizer(
                     n_components=n_components,
                     apply_umap=apply_umap,
                     umap_n_components=umap_n_components,
@@ -196,7 +196,7 @@ class PHVect(BaseFeaturizer):
         for atom_type in self.atom_types:
             for dim in self.dimensions:
                 for i in range(self.n_components):
-                    labels.append(f'ph_{atom_type}_{dim}_{i}')
+                    labels.append(f"ph_{atom_type}_{dim}_{i}")
 
         return labels
 
@@ -205,7 +205,7 @@ class PHVect(BaseFeaturizer):
 
     def featurize(self, structure: Union[Structure, IStructure]) -> np.ndarray:
         if not self._fitted:
-            raise ValueError('Must call fit before featurizing')
+            raise ValueError("Must call fit before featurizing")
         res = _transform_structures(
             self.transformers,
             [structure],
@@ -217,7 +217,7 @@ class PHVect(BaseFeaturizer):
         compiled_results = self._reshape_results(res, 1).flatten()
         return compiled_results
 
-    def fit(self, structures: Union[Structure, IStructure]) -> 'PHVect':
+    def fit(self, structures: Union[Structure, IStructure]) -> "PHVect":
         self.transformers, _ = _fit_transform_structures(
             self.transformers,
             structures,
@@ -253,29 +253,29 @@ class PHVect(BaseFeaturizer):
 
     def citations(self):
         return [
-            '@article{perea2019approximating,'
-            'title   = {Approximating Continuous Functions on Persistence Diagrams Using Template Functions},'
-            'author  = {Jose A. Perea and Elizabeth Munch and Firas A. Khasawneh},'
-            'year    = {2019},'
-            'journal = {arXiv preprint arXiv: Arxiv-1902.07190}'
-            '}',
-            '@article{tymochko2019adaptive,'
-            'title   = {Adaptive Partitioning for Template Functions on Persistence Diagrams},'
-            'author  = {Sarah Tymochko and Elizabeth Munch and Firas A. Khasawneh},'
-            'year    = {2019},'
-            'journal = {arXiv preprint arXiv: Arxiv-1910.08506}'
-            '}',
-            '@article{doi:10.1021/acs.jpcc.0c01167,'
-            'author = {Krishnapriyan, Aditi S. and Haranczyk, Maciej and Morozov, Dmitriy},'
-            'title = {Topological Descriptors Help Predict Guest Adsorption in Nanoporous Materials},'
-            'journal = {The Journal of Physical Chemistry C},'
-            'volume = {124},'
-            'number = {17},'
-            'pages = {9360-9368},'
-            'year = {2020},'
-            'doi = {10.1021/acs.jpcc.0c01167},'
-            '}',
+            "@article{perea2019approximating,"
+            "title   = {Approximating Continuous Functions on Persistence Diagrams Using Template Functions},"
+            "author  = {Jose A. Perea and Elizabeth Munch and Firas A. Khasawneh},"
+            "year    = {2019},"
+            "journal = {arXiv preprint arXiv: Arxiv-1902.07190}"
+            "}",
+            "@article{tymochko2019adaptive,"
+            "title   = {Adaptive Partitioning for Template Functions on Persistence Diagrams},"
+            "author  = {Sarah Tymochko and Elizabeth Munch and Firas A. Khasawneh},"
+            "year    = {2019},"
+            "journal = {arXiv preprint arXiv: Arxiv-1910.08506}"
+            "}",
+            "@article{doi:10.1021/acs.jpcc.0c01167,"
+            "author = {Krishnapriyan, Aditi S. and Haranczyk, Maciej and Morozov, Dmitriy},"
+            "title = {Topological Descriptors Help Predict Guest Adsorption in Nanoporous Materials},"
+            "journal = {The Journal of Physical Chemistry C},"
+            "volume = {124},"
+            "number = {17},"
+            "pages = {9360-9368},"
+            "year = {2020},"
+            "doi = {10.1021/acs.jpcc.0c01167},"
+            "}",
         ]
 
     def implementors(self):
-        return ['Kevin Maik Jablonka']
+        return ["Kevin Maik Jablonka"]

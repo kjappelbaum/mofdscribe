@@ -34,7 +34,7 @@ def get_node_atoms(structure_graph: StructureGraph) -> Set[int]:
         all_bonded_atoms = get_connected_site_indices(structure_graph, node_atom_index)
         only_bonded_metal_hydrogen = True
         for index in all_bonded_atoms:
-            if not ((str(structure_graph.structure[index].specie) == 'H') or index in metal_names):
+            if not ((str(structure_graph.structure[index].specie) == "H") or index in metal_names):
                 only_bonded_metal_hydrogen = False
         if only_bonded_metal_hydrogen:
             node_set.add(node_atom_index)
@@ -42,7 +42,7 @@ def get_node_atoms(structure_graph: StructureGraph) -> Set[int]:
     final_node_atom_set = deepcopy(node_set)
     for atom_index in node_set:
         for index in get_connected_site_indices(structure_graph, atom_index):
-            if str(structure_graph.structure[index].specie) == 'H':
+            if str(structure_graph.structure[index].specie) == "H":
                 final_node_atom_set.update(index)
 
     return final_node_atom_set
@@ -86,7 +86,7 @@ def get_bb_indices(structure_graph: StructureGraph) -> Dict[str, List[List[int]]
 
     linker_atom_types = _linker_atom_types(linker_idx, node_idx, structure_graph)
 
-    linker_atom_types['nodes'] = node_idx
+    linker_atom_types["nodes"] = node_idx
 
     return linker_atom_types
 
@@ -108,7 +108,7 @@ def _linker_atom_types(indices, node_indices, structure_graph):
             neighors = get_connected_site_indices(structure_graph, index)
             if any(i in flat_node_indices for i in neighors):
                 connecting_.append(index)
-            elif structure_graph.structure[index].specie.symbol not in ('H', 'C'):
+            elif structure_graph.structure[index].specie.symbol not in ("H", "C"):
                 functional_group_.append(index)
             else:
                 scaffold_.append(index)
@@ -117,8 +117,8 @@ def _linker_atom_types(indices, node_indices, structure_graph):
         connecting.append(connecting_)
 
     return {
-        'linker_all': indices,
-        'linker_functional': functional_group,
-        'linker_scaffold': scaffold,
-        'linker_connecting': connecting,
+        "linker_all": indices,
+        "linker_functional": functional_group,
+        "linker_scaffold": scaffold,
+        "linker_connecting": connecting,
     }

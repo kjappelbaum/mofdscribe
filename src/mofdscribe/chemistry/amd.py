@@ -8,7 +8,7 @@ from pymatgen.core import IStructure, Structure
 
 from mofdscribe.utils.substructures import filter_element
 
-__all__ = ['AMD']
+__all__ = ["AMD"]
 
 
 class AMD(BaseFeaturizer):
@@ -31,12 +31,12 @@ class AMD(BaseFeaturizer):
         self,
         k: int = 100,
         atom_types=(
-            'C-H-N-O',
-            'F-Cl-Br-I',
-            'Cu-Mn-Ni-Mo-Fe-Pt-Zn-Ca-Er-Au-Cd-Co-Gd-Na-Sm-Eu-Tb-V-Ag-Nd-U-Ba-Ce-K-Ga-Cr-Al-Li-Sc-Ru-In-Mg-Zr-Dy-W-Yb-Y-Ho-Re-Be-Rb-La-Sn-Cs-Pb-Pr-Bi-Tm-Sr-Ti-Hf-Ir-Nb-Pd-Hg-Th-Np-Lu-Rh-Pu',
+            "C-H-N-O",
+            "F-Cl-Br-I",
+            "Cu-Mn-Ni-Mo-Fe-Pt-Zn-Ca-Er-Au-Cd-Co-Gd-Na-Sm-Eu-Tb-V-Ag-Nd-U-Ba-Ce-K-Ga-Cr-Al-Li-Sc-Ru-In-Mg-Zr-Dy-W-Yb-Y-Ho-Re-Be-Rb-La-Sn-Cs-Pb-Pr-Bi-Tm-Sr-Ti-Hf-Ir-Nb-Pd-Hg-Th-Np-Lu-Rh-Pu",
         ),
         compute_for_all_elements: bool = True,
-        aggregations: Tuple[str] = ('mean',),
+        aggregations: Tuple[str] = ("mean",),
     ) -> None:
         """Initializes the AMD descriptor.
 
@@ -50,7 +50,7 @@ class AMD(BaseFeaturizer):
         atom_types = [] if atom_types is None else atom_types
         self.elements = atom_types
         self.atom_types = (
-            list(atom_types) + ['all'] if compute_for_all_elements else list(atom_types)
+            list(atom_types) + ["all"] if compute_for_all_elements else list(atom_types)
         )
         self.compute_for_all_elements = compute_for_all_elements
         self.aggregations = aggregations
@@ -60,7 +60,7 @@ class AMD(BaseFeaturizer):
         for atom_type in self.atom_types:
             for agg in self.aggregations:
                 for i in range(self.k):
-                    labels.append(f'{atom_type}_{agg}_{i}')
+                    labels.append(f"{atom_type}_{agg}_{i}")
 
         return labels
 
@@ -110,17 +110,17 @@ class AMD(BaseFeaturizer):
 
     def citations(self):
         return [
-            '@article{amd2022,'
-            'title = {Average Minimum Distances of periodic point sets - foundational invariants for mapping periodic crystals},'
-            'author = {Daniel Widdowson and Marco M Mosca and Angeles Pulido and Vitaliy Kurlin and Andrew I Cooper},'
-            'journal = {MATCH Communications in Mathematical and in Computer Chemistry},'
-            'doi = {10.46793/match.87-3.529W},'
-            'volume = {87},'
-            'number = {3},'
-            'pages = {529-559},'
-            'year = {2022}'
-            '}'
+            "@article{amd2022,"
+            "title = {Average Minimum Distances of periodic point sets - foundational invariants for mapping periodic crystals},"
+            "author = {Daniel Widdowson and Marco M Mosca and Angeles Pulido and Vitaliy Kurlin and Andrew I Cooper},"
+            "journal = {MATCH Communications in Mathematical and in Computer Chemistry},"
+            "doi = {10.46793/match.87-3.529W},"
+            "volume = {87},"
+            "number = {3},"
+            "pages = {529-559},"
+            "year = {2022}"
+            "}"
         ]
 
     def implementors(self):
-        return ['Kevin Maik Jablonka']
+        return ["Kevin Maik Jablonka"]
