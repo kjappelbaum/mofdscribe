@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from tempfile import NamedTemporaryFile
 from typing import List, Tuple, Union
 
 import numpy as np
