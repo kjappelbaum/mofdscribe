@@ -9,7 +9,6 @@ RASPA_DIR/bin/simulate
 
 import os
 import subprocess
-from pathlib import Path
 from tempfile import TemporaryDirectory
 from typing import Callable, Union
 

@@ -2,7 +2,6 @@
 """Featurizer that runs RASPA to calculate the Henry coefficient."""
 import os
 from glob import glob
-from pathlib import Path
 from typing import List, Tuple, Union
 
 import numpy as np
