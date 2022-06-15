@@ -53,9 +53,8 @@ class MOFStructureDataset(ABC):
     def get_time_based_split_indices(
         self, year: int, year_valid: Union[int, None] = None
     ) -> Tuple[np.ndarray, np.ndarray]:
-        if year_valid is None:
-            if year_valid >= year:
-                raise ValueError('Year valid must be smaller than year.')
+        if year_valid is None and year_valid >= year:
+            raise ValueError('Year valid must be smaller than year.')
 
         train = np.where(self._df['year'] <= year)
         test = np.where(self._df['year'] > year)
