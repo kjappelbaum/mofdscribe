@@ -10,6 +10,7 @@ ignore =
     S603
     W503 # Line break before binary operator (flake8 is wrong)
     E203  # whitespace before ':'
+    S101 # Complaining about assert statements
 exclude =
     .tox,
     .git,
