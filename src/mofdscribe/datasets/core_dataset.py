@@ -6,8 +6,8 @@ import numpy as np
 import pandas as pd
 from loguru import logger
 
+from .checks import check_all_file_exists, length_check
 from .dataset import StructureDataset
-from .checks import length_check, check_all_file_exists
 from ..constants import MOFDSCRIBE_PYSTOW_MODULE
 
 
