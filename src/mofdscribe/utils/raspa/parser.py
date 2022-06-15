@@ -113,7 +113,7 @@ def parse(raspa_output):
             # "Heat of Desorption" section
             elif 'desorption' in key:
                 if 'Note' in item:
-                    notes = re.split('[:\s]{2,}', item)
+                    notes = re.split(r'[:\s]{2,}', item)
                     d['%s %d' % (notes[0], note_index)] = notes[1]
                     note_index += 1
                 else:
@@ -130,12 +130,12 @@ def parse(raspa_output):
                 van_der = item.split()
                 # First Column
                 if 'Block' in van_der[0]:
-                    sub_data = [_clean(s.split(':')) for s in re.split('\s{2,}', item)[1:]]
+                    sub_data = [_clean(s.split(':')) for s in re.split(r'\s{2,}', item)[1:]]
                     sub_dict = {s[0]: s[1] for s in sub_data[:2]}
                     d[''.join(van_der[:2])] = [float(van_der[2]), sub_dict]
                 # Average for each columns
                 elif 'Average' in item:
-                    avg = _clean(re.split('\s{2,}', item))
+                    avg = _clean(re.split(r'\s{2,}', item))
                     vdw, coulomb = [_clean(s.split(': ')) for s in avg[2:4]]
                     d[avg[0]] = avg[1]
                     d['Average %s' % vdw[0]] = vdw[1]
@@ -165,11 +165,11 @@ def parse(raspa_output):
 
             # Other strings
             else:
-                parsed_data = _clean(re.split('[()[\]:,\t]', item))
+                parsed_data = _clean(re.split(r'[()[\]:,\t]', item))
                 d[parsed_data[0]] = parsed_data[1:]
         # Putting subdictionary back into main object
         info[key] = d
-    info['HoA_K'] = float(re.findall('\<U_gh\>_1-\<U_h\>_0:\s+([-\d]+.\d+)', raspa_output)[0])
+    info['HoA_K'] = float(re.findall(r'\<U_gh\>_1-\<U_h\>_0:\s+([-\d]+.\d+)', raspa_output)[0])
     return info
 
 
