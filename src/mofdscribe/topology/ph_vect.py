@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import re
 from collections import defaultdict
 from typing import List, Tuple, Union
 
