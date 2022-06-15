@@ -6,9 +6,9 @@ import numpy as np
 import pandas as pd
 from loguru import logger
 
+from .checks import check_all_file_exists, length_check
 from .dataset import StructureDataset
 from ..constants import MOFDSCRIBE_PYSTOW_MODULE
-from .checks import length_check, check_all_file_exists
 
 
 class QMOFDataset(StructureDataset):
@@ -73,10 +73,12 @@ class QMOFDataset(StructureDataset):
         self._decorated_scaffold_hashes = self._df["scaffold_hash"]
         self._undecorated_scaffold_hashes = self._df["undecorated_scaffold_hash"]
         self._densities = self._df["density_x"]
-        self._labelnames = ("outputs.pbe.bandgap",
-                "outputs.pbe.cbm",
-                "outputs.pbe.vbm",
-                "outputs.pbe.directgap",)
+        self._labelnames = (
+            "outputs.pbe.bandgap",
+            "outputs.pbe.cbm",
+            "outputs.pbe.vbm",
+            "outputs.pbe.directgap",
+        )
 
     @property
     def available_labels(self) -> Tuple[str]:
