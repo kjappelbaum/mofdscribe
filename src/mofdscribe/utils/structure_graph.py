@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
+"""perform analyses on structure graphs."""
 from collections import defaultdict
 from functools import lru_cache
-from typing import List, Set, Tuple
+from typing import List, Optional, Set, Tuple
 
 import networkx as nx
 import numpy as np
@@ -10,7 +11,20 @@ from pymatgen.analysis.local_env import CrystalNN, IsayevNN, JmolNN
 from pymatgen.core import IStructure, Molecule
 
 
-def get_neighbors_at_distance(structure_graph: StructureGraph, start: int, scope: int) -> Set[int]:
+def get_neighbors_at_distance(
+    structure_graph: StructureGraph, start: int, scope: int
+) -> Tuple[Set[int], List[int]]:
+    """For a structure graph and a start site, return all sites within a certain
+    distance (scope) of the start site.
+
+    Args:
+        structure_graph (StructureGraph): pymatgen StructureGraph object start
+        (int): starting atom scope (int): distance to search
+
+    Returns:
+        Tuple[Set[int], List[int]]: All sites within the scope of the start
+        site, and the indices of the sites in the last shell
+    """
     # Todo: This code is stupid.
     neighbors_at_last_level = [start]
     all_neighbors = set()
@@ -30,30 +44,41 @@ def get_neighbors_at_distance(structure_graph: StructureGraph, start: int, scope
     return all_neighbors, neighbors_at_last_level
 
 
-def _get_local_env_strategy(name: str = None):
-    n = "jmolnn" if name is None else name.lower()
+def _get_local_env_strategy(name: Optional[str] = None):
+    n = 'jmolnn' if name is None else name.lower()
 
-    if n == "jmolnn":
+    if n == 'jmolnn':
         return JmolNN()
-    elif n == "crystalnn":
+    elif n == 'crystalnn':
         return CrystalNN()
-    elif n == "isayevnn":
+    elif n == 'isayevnn':
         return IsayevNN()
 
 
 @lru_cache()
-def get_structure_graph(structure: IStructure, strategy: str = None) -> StructureGraph:
+def get_structure_graph(structure: IStructure, strategy: Optional[str] = None) -> StructureGraph:
+    """Get a StructureGraph object for a given structure.
+
+    Args:
+        structure (IStructure): Pymatgen structure object.
+        strategy (str, optional): Heuristic for assigning bonds.
+            Must be one of 'jmolnn', 'crystalnn', 'isayevnn'. Defaults to None.
+
+    Returns:
+        StructureGraph: pymatgen StructureGraph object
+    """
     strategy = _get_local_env_strategy(strategy)
     sg = StructureGraph.with_local_env_strategy(structure, strategy)
     nx.set_node_attributes(
         sg.graph,
-        name="idx",
+        name='idx',
         values=dict(zip(range(len(sg)), range(len(sg)))),
     )
     return sg
 
 
 def get_connected_site_indices(structure_graph: StructureGraph, site_index: int) -> List[int]:
+    """Get all connected site indices for a given site."""
     connected_sites = structure_graph.get_connected_sites(site_index)
     return [site.index for site in connected_sites]
 
@@ -103,25 +128,31 @@ def _select_parts_in_cell(  # pylint:disable=too-many-arguments, too-many-locals
 
 def get_subgraphs_as_molecules(  # pylint:disable=too-many-locals
     structure_graph: StructureGraph,
-    use_weights: bool = False,
-    return_unique: bool = True,
-    disable_boundary_crossing_check: bool = False,
-    filter_in_cell: bool = True,
+    use_weights: Optional[bool] = False,
+    return_unique: Optional[bool] = True,
+    disable_boundary_crossing_check: Optional[bool] = False,
+    filter_in_cell: Optional[bool] = True,
 ) -> Tuple[List[Molecule], List[MoleculeGraph], List[List[int]], List[np.ndarray]]:
     """Copied from
     http://pymatgen.org/_modules/pymatgen/analysis/graphs.html#StructureGraph.get_subgraphs_as_molecules
-    and removed the duplicate check
+    and removed the duplicate check.
+
     Args:
-        structure_graph ( pymatgen.analysis.graphs.StructureGraph): Structuregraph
-        use_weights (bool): If True, use weights for the edge matching
-        return_unique (bool): If true, it only returns the unique molecules.
-            If False, it will return all molecules that are completely
-            included in the unit cell
-            and fragments of the ones that are only partly in the cell
+        structure_graph (pymatgen.analysis.graphs.StructureGraph):
+            Structuregraph
+        use_weights (bool): If True, use weights for the edge
+            matching
+        return_unique (bool): If true, it only returns the unique
+            molecules.
+            If False, it will return all molecules that are completely included
+            in the unit cell and fragments of the ones that are only partly in
+            the cell
         filter_in_cell (bool): If True, it will only return molecules that
             have at least one atom in the cell
+
     Returns:
-        Tuple[List[Molecule], List[MoleculeGraph], List[List[int]], List[np.ndarray]]
+        Tuple[List[Molecule], List[MoleculeGraph], List[List[int]],
+        List[np.ndarray]]
     """
     # pylint: disable=invalid-name
     # creating a supercell is an easy way to extract
@@ -146,7 +177,7 @@ def get_subgraphs_as_molecules(  # pylint:disable=too-many-locals
             molecule_subgraphs.append(nx.MultiDiGraph(subgraph))
         else:
             intersects_boundary = any(  # pylint: disable=use-a-generator
-                d["to_jimage"] != (0, 0, 0) for u, v, d in subgraph.edges(data=True)
+                d['to_jimage'] != (0, 0, 0) for u, v, d in subgraph.edges(data=True)
             )
             if not intersects_boundary:
                 molecule_subgraphs.append(nx.MultiDiGraph(subgraph))
@@ -159,11 +190,11 @@ def get_subgraphs_as_molecules(  # pylint:disable=too-many-locals
     unique_subgraphs = []
 
     def node_match(node_1, node_2):
-        return node_1["specie"] == node_2["specie"]
+        return node_1['specie'] == node_2['specie']
 
     def edge_match(edge_1, edge_2):
         if use_weights:
-            return edge_1["weight"] == edge_2["weight"]
+            return edge_1['weight'] == edge_2['weight']
 
         return True
 
@@ -189,7 +220,7 @@ def get_subgraphs_as_molecules(  # pylint:disable=too-many-locals
             coords = [supercell_sg.structure[node].coords for node in subgraph.nodes()]
             species = [supercell_sg.structure[node].specie for node in subgraph.nodes()]
 
-            idx = [subgraph.nodes[node]["idx"] for node in subgraph.nodes()]
+            idx = [subgraph.nodes[node]['idx'] for node in subgraph.nodes()]
             idx_here = subgraph.nodes()
             molecule = Molecule(species, coords)  #  site_properties={"binding": binding}
             mol_centers.append(np.mean(supercell_sg.structure.cart_coords[idx_here], axis=0))

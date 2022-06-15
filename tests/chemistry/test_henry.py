@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Test the Henry featurizer"""
+"""Test the Henry featurizer."""
 from mofdscribe.chemistry.henry import Henry
 
 from ..helpers import is_jsonable

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Test the PH Vect featurizer"""
+"""Test the PH Vect featurizer."""
 import pytest
 
 from mofdscribe.topology.ph_vect import PHVect
@@ -8,7 +8,7 @@ from ..helpers import is_jsonable
 
 
 def test_ph_vect(hkust_structure, irmof_structure):
-    """Ensure we get the correct number of features and that they are different for different structures"""
+    """Ensure we get the correct number of features and that they are different for different structures."""
     # should raise if not fitted
     with pytest.raises(ValueError):
         ph_vect = PHVect()

@@ -24,38 +24,38 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 """
 
+from typing import Iterable, List, Optional
+
 import numpy as np
 from scipy.spatial import cKDTree
 
 
-def cartesian(arrays, out=None):
+def cartesian(arrays: List[Iterable], out: Optional[np.ndarray] = None) -> np.ndarray:
     """Generate a cartesian product of input arrays.
-    Parameters
-    ----------
-    arrays : list of array-like
-        1-D arrays to form the cartesian product of.
-    out : ndarray
-        Array to place the cartesian product in.
-    Returns
-    -------
-    out : ndarray
-        2-D array of shape (M, len(arrays)) containing cartesian products
-        formed of input arrays.
-    Examples
-    --------
-    >>> cartesian(([1, 2, 3], [4, 5], [6, 7]))
-    array([[1, 4, 6],
-           [1, 4, 7],
-           [1, 5, 6],
-           [1, 5, 7],
-           [2, 4, 6],
-           [2, 4, 7],
-           [2, 5, 6],
-           [2, 5, 7],
-           [3, 4, 6],
-           [3, 4, 7],
-           [3, 5, 6],
-           [3, 5, 7]])
+
+    Args:
+        arrays (List[Iterable]): list of array-like 1-D arrays to form the
+        cartesian product of. out (Optional[np.ndarray], optional): Array to
+        place the cartesian product in. Defaults to None.
+
+    Returns:
+        np.ndarray: 2-D array of shape (M, len(arrays)) containing cartesian
+        products formed of input arrays.
+
+    Examples:
+        >>> cartesian(([1, 2, 3], [4, 5], [6, 7]))
+        array([[1, 4, 6],
+            [1, 4, 7],
+            [1, 5, 6],
+            [1, 5, 7],
+            [2, 4, 6],
+            [2, 4, 7],
+            [2, 5, 6],
+            [2, 5, 7],
+            [3, 4, 6],
+            [3, 4, 7],
+            [3, 5, 6],
+            [3, 5, 7]])
     """
     arrays = [np.asarray(x) for x in arrays]
     shape = (len(x) for x in arrays)
@@ -160,7 +160,7 @@ class VoxelGrid:
 
         self.n_voxels = np.prod(self.x_y_z)
 
-        self.id = "V({},{},{})".format(self.x_y_z, self.sizes, self.regular_bounding_box)
+        self.id = 'V({},{},{})'.format(self.x_y_z, self.sizes, self.regular_bounding_box)
 
         # find where each point lies in corresponding segmented axis
         # -1 so index are 0-based; clip for edge cases
@@ -204,7 +204,7 @@ class VoxelGrid:
 
         return voxel_n
 
-    def get_feature_vector(self, mode="binary", flatten: bool = False):
+    def get_feature_vector(self, mode='binary', flatten: bool = False):
         """Return a vector of size self.n_voxels. See mode options below.
 
         Parameters
@@ -234,15 +234,15 @@ class VoxelGrid:
         """
         vector = np.zeros(self.n_voxels)
 
-        if mode == "binary":
+        if mode == 'binary':
             vector[np.unique(self.voxel_n)] = 1
 
-        elif mode == "density":
+        elif mode == 'density':
             count = np.bincount(self.voxel_n)
             vector[: len(count)] = count
             vector /= len(self.voxel_n)
 
-        elif mode == "TDF":
+        elif mode == 'TDF':
             kdt = cKDTree(self._points)
             vector, i = kdt.query(self.voxel_centers, n_jobs=-1)
 
@@ -251,7 +251,7 @@ class VoxelGrid:
             vector[unique_voxels] = self.averaged_properties[:, mode]
 
         else:
-            raise NotImplementedError("{} is not a supported feature vector mode".format(mode))
+            raise NotImplementedError('{} is not a supported feature vector mode'.format(mode))
 
         if flatten:
             return vector

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+"""Helper functions for obtaining the correct number of replicas"""
 from math import ceil, cos, fabs, hypot, pi, sin
 
 import numpy as np

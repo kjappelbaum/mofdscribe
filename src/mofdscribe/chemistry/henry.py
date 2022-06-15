@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+"""Featurizer that runs RASPA to calculate the Henry coefficient."""
 import os
 from glob import glob
 from pathlib import Path
@@ -12,7 +13,7 @@ from mofdscribe.utils.raspa.parser import parse
 from mofdscribe.utils.raspa.resize_uc import resize_unit_cell
 from mofdscribe.utils.raspa.run_raspa import run_raspa
 
-__all__ = ["Henry"]
+__all__ = ['Henry']
 
 WIDOM_INPUT_TEMPLATE = """SimulationType  MonteCarlo
 
@@ -40,19 +41,20 @@ Component 0 MoleculeName             {molname}
 
 def parse_widom(directory: Union[str, os.PathLike]) -> dict:
     """Parse the widom output files in the given directory."""
-    outputs = glob(os.path.join(directory, "Output", "System_0", "*.data"))
+    outputs = glob(os.path.join(directory, 'Output', 'System_0', '*.data'))
     if len(outputs) != 1:
-        raise ValueError("Expected one output file, got {}".format(len(outputs)))
-    with open(outputs[0], "r") as handle:
+        raise ValueError('Expected one output file, got {}'.format(len(outputs)))
+    with open(outputs[0], 'r') as handle:
         res = parse(handle.read())
-    return [res["Average Henry coefficient"]["Henry"][0], res["HoA_K"]]
+    return [res['Average Henry coefficient']['Henry'][0], res['HoA_K']]
 
 
 class Henry(BaseFeaturizer):
     """
-    Computes the Henry coefficient for a given molecule using the RASPA [1]_ program.
-    While Henry coefficients are sometimes the targets of ML algorithms, they are sometimes also used as features.
-    In fact, they are closely related to the energy histograms.
+    Computes the Henry coefficient for a given molecule using the RASPA [1]_
+    program. While Henry coefficients are sometimes the targets of ML
+    algorithms, they are sometimes also used as features. In fact, they are
+    closely related to the energy histograms.
 
     """
 
@@ -62,11 +64,11 @@ class Henry(BaseFeaturizer):
         cycles: int = 5_000,
         temperature: float = 300,
         cutoff: float = 12,
-        mof_ff: str = "UFF",
-        mol_ff: str = "TraPPE",
-        mol_name: str = "CO2",
+        mof_ff: str = 'UFF',
+        mol_ff: str = 'TraPPE',
+        mol_name: str = 'CO2',
         tail_corrections: bool = True,
-        mixing_rule: str = "Lorentz-Berthelot",
+        mixing_rule: str = 'Lorentz-Berthelot',
         shifted: bool = False,
         separate_interactions: bool = True,
         run_eqeq: bool = True,
@@ -74,30 +76,39 @@ class Henry(BaseFeaturizer):
         """
 
         Args:
-            raspa_dir (Union[str, PathLike, None], optional): Path to the raspa directory (with lib, bin, share) subdirectories.
+            raspa_dir (Union[str, PathLike, None], optional): Path to the raspa
+            directory (with lib, bin, share) subdirectories.
                 If `None` we will look for the `RASPA_DIR` environment variable.
                 Defaults to None.
-            cycles (int, optional): Number of simulation cycles. Defaults to 5_000.
-            temperature (float, optional): Simulation temperature in Kelvin. Defaults to 300.
-            cutoff (float, optional): Cutoff for simulation in Angstrom. Defaults to 12.
-            mof_ff (str, optional): Name of the forcefield used for the framework. Defaults to "UFF".
-            mol_ff (str, optional): Name of the forcefield used for the guest molecule. Defaults to "TraPPE".
-            mol_name (str, optional): Name of the guest molecule. Defaults to "CO2".
-            tail_corrections (bool, optional): If true, use analytical tail-correction
-                for the contribution of the interaction potential after the cutoff. Defaults to True.
-            mixing_rule (str, optional): Mixing rule for framework and guest molecule force field. Available options are `Jorgenson` and `Lorentz-Berthelot`. Defaults to "Lorentz-Berthelot".
-            shifted (bool, optional): If true, shifts the potential to equal to zero at the cutoff. Defaults to False.
-            separate_interactions (bool, optional): If True use framework's force field for framework-molecule interactions.
+            cycles (int, optional): Number of simulation cycles. Defaults to
+            5_000. temperature (float, optional): Simulation temperature in
+            Kelvin. Defaults to 300. cutoff (float, optional): Cutoff for
+            simulation in Angstrom. Defaults to 12. mof_ff (str, optional): Name
+            of the forcefield used for the framework. Defaults to "UFF". mol_ff
+            (str, optional): Name of the forcefield used for the guest molecule.
+            Defaults to "TraPPE". mol_name (str, optional): Name of the guest
+            molecule. Defaults to "CO2". tail_corrections (bool, optional): If
+            true, use analytical tail-correction
+                for the contribution of the interaction potential after the
+                cutoff. Defaults to True.
+            mixing_rule (str, optional): Mixing rule for framework and guest
+            molecule force field. Available options are `Jorgenson` and
+            `Lorentz-Berthelot`. Defaults to "Lorentz-Berthelot". shifted (bool,
+            optional): If true, shifts the potential to equal to zero at the
+            cutoff. Defaults to False. separate_interactions (bool, optional):
+            If True use framework's force field for framework-molecule
+            interactions.
                 Defaults to True.
-            run_eqeq (bool, optional): If true, runs EqEq to compute charges. Defaults to True.
+            run_eqeq (bool, optional): If true, runs EqEq to compute charges.
+            Defaults to True.
 
         Raises:
-            ValueError: _description_
+            ValueError: If the `RASPA_DIR` environment variable is not set.
         """
-        self.raspa_dir = raspa_dir if raspa_dir else os.environ.get("RASPA_DIR")
+        self.raspa_dir = raspa_dir if raspa_dir else os.environ.get('RASPA_DIR')
         if self.raspa_dir is None:
             raise ValueError(
-                "Please set the RASPA_DIR environment variable or provide the path for the class initialization."
+                'Please set the RASPA_DIR environment variable or provide the path for the class initialization.'
             )
         self.cycles = cycles
         self.cutoff = cutoff
@@ -115,15 +126,15 @@ class Henry(BaseFeaturizer):
         ff_molecules = {self.mol_name: self.mol_ff}
 
         parameters = {
-            "ff_framework": self.mof_ff,
-            "ff_molecules": ff_molecules,
-            "shifted": self.shifted,
-            "tail_corrections": self.tail_corrections,
-            "mixing_rule": self.mixing_rule,
-            "separate_interactions": self.separate_interactions,
+            'ff_framework': self.mof_ff,
+            'ff_molecules': ff_molecules,
+            'shifted': self.shifted,
+            'tail_corrections': self.tail_corrections,
+            'mixing_rule': self.mixing_rule,
+            'separate_interactions': self.separate_interactions,
         }
         replicas = resize_unit_cell(s, self.cutoff)
-        ucells = f"{replicas[0]} {replicas[1]} {replicas[2]}"
+        ucells = f'{replicas[0]} {replicas[1]} {replicas[2]}'
         simulation_script = WIDOM_INPUT_TEMPLATE.format(
             cycles=self.cycles,
             unit_cells=ucells,
@@ -144,26 +155,26 @@ class Henry(BaseFeaturizer):
 
     def feature_labels(self) -> List[str]:
         return [
-            f"henry_coefficient_{self.mol_name}_{self.temperature}_mol/kg/Pa",
-            f"heat_of_adsorption_{self.mol_name}_{self.temperature}_K",
+            f'henry_coefficient_{self.mol_name}_{self.temperature}_mol/kg/Pa',
+            f'heat_of_adsorption_{self.mol_name}_{self.temperature}_K',
         ]
 
     def implementors(self) -> List[str]:
-        return ["Kevin Maik Jablonka"]
+        return ['Kevin Maik Jablonka']
 
     def citations(self) -> List[str]:
         return [
-            "@article{Dubbeldam2015,"
-            "doi = {10.1080/08927022.2015.1010082},"
-            "url = {https://doi.org/10.1080/08927022.2015.1010082},"
-            "year = {2015},"
-            "month = feb,"
-            "publisher = {Informa {UK} Limited},"
-            "volume = {42},"
-            "number = {2},"
-            "pages = {81--101},"
+            '@article{Dubbeldam2015,'
+            'doi = {10.1080/08927022.2015.1010082},'
+            'url = {https://doi.org/10.1080/08927022.2015.1010082},'
+            'year = {2015},'
+            'month = feb,'
+            'publisher = {Informa {UK} Limited},'
+            'volume = {42},'
+            'number = {2},'
+            'pages = {81--101},'
             r"author = {David Dubbeldam and Sof{'{\i}}a Calero and Donald E. Ellis and Randall Q. Snurr},"
-            "title = {{RASPA}: molecular simulation software for adsorption and diffusion in flexible nanoporous materials},"
-            "journal = {Molecular Simulation}"
-            "}"
+            'title = {{RASPA}: molecular simulation software for adsorption and diffusion in flexible nanoporous materials},'
+            'journal = {Molecular Simulation}'
+            '}'
         ]

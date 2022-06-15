@@ -8,7 +8,7 @@ from ..helpers import is_jsonable
 
 
 def test_atom_centered_ph_site(hkust_structure, irmof_structure, cof_structure):
-    """Ensure we get the correct number of features and that they are different for different sites"""
+    """Ensure we get the correct number of features and that they are different for different sites."""
     for i, structure in enumerate([hkust_structure, irmof_structure, cof_structure]):
         featurizer = AtomCenteredPHSite()
         features = featurizer.featurize(structure, 0)
@@ -26,6 +26,7 @@ def test_atom_centered_ph_site(hkust_structure, irmof_structure, cof_structure):
 
 
 def test_atom_centered_ph(hkust_structure, irmof_structure):
+    """Ensure we get the correct number of features and that they are different for different structures."""
     for structure in [hkust_structure]:
         featurizer = AtomCenteredPH()
         features = featurizer.featurize(structure)

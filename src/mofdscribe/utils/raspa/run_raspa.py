@@ -11,7 +11,7 @@ import os
 import subprocess
 from pathlib import Path
 from tempfile import TemporaryDirectory
-from typing import Union
+from typing import Callable, Union
 
 from pymatgen.core import IStructure, Structure
 
@@ -28,8 +28,8 @@ def call_eqeq(structure: Union[Structure, IStructure], filename: Union[str, os.P
     s, _ = get_eqeq_charges(structure)
     # This is a weird hack because recent versions of ASE changed how they write
     # symmetry in CIFs. One representative issue is https://github.com/lsmo-epfl/curated-cofs-submission/issues/17
-    s = s.replace("_space_group_name_H-M_alt", "_symmetry_space_group_name_H-M")
-    with open(filename, "w") as handle:
+    s = s.replace('_space_group_name_H-M_alt', '_symmetry_space_group_name_H-M')
+    with open(filename, 'w') as handle:
         handle.write(s)
 
 
@@ -38,7 +38,7 @@ def run_raspa(
     raspa_dir: Union[str, os.PathLike],
     simulation_script: str,
     ff_params: dict,
-    parser: callable,
+    parser: Callable,
     run_eqeq: bool = False,
 ):
     """Submit a simulation to RASPA.
@@ -48,7 +48,7 @@ def run_raspa(
         raspa_dir (Union[str, os.PathLike]): Used for the `RASPA_DIR` environment variable.
         simulation_script (str): RASPA input file.
         ff_params (dict): settings for the force field builder.
-        parser (callable): function that takes the simulation directory as input and returns the output.
+        parser (Callable): function that takes the simulation directory as input and returns the output.
         run_eqeq (bool, optional): If true, runs eqeq before submitting the RASPA simulations. Defaults to False.
 
     Raises:
@@ -61,27 +61,27 @@ def run_raspa(
     with TemporaryDirectory(dir=TEMPDIR) as tempdir:
         for k, v in ff_results.items():
             with open(
-                os.path.join(tempdir, k.replace("_def", ".def").replace("molecule_", "")), "w"
+                os.path.join(tempdir, k.replace('_def', '.def').replace('molecule_', '')), 'w'
             ) as handle:
                 handle.write(v)
 
-        with open(os.path.join(tempdir, "simulation.input"), "w") as handle:
+        with open(os.path.join(tempdir, 'simulation.input'), 'w') as handle:
             handle.write(simulation_script)
 
-        with open(os.path.join(tempdir, "run.sh"), "w") as handle:
-            run_template = RUN_SCRIPT.replace("RASPA_DIR", raspa_dir)
+        with open(os.path.join(tempdir, 'run.sh'), 'w') as handle:
+            run_template = RUN_SCRIPT.replace('RASPA_DIR', raspa_dir)
             handle.write(run_template)
 
-        structure.to("cif", os.path.join(tempdir, "input.cif"))
+        structure.to('cif', os.path.join(tempdir, 'input.cif'))
         if run_eqeq:
             try:
-                call_eqeq(structure, os.path.join(tempdir, "input.cif"))
+                call_eqeq(structure, os.path.join(tempdir, 'input.cif'))
             except Exception as e:
-                raise ValueError(f"Error running EqEq. Output: {e}")
+                raise ValueError(f'Error running EqEq. Output: {e}')
 
         try:
             _ = subprocess.run(  # nosec
-                ["sh", "run.sh"],
+                ['sh', 'run.sh'],
                 universal_newlines=True,
                 stdout=subprocess.DEVNULL,
                 stderr=subprocess.PIPE,
@@ -89,7 +89,7 @@ def run_raspa(
                 cwd=tempdir,
             )
         except subprocess.CalledProcessError as e:
-            raise ValueError(f"Error running RASPA. Output: {e.output}  stderr: {e.stderr}")
+            raise ValueError(f'Error running RASPA. Output: {e.output}  stderr: {e.stderr}')
 
         results = parser(os.path.join(tempdir))
 

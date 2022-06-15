@@ -6,7 +6,7 @@ from ..helpers import is_jsonable
 
 
 def test_phimage(hkust_structure, irmof_structure, cof_structure):
-    """Ensure we get the correct number of features"""
+    """Ensure we get the correct number of features."""
     phi = PHImage()
     for structure in [hkust_structure, irmof_structure, cof_structure]:
         features = phi.featurize(structure)
@@ -18,7 +18,7 @@ def test_phimage(hkust_structure, irmof_structure, cof_structure):
 
 
 def test_phimage_fit(hkust_structure, irmof_structure):
-    """Ensure that calling fit changes the settings"""
+    """Ensure that calling fit changes the settings."""
     phi = PHImage()
     phi.fit([hkust_structure, irmof_structure])
 

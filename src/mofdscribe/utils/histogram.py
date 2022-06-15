@@ -1,11 +1,35 @@
 # -*- coding: utf-8 -*-
+"""Helpers for computing histograms."""
 import math
+from typing import Optional
 
 import numpy as np
 from scipy.stats import gaussian_kde
 
 
-def get_rdf(array, lower_lim, upper_lim, bin_size, num_sites, volume, normalized: bool = True):
+def get_rdf(
+    array: np.array,
+    lower_lim: float,
+    upper_lim: float,
+    bin_size: float,
+    num_sites: int,
+    volume: float,
+    normalized: Optional[bool] = True,
+) -> np.array:
+    """Compute the RDF
+
+    Args:
+        array (np.array): distances
+        lower_lim (float): lower limit of the RDF
+        upper_lim (float): upper limit of the RDF
+        bin_size (float): size of the bins
+        num_sites (int): number of sites in the cell, used for normalization
+        volume (float): volume of the cell, used for normalization
+        normalized (bool, optional): If True, normalize the RDF. Defaults to True.
+
+    Returns:
+        np.array: RDF
+    """
     dist_hist, dist_bins = np.histogram(
         array,
         bins=np.arange(lower_lim, upper_lim + bin_size, bin_size),
@@ -21,7 +45,18 @@ def get_rdf(array, lower_lim, upper_lim, bin_size, num_sites, volume, normalized
     return dist_hist.astype(np.float64)
 
 
-def smear_histogram(histogram, bw, lower_lim, upper_lim):
+def smear_histogram(histogram: np.array, bw: float, lower_lim: float, upper_lim: float) -> np.array:
+    """Use a gaussian kernel to smooth the histogram.
+
+    Args:
+        histogram (np.array): histogram to be smoothed
+        bw (float): bandwidth of the gaussian kernel
+        lower_lim (float): lower limit of the RDF
+        upper_lim (float): upper limit of the RDF
+
+    Returns:
+        np.array: smoothed histogram
+    """
     kernel = gaussian_kde(histogram, bw_method=bw)
     x = np.linspace(lower_lim, upper_lim, len(histogram))
     y = kernel(x)

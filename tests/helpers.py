@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
+"""Helper functions for tests."""
 import json
 
 
 def is_jsonable(x):
-    """Test if a object is JSONable"""
+    """Test if a object is JSONable."""
     try:
         json.dumps(x)
         return True

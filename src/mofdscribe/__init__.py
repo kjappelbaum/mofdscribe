@@ -1,3 +1,3 @@
 # -*- coding: utf-8 -*-
 
-"""Compute features for MOFs"""
+"""Compute features for MOFs."""

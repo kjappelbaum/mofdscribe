@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-from typing import List, Tuple, Union
+"""Featurizer that computes 3D voxelgrids.  """
+from typing import List, Optional, Tuple, Union
 
 import numpy as np
 from matminer.featurizers.base import BaseFeaturizer
@@ -13,7 +14,7 @@ def make_supercell(
     elements: List[int],
     lattice: Tuple[float, float, float],
     size: float,
-    min_size: float = -5,
+    min_size: Optional[float] = -5,
 ) -> np.ndarray:
     """
     Generate cubic supercell of a given size.
@@ -22,7 +23,8 @@ def make_supercell(
         coords (np.ndarray): matrix of xyz coordinates of the system
         lattice (Tuple[float, float, float]): lattice constants of the system
         size (float): dimension size of cubic cell, e.g., 10x10x10
-        min_size (float): minimum axes size to keep negative xyz coordinates from the original cell
+        min_size (float, optional): minimum axes size to keep negative xyz coordinates from the original cell.
+            Defaults to -5.
 
     Returns:
         new_cell: supercell array
@@ -99,16 +101,16 @@ class VoxelGrid(BaseFeaturizer):
 
     def __init__(
         self,
-        min_size: float = 30,
-        n_x: int = 25,
-        n_y: int = 25,
-        n_z: int = 25,
-        geometry_aggregations: Union[Tuple[str], None] = ("binary",),
-        properties: Union[Tuple[str, int], None] = ("X", "electron_affinity"),
-        flatten: bool = True,
-        regular_bounding_box: bool = True,
+        min_size: Optional[float] = 30,
+        n_x: Optional[int] = 25,
+        n_y: Optional[int] = 25,
+        n_z: Optional[int] = 25,
+        geometry_aggregations: Optional[Union[Tuple[str], None]] = ('binary',),
+        properties: Optional[Union[Tuple[str, int], None]] = ('X', 'electron_affinity'),
+        flatten: Optional[bool] = True,
+        regular_bounding_box: Optional[bool] = True,
     ):
-        """
+        """Initialize a VoxelGrid featurizer.
 
         Args:
             min_size (float, optional): Minimum supercell size in Angstrom. Defaults to 30.
@@ -182,10 +184,10 @@ class VoxelGrid(BaseFeaturizer):
         feature_labels = []
         for geometry_aggregation in self.geometry_aggregations:
             for voxel in range(self._num_voxels):
-                feature_labels.append(f"{geometry_aggregation}_{voxel}")
+                feature_labels.append(f'{geometry_aggregation}_{voxel}')
         for property in self.properties:
             for voxel in range(self._num_voxels):
-                feature_labels.append(f"{geometry_aggregation}_{voxel}")
+                feature_labels.append(f'{geometry_aggregation}_{voxel}')
 
         return feature_labels
 
@@ -194,33 +196,33 @@ class VoxelGrid(BaseFeaturizer):
 
     def citations(self) -> List[str]:
         return [
-            "@article{Hung2022,"
-            "doi = {10.1021/acs.jpcc.1c09649},"
-            "url = {https://doi.org/10.1021/acs.jpcc.1c09649},"
-            "year = {2022},"
-            "month = jan,"
-            "publisher = {American Chemical Society ({ACS})},"
-            "volume = {126},"
-            "number = {5},"
-            "pages = {2813--2822},"
-            "author = {Ting-Hsiang Hung and Zhi-Xun Xu and Dun-Yen Kang and Li-Chiang Lin},"
-            "title = {Chemistry-Encoded Convolutional Neural Networks for Predicting Gaseous Adsorption in Porous Materials},"
-            "journal = {The Journal of Physical Chemistry C}"
-            "}",
-            "@article{Cho2021,"
-            "doi = {10.1021/acs.jpclett.1c00293},"
-            "url = {https://doi.org/10.1021/acs.jpclett.1c00293},"
-            "year = {2021},"
-            "month = mar,"
-            "publisher = {American Chemical Society ({ACS})},"
-            "volume = {12},"
-            "number = {9},"
-            "pages = {2279--2285},"
-            "author = {Eun Hyun Cho and Li-Chiang Lin},"
-            "title = {Nanoporous Material Recognition via 3D Convolutional Neural Networks: Prediction of Adsorption Properties},"
-            "journal = {The Journal of Physical Chemistry Letters}"
-            "}",
+            '@article{Hung2022,'
+            'doi = {10.1021/acs.jpcc.1c09649},'
+            'url = {https://doi.org/10.1021/acs.jpcc.1c09649},'
+            'year = {2022},'
+            'month = jan,'
+            'publisher = {American Chemical Society ({ACS})},'
+            'volume = {126},'
+            'number = {5},'
+            'pages = {2813--2822},'
+            'author = {Ting-Hsiang Hung and Zhi-Xun Xu and Dun-Yen Kang and Li-Chiang Lin},'
+            'title = {Chemistry-Encoded Convolutional Neural Networks for Predicting Gaseous Adsorption in Porous Materials},'
+            'journal = {The Journal of Physical Chemistry C}'
+            '}',
+            '@article{Cho2021,'
+            'doi = {10.1021/acs.jpclett.1c00293},'
+            'url = {https://doi.org/10.1021/acs.jpclett.1c00293},'
+            'year = {2021},'
+            'month = mar,'
+            'publisher = {American Chemical Society ({ACS})},'
+            'volume = {12},'
+            'number = {9},'
+            'pages = {2279--2285},'
+            'author = {Eun Hyun Cho and Li-Chiang Lin},'
+            'title = {Nanoporous Material Recognition via 3D Convolutional Neural Networks: Prediction of Adsorption Properties},'
+            'journal = {The Journal of Physical Chemistry Letters}'
+            '}',
         ]
 
     def implementors(self) -> List[str]:
-        return ["Kevin Maik Jablonka"]
+        return ['Kevin Maik Jablonka']
