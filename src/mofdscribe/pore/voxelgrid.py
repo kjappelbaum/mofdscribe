@@ -29,10 +29,8 @@ def make_supercell(
     """
     a, b, c = lattice
     elements = np.array(elements).reshape(-1, 1)
-    xyz_periodic_copies = []
-    xyz_periodic_copies.append(coords)
-    element_periodic_copies = []
-    element_periodic_copies.append(elements)
+    xyz_periodic_copies = [coords]
+    element_periodic_copies = [elements]
 
     min_range = -3  # we aren't going in the minimum direction too much, so can make this small
     max_range = 20  # make this large enough, but can modify if wanting an even larger cell
