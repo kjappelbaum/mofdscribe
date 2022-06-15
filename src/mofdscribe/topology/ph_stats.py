@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
-from collections import defaultdict
 from typing import List, Tuple, Union
 
 import numpy as np
-from loguru import logger
 from matminer.featurizers.base import BaseFeaturizer
 from pymatgen.core import IStructure, Structure
 

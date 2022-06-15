@@ -5,7 +5,6 @@ from pathlib import Path
 from typing import List, Tuple, Union
 
 import numpy as np
-import pandas as pd
 from matminer.featurizers.base import BaseFeaturizer
 from pymatgen.core import IStructure, Structure
 

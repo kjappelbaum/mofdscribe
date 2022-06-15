@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from math import ceil, cos, fabs, hypot, pi, sin, sqrt
+from math import ceil, cos, fabs, hypot, pi, sin
 
 import numpy as np
 

@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from re import I
 
 from pytest import approx
 
