@@ -3,7 +3,14 @@ from collections import Counter
 
 import numpy as np
 
-__all__ = ("DensitySpliiter", "HashSplitter", "TimeSplitter", "Splitter")
+__all__ = (
+    "DensitySplitter",
+    "HashSplitter",
+    "TimeSplitter",
+    "Splitter",
+    "RandomSplitter",
+    "FingerprintSplitter",
+)
 
 
 class Splitter:
@@ -130,7 +137,7 @@ class HashSplitter(Splitter):
         return indices
 
 
-class DensitySpliiter(Splitter):
+class DensitySplitter(Splitter):
     def __init__(
         self,
         ascending: bool = True,

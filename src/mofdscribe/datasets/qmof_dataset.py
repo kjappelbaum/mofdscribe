@@ -8,6 +8,7 @@ from loguru import logger
 
 from .dataset import StructureDataset
 from ..constants import MOFDSCRIBE_PYSTOW_MODULE
+from .checks import length_check, check_all_file_exists
 
 
 class QMOFDataset(StructureDataset):
@@ -45,6 +46,8 @@ class QMOFDataset(StructureDataset):
             )
         ).reset_index(drop=True)
 
+        length_check(self._df, self._files[version]["expected_length"])
+
         if drop_basename_duplicates:
             old_len = len(self._df)
             self._df = self._df.drop_duplicates(subset=["basename"])
@@ -61,6 +64,8 @@ class QMOFDataset(StructureDataset):
         self._structures = [
             os.path.join(self._structure_dir, f + ".cif") for f in self._df["qmof_id"]
         ]
+
+        check_all_file_exists(self._structures)
 
         self._years = self._df["year"]
         self._decorated_graph_hashes = self._df["hash"]
