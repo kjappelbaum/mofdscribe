@@ -73,14 +73,10 @@ class QMOFDataset(StructureDataset):
         self._decorated_scaffold_hashes = self._df["scaffold_hash"]
         self._undecorated_scaffold_hashes = self._df["undecorated_scaffold_hash"]
         self._densities = self._df["density_x"]
-        self._labelnames = tuple(
-            [
-                "outputs.pbe.bandgap",
+        self._labelnames = ("outputs.pbe.bandgap",
                 "outputs.pbe.cbm",
                 "outputs.pbe.vbm",
-                "outputs.pbe.directgap",
-            ]
-        )
+                "outputs.pbe.directgap",)
 
     @property
     def available_labels(self) -> Tuple[str]:
