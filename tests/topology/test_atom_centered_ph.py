@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+"""Test the atom centred PH featurizer."""
 import numpy as np
 
 from mofdscribe.topology.atom_centered_ph import AtomCenteredPH, AtomCenteredPHSite
@@ -7,6 +8,7 @@ from ..helpers import is_jsonable
 
 
 def test_atom_centered_ph_site(hkust_structure, irmof_structure, cof_structure):
+    """Ensure we get the correct number of features and that they are different for different sites"""
     for i, structure in enumerate([hkust_structure, irmof_structure, cof_structure]):
         featurizer = AtomCenteredPHSite()
         features = featurizer.featurize(structure, 0)

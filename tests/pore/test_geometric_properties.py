@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+"""Test the geometric properties featurizers."""
 
 from pytest import approx
 
@@ -32,6 +33,7 @@ RES_SAMPLE_OUTPUT = "output_file.res    1.70107 0.95106  1.64805"
 
 
 def test_parse_sa():
+    """Ensure that the parser works as expected."""
     parsed = _parse_sa_zeopp(SA_SAMPLE_OUTPUT)
     assert parsed["unitcell_volume"] == approx(307.484, 0.1)
     assert parsed["density"] == approx(1.62239, 0.1)

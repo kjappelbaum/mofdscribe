@@ -95,7 +95,7 @@ class EnergyGridHistogram(BaseFeaturizer):
 
     def __init__(
         self,
-        raspa_dir: Union[str, Path, None] = None,
+        raspa_dir: Union[str, os.PathLike, None] = None,
         grid_spacing: float = 1.0,
         bin_size_vdw: float = 1,
         min_energy_vdw: float = -40,

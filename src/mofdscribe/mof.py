@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from pathlib import Path
 from typing import Union
+import os
 
 from pymatgen.core import IStructure, Structure
 
@@ -10,6 +10,6 @@ class MOF:
         self.structure = IStructure.from_site(structure.sites)
 
     @classmethod
-    def from_cif(self, path: Union[str, Path]):
+    def from_cif(self, path: Union[str, os.PathLike]) -> "MOF":
         s = IStructure.from_file(path)
         return MOF(s)

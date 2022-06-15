@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+"""Test the AMD featurizer"""
 import os
 
 import amd

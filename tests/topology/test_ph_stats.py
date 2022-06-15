@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
+"""Test the PH Stats featurizer"""
 from mofdscribe.topology.ph_stats import PHStats
 
 from ..helpers import is_jsonable
 
 
 def test_ph_stats(hkust_structure, irmof_structure, cof_structure):
+    """Ensure we get the correct number of features and that they are different for different structures"""
     for structure in [hkust_structure, irmof_structure, cof_structure]:
         featurizer = PHStats()
         features = featurizer.featurize(structure)

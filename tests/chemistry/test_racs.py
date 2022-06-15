@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+"""Test the RACs featurizer."""
 from pymatgen.core import IStructure
 
 from mofdscribe.chemistry._fragment import get_bb_indices
@@ -9,6 +10,7 @@ from ..helpers import is_jsonable
 
 
 def test_racs(hkust_structure, irmof_structure):
+    """Make sure that the featurization works for typical MOFs and the number of features is as expected."""
     for structure in [hkust_structure, irmof_structure]:
         featurizer = RACS()
         feats = featurizer.featurize(structure)

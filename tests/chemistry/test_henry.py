@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
+"""Test the Henry featurizer"""
 from mofdscribe.chemistry.henry import Henry
 
 from ..helpers import is_jsonable
 
 
 def test_henryhoa(hkust_structure, irmof_structure):
+    """Make sure that the featurization works for typical MOFs and the number of features is as expected."""
     featurizer = Henry(cycles=1000)
     features = featurizer.featurize(hkust_structure)
     labels = featurizer.feature_labels()

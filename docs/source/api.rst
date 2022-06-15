@@ -16,7 +16,7 @@ Voxelgrid
     :members:
 
 Topological featurization (persistent homology)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. automodule:: mofdscribe.topology.ph_vect
     :members:
@@ -55,7 +55,7 @@ Datasets
 ---------
 
 Structure datasets
-^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^
 
 .. automodule:: mofdscribe.datasets.core_dataset
     :members:

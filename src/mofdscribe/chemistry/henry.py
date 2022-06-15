@@ -38,7 +38,8 @@ Component 0 MoleculeName             {molname}
 """
 
 
-def parse_widom(directory: Union[str, Path]) -> dict:
+def parse_widom(directory: Union[str, os.PathLike]) -> dict:
+    """Parse the widom output files in the given directory."""
     outputs = glob(os.path.join(directory, "Output", "System_0", "*.data"))
     if len(outputs) != 1:
         raise ValueError("Expected one output file, got {}".format(len(outputs)))
@@ -57,7 +58,7 @@ class Henry(BaseFeaturizer):
 
     def __init__(
         self,
-        raspa_dir: Union[str, Path, None] = None,
+        raspa_dir: Union[str, os.PathLike, None] = None,
         cycles: int = 5_000,
         temperature: float = 300,
         cutoff: float = 12,
@@ -73,7 +74,7 @@ class Henry(BaseFeaturizer):
         """
 
         Args:
-            raspa_dir (Union[str, Path, None], optional): Path to the raspa directory (with lib, bin, share) subdirectories.
+            raspa_dir (Union[str, PathLike, None], optional): Path to the raspa directory (with lib, bin, share) subdirectories.
                 If `None` we will look for the `RASPA_DIR` environment variable.
                 Defaults to None.
             cycles (int, optional): Number of simulation cycles. Defaults to 5_000.
