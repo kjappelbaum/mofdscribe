@@ -27,7 +27,7 @@ class QMOFDataset(StructureDataset):
         drop_graph_duplicates: bool = True,
     ):
 
-        if not version in self._files:
+        if version not in self._files:
             raise ValueError(
                 f"Version {version} not available. Available versions: {list(self._files.keys())}"
             )
