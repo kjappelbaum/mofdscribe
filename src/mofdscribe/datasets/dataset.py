@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
 """Base class for datasets."""
-from functools import cached_property
 from typing import Iterable, List, Optional, Tuple
 
 import numpy as np
-from pymatgen.core import IStructure, Structure
-from mofchecker import MOFChecker
 from loguru import logger
+from mofchecker import MOFChecker
+from pymatgen.core import IStructure, Structure
 
 
 class StructureDataset:
