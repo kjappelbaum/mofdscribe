@@ -3,6 +3,7 @@
 from typing import List, Optional, Tuple, Union
 
 import numpy as np
+from element_coder import encode
 from matminer.featurizers.base import BaseFeaturizer
 from pymatgen.core import Element, IStructure, Structure
 
@@ -72,7 +73,7 @@ def compute_properties(numbers: np.array, properties: Tuple[str]) -> np.array:
         element = Element.from_Z(number)
         prop_vec = []
         for prop in properties:
-            prop_vec.append(getattr(element, prop))
+            prop_vec.append(encode(element.symbol, prop))
 
         property_lookup[number] = prop_vec
 

@@ -10,6 +10,7 @@ from functools import cached_property
 from typing import List, Optional, Tuple, Union
 
 import numpy as np
+from element_coder import encode
 from matminer.featurizers.base import BaseFeaturizer
 from pymatgen.core import IStructure, Structure
 
@@ -103,8 +104,8 @@ class APRDF(BaseFeaturizer):
                             p0 = 1
                             p1 = 1
                         else:
-                            p0 = getattr(site.specie, prop)
-                            p1 = getattr(n.specie, prop)
+                            p0 = encode(site.specie.symbol, prop)
+                            p1 = encode(n.specie.symbol, prop)
                         for agg in self.aggregations:
                             agg_func = AGGREGATORS[agg]
                             results[prop][agg].append(agg_func((p0, p1)) * n.nn_distance)
