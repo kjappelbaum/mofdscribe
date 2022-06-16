@@ -20,7 +20,7 @@ class AtomCenteredPHSite(BaseFeaturizer):
     """Site featurizer for atom-centered statistics of persistence diagrams.
 
     This featurizer is an abstraction of the on described in the work of Jiang
-    et al. (2021) [1]_. It computes the persistence diagrams for the
+    et al. (2021) [Jiang2021]_. It computes the persistence diagrams for the
     neighborhood of every site and then aggregates the diagrams by computing
     certain statistics.
 
@@ -28,13 +28,12 @@ class AtomCenteredPHSite(BaseFeaturizer):
     resolutions over the chemistry, you can wrap it in a
     :class:`~matminer.featurizers.structure.SiteStatsFingerprint`.
 
-    .. example::
-        from matminer.featurizers.structure import SiteStatsFingerprint
-        from mofdscribe.topology.atom_centered_ph import AtomCenteredPHSite
-
-        featurizer = SiteStatsFingerprint(AtomCenteredPHSite()) features =
-        featurizer.featurize(structure) feature_labels =
-        featurizer.feature_labels()
+    Examples:
+        >>> from matminer.featurizers.structure import SiteStatsFingerprint
+        >>> from mofdscribe.topology.atom_centered_ph import AtomCenteredPHSite
+        >>> featurizer = SiteStatsFingerprint(AtomCenteredPHSite())
+        >>> featurizer.featurize(structure)
+        np.array([2,...]) # np.array with features
 
     However, if you want the additional chemical dimension, you can use the the
     :class:`~mofdscribe.topology.atom_centered_ph.AtomCenteredPH`.
@@ -152,9 +151,9 @@ class AtomCenteredPH(BaseFeaturizer):
                 If multiple atom types separated by hash are provided, e.g. "C-H-N-O",
                 then the substructure consists of all atoms of type C, H, N, or O.
                 Defaults to ( "C-H-N-O", "F-Cl-Br-I",
-                 "Cu-Mn-Ni-Mo-Fe-Pt-Zn-Ca-Er-Au-Cd-Co-Gd-Na-Sm-Eu-Tb-V-Ag-Nd-U-Ba-Ce-K-Ga-
-                 Cr-Al-Li-Sc-Ru-In-Mg-Zr-Dy-W-Yb-Y-Ho-Re-Be-Rb-La-Sn-Cs-Pb-Pr-Bi-Tm-Sr-Ti-Hf-Ir-
-                 Nb-Pd-Hg-Th-Np-Lu-Rh-Pu", ).
+                "Cu-Mn-Ni-Mo-Fe-Pt-Zn-Ca-Er-Au-Cd-Co-Gd-Na-Sm-Eu-Tb-V-Ag-Nd-U-Ba-Ce-K-Ga-
+                "Cr-Al-Li-Sc-Ru-In-Mg-Zr-Dy-W-Yb-Y-Ho-Re-Be-Rb-La-Sn-Cs-Pb-Pr-Bi-Tm-Sr-Ti-Hf-Ir-
+                "Nb-Pd-Hg-Th-Np-Lu-Rh-Pu", ).
             aggregation_functions (Tuple[str], optional): Aggregations to compute on the persistence
                 diagrams (over birth/death time and persistence).
                 Defaults to ("min", "max", "mean", "std").

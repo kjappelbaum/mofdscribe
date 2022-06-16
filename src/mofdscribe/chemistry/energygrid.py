@@ -60,7 +60,7 @@ def read_ascii_grid(filename: Union[str, os.PathLike]) -> pd.DataFrame:
 
 
 class EnergyGridHistogram(BaseFeaturizer):
-    """Computes the energy grid histograms as originally proposed by Bucior et al. [1]_.
+    """Computes the energy grid histograms as originally proposed by Bucior et al. [Bucior2019]_.
 
     Conventionally, energy grids can be used to speed up molecular simulations.
     The idea is that the interactions between the guest and host are
@@ -73,17 +73,11 @@ class EnergyGridHistogram(BaseFeaturizer):
     mol−1, again with a repulsion bin.
 
     This approach has also been used, for example, `Li et al. (2021)
-    <https://aip.scitation.org/doi/10.1063/5.0050823>`_
+    <https://aip.scitation.org/doi/10.1063/5.0050823>`_ and [Bucior2021]_.
 
     References
     ----------
-    .. [1]  Bucior, B. J.; Bobbitt, N. S.; Islamoglu, T.; Goswami, S.; Gopalan,
-        A.; Yildirim, T.; Farha, O. K.; Bagheri, N.; Snurr, R. Q. Energy-Based
-        Descriptors to Rapidly Predict Hydrogen Storage in Metal–Organic
-        Frameworks. Molecular Systems Design & Engineering 2019, 4 (1), 162–174.
-        https://doi.org/10.1039/C8ME00050F.
-
-    .. [2]  Li, Z.; Bucior, B. J.; Chen, H.; Haranczyk, M.; Siepmann, J. I.;
+    .. [Bucior2021]  Li, Z.; Bucior, B. J.; Chen, H.; Haranczyk, M.; Siepmann, J. I.;
         Snurr, R. Q. Machine Learning Using Host/Guest Energy Histograms to
         Predict Adsorption in Metal–Organic Frameworks: Application to Short
         Alkanes and Xe/Kr Mixtures. J. Chem. Phys. 2021, 155 (1), 014701.

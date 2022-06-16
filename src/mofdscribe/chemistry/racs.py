@@ -17,7 +17,7 @@ from mofdscribe.utils.structure_graph import (
 
 from ._fragment import get_bb_indices
 
-__all__ = "RACS"
+__all__ = ("RACS",)
 
 
 def _compute_racs(

@@ -212,8 +212,8 @@ class SurfaceArea(BaseFeaturizer):
                 Defaults to 0.1.
             num_samples (Optional[int], optional): Number of samples.
                 Defaults to 100.
-            channel_radius (Optional[Union[str, float, None]], optional):
-                Channel radius. Should equal to `probe_radius. Defaults to None.
+            channel_radius (Optional[Union[str, float, None]], optional): Channel radius.
+                Should equal to `probe_radius`. Defaults to None.
         """
         if channel_radius is not None and probe_radius != channel_radius:
             logger.warning(
@@ -295,8 +295,8 @@ class AccessibleVolume(BaseFeaturizer):
                 Defaults to 0.1.
             num_samples (Optional[int], optional): Number of samples.
                 Defaults to 100.
-            channel_radius (Optional[Union[str, float, None]], optional):
-                Channel radius. Should equal to `probe_radius. Defaults to None.
+            channel_radius (Optional[Union[str, float, None]], optional): Channel radius.
+                Should equal to `probe_radius`. Defaults to None.
         """
         if channel_radius is not None and probe_radius != channel_radius:
             logger.warning(

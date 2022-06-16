@@ -15,7 +15,7 @@ from ..constants import MOFDSCRIBE_PYSTOW_MODULE
 class CoREDataset(StructureDataset):
     """Dataset of gas uptake related features for a subset of CoRE MOFs.
 
-    The labels were computed by Moosavi et al. (2020) [1]_.
+    The labels were computed by Moosavi et al. (2020) [Moosavi2020]_.
 
     To reduce the risk of data leakage, we  (by default) also only keep one representative
     structure for a "base refcode" (i.e. the first five letters of a refcode).
@@ -58,7 +58,7 @@ class CoREDataset(StructureDataset):
 
     References
     ----------
-    .. [1] Moosavi, S. M.; Nandy, A.; Jablonka, K. M.; Ongari, D.; Janet, J. P.; Boyd, P. G.; Lee,
+    .. [Moosavi2020] Moosavi, S. M.; Nandy, A.; Jablonka, K. M.; Ongari, D.; Janet, J. P.; Boyd, P. G.; Lee,
         Y.; Smit, B.; Kulik, H. J. Understanding the Diversity of the Metal-Organic Framework Ecosystem.
         Nature Communications 2020, 11 (1), 4068. https://doi.org/10.1038/s41467-020-17755-8.
 

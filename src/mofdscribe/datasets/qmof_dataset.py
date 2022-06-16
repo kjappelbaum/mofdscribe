@@ -14,7 +14,7 @@ from ..constants import MOFDSCRIBE_PYSTOW_MODULE
 
 class QMOFDataset(StructureDataset):
     """
-    Exposes the QMOF dataset by Rosen et al. [1]_ [2]_ .
+    Exposes the QMOF dataset by Rosen et al. [Rosen2021a]_ [Rosen2021b]_ .
 
     To reduce the risk of data leakage, we (by default) also only keep one representative
     structure for a "base refcode" (i.e. the first five letters of a refcode).
@@ -56,11 +56,12 @@ class QMOFDataset(StructureDataset):
 
     References
     ----------
-    .. [1] Rosen, A. S.; Iyer, S. M.; Ray, D.; Yao, Z.; Aspuru-Guzik, A.; Gagliardi, L.; Notestein, J. M.; Snurr, R. Q.
-        Machine Learning the Quantum-Chemical Properties of Metal–Organic Frameworks for
-        Accelerated Materials Discovery. Matter 2021, 4 (5), 1578–1597. https://doi.org/10.1016/j.matt.2021.02.015.
+    .. [Rosen2021a] Rosen, A. S.; Iyer, S. M.; Ray, D.; Yao, Z.; Aspuru-Guzik, A.; Gagliardi, L.;
+        Notestein, J. M.; Snurr, R. Q. Machine Learning the Quantum-Chemical Properties
+        of Metal–Organic Frameworks for Accelerated Materials Discovery.
+        Matter 2021, 4 (5), 1578–1597. https://doi.org/10.1016/j.matt.2021.02.015.
 
-    .. [2] Rosen, A. S.; Fung, V.; Huck, P.; O'Donnell, C. T.; Horton, M. K.; Truhlar, D. G.; Persson, K. A.;
+    .. [Rosen2021b] Rosen, A. S.; Fung, V.; Huck, P.; O'Donnell, C. T.; Horton, M. K.; Truhlar, D. G.; Persson, K. A.;
         Notestein, J. M.; Snurr, R. Q. High-Throughput Predictions of Metal–Organic Framework Electronic Properties:
         Theoretical Challenges, Graph Neural Networks, and Data Exploration. ChemRxiv 2021.
         https://chemrxiv.org/engage/chemrxiv/article-details/61b03430535d63bcdf93968b

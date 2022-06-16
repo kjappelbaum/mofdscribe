@@ -30,7 +30,9 @@ dependencies, the featurizers are currently not integrated in matminer itself.
    :maxdepth: 2
    :caption: Table of Contents
 
-   getting_started background api
+   getting_started
+   background
+   api
 
 Indices and Tables
 ------------------
