@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""RASPA force-field builder taken from aiida-lsmo
+"""RASPA force-field builder taken from aiida-lsmo.
 
 MIT License
 
@@ -28,18 +28,29 @@ SOFTWARE.
 """
 import os
 from math import sqrt
+from typing import List
 
 import ruamel.yaml as yaml
 
 THISDIR = os.path.dirname(os.path.abspath(__file__))
 
 
-def check_ff_list(inp_list):
-    """Check a list of atom types:
+def check_ff_list(inp_list: List[str]):
+    """Check a list of atom types.
+
     1) Remove duplicates, preserving the order of the elements.
     2) Warn if there are atom types with the same name but different parameters
     3) If a shorter atom type comes later, swap the order # TODO!
-    """
+
+    Args:
+        inp_list (List[str]): list of atom types
+
+    Raises:
+        ValueError: If the list contains duplicate atom type with different parameters
+
+    Returns:
+        list[str]: list of atom types
+    """ """ """
     out_list = []
     for item in inp_list:
         if item.split()[0] not in [x.split()[0] for x in out_list]:  # atom type label is unique
@@ -105,7 +116,7 @@ def render_ff_mixing_def(ff_data, params):
 
 
 def mix_molecule_ff(ff_list, mixing_rule):
-    """Mix molecule-molecule interactions in case of separate_interactions: return mixed ff_list"""
+    """Mix molecule-molecule interactions in case of separate_interactions: return mixed ff_list."""
     ff_mix = []
     for i, ffi in enumerate(ff_list):
         for ffj in ff_list[i:]:
@@ -243,19 +254,26 @@ def ff_builder(params: dict) -> dict:
     Args:
         params (dict): Input parameters, for example:
             params = {
-                'ff_framework': 'UFF',              # See force fields available in ff_data.yaml as framework.keys()
-                'ff_molecules': {                   # See molecules available in ff_data.yaml as ff_data.keys()
-                    'CO2': 'TraPPE',                    # See force fields available in ff_data.yaml as {molecule}.keys()
+                # See force fields available in ff_data.yaml as framework.keys()
+                'ff_framework': 'UFF',
+                # See molecules available in ff_data.yaml as ff_data.keys()
+                'ff_molecules': {
+                    'CO2': 'TraPPE',
+                # See force fields available in ff_data.yaml as {molecule}.keys()
                     'N2': 'TraPPE',
                 },
-                'shifted': True,                    # If True shift despersion interactions, if False simply truncate them.
-                'tail_corrections': False,          # If True apply tail corrections based on homogeneous-liquid assumption
-                'mixing_rule': 'Lorentz-Berthelot', # Options: 'Lorentz-Berthelot' or 'Jorgensen'
-                'separate_interactions': True       # If True use framework's force field for framework-molecule interactions
+                # If True shift despersion interactions, if False simply truncate them.
+                'shifted': True,                    .
+                # If True apply tail corrections based on homogeneous-liquid assumption
+                'tail_corrections': False,
+                 Options: 'Lorentz-Berthelot' or 'Jorgensen'
+                'mixing_rule': 'Lorentz-Berthelot'
+                 # If True use framework's force field for framework-molecule interactions
+                'separate_interactions': True
             }
 
     Returns:
-        dict: _description_
+        dict: ff settings
     """
     ff_data = load_yaml()
 

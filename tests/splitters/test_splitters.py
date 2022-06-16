@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Test splitters"""
+"""Test splitters."""
 from mofdscribe.datasets.core_dataset import CoREDataset
 from mofdscribe.splitters.splitters import (
     DensitySplitter,
@@ -11,7 +11,7 @@ from mofdscribe.splitters.splitters import (
 
 
 def test_hash_splitter():
-    """Ensure that the splits add up to the total number of structures and are non-overlapping"""
+    """Ensure that the splits add up to the total number of structures and are non-overlapping."""
     ds = CoREDataset()
     hs = HashSplitter(hash_type="undecorated_scaffold_hash")
 
@@ -26,7 +26,7 @@ def test_hash_splitter():
 
 
 def test_time_splitter():
-    """Ensure that the splits add up to the total number of structures and are non-overlapping"""
+    """Ensure that the splits add up to the total number of structures and are non-overlapping."""
     ds = CoREDataset()
     ts = TimeSplitter()
 
@@ -41,7 +41,7 @@ def test_time_splitter():
 
 
 def test_density_splitter():
-    """Ensure that the splits add up to the total number of structures and are non-overlapping"""
+    """Ensure that the splits add up to the total number of structures and are non-overlapping."""
     ds = CoREDataset()
 
     dens_splitter = DensitySplitter()
@@ -70,7 +70,7 @@ def test_random_splitter():
 
 
 def test_fingerprint_splitter():
-    """Ensure that the splits add up to the total number of structures and are non-overlapping"""
+    """Ensure that the splits add up to the total number of structures and are non-overlapping."""
     ds = CoREDataset()
 
     fps = FingerprintSplitter(

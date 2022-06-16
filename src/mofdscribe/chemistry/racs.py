@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-"""Revised autocorrelation functions (RACs) for MOFs"""
+"""Revised autocorrelation functions (RACs) for MOFs."""
 from collections import defaultdict
-from typing import Iterable, List, Tuple, Union
+from typing import Iterable, List, Optional, Tuple, Union
 
 import numpy as np
 from matminer.featurizers.base import BaseFeaturizer
@@ -17,7 +17,7 @@ from mofdscribe.utils.structure_graph import (
 
 from ._fragment import get_bb_indices
 
-__all__ = 'RACS'
+__all__ = "RACS"
 
 
 def _compute_racs(
@@ -27,7 +27,7 @@ def _compute_racs(
     scope: int,
     property_aggregations: Tuple[str],
     corr_aggregations: Tuple[str],
-    part_name: str = '',
+    part_name: str = "",
     nan_value: float = np.nan,
 ):
     racs = defaultdict(lambda: defaultdict(list))
@@ -48,10 +48,10 @@ def _compute_racs(
 
                     n = structure_graph.structure[neighbor]
                     for prop in properties:
-                        if prop in ('I', 1):
+                        if prop in ("I", 1):
                             p0 = 1
                             p1 = 1
-                        elif prop == 'T':
+                        elif prop == "T":
                             p0 = num_neighbors
                             p1 = len(get_connected_site_indices(structure_graph, neighbor))
                         else:
@@ -71,7 +71,7 @@ def _compute_racs(
         for aggregation_name, aggregation_values in property_values.items():
             for corr_agg in corr_aggregations:
                 agg_func = ARRAY_AGGREGATORS[corr_agg]
-                name = f'racs_{part_name}_{property_name}_{scope}_{aggregation_name}_{corr_agg}'
+                name = f"racs_{part_name}_{property_name}_{scope}_{aggregation_name}_{corr_agg}"
                 aggregated_racs[name] = agg_func(aggregation_values)
 
     return aggregated_racs
@@ -85,7 +85,7 @@ def _get_racs_for_bbs(
     property_aggregations: Tuple[str],
     corr_aggregations: Tuple[str],
     bb_aggregations: Tuple[str],
-    bb_name: str = '',
+    bb_name: str = "",
 ):
     bb_racs = defaultdict(list)
 
@@ -107,7 +107,7 @@ def _get_racs_for_bbs(
     for racs_name, racs_values in bb_racs.items():
         for bb_agg in bb_aggregations:
             agg_func = ARRAY_AGGREGATORS[bb_agg]
-            name = f'{racs_name}_{bb_agg}'
+            name = f"{racs_name}_{bb_agg}"
             aggregated_racs[name] = agg_func(racs_values)
 
     return aggregated_racs
@@ -115,7 +115,8 @@ def _get_racs_for_bbs(
 
 class RACS(BaseFeaturizer):
     r"""Modified version of the revised autocorrelation functions (RACs) for
-    MOFs proposed by Moosavi et al. (10.1038/s41467-020-17755-8)
+    MOFs proposed by Moosavi et al. (10.1038/s41467-020-17755-8).
+
     In the original paper, RACs were computed as
 
     .. math::
@@ -139,22 +140,27 @@ class RACS(BaseFeaturizer):
 
     def __init__(
         self,
-        attributes: Tuple[Union[int, str]] = ('X', 'electron_affinity', 'I', 'T'),
-        scopes: Tuple[int] = (1, 2, 3),
-        prop_agg: Tuple[str] = ('product', 'diff'),
-        corr_agg: Tuple[str] = ('sum',),
-        bb_agg: Tuple[str] = ('avg',),
-        bond_heuristic: str = 'jmolnn',
+        attributes: Optional[Tuple[Union[int, str]]] = ("X", "electron_affinity", "I", "T"),
+        scopes: Optional[Tuple[int]] = (1, 2, 3),
+        prop_agg: Optional[Tuple[str]] = ("product", "diff"),
+        corr_agg: Optional[Tuple[str]] = ("sum",),
+        bb_agg: Optional[Tuple[str]] = ("avg",),
+        bond_heuristic: Optional[str] = "jmolnn",
     ) -> None:
         """
+        Initialize the RACS featurizer.
 
         Args:
-            attributes (Tuple[Union[int, str]], optional): _description_. Defaults to ("X", "electron_affinity", "I", "T").
-            scopes (Tuple[int], optional): _description_. Defaults to (1, 2, 3).
-            prop_agg (Tuple[str], optional): _description_. Defaults to ("product", "diff").
-            corr_agg (Tuple[str], optional): _description_. Defaults to ("sum").
-            bb_agg (Tuple[str], optional): _description_. Defaults to ("avg").
-            bond_heuristic (str, optional): _description_. Defaults to "jmolnn".
+            attributes (Tuple[Union[int, str]], optional): Properties that are correlated.
+                Defaults to ("X", "electron_affinity", "I", "T").
+            scopes (Tuple[int], optional): Number of edges to traverse. Defaults to (1, 2, 3).
+            prop_agg (Tuple[str], optional): Function for aggregating the properties.
+                Defaults to ("product", "diff").
+            corr_agg (Tuple[str], optional): Function to aggregate the properties across different start/scopes.
+                Defaults to ("sum").
+            bb_agg (Tuple[str], optional): Function used to aggregate the properties across different building blocks.
+                 Defaults to ("avg").
+            bond_heuristic (str, optional): Method used to guess bonds. Defaults to "jmolnn".
         """
         self.attributes = attributes
         self.scopes = scopes
@@ -163,11 +169,11 @@ class RACS(BaseFeaturizer):
         self.bb_agg = bb_agg
         self.bond_heuristic = bond_heuristic
         self._bbs = [
-            'linker_all',
-            'linker_connecting',
-            'linker_functional',
-            'linker_scaffold',
-            'nodes',
+            "linker_all",
+            "linker_connecting",
+            "linker_functional",
+            "linker_scaffold",
+            "nodes",
         ]
 
     def featurize(self, structure: Union[Structure, IStructure]) -> np.ndarray:
@@ -201,7 +207,7 @@ class RACS(BaseFeaturizer):
                         for prop in self.attributes:
                             for property_agg in self.prop_agg:
                                 names.append(
-                                    f'racs_{bb}_{prop}_{scope}_{property_agg}_{cor_agg}_{bb_agg}'
+                                    f"racs_{bb}_{prop}_{scope}_{property_agg}_{cor_agg}_{bb_agg}"
                                 )
         return names
 
@@ -210,32 +216,35 @@ class RACS(BaseFeaturizer):
 
     def citations(self) -> List[str]:
         return [
-            '@article{Moosavi2020,'
-            'doi = {10.1038/s41467-020-17755-8},'
-            'url = {https://doi.org/10.1038/s41467-020-17755-8},'
-            'year = {2020},'
-            'month = aug,'
-            'publisher = {Springer Science and Business Media {LLC}},'
-            'volume = {11},'
-            'number = {1},'
-            'author = {Seyed Mohamad Moosavi and Aditya Nandy and Kevin Maik Jablonka and Daniele Ongari and Jon Paul Janet and Peter G. Boyd and Yongjin Lee and Berend Smit and Heather J. Kulik},'
-            'title = {Understanding the diversity of the metal-organic framework ecosystem},'
-            'journal = {Nature Communications}'
-            '}',
-            '@article{Janet2017,'
-            'doi = {10.1021/acs.jpca.7b08750},'
-            'url = {https://doi.org/10.1021/acs.jpca.7b08750},'
-            'year = {2017},'
-            'month = nov,'
-            'publisher = {American Chemical Society ({ACS})},'
-            'volume = {121},'
-            'number = {46},'
-            'pages = {8939--8954},'
-            'author = {Jon Paul Janet and Heather J. Kulik},'
-            'title = {Resolving Transition Metal Chemical Space: Feature Selection for Machine Learning and Structure{\textendash}Property Relationships},'
-            'journal = {The Journal of Physical Chemistry A}'
-            '}',
+            "@article{Moosavi2020,"
+            "doi = {10.1038/s41467-020-17755-8},"
+            "url = {https://doi.org/10.1038/s41467-020-17755-8},"
+            "year = {2020},"
+            "month = aug,"
+            "publisher = {Springer Science and Business Media {LLC}},"
+            "volume = {11},"
+            "number = {1},"
+            "author = {Seyed Mohamad Moosavi and Aditya Nandy and "
+            "Kevin Maik Jablonka and Daniele Ongari and Jon Paul Janet "
+            "and Peter G. Boyd and Yongjin Lee and Berend Smit and Heather J. Kulik},"
+            "title = {Understanding the diversity of the metal-organic framework ecosystem},"
+            "journal = {Nature Communications}"
+            "}",
+            "@article{Janet2017,"
+            "doi = {10.1021/acs.jpca.7b08750},"
+            "url = {https://doi.org/10.1021/acs.jpca.7b08750},"
+            "year = {2017},"
+            "month = nov,"
+            "publisher = {American Chemical Society ({ACS})},"
+            "volume = {121},"
+            "number = {46},"
+            "pages = {8939--8954},"
+            "author = {Jon Paul Janet and Heather J. Kulik},"
+            "title = {Resolving Transition Metal Chemical Space: "
+            "Feature Selection for Machine Learning and Structure{\textendash}Property Relationships},"
+            "journal = {The Journal of Physical Chemistry A}"
+            "}",
         ]
 
     def implementors(self):
-        return ['Kevin Maik Jablonka']
+        return ["Kevin Maik Jablonka"]

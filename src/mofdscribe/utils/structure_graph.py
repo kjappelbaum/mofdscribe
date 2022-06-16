@@ -18,8 +18,9 @@ def get_neighbors_at_distance(
     distance (scope) of the start site.
 
     Args:
-        structure_graph (StructureGraph): pymatgen StructureGraph object start
-        (int): starting atom scope (int): distance to search
+        structure_graph (StructureGraph): pymatgen StructureGraph object
+        start (int): starting atom
+        scope (int): distance to search
 
     Returns:
         Tuple[Set[int], List[int]]: All sites within the scope of the start
@@ -45,13 +46,13 @@ def get_neighbors_at_distance(
 
 
 def _get_local_env_strategy(name: Optional[str] = None):
-    n = 'jmolnn' if name is None else name.lower()
+    n = "jmolnn" if name is None else name.lower()
 
-    if n == 'jmolnn':
+    if n == "jmolnn":
         return JmolNN()
-    elif n == 'crystalnn':
+    elif n == "crystalnn":
         return CrystalNN()
-    elif n == 'isayevnn':
+    elif n == "isayevnn":
         return IsayevNN()
 
 
@@ -71,7 +72,7 @@ def get_structure_graph(structure: IStructure, strategy: Optional[str] = None) -
     sg = StructureGraph.with_local_env_strategy(structure, strategy)
     nx.set_node_attributes(
         sg.graph,
-        name='idx',
+        name="idx",
         values=dict(zip(range(len(sg)), range(len(sg)))),
     )
     return sg
@@ -138,7 +139,7 @@ def get_subgraphs_as_molecules(  # pylint:disable=too-many-locals
     and removed the duplicate check.
 
     Args:
-        structure_graph (pymatgen.analysis.graphs.StructureGraph):
+        structure_graph (StructureGraph):
             Structuregraph
         use_weights (bool): If True, use weights for the edge
             matching
@@ -177,7 +178,7 @@ def get_subgraphs_as_molecules(  # pylint:disable=too-many-locals
             molecule_subgraphs.append(nx.MultiDiGraph(subgraph))
         else:
             intersects_boundary = any(  # pylint: disable=use-a-generator
-                d['to_jimage'] != (0, 0, 0) for u, v, d in subgraph.edges(data=True)
+                d["to_jimage"] != (0, 0, 0) for u, v, d in subgraph.edges(data=True)
             )
             if not intersects_boundary:
                 molecule_subgraphs.append(nx.MultiDiGraph(subgraph))
@@ -190,11 +191,11 @@ def get_subgraphs_as_molecules(  # pylint:disable=too-many-locals
     unique_subgraphs = []
 
     def node_match(node_1, node_2):
-        return node_1['specie'] == node_2['specie']
+        return node_1["specie"] == node_2["specie"]
 
     def edge_match(edge_1, edge_2):
         if use_weights:
-            return edge_1['weight'] == edge_2['weight']
+            return edge_1["weight"] == edge_2["weight"]
 
         return True
 
@@ -220,9 +221,9 @@ def get_subgraphs_as_molecules(  # pylint:disable=too-many-locals
             coords = [supercell_sg.structure[node].coords for node in subgraph.nodes()]
             species = [supercell_sg.structure[node].specie for node in subgraph.nodes()]
 
-            idx = [subgraph.nodes[node]['idx'] for node in subgraph.nodes()]
+            idx = [subgraph.nodes[node]["idx"] for node in subgraph.nodes()]
             idx_here = subgraph.nodes()
-            molecule = Molecule(species, coords)  #  site_properties={"binding": binding}
+            molecule = Molecule(species, coords)
             mol_centers.append(np.mean(supercell_sg.structure.cart_coords[idx_here], axis=0))
             # shift so origin is at center of mass
             if center:

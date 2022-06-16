@@ -23,8 +23,8 @@ def make_supercell(
         coords (np.ndarray): matrix of xyz coordinates of the system
         lattice (Tuple[float, float, float]): lattice constants of the system
         size (float): dimension size of cubic cell, e.g., 10x10x10
-        min_size (float, optional): minimum axes size to keep negative xyz coordinates from the original cell.
-            Defaults to -5.
+        min_size (float, optional): minimum axes size to keep negative xyz
+            coordinates from the original cell. Defaults to -5.
 
     Returns:
         new_cell: supercell array
@@ -88,15 +88,18 @@ def compute_properties(numbers: np.array, properties: Tuple[str]) -> np.array:
 class VoxelGrid(BaseFeaturizer):
     """
     Describe the structure using a voxel grid.
+
     For this, we first compute a supercell, the "voxelize" the point cloud.
 
     For setting the value of the voxels, different options are available:
-    Geometry Aggregations:
-    - `binary`: 1 if the voxel is occupied, 0 otherwise
-    - `density`: the number of atoms in the voxel / total number of atoms
-    - `TDF`: truncated distance function. Value between 0 and 1 indicating the distance between the voxel's center and the closest point. 1 on the surface, 0 on voxels further than 2 * voxel side.
+    Geometry Aggregations: - `binary`: 1 if the voxel is occupied, 0 otherwise -
+    `density`: the number of atoms in the voxel / total number of atoms - `TDF`:
+    truncated distance function. Value between 0 and 1 indicating the distance
+    between the voxel's center and the closest point. 1 on the surface, 0 on
+    voxels further than 2 * voxel side.
 
-    Properties: Alternatively/additionally one can use the average of any available properties of pymatgen Element objects.
+    Properties: Alternatively/additionally one can use the average of any
+    available properties of pymatgen Element objects.
     """
 
     def __init__(
@@ -105,27 +108,35 @@ class VoxelGrid(BaseFeaturizer):
         n_x: Optional[int] = 25,
         n_y: Optional[int] = 25,
         n_z: Optional[int] = 25,
-        geometry_aggregations: Optional[Union[Tuple[str], None]] = ('binary',),
-        properties: Optional[Union[Tuple[str, int], None]] = ('X', 'electron_affinity'),
+        geometry_aggregations: Optional[Union[Tuple[str], None]] = ("binary",),
+        properties: Optional[Union[Tuple[str, int], None]] = ("X", "electron_affinity"),
         flatten: Optional[bool] = True,
         regular_bounding_box: Optional[bool] = True,
     ):
         """Initialize a VoxelGrid featurizer.
 
         Args:
-            min_size (float, optional): Minimum supercell size in Angstrom. Defaults to 30.
-            n_x (int, optional): Number of bins in x direction (Hung et al used 30 and 60 at a cell size of 60). Defaults to 25.
-            n_y (int, optional): Number of bins in x direction (Hung et al used 30 and 60 at a cell size of 60). Defaults to 25.
-            n_z (int, optional): Number of bins in x direction (Hung et al used 30 and 60 at a cell size of 60). Defaults to 25.
-            geometry_aggregations (Union[Tuple["density" | "binary" | "TDF"], None], optional): Mode for encoding the occupation of voxels.
+            min_size (float, optional): Minimum supercell size in Angstrom.
+                Defaults to 30.
+            n_x (int, optional): Number of bins in x direction
+                (Hung et al used 30 and 60 at a cell size of 60). Defaults to 25.
+            n_y (int, optional): Number of bins in x direction
+                (Hung et al used 30 and 60 at a cell size of 60). Defaults to 25.
+            n_z (int, optional): Number of bins in x direction
+                (Hung et al used 30 and 60 at a cell size of 60). Defaults to 25.
+            geometry_aggregations (Union[Tuple["density" | "binary" | "TDF"], None], optional):
+                Mode for encoding the occupation of voxels.
                 * binary: 0 for empty voxels, 1 for occupied.
                 * density: number of points inside voxel / total number of points.
-                * TDF: Truncated Distance Function. Value between 0 and 1 indicating the distance, between the voxel's center and the closest point. 1 on the surface, 0 on voxels further than 2 * voxel side.
+                * TDF: Truncated Distance Function. Value between 0 and 1 indicating the distance,
+                between the voxel's center and the closest point. 1 on the surface,
+                0 on voxels further than 2 * voxel side.
                 Defaults to ("binary",).
             properties (Union[Tuple[str, int], None], optional): Properties used for calculation of the AP-RDF.
                 All properties of `pymatgen.core.Species` are available. Defaults to ("X", "electron_affinity").
             flatten (bool, optional): It true, flatten the 3D voxelgrid to 1D array. Defaults to True.
-            regular_bounding_box (bool, optional): If True, the bounding box of the point cloud will be adjusted in order to have all the dimensions of equal length.
+            regular_bounding_box (bool, optional): If True, the bounding box of the point cloud will be adjusted
+                in order to have all the dimensions of equal length.
                 Defaults to True.
         """
         self.min_size = min_size
@@ -184,10 +195,10 @@ class VoxelGrid(BaseFeaturizer):
         feature_labels = []
         for geometry_aggregation in self.geometry_aggregations:
             for voxel in range(self._num_voxels):
-                feature_labels.append(f'{geometry_aggregation}_{voxel}')
+                feature_labels.append(f"{geometry_aggregation}_{voxel}")
         for property in self.properties:
             for voxel in range(self._num_voxels):
-                feature_labels.append(f'{geometry_aggregation}_{voxel}')
+                feature_labels.append(f"{property}_{voxel}")
 
         return feature_labels
 
@@ -196,33 +207,36 @@ class VoxelGrid(BaseFeaturizer):
 
     def citations(self) -> List[str]:
         return [
-            '@article{Hung2022,'
-            'doi = {10.1021/acs.jpcc.1c09649},'
-            'url = {https://doi.org/10.1021/acs.jpcc.1c09649},'
-            'year = {2022},'
-            'month = jan,'
-            'publisher = {American Chemical Society ({ACS})},'
-            'volume = {126},'
-            'number = {5},'
-            'pages = {2813--2822},'
-            'author = {Ting-Hsiang Hung and Zhi-Xun Xu and Dun-Yen Kang and Li-Chiang Lin},'
-            'title = {Chemistry-Encoded Convolutional Neural Networks for Predicting Gaseous Adsorption in Porous Materials},'
-            'journal = {The Journal of Physical Chemistry C}'
-            '}',
-            '@article{Cho2021,'
-            'doi = {10.1021/acs.jpclett.1c00293},'
-            'url = {https://doi.org/10.1021/acs.jpclett.1c00293},'
-            'year = {2021},'
-            'month = mar,'
-            'publisher = {American Chemical Society ({ACS})},'
-            'volume = {12},'
-            'number = {9},'
-            'pages = {2279--2285},'
-            'author = {Eun Hyun Cho and Li-Chiang Lin},'
-            'title = {Nanoporous Material Recognition via 3D Convolutional Neural Networks: Prediction of Adsorption Properties},'
-            'journal = {The Journal of Physical Chemistry Letters}'
-            '}',
+            "@article{Hung2022,"
+            "doi = {10.1021/acs.jpcc.1c09649},"
+            "url = {https://doi.org/10.1021/acs.jpcc.1c09649},"
+            "year = {2022},"
+            "month = jan,"
+            "publisher = {American Chemical Society ({ACS})},"
+            "volume = {126},"
+            "number = {5},"
+            "pages = {2813--2822},"
+            "author = {Ting-Hsiang Hung and Zhi-Xun Xu and Dun-Yen Kang "
+            "and Li-Chiang Lin},"
+            "title = {Chemistry-Encoded Convolutional Neural Networks for "
+            "Predicting Gaseous Adsorption in Porous Materials},"
+            "journal = {The Journal of Physical Chemistry C}"
+            "}",
+            "@article{Cho2021,"
+            "doi = {10.1021/acs.jpclett.1c00293},"
+            "url = {https://doi.org/10.1021/acs.jpclett.1c00293},"
+            "year = {2021},"
+            "month = mar,"
+            "publisher = {American Chemical Society ({ACS})},"
+            "volume = {12},"
+            "number = {9},"
+            "pages = {2279--2285},"
+            "author = {Eun Hyun Cho and Li-Chiang Lin},"
+            "title = {Nanoporous Material Recognition via 3D Convolutional "
+            "Neural Networks: Prediction of Adsorption Properties},"
+            "journal = {The Journal of Physical Chemistry Letters}"
+            "}",
         ]
 
     def implementors(self) -> List[str]:
-        return ['Kevin Maik Jablonka']
+        return ["Kevin Maik Jablonka"]

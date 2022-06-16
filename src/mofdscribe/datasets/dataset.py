@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+"""Base class for datasets."""
 from typing import Iterable, List, Optional, Tuple
 
 import numpy as np
@@ -6,6 +7,8 @@ from pymatgen.core import IStructure, Structure
 
 
 class StructureDataset:
+    """Base class for datasets."""
+
     def __init__(self):
         self._structures = None
         self._target = None

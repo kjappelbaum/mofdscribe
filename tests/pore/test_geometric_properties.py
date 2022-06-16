@@ -46,6 +46,7 @@ def test_parse_sa():
 
 
 def test_parse_res():
+    """Ensure that the parser works as expected."""
     res = _parse_res_zeopp(RES_SAMPLE_OUTPUT)
     assert res == {
         "lis": 1.70107,  # largest included sphere
@@ -55,6 +56,7 @@ def test_parse_res():
 
 
 def test_parse_volpo_zeopp():
+    """Ensure that the parser works as expected."""
     res = _parse_volpo_zeopp(VOLPO_SAMPLE_OUTPUT)
     assert res["unitcell_volume"] == approx(307.484, 0.1)
     assert res["density"] == approx(1.62239, 0.1)
@@ -67,6 +69,7 @@ def test_parse_volpo_zeopp():
 
 
 def test_pore_diameters(hkust_structure):
+    """Ensure that the featurizer works as expected."""
     pd = PoreDiameters()
     assert pd.feature_labels() == ["lis", "lifs", "lifsp"]
     result = pd.featurize(hkust_structure)
@@ -79,6 +82,7 @@ def test_pore_diameters(hkust_structure):
 
 
 def test_surface_area(hkust_structure):
+    """Ensure that the featurizer works as expected."""
     sa = SurfaceArea()
     assert sa.feature_labels() == [
         "uc_volume",
@@ -106,6 +110,7 @@ def test_surface_area(hkust_structure):
 
 
 def test_accessible_volume(hkust_structure):
+    """Ensure that the featurizer works as expected."""
     av = AccessibleVolume()
     assert av.feature_labels() == [
         "uc_volume",
@@ -133,6 +138,7 @@ def test_accessible_volume(hkust_structure):
 
 
 def test_raytracing_histogram(hkust_structure):
+    """Ensure that the featurizer works as expected."""
     rth = RayTracingHistogram()
     assert len(rth.feature_labels()) == 1000
     assert len(rth.citations()) == 2
@@ -144,6 +150,7 @@ def test_raytracing_histogram(hkust_structure):
 
 
 def test_psd(hkust_structure):
+    """Ensure that the featurizer works as expected."""
     psd = PoreSizeDistribution()
     assert len(psd.feature_labels()) == 1000
     assert len(psd.citations()) == 2

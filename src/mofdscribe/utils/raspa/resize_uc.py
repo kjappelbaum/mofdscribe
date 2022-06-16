@@ -3,12 +3,22 @@
 from math import ceil, cos, fabs, hypot, pi, sin
 
 import numpy as np
+from pymatgen.core import Structure
+from typing import Tuple
 
 
-def resize_unit_cell(structure, threshold):  # pylint: disable=too-many-locals
-    """Returns the multiplication factors for the cell vectors to respect, in every direction:
-    min(perpendicular_width) > threshold."""
+def resize_unit_cell(structure: Structure, threshold: float) -> Tuple[int, int, int]:
+    """Returns the multiplication factors for the cell vectors.
 
+    In every direction: min(perpendicular_width) > threshold.
+
+    Args:
+        structure (Structure): pymatgen Structure
+        threshold (float): threshold for the minimum width of the cell
+
+    Returns:
+        Tuple[int, int, int]: Multiplication factors for the cell vectors.
+    """
     deg2rad = pi / 180.0
 
     a_len = structure.lattice.a

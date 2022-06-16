@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
+"""Computing pore properties using Zeo++."""
 import os
 import re
 import subprocess
 from io import StringIO
 from tempfile import TemporaryDirectory
-from typing import List, Tuple, Union
+from typing import Callable, List, Optional, Tuple, Union
 
 import numpy as np
 import pandas as pd
@@ -42,12 +43,14 @@ __all__ = [
 ]
 
 
-def run_zeopp(structure: Structure, command, parser) -> dict:
-    """Run zeopp with network -ha  (http://www.zeoplusplus.org/examples.html)
-    to find the pore diameters
+def run_zeopp(structure: Structure, command: str, parser: Callable) -> dict:
+    """Run zeopp with network -ha (http://www.zeoplusplus.org/examples.html)
+        to find the pore diameters
 
     Args:
         structure (Structure): pymatgen Structure object
+        command (str): command for zeopp
+        parser (Callable): function to parse the output of zeopp
 
     Returns:
         dict: pore analysis results
@@ -78,11 +81,13 @@ def run_zeopp(structure: Structure, command, parser) -> dict:
 
 def _parse_res_zeopp(filecontent: str) -> Tuple[List[float], List[str]]:
     """Parse the results line of a network -res call to zeopp
+
     Args:
         filecontent (str): results file
+
     Returns:
         dict: largest included sphere, largest free sphere,
-            largest included sphera along free sphere path
+            largest included sphere along free sphere path
     """
     first_line = filecontent.split("\n")[0]
     parts = first_line.split()
@@ -158,6 +163,8 @@ def _parse_psd_zeopp(filecontent):
 
 
 class PoreDiameters(BaseFeaturizer):
+    """Calculate the pore diameters of a framework."""
+
     def __init__(self):
         self.labels = ["lis", "lifs", "lifsp"]
 
@@ -179,8 +186,10 @@ class PoreDiameters(BaseFeaturizer):
             "volume = {149},"
             "number = {1},"
             "pages = {134--141},"
-            "author = {Thomas F. Willems and Chris H. Rycroft and Michaeel Kazi and Juan C. Meza and Maciej Haranczyk},"
-            "title = {Algorithms and tools for high-throughput geometry-based analysis of crystalline porous materials},"
+            "author = {Thomas F. Willems and Chris H. Rycroft and Michaeel Kazi "
+            "and Juan C. Meza and Maciej Haranczyk},"
+            "title = {Algorithms and tools for high-throughput geometry-based "
+            "analysis of crystalline porous materials},"
             "journal = {Microporous and Mesoporous Materials}"
             "}"
         ]
@@ -192,10 +201,20 @@ class PoreDiameters(BaseFeaturizer):
 class SurfaceArea(BaseFeaturizer):
     def __init__(
         self,
-        probe_radius: Union[str, float] = 0.1,
-        num_samples: int = 100,
-        channel_radius: Union[str, float, None] = None,
+        probe_radius: Optional[Union[str, float]] = 0.1,
+        num_samples: Optional[int] = 100,
+        channel_radius: Optional[Union[str, float, None]] = None,
     ):
+        """Initialize the SurfaceArea featurizer.
+
+        Args:
+            probe_radius (Optional[Union[str, float]], optional): Radius of the probe.
+                Defaults to 0.1.
+            num_samples (Optional[int], optional): Number of samples.
+                Defaults to 100.
+            channel_radius (Optional[Union[str, float, None]], optional):
+                Channel radius. Should equal to `probe_radius. Defaults to None.
+        """
         if channel_radius is not None and probe_radius != channel_radius:
             logger.warning(
                 "Probe radius and channel radius are different. This is a highly unusual setting."
@@ -250,8 +269,10 @@ class SurfaceArea(BaseFeaturizer):
             "volume = {149},"
             "number = {1},"
             "pages = {134--141},"
-            "author = {Thomas F. Willems and Chris H. Rycroft and Michaeel Kazi and Juan C. Meza and Maciej Haranczyk},"
-            "title = {Algorithms and tools for high-throughput geometry-based analysis of crystalline porous materials},"
+            "author = {Thomas F. Willems and Chris H. Rycroft and Michaeel Kazi "
+            "and Juan C. Meza and Maciej Haranczyk},"
+            "title = {Algorithms and tools for high-throughput geometry-based "
+            "analysis of crystalline porous materials},"
             "journal = {Microporous and Mesoporous Materials}"
             "}"
         ]
@@ -267,6 +288,16 @@ class AccessibleVolume(BaseFeaturizer):
         num_samples: int = 100,
         channel_radius: Union[str, float, None] = None,
     ):
+        """Initialize the AccessibleVolume featurizer.
+
+        Args:
+            probe_radius (Optional[Union[str, float]], optional): Radius of the probe.
+                Defaults to 0.1.
+            num_samples (Optional[int], optional): Number of samples.
+                Defaults to 100.
+            channel_radius (Optional[Union[str, float, None]], optional):
+                Channel radius. Should equal to `probe_radius. Defaults to None.
+        """
         if channel_radius is not None and probe_radius != channel_radius:
             logger.warning(
                 "Probe radius and channel radius are different. This is a highly unusual setting."
@@ -314,8 +345,10 @@ class AccessibleVolume(BaseFeaturizer):
             "volume = {149},"
             "number = {1},"
             "pages = {134--141},"
-            "author = {Thomas F. Willems and Chris H. Rycroft and Michaeel Kazi and Juan C. Meza and Maciej Haranczyk},"
-            "title = {Algorithms and tools for high-throughput geometry-based analysis of crystalline porous materials},"
+            "author = {Thomas F. Willems and Chris H. Rycroft and Michaeel Kazi "
+            "and Juan C. Meza and Maciej Haranczyk},"
+            "title = {Algorithms and tools for high-throughput geometry-based "
+            "analysis of crystalline porous materials},"
             "journal = {Microporous and Mesoporous Materials}"
             "}",
             "@article{Ongari2017,"
@@ -327,8 +360,10 @@ class AccessibleVolume(BaseFeaturizer):
             "volume = {33},"
             "number = {51},"
             "pages = {14529--14538},"
-            "author = {Daniele Ongari and Peter G. Boyd and Senja Barthel and Matthew Witman and Maciej Haranczyk and Berend Smit},"
-            "title = {Accurate Characterization of the Pore Volume in Microporous Crystalline Materials},"
+            "author = {Daniele Ongari and Peter G. Boyd and Senja Barthel "
+            "and Matthew Witman and Maciej Haranczyk and Berend Smit},"
+            "title = {Accurate Characterization of the Pore Volume in "
+            "Microporous Crystalline Materials},"
             "journal = {Langmuir}"
             "}",
         ]
@@ -338,26 +373,37 @@ class AccessibleVolume(BaseFeaturizer):
 
 
 class RayTracingHistogram(BaseFeaturizer):
-    """The algorithm (implemented in `zeo++ <http://www.zeoplusplus.org/>`_) shoots random rays through the accesible volume of the cell until the ray hits atoms, and it records their lenghts to provide the corresponding histogram.
-    Such ray histograms are supposed to encode the shape, topology, distribution and size of voids.
+    """The algorithm (implemented in `zeo++ <http://www.zeoplusplus.org/>`_)
+        shoots random rays through the accesible volume of the cell until the ray
+        hits atoms, and it records their lenghts to provide the corresponding
+        histogram.
 
-    Currently, the histogram is hard-coded to be of length 1000 (in zeo++ itself)."""
+    Such ray histograms are supposed to encode the shape, topology, distribution
+    and size of voids.
+
+    Currently, the histogram is hard-coded to be of length 1000 (in zeo++
+    itself)."""
 
     def __init__(
         self,
-        probe_radius: Union[str, float] = 0.0,
-        num_samples: int = 50000,
-        channel_radius: Union[str, float, None] = None,
+        probe_radius: Optional[Union[str, float]] = 0.0,
+        num_samples: Optional[int] = 50000,
+        channel_radius: Optional[Union[str, float, None]] = None,
     ) -> None:
         """
 
         Args:
             probe_radius (Union[str, float], optional): Used to estimate the accessible volume.
-            Only the accessible volume is then considered for the histogram.
-            Defaults to 0.0.
+                Only the accessible volume is then considered for the histogram.
+                Defaults to 0.0.
             num_samples (int, optional): Number of rays that are placed through sample.
-                Original publication used  1,000,000 sample points for IZA zeolites and 100,000 sample points for hypothetical zeolites. Larger numbers increase the runtime Defaults to 50000.
-            channel_radius (Union[str, float, None], optional):  Radius of a probe used to determine accessibility of the void space. Should typically equal the radius of the `probe_radius`. If set to `None`, we will use the `probe_radius`. Defaults to None.
+                Original publication used  1,000,000 sample points for IZA zeolites
+                and 100,000 sample points for hypothetical zeolites.
+                Larger numbers increase the runtime Defaults to 50000.
+            channel_radius (Union[str, float, None], optional):  Radius of a probe
+                used to determine accessibility of the void space.
+                Should typically equal the radius of the `probe_radius`.
+                If set to `None`, we will use the `probe_radius`. Defaults to None.
         """
         if channel_radius is not None and probe_radius != channel_radius:
             logger.warning(
@@ -399,8 +445,10 @@ class RayTracingHistogram(BaseFeaturizer):
             "publisher = {Elsevier {BV}},"
             "volume = {181},"
             "pages = {208--216},"
-            "author = {Andrew J. Jones and Christopher Ostrouchov and Maciej Haranczyk and Enrique Iglesia},"
-            "title = {From rays to structures: Representation and selection of void structures in zeolites using stochastic methods},"
+            "author = {Andrew J. Jones and Christopher Ostrouchov and Maciej Haranczyk "
+            "and Enrique Iglesia},"
+            "title = {From rays to structures: Representation and selection of "
+            "void structures in zeolites using stochastic methods},"
             "journal = {Microporous and Mesoporous Materials}"
             "}",
             "@article{Willems2012,"
@@ -412,8 +460,10 @@ class RayTracingHistogram(BaseFeaturizer):
             "volume = {149},"
             "number = {1},"
             "pages = {134--141},"
-            "author = {Thomas F. Willems and Chris H. Rycroft and Michaeel Kazi and Juan C. Meza and Maciej Haranczyk},"
-            "title = {Algorithms and tools for high-throughput geometry-based analysis of crystalline porous materials},"
+            "author = {Thomas F. Willems and Chris H. Rycroft and Michaeel Kazi "
+            "and Juan C. Meza and Maciej Haranczyk},"
+            "title = {Algorithms and tools for high-throughput geometry-based "
+            "analysis of crystalline porous materials},"
             "journal = {Microporous and Mesoporous Materials}"
             "}",
         ]
@@ -423,32 +473,49 @@ class RayTracingHistogram(BaseFeaturizer):
 
 
 class PoreSizeDistribution(BaseFeaturizer):
-    """The pore size distribution describes how much of the void space corresponds to certain pore sizes.
-    Pinheiro et al. (2013) concluded that they are "sensitive to small changes in pore diameter" but do "not reflect subtle changes in features such as the surface texture of a pore".
+    """The pore size distribution describes how much of the void space
+        corresponds to certain pore sizes.
 
-    We use the implementation in `zeo++ <http://www.zeoplusplus.org/>`_ to calculate the pore size distribution.
+    Pinheiro et al. (2013) concluded that they are "sensitive to small changes
+    in pore diameter" but do "not reflect subtle changes in features such as the
+    surface texture of a pore".
 
-    The pore size distribution has been used by the group of Gómez-Gualdrón  as pore size standard deviation (PSSD) in, for example, `10.1021/acs.jctc.9b00940 <https://pubs.acs.org/doi/10.1021/acs.jctc.9b00940>`_ and `10.1063/5.0048736 <https://aip.scitation.org/doi/10.1063/5.0048736>`_.
+    We use the implementation in `zeo++ <http://www.zeoplusplus.org/>`_ to
+    calculate the pore size distribution.
 
-    Currently, the histogram is hard-coded to be of length 1000 between 0 and 100 Angstrom (in zeo++ itself)."""
+    The pore size distribution has been used by the group of Gómez-Gualdrón  as
+    pore size standard deviation (PSSD) in, for example,
+    `10.1021/acs.jctc.9b00940
+    <https://pubs.acs.org/doi/10.1021/acs.jctc.9b00940>`_ and `10.1063/5.0048736
+    <https://aip.scitation.org/doi/10.1063/5.0048736>`_.
+
+    Currently, the histogram is hard-coded to be of length 1000 between 0 and
+    100 Angstrom (in zeo++ itself).
+    """
 
     def __init__(
         self,
-        probe_radius: Union[str, float] = 0.0,
-        num_samples: int = 5000,
-        channel_radius: Union[str, float, None] = None,
-        hist_type: str = "derivative",
+        probe_radius: Optional[Union[str, float]] = 0.0,
+        num_samples: Optional[int] = 5000,
+        channel_radius: Optional[Union[str, float, None]] = None,
+        hist_type: Optional[str] = "derivative",
     ) -> None:
         """
 
         Args:
             probe_radius (Union[str, float], optional): Used to estimate the accessible volume.
-            Only the accessible volume is then considered for the histogram.
+                Only the accessible volume is then considered for the histogram.
             Defaults to 0.0.
-            num_samples (int, optional): Number of rays that are placed through sample.
-                Original publication used  1,000,000 sample points for IZA zeolites and 100,000 sample points for hypothetical zeolites. Larger numbers increase the runtime Defaults to 50000.
-            channel_radius (Union[str, float, None], optional):  Radius of a probe used to determine accessibility of the void space. Should typically equal the radius of the `probe_radius`. If set to `None`, we will use the `probe_radius`. Defaults to None.
-            hist_type (str, optional): Type of the histogram. Available options `count`, `cumulative`, `derivative` (The derivative distribution describes the change in the cumulative distribution with respect to pore size). Defaults to "derivative".
+                num_samples (int, optional): Number of rays that are placed through sample.
+                Original publication used  1,000,000 sample points for IZA zeolites and 100,000 sample points
+                for hypothetical zeolites. Larger numbers increase the runtime. Defaults to 50000.
+            channel_radius (Union[str, float, None], optional): Radius of a probe used to determine
+                accessibility of the void space. Should typically equal the radius of the `probe_radius`.
+                If set to `None`, we will use the `probe_radius`. Defaults to None.
+            hist_type (str, optional): Type of the histogram.
+                Available options `count`, `cumulative`, `derivative`.
+                (The derivative distribution describes the change in the cumulative distribution
+                with respect to pore size). Defaults to "derivative".
         """
         if channel_radius is not None and probe_radius != channel_radius:
             logger.warning(
@@ -500,8 +567,10 @@ class PoreSizeDistribution(BaseFeaturizer):
             "publisher = {Elsevier {BV}},"
             "volume = {44},"
             "pages = {208--219},"
-            "author = {Marielle Pinheiro and Richard L. Martin and Chris H. Rycroft and Andrew Jones and Enrique Iglesia and Maciej Haranczyk},"
-            "title = {Characterization and comparison of pore landscapes in crystalline porous materials},"
+            "author = {Marielle Pinheiro and Richard L. Martin and "
+            "Chris H. Rycroft and Andrew Jones and Enrique Iglesia and Maciej Haranczyk},"
+            "title = {Characterization and comparison of pore landscapes "
+            "in crystalline porous materials},"
             "journal = {Journal of Molecular Graphics and Modelling}"
             "}",
             "@article{Willems2012,"
@@ -513,8 +582,10 @@ class PoreSizeDistribution(BaseFeaturizer):
             "volume = {149},"
             "number = {1},"
             "pages = {134--141},"
-            "author = {Thomas F. Willems and Chris H. Rycroft and Michaeel Kazi and Juan C. Meza and Maciej Haranczyk},"
-            "title = {Algorithms and tools for high-throughput geometry-based analysis of crystalline porous materials},"
+            "author = {Thomas F. Willems and Chris H. Rycroft and Michaeel Kazi "
+            "and Juan C. Meza and Maciej Haranczyk},"
+            "title = {Algorithms and tools for high-throughput geometry-based "
+            "analysis of crystalline porous materials},"
             "journal = {Microporous and Mesoporous Materials}"
             "}",
         ]

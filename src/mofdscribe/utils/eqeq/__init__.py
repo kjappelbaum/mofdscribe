@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+"""Run eqeq."""
 import contextlib
 import os
 from functools import lru_cache

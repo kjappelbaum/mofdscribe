@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """Generalized average minimum distance (AMD) featurizer."""
-from typing import List, Tuple, Union
+from typing import List, Optional, Tuple, Union
 
 import numpy as np
 from matminer.featurizers.base import BaseFeaturizer
@@ -8,15 +8,15 @@ from pymatgen.core import IStructure, Structure
 
 from mofdscribe.utils.substructures import filter_element
 
-__all__ = ['AMD']
+__all__ = ["AMD"]
 
 
 class AMD(BaseFeaturizer):
-    """
-    Implements the average minimum distance (AMD) isometry invariant and its
-    generalization to other aggregations of the PDD. Note that it currently does
-    not implement averages according to multiplicity of sites (as the original
-    code supports).
+    """Implements the average minimum distance (AMD) isometry invariant
+        and its generalization to other aggregations of the PDD.
+
+    Note that it currently does not implement averages according to
+    multiplicity of sites (as the original code supports).
 
     The AMD is the average of the point-wise distance distribution (PDD) of a
     crystal. The PDD lists distances to neighbouring atoms in order, closest
@@ -29,28 +29,39 @@ class AMD(BaseFeaturizer):
 
     def __init__(
         self,
-        k: int = 100,
-        atom_types=(
-            'C-H-N-O',
-            'F-Cl-Br-I',
-            'Cu-Mn-Ni-Mo-Fe-Pt-Zn-Ca-Er-Au-Cd-Co-Gd-Na-Sm-Eu-Tb-V-Ag-Nd-U-Ba-Ce-K-Ga-Cr-Al-Li-Sc-Ru-In-Mg-Zr-Dy-W-Yb-Y-Ho-Re-Be-Rb-La-Sn-Cs-Pb-Pr-Bi-Tm-Sr-Ti-Hf-Ir-Nb-Pd-Hg-Th-Np-Lu-Rh-Pu',
+        k: Optional[int] = 100,
+        atom_types: Optional[Tuple[str]] = (
+            "C-H-N-O",
+            "F-Cl-Br-I",
+            "Cu-Mn-Ni-Mo-Fe-Pt-Zn-Ca-Er-Au-Cd-Co-Gd-Na-Sm-Eu-Tb-V"
+            "-Ag-Nd-U-Ba-Ce-K-Ga-Cr-Al-Li-Sc-Ru-In-Mg-Zr-Dy-W-Yb-Y-"
+            "Ho-Re-Be-Rb-La-Sn-Cs-Pb-Pr-Bi-Tm-Sr-Ti-Hf-Ir-Nb-Pd-Hg-"
+            "Th-Np-Lu-Rh-Pu",
         ),
-        compute_for_all_elements: bool = True,
-        aggregations: Tuple[str] = ('mean',),
+        compute_for_all_elements: Optional[bool] = True,
+        aggregations: Optional[Tuple[str]] = ("mean",),
     ) -> None:
-        """Initializes the AMD descriptor.
+        """Initialize the AMD descriptor.
 
         Args:
-            k (int, optional): controls the number of nearest neighbour atoms considered for each atom in the unit cell. Defaults to 100.
-            atom_types (tuple, optional): Atoms that are used to create substructures for which the AMD descriptor is computed. Defaults to ( 'C-H-N-O', 'F-Cl-Br-I', 'Cu-Mn-Ni-Mo-Fe-Pt-Zn-Ca-Er-Au-Cd-Co-Gd-Na-Sm-Eu-Tb-V-Ag-Nd-U-Ba-Ce-K-Ga-Cr-Al-Li-Sc-Ru-In-Mg-Zr-Dy-W-Yb-Y-Ho-Re-Be-Rb-La-Sn-Cs-Pb-Pr-Bi-Tm-Sr-Ti-Hf-Ir-Nb-Pd-Hg-Th-Np-Lu-Rh-Pu', ).
-            compute_for_all_elements (bool, optional): If True, compute the AMD descriptor for the original structure with all elements. Defaults to True.
-            aggregations (tuple, optional): Aggregations of the AMD descriptor. The 'mean' is equivalent to the original AMD. Defaults to ('mean',).
+            k (int, optional): controls the number of nearest neighbour atoms considered
+                for each atom in the unit cell. Defaults to 100.
+            atom_types (tuple, optional): Atoms that are used to create substructures
+                for which the AMD descriptor is computed.
+                Defaults to ( 'C-H-N-O', 'F-Cl-Br-I',
+                'Cu-Mn-Ni-Mo-Fe-Pt-Zn-Ca-Er-Au-Cd-Co-Gd-Na-Sm-Eu-Tb-V-Ag-Nd-U-Ba-Ce-K-Ga-
+                Cr-Al-Li-Sc-Ru-In-Mg-Zr-Dy-W-Yb-Y-Ho-Re-Be-Rb-La-Sn-Cs-Pb-Pr-Bi-Tm-Sr-Ti-Hf-
+                Ir-Nb-Pd-Hg-Th-Np-Lu-Rh-Pu', ).
+            compute_for_all_elements (bool, optional): If True, compute the AMD descriptor for
+                the original structure with all elements. Defaults to True.
+            aggregations (tuple, optional): Aggregations of the AMD descriptor.
+                The 'mean' is equivalent to the original AMD. Defaults to ('mean',).
         """
         self.k = k
         atom_types = [] if atom_types is None else atom_types
         self.elements = atom_types
         self.atom_types = (
-            list(atom_types) + ['all'] if compute_for_all_elements else list(atom_types)
+            list(atom_types) + ["all"] if compute_for_all_elements else list(atom_types)
         )
         self.compute_for_all_elements = compute_for_all_elements
         self.aggregations = aggregations
@@ -60,7 +71,7 @@ class AMD(BaseFeaturizer):
         for atom_type in self.atom_types:
             for agg in self.aggregations:
                 for i in range(self.k):
-                    labels.append(f'{atom_type}_{agg}_{i}')
+                    labels.append(f"{atom_type}_{agg}_{i}")
 
         return labels
 
@@ -68,11 +79,10 @@ class AMD(BaseFeaturizer):
         return self._get_feature_labels()
 
     def featurize(self, structure: Union[Structure, IStructure]) -> np.ndarray:
-        """
-        Computes the AMD descriptor for a given structure.
+        """Compute the AMD descriptor for a given structure.
 
         Args:
-            structure: Structure to compute the descriptor for.
+            structure (Union[Structure, IStructure]): Structure to compute the descriptor for.
 
         Returns:
             A numpy array containing the AMD descriptor.
@@ -110,17 +120,19 @@ class AMD(BaseFeaturizer):
 
     def citations(self):
         return [
-            '@article{amd2022,'
-            'title = {Average Minimum Distances of periodic point sets - foundational invariants for mapping periodic crystals},'
-            'author = {Daniel Widdowson and Marco M Mosca and Angeles Pulido and Vitaliy Kurlin and Andrew I Cooper},'
-            'journal = {MATCH Communications in Mathematical and in Computer Chemistry},'
-            'doi = {10.46793/match.87-3.529W},'
-            'volume = {87},'
-            'number = {3},'
-            'pages = {529-559},'
-            'year = {2022}'
-            '}'
+            "@article{amd2022,"
+            "title = {Average Minimum Distances of periodic point sets - "
+            "foundational invariants for mapping periodic crystals},"
+            "author = {Daniel Widdowson and Marco M Mosca and Angeles Pulido "
+            "and Vitaliy Kurlin and Andrew I Cooper},"
+            "journal = {MATCH Communications in Mathematical and in Computer Chemistry},"
+            "doi = {10.46793/match.87-3.529W},"
+            "volume = {87},"
+            "number = {3},"
+            "pages = {529-559},"
+            "year = {2022}"
+            "}"
         ]
 
     def implementors(self):
-        return ['Kevin Maik Jablonka']
+        return ["Kevin Maik Jablonka"]

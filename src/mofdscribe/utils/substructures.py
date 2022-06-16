@@ -6,21 +6,19 @@ from pymatgen.core import IStructure, Structure
 
 
 def filter_element(structure: Structure, elements: List[str]) -> Structure:
-    """
-    Filter a structure by element.
+    """Filter a structure by element.
 
     Args:
         structure (Structure): input structure
-        element (str): element to filter
+        elements (str): element to filter
 
     Returns:
         filtered_structure (Structure): filtered structure
     """
-
     elements_ = []
     for atom_type in elements:
-        if '-' in atom_type:
-            elements_.extend(atom_type.split('-'))
+        if "-" in atom_type:
+            elements_.extend(atom_type.split("-"))
         else:
             elements_.append(atom_type)
     keep_sites = []
@@ -38,7 +36,7 @@ def elements_in_structure(structure: Structure) -> List[str]:
 
 
 def get_metal_indices(structure: Structure) -> List[int]:
-    """Get the indices of metals in the structure"""
+    """Get the indices of metals in the structure."""
     metal_indices = []
     for i, s in enumerate(structure):
         if s.specie.is_metal:

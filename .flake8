@@ -14,6 +14,8 @@ ignore =
     D101 # Docstring missing
     D102 # Docstring missing
     D103 # Docstring missing
+    D104 # Docstring missing
+    D400
 exclude =
     .tox,
     .git,
@@ -34,3 +36,5 @@ application-import-names =
     mofdscribe
     tests
 format = ${cyan}%(path)s${reset}:${yellow_bold}%(row)d${reset}:${green_bold}%(col)d${reset}: ${red_bold}%(code)s${reset} %(text)s
+per-file-ignores =
+    tests/*/*.py:DAR101, D205, D100, DAR101, DAR201, D209

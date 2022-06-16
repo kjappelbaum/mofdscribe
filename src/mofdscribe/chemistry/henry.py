@@ -2,7 +2,7 @@
 """Featurizer that runs RASPA to calculate the Henry coefficient."""
 import os
 from glob import glob
-from typing import List, Tuple, Union
+from typing import List, Optional, Union
 
 import numpy as np
 from matminer.featurizers.base import BaseFeaturizer
@@ -49,57 +49,59 @@ def parse_widom(directory: Union[str, os.PathLike]) -> dict:
 
 
 class Henry(BaseFeaturizer):
-    """
-    Computes the Henry coefficient for a given molecule using the RASPA [1]_
-    program. While Henry coefficients are sometimes the targets of ML
+    """Computes the Henry coefficient for a given molecule using the RASPA [1]_ program.
+
+    While Henry coefficients are sometimes the targets of ML
     algorithms, they are sometimes also used as features. In fact, they are
     closely related to the energy histograms.
-
     """
 
     def __init__(
         self,
-        raspa_dir: Union[str, os.PathLike, None] = None,
-        cycles: int = 5_000,
-        temperature: float = 300,
-        cutoff: float = 12,
-        mof_ff: str = "UFF",
-        mol_ff: str = "TraPPE",
-        mol_name: str = "CO2",
-        tail_corrections: bool = True,
-        mixing_rule: str = "Lorentz-Berthelot",
-        shifted: bool = False,
-        separate_interactions: bool = True,
-        run_eqeq: bool = True,
+        raspa_dir: Optional[Union[str, os.PathLike, None]] = None,
+        cycles: Optional[int] = 5_000,
+        temperature: Optional[float] = 300,
+        cutoff: Optional[float] = 12,
+        mof_ff: Optional[str] = "UFF",
+        mol_ff: Optional[str] = "TraPPE",
+        mol_name: Optional[str] = "CO2",
+        tail_corrections: Optional[bool] = True,
+        mixing_rule: Optional[str] = "Lorentz-Berthelot",
+        shifted: Optional[bool] = False,
+        separate_interactions: Optional[bool] = True,
+        run_eqeq: Optional[bool] = True,
     ):
-        """
+        """Initialize the featurizer.
 
         Args:
             raspa_dir (Union[str, PathLike, None], optional): Path to the raspa
-            directory (with lib, bin, share) subdirectories.
+                directory (with lib, bin, share) subdirectories.
                 If `None` we will look for the `RASPA_DIR` environment variable.
                 Defaults to None.
-            cycles (int, optional): Number of simulation cycles. Defaults to
-            5_000. temperature (float, optional): Simulation temperature in
-            Kelvin. Defaults to 300. cutoff (float, optional): Cutoff for
-            simulation in Angstrom. Defaults to 12. mof_ff (str, optional): Name
-            of the forcefield used for the framework. Defaults to "UFF". mol_ff
-            (str, optional): Name of the forcefield used for the guest molecule.
-            Defaults to "TraPPE". mol_name (str, optional): Name of the guest
-            molecule. Defaults to "CO2". tail_corrections (bool, optional): If
-            true, use analytical tail-correction
+            cycles (int, optional): Number of simulation cycles.
+                Defaults to 5_000.
+            temperature (float, optional): Simulation temperature in
+                Kelvin. Defaults to 300.
+            cutoff (float, optional): Cutoff for simulation in Angstrom.
+                Defaults to 12.
+            mof_ff (str, optional): Name of the forcefield used for the framework.
+                Defaults to "UFF".
+            mol_ff (str, optional): Name of the forcefield used for the guest molecule.
+                Defaults to "TraPPE".
+            mol_name (str, optional): Name of the guest molecule. Defaults to "CO2".
+            tail_corrections (bool, optional): If true, use analytical tail-correction
                 for the contribution of the interaction potential after the
                 cutoff. Defaults to True.
             mixing_rule (str, optional): Mixing rule for framework and guest
-            molecule force field. Available options are `Jorgenson` and
-            `Lorentz-Berthelot`. Defaults to "Lorentz-Berthelot". shifted (bool,
-            optional): If true, shifts the potential to equal to zero at the
-            cutoff. Defaults to False. separate_interactions (bool, optional):
-            If True use framework's force field for framework-molecule
-            interactions.
+                molecule force field. Available options are `Jorgenson` and
+                `Lorentz-Berthelot`. Defaults to "Lorentz-Berthelot".
+            shifted (bool, optional): If true, shifts the potential to equal to zero at the
+                cutoff. Defaults to False.
+            separate_interactions (bool, optional): If True use framework's force field
+                for framework-molecule interactions.
                 Defaults to True.
             run_eqeq (bool, optional): If true, runs EqEq to compute charges.
-            Defaults to True.
+                Defaults to True.
 
         Raises:
             ValueError: If the `RASPA_DIR` environment variable is not set.
@@ -172,8 +174,10 @@ class Henry(BaseFeaturizer):
             "volume = {42},"
             "number = {2},"
             "pages = {81--101},"
-            r"author = {David Dubbeldam and Sof{'{\i}}a Calero and Donald E. Ellis and Randall Q. Snurr},"
-            "title = {{RASPA}: molecular simulation software for adsorption and diffusion in flexible nanoporous materials},"
+            r"author = {David Dubbeldam and Sof{'{\i}}a Calero and "
+            "Donald E. Ellis and Randall Q. Snurr},"
+            "title = {{RASPA}: molecular simulation software for adsorption "
+            "and diffusion in flexible nanoporous materials},"
             "journal = {Molecular Simulation}"
             "}"
         ]

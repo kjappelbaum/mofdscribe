@@ -1,16 +1,11 @@
 # -*- coding: utf-8 -*-
 """Helper functions to submit RASPA simulations."""
 
-RUN_SCRIPT = """#! /bin/sh -f
-export DYLD_LIBRARY_PATH=RASPA_DIR/lib
-export LD_LIBRARY_PATH=RASPA_DIR/lib
-RASPA_DIR/bin/simulate
-"""
 
 import os
 import subprocess
 from tempfile import TemporaryDirectory
-from typing import Callable, Union
+from typing import Callable, Union, Optional
 
 from pymatgen.core import IStructure, Structure
 
@@ -18,6 +13,12 @@ from mofdscribe.utils.eqeq import get_eqeq_charges
 
 from .ff_builder import ff_builder
 from ..tempdir import TEMPDIR
+
+RUN_SCRIPT = """#! /bin/sh -f
+export DYLD_LIBRARY_PATH=RASPA_DIR/lib
+export LD_LIBRARY_PATH=RASPA_DIR/lib
+RASPA_DIR/bin/simulate
+"""
 
 
 def call_eqeq(structure: Union[Structure, IStructure], filename: Union[str, os.PathLike]) -> None:
@@ -38,7 +39,7 @@ def run_raspa(
     simulation_script: str,
     ff_params: dict,
     parser: Callable,
-    run_eqeq: bool = False,
+    run_eqeq: Optional[bool] = False,
 ):
     """Submit a simulation to RASPA.
 
@@ -47,8 +48,10 @@ def run_raspa(
         raspa_dir (Union[str, os.PathLike]): Used for the `RASPA_DIR` environment variable.
         simulation_script (str): RASPA input file.
         ff_params (dict): settings for the force field builder.
-        parser (Callable): function that takes the simulation directory as input and returns the output.
-        run_eqeq (bool, optional): If true, runs eqeq before submitting the RASPA simulations. Defaults to False.
+        parser (Callable): function that takes the simulation directory as input
+            and returns the output.
+        run_eqeq (bool, optional): If true, runs eqeq before submitting the RASPA simulations.
+            Defaults to False.
 
     Raises:
         ValueError: In case the simulation fails.
@@ -79,7 +82,7 @@ def run_raspa(
                 raise ValueError(f"Error running EqEq. Output: {e}")
 
         try:
-            _ = subprocess.run(  # nosec
+            _ = subprocess.run(  # nosec, noqa: S607
                 ["sh", "run.sh"],
                 universal_newlines=True,
                 stdout=subprocess.DEVNULL,

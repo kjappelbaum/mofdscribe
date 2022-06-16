@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Code based on the pyntcloud library
+"""Code based on the pyntcloud library.
 
 The MIT License
 
@@ -67,7 +67,7 @@ def cartesian(arrays: List[Iterable], out: Optional[np.ndarray] = None) -> np.nd
     if out is None:
         out = np.empty_like(ix, dtype=dtype)
 
-    for n, arr in enumerate(arrays):
+    for n, _ in enumerate(arrays):
         out[:, n] = arrays[n][ix[:, n]]
 
     return out
@@ -86,28 +86,30 @@ class VoxelGrid:
         size_z=None,
         regular_bounding_box=True,
     ):
-        """Grid of voxels with support for different build methods.
+        """Initialize a VoxelGrid.
 
-        Parameters
-        ----------
-        points: (N, 3) numpy.array
-        properties: (N, 3) numpy.array, optional
-            Default None.
-            If not None, color for each voxel will be computed.
-        n_x, n_y, n_z :  int, optional
-            Default: 1
-            The number of segments in which each axis will be divided.
-            Ignored if corresponding size_x, size_y or size_z is not None.
-        size_x, size_y, size_z : float, optional
-            Default: None
-            The desired voxel size along each axis.
-            If not None, the corresponding n_x, n_y or n_z will be ignored.
-        regular_bounding_box : bool, optional
-            Default: True
-            If True, the bounding box of the point cloud will be adjusted
-            in order to have all the dimensions of equal length.
+        Args:
+            points (np.ndarray): shape (N,  3)
+            properties (numpy.array, optional): Shape (N, 3). Defaults to None.
+            n_x (int, optional): The number of segments in which each axis will be divided.
+                Ignored if corresponding size_x, size_y or size_z is not None. Defaults to 1.
+            n_y (int, optional): The number of segments in which each axis will be divided.
+                Ignored if corresponding size_x, size_y or size_z is not None. Defaults to 1.
+            n_z (int, optional):  The number of segments in which each axis will be divided.
+                Ignored if corresponding size_x, size_y or size_z is not None. Defaults to 1.
+            size_x (float, optional): The desired voxel size along each axis.
+                If not None, the corresponding n_x, n_y or n_z will be ignored.
+                Defaults to None.
+            size_y (float, optional): The desired voxel size along each axis.
+                If not None, the corresponding n_x, n_y or n_z will be ignored.
+                Defaults to None.
+            size_z (float, optional): The desired voxel size along each axis.
+                If not None, the corresponding n_x, n_y or n_z will be ignored.
+                Defaults to None.
+            regular_bounding_box (bool, optional): If True, the bounding box
+                of the point cloud will be adjusted in order to have all
+                the dimensions of equal length. Defaults to True.
         """
-
         self._points = points
         self.properties = properties
         self.x_y_z = np.asarray([n_x, n_y, n_z])
@@ -125,7 +127,7 @@ class VoxelGrid:
         self.voxel_colors = None
 
     def compute(self):
-        """ABC API."""
+        """Compute the voxel grid."""
         xyzmin = self._points.min(0)
         xyzmax = self._points.max(0)
         xyz_range = self._points.ptp(0)
@@ -160,7 +162,7 @@ class VoxelGrid:
 
         self.n_voxels = np.prod(self.x_y_z)
 
-        self.id = 'V({},{},{})'.format(self.x_y_z, self.sizes, self.regular_bounding_box)
+        self.id = "V({},{},{})".format(self.x_y_z, self.sizes, self.regular_bounding_box)
 
         # find where each point lies in corresponding segmented axis
         # -1 so index are 0-based; clip for edge cases
@@ -192,11 +194,7 @@ class VoxelGrid:
             self.averaged_properties = averaged_colors
 
     def query(self, points):
-        """ABC API. Query structure.
-
-        TODO Make query_voxelgrid an independent function, and add a light
-        save mode where only segments and x_y_z are saved.
-        """
+        """Query structure."""
         voxel_x = np.clip(np.searchsorted(self.segments[0], points[:, 0]) - 1, 0, self.x_y_z[0])
         voxel_y = np.clip(np.searchsorted(self.segments[1], points[:, 1]) - 1, 0, self.x_y_z[1])
         voxel_z = np.clip(np.searchsorted(self.segments[2], points[:, 2]) - 1, 0, self.x_y_z[2])
@@ -204,45 +202,40 @@ class VoxelGrid:
 
         return voxel_n
 
-    def get_feature_vector(self, mode='binary', flatten: bool = False):
-        """Return a vector of size self.n_voxels. See mode options below.
+    def get_feature_vector(self, mode="binary", flatten: bool = False):
+        """Get feature vector.
 
-        Parameters
-        ----------
-        mode: str in available modes. See Notes
-            Default "binary"
+        Args:
+            mode (str, optional): Available modes are:
+                * binary: 0 for empty voxels, 1 for occupied.
+                * density: number of points inside voxel / total number of points.
+                * TDF: Truncated Distance Function. Value between 0 and 1 indicating
+                the distance between the voxel's center and the closest point. 1 on the surface,
+                0 on voxels further than 2 * voxel side.
 
-        Returns
-        -------
-        feature_vector: [n_x, n_y, n_z] ndarray
-            See Notes.
+                Defaults to "binary".
 
-        Notes
-        -----
-        Available modes are:
+            flatten (bool, optional): Returns a flattened vector.
+                Defaults to False.
 
-        binary
-            0 for empty voxels, 1 for occupied.
+        Raises:
+            NotImplementedError: If the mode is not implemented.
 
-        density
-            number of points inside voxel / total number of points.
-
-        TDF
-            Truncated Distance Function. Value between 0 and 1 indicating the distance
-            between the voxel's center and the closest point. 1 on the surface,
-            0 on voxels further than 2 * voxel side.
+        Returns:
+            np.ndarray: _description_
         """
+
         vector = np.zeros(self.n_voxels)
 
-        if mode == 'binary':
+        if mode == "binary":
             vector[np.unique(self.voxel_n)] = 1
 
-        elif mode == 'density':
+        elif mode == "density":
             count = np.bincount(self.voxel_n)
             vector[: len(count)] = count
             vector /= len(self.voxel_n)
 
-        elif mode == 'TDF':
+        elif mode == "TDF":
             kdt = cKDTree(self._points)
             vector, i = kdt.query(self.voxel_centers, n_jobs=-1)
 
@@ -251,25 +244,21 @@ class VoxelGrid:
             vector[unique_voxels] = self.averaged_properties[:, mode]
 
         else:
-            raise NotImplementedError('{} is not a supported feature vector mode'.format(mode))
+            raise NotImplementedError("{} is not a supported feature vector mode".format(mode))
 
         if flatten:
             return vector
         return vector.reshape(self.x_y_z)
 
     def get_voxel_neighbors(self, voxel):
-        """Get valid, non-empty 26 neighbors of voxel.
+        """Get all voxel neighbors.
 
-        Parameters
-        ----------
-        voxel: int in self.set_voxel_n
+        Args:
+            voxel (int): Voxel index.
 
-        Returns
-        -------
-        neighbors: list of int
-            Indices of the valid, non-empty 26 neighborhood around voxel.
+        Returns:
+            List[int]: Indices of the valid, non-empty 26 neighborhood around voxel.
         """
-
         x, y, z = np.unravel_index(voxel, self.x_y_z)
 
         valid_x = []

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# noqa: W605
+# flake8: noqa
 """RASPA output parser taken from the official repo [1]
 
 [1] https://github.com/iRASPA/RASPA2/blob/f1eb37f3ffd610851220199307d91872789e1254/python/output_parser.py
