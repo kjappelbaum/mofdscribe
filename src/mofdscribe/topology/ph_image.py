@@ -14,7 +14,8 @@ from ._tda_helpers import (
 
 
 class PHImage(BaseFeaturizer):
-    r"""
+    r"""Vectorize persistent diagrams as image.
+
     `Adams et al. (2017)
     <https://www.jmlr.org/papers/volume18/16-337/16-337.pdf>`_ introduced a
     stable vector representation of persistent homology.
@@ -95,6 +96,10 @@ class PHImage(BaseFeaturizer):
                 will then be max + max_fit_tolerance * max. Defaults to 0.1.
             periodic (bool, optional): If true, then periodic Euclidean is used
                 in the analysis (experimental!). Defaults to False.
+
+        Raises:
+            AssertionError: If the length of the max_b and max_p is not equal
+                to the number of dimensions.
         """
         atom_types = [] if atom_types is None else atom_types
         self.atom_types = atom_types
@@ -172,7 +177,9 @@ class PHImage(BaseFeaturizer):
         return np.concatenate(features)
 
     def fit(self, structures: List[Union[Structure, IStructure]]) -> None:
-        """Find the limits (maximum/minimum birth/death and persistence)
+        """Use structures to estimate the settings for the featurizer.
+
+        Find the limits (maximum/minimum birth/death and persistence)
         for all the structures in the dataset and store them in the object.
 
         Args:
@@ -196,18 +203,18 @@ class PHImage(BaseFeaturizer):
                 limits[k].extend(v)
 
         # birth min, max persistence min, max
-        maxP = []
-        maxB = []
+        maxp = []
+        maxb = []
 
         for _, v in limits.items():
             v = np.array(v)
-            mB = np.max(v[:, 1])
-            mP = np.max(v[:, 3])
-            maxB.append(mB + self.max_fit_tolerance * mB)
-            maxP.append(mP + self.max_fit_tolerance * mP)
+            mb = np.max(v[:, 1])
+            mp = np.max(v[:, 3])
+            maxb.append(mb + self.max_fit_tolerance * mb)
+            maxp.append(mp + self.max_fit_tolerance * mp)
 
-        self.max_b = maxB
-        self.max_p = maxP
+        self.max_b = maxb
+        self.max_p = maxp
 
     def citations(self) -> List[str]:
         return [
@@ -225,7 +232,7 @@ class PHImage(BaseFeaturizer):
             "title={Machine learning with persistent homology and chemical word embeddings "
             "improves prediction accuracy and interpretability in metal-organic frameworks},"
             r"author={Krishnapriyan, Aditi S and Montoya, Joseph and Haranczyk, Maciej and "
-            "Hummelsh{\o}j, Jens and Morozov, Dmitriy},"
+            r"Hummelsh{\o}j, Jens and Morozov, Dmitriy},"
             "journal = {Scientific Reports},"
             "volume = {11},"
             "numer = {1},"

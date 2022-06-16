@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """Partial charge histogram featurizer."""
-from typing import List, Optional, Tuple, Union
+from typing import List, Optional, Union
 
 import numpy as np
 from matminer.featurizers.base import BaseFeaturizer
@@ -25,7 +25,7 @@ class PartialChargeHistogram(BaseFeaturizer):
         max_charge: Optional[float] = 4,
         bin_size: Optional[float] = 0.5,
     ) -> None:
-        """
+        """Construct a new PartialChargeHistogram featurizer.
 
         Args:
             min_charge (float, optional): Minimum limit of bin grid.

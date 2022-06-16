@@ -82,7 +82,7 @@ def run_raspa(
                 raise ValueError(f"Error running EqEq. Output: {e}")
 
         try:
-            _ = subprocess.run(  # nosec, noqa: S607
+            _ = subprocess.run(  # noqa: S607, nosec
                 ["sh", "run.sh"],
                 universal_newlines=True,
                 stdout=subprocess.DEVNULL,

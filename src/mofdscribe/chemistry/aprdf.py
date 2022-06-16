@@ -26,7 +26,7 @@ class APRDF(BaseFeaturizer):
     of a "conventional" radiual distribution function "RDF".
 
     .. math::
-        \operatorname{RDF}^{p}(R)=f \sum_{i, j}^{\text {all atom puirs }} P_{i} P_{j} \mathrm{e}^{-B\left(r_{ij}-R\right)^{2}}
+        \operatorname{RDF}^{p}(R)=f \sum_{i, j}^{\text {all atom puirs }} P_{i} P_{j} \mathrm{e}^{-B\left(r_{ij}-R\right)^{2}} # noqa: E501
 
     Here, we allow for a wider choice of option for aggregation of properties
     :math:`P_{i}` and :math:`P_{j}` (not only the product).

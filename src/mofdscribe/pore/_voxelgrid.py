@@ -31,12 +31,13 @@ from scipy.spatial import cKDTree
 
 
 def cartesian(arrays: List[Iterable], out: Optional[np.ndarray] = None) -> np.ndarray:
-    """Generate a cartesian product of input arrays.
+    """Generate a Cartesian product of input arrays.
 
     Args:
         arrays (List[Iterable]): list of array-like 1-D arrays to form the
-        cartesian product of. out (Optional[np.ndarray], optional): Array to
-        place the cartesian product in. Defaults to None.
+            Cartesian product of.
+        out (Optional[np.ndarray], optional): Array to  place the cartesian product in.
+            Defaults to None.
 
     Returns:
         np.ndarray: 2-D array of shape (M, len(arrays)) containing cartesian
@@ -202,7 +203,7 @@ class VoxelGrid:
 
         return voxel_n
 
-    def get_feature_vector(self, mode="binary", flatten: bool = False):
+    def get_feature_vector(self, mode="binary", flatten: Optional[bool] = False):
         """Get feature vector.
 
         Args:
@@ -212,9 +213,7 @@ class VoxelGrid:
                 * TDF: Truncated Distance Function. Value between 0 and 1 indicating
                 the distance between the voxel's center and the closest point. 1 on the surface,
                 0 on voxels further than 2 * voxel side.
-
                 Defaults to "binary".
-
             flatten (bool, optional): Returns a flattened vector.
                 Defaults to False.
 
@@ -224,7 +223,6 @@ class VoxelGrid:
         Returns:
             np.ndarray: _description_
         """
-
         vector = np.zeros(self.n_voxels)
 
         if mode == "binary":

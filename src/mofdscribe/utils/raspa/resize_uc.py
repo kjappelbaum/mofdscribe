@@ -8,7 +8,7 @@ from pymatgen.core import Structure
 
 
 def resize_unit_cell(structure: Structure, threshold: float) -> Tuple[int, int, int]:
-    """Returns the multiplication factors for the cell vectors.
+    """Return the multiplication factors for the cell vectors.
 
     In every direction: min(perpendicular_width) > threshold.
 

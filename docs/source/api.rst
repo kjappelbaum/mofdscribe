@@ -70,12 +70,9 @@ Metrics
 .. automodule:: mofdscribe.metrics.regression
     :members:
 
-.. automodule:: mofdscribe.metrics.complexity
-    :members:
-
 
 Splitters
 -----------
 
-.. automodule:: mofdscribe.splitters.splitter
+.. automodule:: mofdscribe.splitters.splitters
     :members:

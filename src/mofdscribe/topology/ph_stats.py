@@ -12,7 +12,9 @@ from ._tda_helpers import get_diagrams_for_structure, persistent_diagram_stats
 
 
 class PHStats(BaseFeaturizer):
-    """Compute a fixed-length vector of topological descriptors for a structure by
+    """Featurizer that computes statistics of persistent images.
+
+    Compute a fixed-length vector of topological descriptors for a structure by
     summarizing the persistence diagrams of the structure (or substructure)
     using aggegrations such as `min`, `max`, `mean`, and `std`.
 

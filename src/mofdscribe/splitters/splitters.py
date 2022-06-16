@@ -34,23 +34,22 @@ class Splitter:
 
         Args:
             ds (StructureDataset): a mofdscribe dataset
-            frac_train (float): fraction of the data to use for training
+            frac_train (float): fraction of the data to use for training.
             frac_valid (float): fraction of the data to use for validation.
-                1 - frac_train - frac_valid = fraction of the data to use for
-                testing
+                Fraction of the data to use for testing = 1 - frac_train - frac_valid.
             sample_frac (float, optional): Fraction by which the full dataset is
                 downsampled (randomly). Can be useful for debugging. Defaults to 1.0.
             shuffle (bool, optional): If True, then the splitters attempt to
-            shuffle the data at every possible step.
+                shuffle the data at every possible step.
                 For the splitters that internally perform a sorting operation,
-                this means that the ties will be shuffled. In any case, if
-                shuffle is set to True, then the folds will be shuffled after
-                the split. Defaults to True.
+                this means that the ties will be shuffled. In any case,
+                if shuffle is set to True,
+                then the folds will be shuffled after the split. Defaults to True.
             **kwargs: additional arguments for the splitter
 
         Raises:
-            ValueError: if frac_train + frac_valid > 1.0 ValueError: if
-            sample_frac > 1.0
+            ValueError: if frac_train + frac_valid > 1.0
+            ValueError: if sample_frac > 1.0
 
         Returns:
             Tuple[Iterable[int], Iterable[int], Iterable[int]]: train, valid,
@@ -87,16 +86,16 @@ class Splitter:
         shuffle: Optional[bool] = True,
         **kwargs,
     ) -> Tuple[Iterable[int], Iterable[int]]:
-        """
+        """Get indices for training and test set.
 
         Args:
             ds (StructureDataset): mofdscribe dataset
             frac_train (float): fraction of the data to use for training
             sample_frac (float, optional): Fraction by which the full dataset
-                is downsampled (randomly).
-                Can be useful for debugging. Defaults to 1.0.
+                is downsampled (randomly). Can be useful for debugging.
+                Defaults to 1.0.
             shuffle (bool, optional): If True, then the splitters attempt to
-            shuffle the data at every possible step.
+                shuffle the data at every possible step.
                 For the splitters that internally perform a sorting operation,
                 this means that the ties will be shuffled. In any case, if
                 shuffle is set to True, then the folds will be shuffled after
@@ -104,8 +103,8 @@ class Splitter:
             **kwargs: Aditional options for the splitter
 
         Raises:
-            ValueError: if frac_train + frac_valid > 1.0 ValueError: if
-            sample_frac > 1.0
+            ValueError: if frac_train + frac_valid > 1.0
+            ValueError: if sample_frac > 1.0
 
         Returns:
             Tuple[Iterable[int], Iterable[int]]: train, test indices
@@ -190,10 +189,10 @@ class HashSplitter(Splitter):
 
         Raises:
             ValueError: If the hash type is not one of the following:
-            * undecorated_scaffold_hash
-            * decorated_graph_hash
-            * decorated_scaffold_hash
-            * undecorated_graph_hash
+                * undecorated_scaffold_hash
+                * decorated_graph_hash
+                * decorated_scaffold_hash
+                * undecorated_graph_hash
 
         Returns:
             Iterable[str]: list of hashes
@@ -333,7 +332,8 @@ class TimeSplitter(Splitter):
 class RandomSplitter(Splitter):
     """The "conventional" splitter.
 
-    Random split data into sets/folds"""
+    Randomly split data into sets/folds
+    """
 
     def get_sorted_indices(
         self, ds: StructureDataset, shuffle: Optional[bool] = True
@@ -353,11 +353,29 @@ class FingerprintSplitter(Splitter):
         self,
         feature_names: List[str],
     ) -> None:
+        """Construct a FingerPrintSplitter.
+
+        Args:
+            feature_names (List[str]): Names of features to consider.
+        """
         self.feature_names = feature_names
         super().__init__()
 
-    def get_sorted_indices(self, ds: StructureDataset, shuffle: Optional[bool] = True):
-        """Return a list of indices, where rows are soreted according to
-        their similarity (considering the features specified in the class construction)"""
+    def get_sorted_indices(
+        self, ds: StructureDataset, shuffle: Optional[bool] = True
+    ) -> Iterable[int]:
+        """Return a list of indices, sorted by similarity.
+
+        Here, rows are sorted according to
+        their similarity (considering the features specified in the class construction)
+
+        Args:
+            ds (StructureDataset): A mofdscribe StructureDataset
+            shuffle (Optional[bool], optional): Not used in this method.
+                Defaults to True.
+
+        Returns:
+            Iterable[int]: Sorted indices.
+        """
         indices = ds._df.sort_values(by=self.feature_names).index.values
         return indices

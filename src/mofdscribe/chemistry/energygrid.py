@@ -77,7 +77,6 @@ class EnergyGridHistogram(BaseFeaturizer):
 
     References
     ----------
-
     .. [1]  Bucior, B. J.; Bobbitt, N. S.; Islamoglu, T.; Goswami, S.; Gopalan,
         A.; Yildirim, T.; Farha, O. K.; Bagheri, N.; Snurr, R. Q. Energy-Based
         Descriptors to Rapidly Predict Hydrogen Storage in Metal–Organic

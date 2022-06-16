@@ -10,11 +10,17 @@ else:
     from collections import MutableMapping
 
 
-def is_tool(name):
+def is_tool(name: str) -> bool:
     """Check whether `name` is on PATH and marked as executable.
 
-    https://stackoverflow.com/questions/11210104/check-if-a-program-exists-from-a-python-script"""
+    Taken from https://stackoverflow.com/questions/11210104/check-if-a-program-exists-from-a-python-script
 
+    Args:
+        name (str): executable name
+
+    Returns:
+        bool: True if the executable in PATH
+    """
     return which(name) is not None
 
 

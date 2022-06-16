@@ -13,6 +13,60 @@ from ..constants import MOFDSCRIBE_PYSTOW_MODULE
 
 
 class QMOFDataset(StructureDataset):
+    """
+    Exposes the QMOF dataset by Rosen et al. [1]_ [2]_ .
+
+    To reduce the risk of data leakage, we (by default) also only keep one representative
+    structure for a "base refcode" (i.e. the first five letters of a refcode).
+    For instance, the base refcode for IGAHED001 is IGAHED. Structures with same
+    base refcode but different refcodes are often different refinements, or measurements
+    at different temperatures and hence chemically quite similar. For instance,
+    the base refcode `TOWPEC` would appear 60 times, `NARVUA` 22 times and so on.
+    Additionally, we  (by default) only keep one structure per "structure hash" which
+    is an approximate graph-isomoprhism check, assuming the VESTA bond thresholds
+    for the derivation of the structure graph.
+
+    Note that Rosen et al. already performed some deduplication using the pymatgen `StructureMatcher`.
+    Our de-duplication is a bit more aggressive, and might be too aggressive in some cases.
+
+    The dataset is further reduced by lack of publication years for some structures.
+
+    .. warning::
+        Even though we performed some basic sanity checks, there are currently still
+        some structures that might chemically not be reasonable.
+        Also, even though we only keep one structure per base refcode, there is still
+        potential for data leakge. We urge users to still drop duplicates (or close neighbors)
+        after featurization.
+
+    Even though Rosen et al. included checks to ensure high-fidelity structures, there might
+    still be some structures that are not chemically reasonable.
+
+    Currently, we expose the following labels:
+
+        * outputs.pbe.energy_total
+        * outputs.pbe.energy_vdw
+        * outputs.pbe.energy_elec
+        * outputs.pbe.net_magmom
+        * outputs.pbe.bandgap
+        * outputs.pbe.cbm
+        * outputs.pbe.vbm
+        * outputs.pbe.directgap
+
+
+
+    References
+    ----------
+    .. [1] Rosen, A. S.; Iyer, S. M.; Ray, D.; Yao, Z.; Aspuru-Guzik, A.; Gagliardi, L.; Notestein, J. M.; Snurr, R. Q.
+        Machine Learning the Quantum-Chemical Properties of Metal–Organic Frameworks for
+        Accelerated Materials Discovery. Matter 2021, 4 (5), 1578–1597. https://doi.org/10.1016/j.matt.2021.02.015.
+
+    .. [2] Rosen, A. S.; Fung, V.; Huck, P.; O'Donnell, C. T.; Horton, M. K.; Truhlar, D. G.; Persson, K. A.;
+        Notestein, J. M.; Snurr, R. Q. High-Throughput Predictions of Metal–Organic Framework Electronic Properties:
+        Theoretical Challenges, Graph Neural Networks, and Data Exploration. ChemRxiv 2021.
+        https://chemrxiv.org/engage/chemrxiv/article-details/61b03430535d63bcdf93968b
+
+    """
+
     _files = {
         "v0.0.1": {
             "df": "https://www.dropbox.com/s/3hls6g6it2agy7u/data.json?dl=1",
@@ -27,7 +81,19 @@ class QMOFDataset(StructureDataset):
         drop_basename_duplicates: Optional[bool] = True,
         drop_graph_duplicates: Optional[bool] = True,
     ):
+        """Construct an instance of the QMOF dataset.
 
+        Args:
+            version (Optional[str], optional): version number to use.
+                Defaults to "v0.0.1".
+            drop_basename_duplicates (Optional[bool], optional): If True, keep only one structure
+                per CSD basename. Defaults to True.
+            drop_graph_duplicates (Optional[bool], optional): If True, keep only one structure
+                per decorated graph hash. Defaults to True.
+
+        Raises:
+            ValueError: If the provided version number is not available.
+        """
         if version not in self._files:
             raise ValueError(
                 f"Version {version} not available. Available versions: {list(self._files.keys())}"

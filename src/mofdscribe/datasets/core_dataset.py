@@ -13,6 +13,57 @@ from ..constants import MOFDSCRIBE_PYSTOW_MODULE
 
 
 class CoREDataset(StructureDataset):
+    """Dataset of gas uptake related features for a subset of CoRE MOFs.
+
+    The labels were computed by Moosavi et al. (2020) [1]_.
+
+    To reduce the risk of data leakage, we  (by default) also only keep one representative
+    structure for a "base refcode" (i.e. the first five letters of a refcode).
+    For instance, the base refcode for IGAHED001 is IGAHED. Structures with same
+    base refcode but different refcodes are often different refinements, or measurements
+    at different temperatures and hence chemically quite similar. For instance,
+    the base refcode `TOWPEC` would appear 60 times, `NARVUA` 22 times and so on.
+    Additionally, we (by default) only keep one structure per "structure hash"
+    which is an approximate graph-isomoprhism check, assuming the VESTA bond thresholds
+    for the derivation of the structure graph.
+
+    .. warning::
+        Even though we performed some basic sanity checks, there are currently still
+        some structures that might chemically not be reasonable.
+        Also, even though we only keep one structure per base refcode, there is still
+        potential for data leakge. We urge users to still drop duplicates (or close neighbors)
+        after featurization.
+
+        If this set is used as test set, make sure to drop all overlapping entries in your training set.
+
+    The years refer to the publication dates of the paper crossreferenced
+    in the CSD entry of the structure. We excluded structures that are not
+    deposited in the CSD.
+
+    The available labels are:
+
+    * 'pure_CO2_kH': Henry coefficient of CO2 obtained by Widom method in mol kg-1 Pa-1
+    * 'pure_CO2_widomHOA': Heat of adsorption of CO2 obtained by Widom method in
+    * 'pure_methane_kH': Henry coefficient of methane obtained by Widom method in mol kg-1 Pa-1
+    * 'pure_methane_widomHOA': Heat of adsorption of methane obtained by Widom method
+    * 'pure_uptake_CO2_298.00_15000': Pure CO2 uptake at 298.00 K and 15000 Pa in mol kg-1
+    * 'pure_uptake_CO2_298.00_1600000': Pure CO2 uptake at 298.00 K and 1600000 Pa in mol kg-1
+    * 'pure_uptake_methane_298.00_580000': Pure methane uptake at 298.00 K and 580000 Pa in mol kg-1
+    * 'pure_uptake_methane_298.00_6500000': Pure methane uptake at 298.00 K and 6500000 Pa in mol kg-1
+    * 'logKH_CO2': Logarithm of Henry coefficient of CO2 obtained by Widom method
+    * 'logKH_CH4': Logarithm of Henry coefficient of methane obtained by Widom method
+    * 'CH4DC': CH4 deliverable capacity in vSTP/v
+    * 'CH4HPSTP': CH4 high pressure uptake in standard temperature and pressure in vSTP/v
+    * 'CH4LPSTP': CH4 low pressure uptake in standard temperature and pressure in vSTP/v
+
+    References
+    ----------
+    .. [1] Moosavi, S. M.; Nandy, A.; Jablonka, K. M.; Ongari, D.; Janet, J. P.; Boyd, P. G.; Lee,
+        Y.; Smit, B.; Kulik, H. J. Understanding the Diversity of the Metal-Organic Framework Ecosystem.
+        Nature Communications 2020, 11 (1), 4068. https://doi.org/10.1038/s41467-020-17755-8.
+
+    """
+
     _files = {
         "v0.0.1": {
             "df": "https://www.dropbox.com/s/i2khfte4s6mcg30/data.json?dl=1",
@@ -27,7 +78,19 @@ class CoREDataset(StructureDataset):
         drop_basename_duplicates: Optional[bool] = True,
         drop_graph_duplicates: Optional[bool] = True,
     ):
+        """Construct an instance of the CoRE dataset.
 
+        Args:
+            version (Optional[str], optional): version number to use.
+                Defaults to "v0.0.1".
+            drop_basename_duplicates (Optional[bool], optional): If True, keep only one structure
+                per CSD basename. Defaults to True.
+            drop_graph_duplicates (Optional[bool], optional): If True, keep only one structure
+                per decorated graph hash. Defaults to True.
+
+        Raises:
+            ValueError: If the provided version number is not available.
+        """
         if version not in self._files:
             raise ValueError(
                 f"Version {version} not available. Available versions: {list(self._files.keys())}"

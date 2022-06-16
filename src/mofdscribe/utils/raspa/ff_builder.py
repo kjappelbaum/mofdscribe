@@ -64,10 +64,7 @@ def check_ff_list(inp_list: List[str]):
 
 
 def load_yaml():
-    """Load the ff_data.yaml as a dict.
-
-    Includes validation against schema.
-    """
+    """Load the ff_data.yaml as a dict."""
     yamlfullpath = os.path.join(THISDIR, "ff_data.yaml")
 
     with open(yamlfullpath, "r") as stream:
@@ -249,7 +246,7 @@ def render_molecule_def(ff_data, params, molecule_name):
 
 
 def ff_builder(params: dict) -> dict:
-    """A function to build the force field files.
+    """Build the force field files.
 
     Args:
         params (dict): Input parameters, for example:

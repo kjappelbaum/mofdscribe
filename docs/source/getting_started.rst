@@ -1,7 +1,6 @@
 Getting started
 ==================
 
-
 Installation
 --------------
 Do to the external dependencies, we recommend installation via conda
@@ -17,7 +16,8 @@ The most recent release can be installed from
 
     $ pip install mofdscribe
 
-However, in this case, the following dependencies need to be manually installed (e.g. via conda):
+However, in this case, the following dependencies need to be manually installed
+(e.g. via conda):
 
 .. code-block:: shell
 
@@ -63,7 +63,8 @@ It is also easy to combine multiple featurizers into a single pipeline:
     featurizer = MultipleFeaturizer([RACS(), PoreDiameters()])
     features = featurizer.featurize(s)
 
-You can, of course, also pass multiple structures to the featurizer (and the featurization is automatically parallelized via matminer):
+You can, of course, also pass multiple structures to the featurizer (and the
+featurization is automatically parallelized via matminer):
 
 .. code-block:: python
 
@@ -83,37 +84,62 @@ And, clearly, you can also use the `mofdscribe` featurizers alongside ones from 
     features = featurizer.featurize_many([s, s2])
 
 
-If you use the `zeo++` or `raspa2` packages, you can customize the temporary directory used by the featurizers by exporting `MOFDSCRIBE_TEMPDIR`. If you do not specify the temporary directory, the default is the current working directory.
+If you use the `zeo++` or `raspa2` packages, you can customize the temporary
+directory used by the featurizers by exporting `MOFDSCRIBE_TEMPDIR`. If you do
+not specify the temporary directory, the default is the current working
+directory.
 
 Using a reference dataset
 --------------------------
 
-mofdscribe contains some de-duplicated structure datasets (with labels) that can be useful to make machine learning studies more comparable.
-To use a reference dataset, you simply need to instantiate the corresponding object.
+mofdscribe contains some de-duplicated structure datasets (with labels) that can
+be useful to make machine learning studies more comparable. To use a reference
+dataset, you simply need to instantiate the corresponding object.
 
 .. code-block:: python
 
-        from mofdscribe.datasets import QMOFElectronic, CoREGas
-        qmof_electronic = QMOFElectronic() # will use no labels and the latest version of the dataset
+        from mofdscribe.datasets import CoRE, QMOF
+        qmof = QMOF() # will use no labels and the latest version of the dataset
 
-Upon first use this will download the datasets into a folder `~/.data/mofdscribe` in your home directory.
-In case of corruption or problems you hence can also try removing the subfolders. The package should automatically download the missing files.
-Note that the currently implemented datasets are loaded completely into memory. On modern machines this should not be a problem, but it might be if you are resource constrained.
+Upon first use this will download the datasets into a folder
+`~/.data/mofdscribe` in your home directory. In case of corruption or problems
+you hence can also try removing the subfolders. The package should automatically
+download the missing files. Note that the currently implemented datasets are
+loaded completely into memory. On modern machines this should not be a problem,
+but it might be if you are resource constrained.
 
-:class:`MOFStructureDataSet` can be iterated over to get the structures and their labels:
-
-.. code-block:: python
-
-        for structure, label in qmof_electronic:
-            print(structure, label)
-
-but you get also get a specific entry with
+You get also get a specific entry with
 
 .. code-block:: python
 
     qmof_electronic.get_structure(1)
 
+
+Using splitters
+-----------------
+
+For model validation it is important to use stringent splits into folds. In many
+cases, a random split is not ideal for materials discovery application, where
+extrapolation is often more relevant than interpolation. To model extrapolative
+behavior, one can some of the splitting strategies implemented in mofdscribe.
+They all assume :py:meth:`~mofdscribe.datasets.dataset.StructureDataset` as
+input.
+
+.. code-block:: python
+
+    from mofdscribe.splitters import TimeSplitter, HashSplitter
+    from mofdscribe.datasets import CoRE
+
+    ds = CoRE()
+
+    splitter = TimeSplitter()
+
+    train_idx, valid_idx, test_idx = splitter.train_valid_test_split(ds,
+        train_frac=0.7, valid_frac=0.1)
+
+
 Referencing datasets and featurizers
 --------------------------------------
 
-If you use a dataset or featurizers please cite all the references you find in the `citations` property of the featurizer/dataset.
+If you use a dataset or featurizers please cite all the references you find in
+the `citations` property of the featurizer/dataset.

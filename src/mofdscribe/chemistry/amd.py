@@ -12,11 +12,11 @@ __all__ = ["AMD"]
 
 
 class AMD(BaseFeaturizer):
-    """Implements the average minimum distance (AMD) isometry invariant
-        and its generalization to other aggregations of the PDD.
+    """Implements the generalized average minimum distance (AMD) isometry invariant.
 
     Note that it currently does not implement averages according to
     multiplicity of sites (as the original code supports).
+    The generalization is to other aggregations of the PDD.
 
     The AMD is the average of the point-wise distance distribution (PDD) of a
     crystal. The PDD lists distances to neighbouring atoms in order, closest

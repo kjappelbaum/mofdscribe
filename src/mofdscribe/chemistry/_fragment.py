@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 """Naive fragmentation implementation following Moosavi et al.
 
-This     does not require multiple loops over the graph.
-For alternative (slower) implementation see MOFfragmentor"""
+This does not require multiple loops over the graph.
+For alternative (slower) implementation see MOFfragmentor.
+"""
 
 
 from copy import deepcopy
@@ -16,8 +17,15 @@ from mofdscribe.utils.substructures import _not_relevant_structure_indices, get_
 
 
 def get_node_atoms(structure_graph: StructureGraph) -> Set[int]:
-    """Get the indices of the atoms that are assigned as node by identifying the
-    metals and their connected atoms.
+    """Get the indices of the atoms that are assigned as node.
+
+    We do this by identifying the metals and their connected atoms.
+
+    Args:
+        structure_graph (StructureGraph): pymatgen StructureGraph
+
+    Returns:
+        Set[int]: node indices
     """
     metal_indices = get_metal_indices(structure_graph.structure)
     metal_names = [str(structure_graph.structure[i].specie.symbol) for i in metal_indices]
@@ -94,9 +102,7 @@ def get_bb_indices(structure_graph: StructureGraph) -> Dict[str, List[List[int]]
 
 
 def _linker_atom_types(indices, node_indices, structure_graph):
-    """Group linker atoms in `connecting`, `functional_group` and `scaffold`
-    (similar to how it has been done in molsimplify).
-    """
+    """Group linker atoms in `connecting`, `functional_group` and `scaffold`."""
     functional_group = []
     scaffold = []
     connecting = []

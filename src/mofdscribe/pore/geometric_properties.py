@@ -44,8 +44,7 @@ __all__ = [
 
 
 def run_zeopp(structure: Structure, command: str, parser: Callable) -> dict:
-    """Run zeopp with network -ha (http://www.zeoplusplus.org/examples.html)
-        to find the pore diameters
+    """Run zeopp with network -ha to find the pore diameters.
 
     Args:
         structure (Structure): pymatgen Structure object
@@ -166,6 +165,7 @@ class PoreDiameters(BaseFeaturizer):
     """Calculate the pore diameters of a framework."""
 
     def __init__(self):
+        """Initialize the featurizer."""
         self.labels = ["lis", "lifs", "lifsp"]
 
     def featurize(self, s):
@@ -243,7 +243,7 @@ class SurfaceArea(BaseFeaturizer):
             "nasa_m2g",
         ]
 
-        self.labels = [f"{l}_{self.probe_radius}" for l in labels]
+        self.labels = [f"{label}_{self.probe_radius}" for label in labels]
 
     def featurize(self, s: Union[Structure, IStructure]) -> np.ndarray:
         command = [
@@ -284,9 +284,9 @@ class SurfaceArea(BaseFeaturizer):
 class AccessibleVolume(BaseFeaturizer):
     def __init__(
         self,
-        probe_radius: Union[str, float] = 0.1,
-        num_samples: int = 100,
-        channel_radius: Union[str, float, None] = None,
+        probe_radius: Optional[Union[str, float]] = 0.1,
+        num_samples: Optional[int] = 100,
+        channel_radius: Optional[Union[str, float, None]] = None,
     ):
         """Initialize the AccessibleVolume featurizer.
 
@@ -324,7 +324,7 @@ class AccessibleVolume(BaseFeaturizer):
             "nav_volume_fraction",
             "nav_cm3g",
         ]
-        self.labels = [f"{l}_{self.probe_radius}" for l in labels]
+        self.labels = [f"{label}_{self.probe_radius}" for label in labels]
 
     def featurize(self, s: Union[Structure, IStructure]) -> np.ndarray:
         command = ["-vol", f"{self.channel_radius}", f"{self.probe_radius}", f"{self.num_samples}"]
@@ -373,16 +373,19 @@ class AccessibleVolume(BaseFeaturizer):
 
 
 class RayTracingHistogram(BaseFeaturizer):
-    """The algorithm (implemented in `zeo++ <http://www.zeoplusplus.org/>`_)
-        shoots random rays through the accesible volume of the cell until the ray
-        hits atoms, and it records their lenghts to provide the corresponding
-        histogram.
+    """Describe pore structures using histograms of ray lengths.
+
+    The algorithm (implemented in `zeo++ <http://www.zeoplusplus.org/>`_)
+    shoots random rays through the accesible volume of the cell until the ray
+    hits atoms, and it records their lenghts to provide the corresponding
+    histogram.
 
     Such ray histograms are supposed to encode the shape, topology, distribution
     and size of voids.
 
     Currently, the histogram is hard-coded to be of length 1000 (in zeo++
-    itself)."""
+    itself).
+    """
 
     def __init__(
         self,
@@ -390,7 +393,7 @@ class RayTracingHistogram(BaseFeaturizer):
         num_samples: Optional[int] = 50000,
         channel_radius: Optional[Union[str, float, None]] = None,
     ) -> None:
-        """
+        """Initialize the RayTracingHistogram featurizer.
 
         Args:
             probe_radius (Union[str, float], optional): Used to estimate the accessible volume.
@@ -473,8 +476,10 @@ class RayTracingHistogram(BaseFeaturizer):
 
 
 class PoreSizeDistribution(BaseFeaturizer):
-    """The pore size distribution describes how much of the void space
-        corresponds to certain pore sizes.
+    """Describe structures using histograms of pore sizes.
+
+    The pore size distribution describes how much of the void space
+    corresponds to certain pore sizes.
 
     Pinheiro et al. (2013) concluded that they are "sensitive to small changes
     in pore diameter" but do "not reflect subtle changes in features such as the
@@ -500,13 +505,13 @@ class PoreSizeDistribution(BaseFeaturizer):
         channel_radius: Optional[Union[str, float, None]] = None,
         hist_type: Optional[str] = "derivative",
     ) -> None:
-        """
+        """Initialize the PoreSizeDistribution featurizer.
 
         Args:
             probe_radius (Union[str, float], optional): Used to estimate the accessible volume.
                 Only the accessible volume is then considered for the histogram.
-            Defaults to 0.0.
-                num_samples (int, optional): Number of rays that are placed through sample.
+                Defaults to 0.0.
+            num_samples (int, optional): Number of rays that are placed through sample.
                 Original publication used  1,000,000 sample points for IZA zeolites and 100,000 sample points
                 for hypothetical zeolites. Larger numbers increase the runtime. Defaults to 50000.
             channel_radius (Union[str, float, None], optional): Radius of a probe used to determine
@@ -516,6 +521,9 @@ class PoreSizeDistribution(BaseFeaturizer):
                 Available options `count`, `cumulative`, `derivative`.
                 (The derivative distribution describes the change in the cumulative distribution
                 with respect to pore size). Defaults to "derivative".
+
+        Raises:
+            ValueError: If type not one of 'count', 'cumulative', 'derivative'.
         """
         if channel_radius is not None and probe_radius != channel_radius:
             logger.warning(

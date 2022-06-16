@@ -114,13 +114,13 @@ def _get_racs_for_bbs(
 
 
 class RACS(BaseFeaturizer):
-    r"""Modified version of the revised autocorrelation functions (RACs) for
-    MOFs proposed by Moosavi et al. (10.1038/s41467-020-17755-8).
+    r"""Modified version of the revised autocorrelation functions (RACs) for MOFs.
 
+    Originally proposed by Moosavi et al. (10.1038/s41467-020-17755-8).
     In the original paper, RACs were computed as
 
     .. math::
-        {}_{{\rm{scope}}}^{{\rm{start}}}{P}_{d}^{{\rm{diff}}}=\mathop{\sum }\limits_{i}^{{\rm{start}}}\mathop{\sum }\limits_{j}^{{\rm{scope}}}({P}_{i}-{P}_{j})\delta ({d}_{i,j},d).
+        {}_{{\rm{scope}}}^{{\rm{start}}}{P}_{d}^{{\rm{diff}}}=\mathop{\sum }\limits_{i}^{{\rm{start}}}\mathop{\sum }\limits_{j}^{{\rm{scope}}}({P}_{i}-{P}_{j})\delta ({d}_{i,j},d). # noqa: E501
 
     Here, we allow to replace the double sum by different aggregations. We call
     this `corr_agg`. The default `sum` is equivalent to the original RACS.

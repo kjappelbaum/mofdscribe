@@ -37,8 +37,8 @@ def get_persistent_images_for_structure(
     Get the persistent images for a structure.
 
     Args:
-        structure (Structure): input structure elements (List[List[str]]): list
-            of elements to compute for
+        structure (Structure): input structure
+        elements (List[List[str]]): list of elements to compute for
         compute_for_all_elements (bool): compute for all elements
         min_size (int): minimum size of the cell for construction of persistent images
         spread (float): spread of kernel for construction
@@ -56,11 +56,10 @@ def get_persistent_images_for_structure(
         persistent_images (dict): dictionary of persistent images and their
             barcode representations
     """
-
     element_images = defaultdict(dict)
     specs = []
-    for mB, mP in zip(max_b, max_p):
-        specs.append({"minBD": 0, "maxB": mB, "maxP": mP})
+    for mb, mp in zip(max_b, max_p):
+        specs.append({"minBD": 0, "maxB": mb, "maxP": mp})
     for element in elements:
         try:
             filtered_structure = filter_element(structure, element)
@@ -86,7 +85,7 @@ def get_persistent_images_for_structure(
         except ValueError:
             images = np.zeros((0, pixels[0], pixels[1]))
             images[:] = np.nan
-            pd = np.zeros((0, maxP + 1))
+            pd = np.zeros((0, max_p + 1))
             pd[:] = np.nan
 
         # ToDo: make sure that we have the correct length
@@ -217,7 +216,7 @@ def get_persistence_image_limits_for_structure(
             pd = diagrams_to_arrays(pds)
             for k, v in pd.items():
                 limits[k].append(get_min_max_from_dia(v))
-        except ValueError as e:
+        except ValueError:
             pass
 
     if compute_for_all_elements:

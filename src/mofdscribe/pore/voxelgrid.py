@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Featurizer that computes 3D voxelgrids.  """
+"""Featurizer that computes 3D voxelgrids."""
 from typing import List, Optional, Tuple, Union
 
 import numpy as np
@@ -16,11 +16,11 @@ def make_supercell(
     size: float,
     min_size: Optional[float] = -5,
 ) -> np.ndarray:
-    """
-    Generate cubic supercell of a given size.
+    """Generate cubic supercell of a given size.
 
     Args:
         coords (np.ndarray): matrix of xyz coordinates of the system
+        elements (List[int]): atomic numbers of every site
         lattice (Tuple[float, float, float]): lattice constants of the system
         size (float): dimension size of cubic cell, e.g., 10x10x10
         min_size (float, optional): minimum axes size to keep negative xyz

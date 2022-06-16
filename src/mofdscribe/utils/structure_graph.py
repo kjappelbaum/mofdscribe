@@ -14,8 +14,8 @@ from pymatgen.core import IStructure, Molecule
 def get_neighbors_at_distance(
     structure_graph: StructureGraph, start: int, scope: int
 ) -> Tuple[Set[int], List[int]]:
-    """For a structure graph and a start site, return all sites within a certain
-    distance (scope) of the start site.
+    """For a structure graph and a start site, return all sites within a certain\
+        distance (scope) of the start site.
 
     Args:
         structure_graph (StructureGraph): pymatgen StructureGraph object
@@ -134,7 +134,9 @@ def get_subgraphs_as_molecules(  # pylint:disable=too-many-locals
     disable_boundary_crossing_check: Optional[bool] = False,
     filter_in_cell: Optional[bool] = True,
 ) -> Tuple[List[Molecule], List[MoleculeGraph], List[List[int]], List[np.ndarray]]:
-    """Copied from
+    """Extract molecules from a periodic framework.
+
+    Copied from
     http://pymatgen.org/_modules/pymatgen/analysis/graphs.html#StructureGraph.get_subgraphs_as_molecules
     and removed the duplicate check.
 
@@ -148,6 +150,8 @@ def get_subgraphs_as_molecules(  # pylint:disable=too-many-locals
             If False, it will return all molecules that are completely included
             in the unit cell and fragments of the ones that are only partly in
             the cell
+        disable_boundary_crossing_check (bool): If true, do also return molecules
+            that cross periodic boundaries.
         filter_in_cell (bool): If True, it will only return molecules that
             have at least one atom in the cell
 

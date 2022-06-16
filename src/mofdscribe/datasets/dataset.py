@@ -10,6 +10,7 @@ class StructureDataset:
     """Base class for datasets."""
 
     def __init__(self):
+        """Initialize a dataset."""
         self._structures = None
         self._target = None
 
@@ -26,6 +27,7 @@ class StructureDataset:
         raise NotImplementedError()
 
     def __len__(self):
+        """Return the number of structures."""
         return len(self._structures)
 
     def get_labels(
