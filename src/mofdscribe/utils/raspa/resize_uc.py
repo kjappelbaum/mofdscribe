@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 """Helper functions for obtaining the correct number of replicas"""
 from math import ceil, cos, fabs, hypot, pi, sin
+from typing import Tuple
 
 import numpy as np
 from pymatgen.core import Structure
-from typing import Tuple
 
 
 def resize_unit_cell(structure: Structure, threshold: float) -> Tuple[int, int, int]:
