@@ -5,7 +5,7 @@
 import os
 import subprocess
 from tempfile import TemporaryDirectory
-from typing import Callable, Union, Optional
+from typing import Callable, Optional, Union
 
 from pymatgen.core import IStructure, Structure
 
