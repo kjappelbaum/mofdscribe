@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
 """Base class for datasets."""
+from functools import cached_property
 from typing import Iterable, List, Optional, Tuple
 
 import numpy as np
 from pymatgen.core import IStructure, Structure
+from mofchecker import MOFChecker
+from loguru import logger
 
 
 class StructureDataset:
@@ -21,6 +24,10 @@ class StructureDataset:
         self._decorated_scaffold_hashes = None
         self._undecorated_scaffold_hashes = None
         self._densities = None
+
+    # todo: think about how we cache without wasting memory
+    def _get_mofchecker_instance(self, idx):
+        return MOFChecker(self.get_structures(idx))
 
     @property
     def available_labels(self) -> Tuple[str]:
@@ -47,25 +54,33 @@ class StructureDataset:
     def get_filenames(self, idx: Iterable[int]) -> List[Structure]:
         return [self._structures[i] for i in idx]
 
-    # ToDo: compute if not already computed
+    # ToDo: parallelize hash computation
     def get_decorated_graph_hashes(self, idx: Iterable[int]) -> str:
         if self._decorated_graph_hashes is None:
-            raise ValueError("Decorated graph hashes are not available.")
+            logger.info("Computing hashes, this can take a while.")
+            hashes = [self._get_mofchecker_instance(i).graph_hash for i in idx]
+            return hashes
         return self._decorated_graph_hashes.iloc[idx]
 
     def get_undecorated_graph_hashes(self, idx: Iterable[int]) -> str:
         if self._undecorated_graph_hashes is None:
-            raise ValueError("Undecorated graph hashes are not available.")
+            logger.info("Computing hashes, this can take a while.")
+            hashes = [self._get_mofchecker_instance(i).undecorated_graph_hash for i in idx]
+            return hashes
         return self._undecorated_graph_hashes.iloc[idx]
 
     def get_decorated_scaffold_hashes(self, idx: Iterable[int]) -> str:
         if self._decorated_graph_hashes is None:
-            raise ValueError("Decorated scaffold hashes are not available.")
+            logger.info("Computing hashes, this can take a while.")
+            hashes = [self._get_mofchecker_instance(i).decorated_scaffold_hash for i in idx]
+            return hashes
         return self._decorated_scaffold_hashes.iloc[idx]
 
     def get_undecorated_scaffold_hashes(self, idx: Iterable[int]) -> str:
         if self._undecorated_scaffold_hashes is None:
-            raise ValueError("Undecorated scaffold hashes are not available.")
+            logger.info("Computing hashes, this can take a while.")
+            hashes = [self._get_mofchecker_instance(i).undecorated_scaffold_hash for i in idx]
+            return hashes
         return self._undecorated_scaffold_hashes.iloc[idx]
 
     def get_densities(self, idx: Iterable[int]) -> np.ndarray:
