@@ -112,6 +112,12 @@ Many of the descriptors implemented in mofdscribe have been discussed in our
      - ✅
      - ❌
      -
+   * - `PHHist <:py:class:`mofdscribe.topology.ph_hist.PHHist>`_
+     - ❌
+     - ✅ (optionally)
+     - ✅
+     - ❌
+     -
    * - `AtomCenteredPH <:py:class:`mofdscribe.topology.atom_centered_ph.AtomCenteredPH>`_
      - ❌
      - ✅ (optionally)
@@ -139,7 +145,7 @@ accessible pore volumes, ...) are computed with a probe approach. By means of
 Histograms
 ...............
 
-An alternative to scaler descriptors are "summaries" of the pore geometry in
+An alternative to scalar descriptors are "summaries" of the pore geometry in
 histograms. One approach for instance is to shoot random rays (orange in the
 figure below) through the structure and use the length of the ray between the
 points where it intersects the pores as ray length. If one performs this

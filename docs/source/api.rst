@@ -28,6 +28,10 @@ Topological featurization (persistent homology)
     :members:
 
 .. automodule:: mofdscribe.topology.ph_stats
+     :members:
+
+.. automodule:: mofdscribe.topology.ph_hist
+     :members:
 
 Chemistry-centred featurization
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
