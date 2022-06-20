@@ -204,7 +204,7 @@ class PHVect(BaseFeaturizer):
         for atom_type in self.atom_types:
             for dim in self.dimensions:
                 for i in range(self.n_components):
-                    labels.append(f"ph_{atom_type}_{dim}_{i}")
+                    labels.append(f"phvect_{atom_type}_{dim}_{i}")
 
         return labels
 

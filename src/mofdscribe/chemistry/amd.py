@@ -71,7 +71,7 @@ class AMD(BaseFeaturizer):
         for atom_type in self.atom_types:
             for agg in self.aggregations:
                 for i in range(self.k):
-                    labels.append(f"{atom_type}_{agg}_{i}")
+                    labels.append(f"amd_{atom_type}_{agg}_{i}")
 
         return labels
 

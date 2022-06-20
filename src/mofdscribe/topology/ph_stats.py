@@ -76,7 +76,7 @@ class PHStats(BaseFeaturizer):
             for dim in self.dimensions:
                 for parameter in ("birth", "death", "persistence"):
                     for aggregation in self.aggregation_functions:
-                        labels.append(f"{atom_type}_dim{dim}_{parameter}_{aggregation}")
+                        labels.append(f"phstats_{atom_type}_dim{dim}_{parameter}_{aggregation}")
 
         return labels
 

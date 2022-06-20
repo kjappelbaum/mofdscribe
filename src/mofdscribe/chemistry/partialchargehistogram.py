@@ -43,7 +43,7 @@ class PartialChargeHistogram(BaseFeaturizer):
         return np.arange(self.min_charge, self.max_charge, self.bin_size)
 
     def feature_labels(self) -> List[str]:
-        return [f"charge_{val}" for val in self._get_grid()]
+        return [f"chargehist_{val}" for val in self._get_grid()]
 
     def featurize(self, s: Union[Structure, IStructure]) -> np.ndarray:
         if isinstance(s, Structure):

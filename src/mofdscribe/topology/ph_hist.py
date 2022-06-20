@@ -85,7 +85,9 @@ class PHHist(BaseFeaturizer):
             for dim in self.dimensions:
                 for nx in range(self.nx):
                     for ny in range(self.ny):
-                        labels.append(f"{atom_type}_dim{dim}_nx{nx}_ny{ny}_{self.y_axis_label}")
+                        labels.append(
+                            f"phhist_{atom_type}_dim{dim}_nx{nx}_ny{ny}_{self.y_axis_label}"
+                        )
 
         return labels
 

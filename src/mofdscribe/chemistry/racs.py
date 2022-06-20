@@ -4,6 +4,7 @@ from collections import defaultdict
 from typing import Iterable, List, Optional, Tuple, Union
 
 import numpy as np
+from element_coder import encode
 from matminer.featurizers.base import BaseFeaturizer
 from pymatgen.analysis.graphs import StructureGraph
 from pymatgen.core import IStructure, Structure
@@ -55,8 +56,8 @@ def _compute_racs(
                             p0 = num_neighbors
                             p1 = len(get_connected_site_indices(structure_graph, neighbor))
                         else:
-                            p0 = getattr(site.specie, prop)
-                            p1 = getattr(n.specie, prop)
+                            p0 = encode(site.specie.symbol, prop)
+                            p1 = encode(n.specie.symbol, prop)
 
                         for agg in property_aggregations:
                             agg_func = AGGREGATORS[agg]

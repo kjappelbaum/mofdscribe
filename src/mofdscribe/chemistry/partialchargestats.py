@@ -35,7 +35,7 @@ class PartialChargeStats(BaseFeaturizer):
         self.aggregations = aggregtations
 
     def feature_labels(self) -> List[str]:
-        return [f"charge_{agg}" for agg in self.aggregations]
+        return [f"chargestat_{agg}" for agg in self.aggregations]
 
     def featurize(self, s: Union[Structure, IStructure]) -> np.ndarray:
         if isinstance(s, Structure):

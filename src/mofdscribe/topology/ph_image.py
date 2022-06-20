@@ -146,7 +146,7 @@ class PHImage(BaseFeaturizer):
             for dim in self.dimensions:
                 for pixel_a in range(self.image_size[0]):
                     for pixel_b in range(self.image_size[1]):
-                        labels.append(f"pi_{element}_{dim}_{pixel_a}_{pixel_b}")
+                        labels.append(f"phimage_{element}_{dim}_{pixel_a}_{pixel_b}")
 
         return labels
 

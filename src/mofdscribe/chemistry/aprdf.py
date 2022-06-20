@@ -82,7 +82,7 @@ class APRDF(BaseFeaturizer):
         for prop in self.properties:
             for aggregation in self.aggregations:
                 for _, bin_ in enumerate(self._bins):
-                    labels.append(f"{prop}_{aggregation}_{bin_}")
+                    labels.append(f"aprdf_{prop}_{aggregation}_{bin_}")
 
         return labels
 
