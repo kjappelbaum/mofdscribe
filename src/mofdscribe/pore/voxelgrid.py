@@ -197,9 +197,9 @@ class VoxelGrid(BaseFeaturizer):
         for geometry_aggregation in self.geometry_aggregations:
             for voxel in range(self._num_voxels):
                 feature_labels.append(f"voxelgrid_{geometry_aggregation}_{voxel}")
-        for property in self.properties:
+        for prop in self.properties:
             for voxel in range(self._num_voxels):
-                feature_labels.append(f"voxelgrid_{property}_{voxel}")
+                feature_labels.append(f"voxelgrid_{prop}_{voxel}")
 
         return feature_labels
 
