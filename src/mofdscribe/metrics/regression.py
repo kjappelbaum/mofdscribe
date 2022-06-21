@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
 """Metrics for the regression setting."""
-from typing import Optional
 
 import numpy as np
 
 
 def top_n_in_top_k(
-    predictions: np.array, labels: np.array, k: int, n: int, maximize: Optional[bool] = True
+    predictions: np.array, labels: np.array, k: int, n: int, maximize: bool = True
 ) -> int:
     """Find how many of the top n predictions are in the top k labels.
 
@@ -15,7 +14,7 @@ def top_n_in_top_k(
         labels (np.array): true labels for one objective
         k (int): number of top labels to consider
         n (int): number of top predictions to consider
-        maximize (bool, optional): Set to `True` if larger is better.
+        maximize (bool): Set to `True` if larger is better.
             Defaults to True.
 
     Returns:

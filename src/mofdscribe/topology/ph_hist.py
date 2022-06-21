@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """Compute histograms of persistent images for MOFs."""
-from typing import List, Optional, Tuple, Union
+from typing import List, Tuple, Union
 
 import numpy as np
 from matminer.featurizers.base import BaseFeaturizer
@@ -22,7 +22,7 @@ class PHHist(BaseFeaturizer):
 
     def __init__(
         self,
-        atom_types: Optional[Tuple[str]] = (
+        atom_types: Tuple[str] = (
             "C-H-N-O",
             "F-Cl-Br-I",
             "Cu-Mn-Ni-Mo-Fe-Pt-Zn-Ca-Er-Au-Cd-Co-Gd-Na-Sm-Eu-Tb-V"
@@ -30,39 +30,39 @@ class PHHist(BaseFeaturizer):
             "Ho-Re-Be-Rb-La-Sn-Cs-Pb-Pr-Bi-Tm-Sr-Ti-Hf-Ir-Nb-Pd-Hg-"
             "Th-Np-Lu-Rh-Pu",
         ),
-        compute_for_all_elements: Optional[bool] = True,
-        dimensions: Optional[Tuple[int]] = (1, 2),
-        min_size: Optional[int] = 20,
-        nx: Optional[int] = 10,
-        ny: Optional[int] = 10,
-        periodic: Optional[bool] = False,
-        y_axis_label: Optional[str] = "persistence",
-        normed: Optional[bool] = True,
+        compute_for_all_elements: bool = True,
+        dimensions: Tuple[int] = (1, 2),
+        min_size: int = 20,
+        nx: int = 10,
+        ny: int = 10,
+        periodic: bool = False,
+        y_axis_label: str = "persistence",
+        normed: bool = True,
     ) -> None:
         """Initialize the PHStats object.
 
         Args:
-            atom_types (tuple, optional): Atoms that are used to create substructures
+            atom_types (tuple): Atoms that are used to create substructures
                 for which the persistent homology statistics are computed.
                 Defaults to ( "C-H-N-O", "F-Cl-Br-I",
                 "Cu-Mn-Ni-Mo-Fe-Pt-Zn-Ca-Er-Au-Cd-Co-Gd-Na-Sm-Eu-Tb-V-Ag-Nd-U-Ba-Ce-K-Ga-
                 Cr-Al-Li-Sc-Ru-In-Mg-Zr-Dy-W-Yb-Y-Ho-Re-Be-Rb-La-Sn-Cs-Pb-Pr-Bi-Tm-Sr-Ti-
                 Hf-Ir-Nb-Pd-Hg-Th-Np-Lu-Rh-Pu", ).
-            compute_for_all_elements (bool, optional): Compute descriptor for original structure with all atoms.
+            compute_for_all_elements (bool): Compute descriptor for original structure with all atoms.
                 Defaults to True.
-            dimensions (Tuple[int], optional): Dimensions of topological features to consider.
+            dimensions (Tuple[int]): Dimensions of topological features to consider.
                 Defaults to (1, 2).
-            min_size (int, optional): Minimum supercell size (in Angstrom).
+            min_size (int): Minimum supercell size (in Angstrom).
                 Defaults to 20.
-            nx (int, optional): Number of points in the x-direction.
+            nx (int): Number of points in the x-direction.
                 Defaults to 10.
-            ny (int, optional): Number of points in the y-direction.
+            ny (int): Number of points in the y-direction.
                 Defaults to 10.
-            periodic (bool, optional): If true, then periodic Euclidean is used in the analysis (experimental!).
+            periodic (bool): If true, then periodic Euclidean is used in the analysis (experimental!).
                 Defaults to False.
-            y_axis_label (str, optional): Label for the y-axis. Can be "death" or "persistence".
+            y_axis_label (str): Label for the y-axis. Can be "death" or "persistence".
                 Defaults to "persistence".
-            normed (bool, optional): If true, then the histogram is normalized.
+            normed (bool): If true, then the histogram is normalized.
                 Defaults to True.
         """
         atom_types = [] if atom_types is None else atom_types

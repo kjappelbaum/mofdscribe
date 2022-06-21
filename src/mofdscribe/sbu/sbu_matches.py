@@ -2,7 +2,8 @@
 """Measure the RMSD between a building block and topological prototypes."""
 import json
 import os
-from typing import List, Optional, Tuple, Union
+from collections import OrderedDict
+from typing import List, Tuple, Union
 
 import numpy as np
 from loguru import logger
@@ -18,17 +19,17 @@ with open(os.path.join(THIS_DIR, "prototype_env.json"), "r") as handle:
 
 ALL_AVAILABLE_TOPOS = tuple(STRUCTURE_ENVS.keys())
 
-__all__ = ("BBMatcher",)
+__all__ = ("SBUMatch",)
 
 
 def match_bb(
     bb: Structure,
     prototype: str,
     aggregations: Tuple[str],
-    allow_rescale: Optional[bool] = True,
-    match: Optional[str] = "node",
-    skip_non_fitting_if_possible: Optional[bool] = True,
-    mismatch_fill_value: Optional[float] = 10_000,
+    allow_rescale: bool = True,
+    match: str = "node",
+    skip_non_fitting_if_possible: bool = True,
+    mismatch_fill_value: float = 10_000,
 ) -> float:
     """
     Compute the RMSD between a building block and a prototype.
@@ -37,12 +38,12 @@ def match_bb(
         bb (Structure): The building block to compare.
         prototype (str): The prototype to compare against.
         aggregations (Tuple[str]): The aggregations to use.
-        allow_rescale (bool, optional): Whether to scale the RMSD by the number of atoms.
+        allow_rescale (bool): Whether to scale the RMSD by the number of atoms.
             Defaults to True.
-        match (str, optional): The type of matching to use. Defaults to 'node'.
-        skip_non_fitting_if_possible (bool, optional): Whether to skip RMSDs of
+        match (str): The type of matching to use. Defaults to 'node'.
+        skip_non_fitting_if_possible (bool): Whether to skip RMSDs of
             building blocks that do not match due to mismatching coordination numbers.
-        mismatch_fill_value (float, optional): The value to fill in for mismatching
+        mismatch_fill_value (float): The value to fill in for mismatching
             coordination numbers. Defaults to 10_000.
 
     Returns:
@@ -70,7 +71,7 @@ def match_bb(
         rmsds = rmsds_fitting
     else:
         rmsds = rmsds_non_fitting + rmsds_fitting
-    aggregation_results = {}
+    aggregation_results = OrderedDict()
 
     for aggregation in aggregations:
         aggregation_results[f"{prototype}_{aggregation}"] = ARRAY_AGGREGATORS[aggregation](rmsds)
@@ -78,7 +79,7 @@ def match_bb(
     return aggregation_results
 
 
-class BBMatcher(BaseFeaturizer):
+class SBUMatch(BaseFeaturizer):
     """MOFs are assembled from building blocks on a net.
 
     The "ideal" vertex "structures" of the net can fit better or
@@ -88,14 +89,34 @@ class BBMatcher(BaseFeaturizer):
 
     def __init__(
         self,
-        allow_rescale: Optional[bool] = True,
-        mismatch_fill_value: Optional[float] = 1_000,
-        return_only_best: Optional[bool] = True,
-        aggregations: Optional[Tuple[str]] = ("max", "min", "mean", "std"),
-        topos: Optional[Tuple[str]] = ALL_AVAILABLE_TOPOS,
-        match: Optional[str] = "node",
-        skip_non_fitting_if_possible: Optional[bool] = True,
+        allow_rescale: bool = True,
+        mismatch_fill_value: float = 1_000,
+        return_only_best: bool = True,
+        aggregations: Tuple[str] = ("max", "min", "mean", "std"),
+        topos: Tuple[str] = ALL_AVAILABLE_TOPOS,
+        match: str = "node",
+        skip_non_fitting_if_possible: bool = True,
     ) -> None:
+        """Create a new SBUMatch featurizer.
+
+        Args:
+            allow_rescale (bool): If True, allow to multiple coordinates of structure
+                with scalar to better match the reference structure.
+                Defaults to True.
+            mismatch_fill_value (float): Value use to fill entries for which the RMSD
+                computation cannot be perform due to a mismatch in coordination numbers.
+                Defaults to 1_000.
+            return_only_best (bool): If True, do not compute statistics but only return the minimum
+                RMSD. Defaults to True.
+            aggregations (Tuple[str]): Functions to use to aggregate RMSD of
+                the different possible positions. Defaults to ("max", "min", "mean", "std").
+            topos (Tuple[str]): RCSR codes to consider for matching.
+                Defaults to ALL_AVAILABLE_TOPOS.
+            match (str): BB to consider for matching. Must be one of "edge" or "node".
+                Defaults to "node".
+            skip_non_fitting_if_possible (bool): If True, do not compute RMSD for
+                non-compatible BBs. Defaults to True.
+        """
         self.allow_rescale = allow_rescale
         self.mismatch_fill_value = mismatch_fill_value
         self.topos = topos
@@ -113,19 +134,32 @@ class BBMatcher(BaseFeaturizer):
         labels = []
         for topo in self.topos:
             if self.return_only_best:
-                labels.append(f"bbmatcher_{self.scaled}_{topo}")
+                labels.append(f"sbumatch_{self.allow_rescale}_{topo}")
             else:
                 for aggregation in self.aggregations:
-                    labels.append(f"bbmatcher_{self.scaled}_{topo}_{aggregation}")
+                    labels.append(f"sbumatch_{self.allow_rescale}_{topo}_{aggregation}")
 
         return labels
 
     def feature_labels(self) -> List[str]:
         return self._get_feature_labels()
 
-    def featurize(self, s: Union[Structure, IStructure]):
+    def featurize(self, s: Union[Structure, IStructure]) -> np.ndarray:
         """Structure is here spanned by the connecting points of a SBU."""
-        features = ...
+        features = []
+        for topo in self.topos:
+            feats = match_bb(
+                s,
+                topo,
+                self.aggregations,
+                self.allow_rescale,
+                self.match,
+                self.skip_non_fitting_if_possible,
+                self.mismatch_fill_value,
+            )
+            features.extend(feats.values())
+
+        return np.array(features)
 
     def citations(self):
         return ["Kevin Maik Jablonka and Berend Smit, TBA."]

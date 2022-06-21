@@ -2,7 +2,7 @@
 """Featurizer that runs RASPA to calculate energy grids."""
 import os
 from glob import glob
-from typing import List, Optional, Tuple, Union
+from typing import List, Tuple, Union
 
 import numpy as np
 import pandas as pd
@@ -86,62 +86,62 @@ class EnergyGridHistogram(BaseFeaturizer):
 
     def __init__(
         self,
-        raspa_dir: Optional[Union[str, os.PathLike, None]] = None,
-        grid_spacing: Optional[float] = 1.0,
-        bin_size_vdw: Optional[float] = 1,
-        min_energy_vdw: Optional[float] = -40,
-        max_energy_vdw: Optional[float] = 0,
-        cutoff: Optional[float] = 12,
-        mof_ff: Optional[str] = "UFF",
-        mol_ff: Optional[str] = "TraPPE",
-        mol_name: Optional[str] = "CO2",
-        sites: Optional[Tuple[str]] = ("C_co2",),
-        tail_corrections: Optional[bool] = True,
-        mixing_rule: Optional[str] = "Lorentz-Berthelot",
-        shifted: Optional[bool] = False,
-        separate_interactions: Optional[bool] = True,
-        run_eqeq: Optional[bool] = True,
+        raspa_dir: Union[str, os.PathLike, None] = None,
+        grid_spacing: float = 1.0,
+        bin_size_vdw: float = 1,
+        min_energy_vdw: float = -40,
+        max_energy_vdw: float = 0,
+        cutoff: float = 12,
+        mof_ff: str = "UFF",
+        mol_ff: str = "TraPPE",
+        mol_name: str = "CO2",
+        sites: Tuple[str] = ("C_co2",),
+        tail_corrections: bool = True,
+        mixing_rule: str = "Lorentz-Berthelot",
+        shifted: bool = False,
+        separate_interactions: bool = True,
+        run_eqeq: bool = True,
     ):
         """Construct the EnergyGridHistogram class.
 
         Args:
-            raspa_dir (Union[str, Path, None], optional): Path to the raspa
+            raspa_dir (Union[str, Path, None]): Path to the raspa
                 directory (with lib, bin, share) subdirectories.
                 If `None` we will look for the `RASPA_DIR` environment variable.
                 Defaults to None.
-            grid_spacing (float, optional): Spacing for the energy grids.
+            grid_spacing (float): Spacing for the energy grids.
                 Bucior et al. (2018) used 1.0 A. Defaults to 1.0.
-            bin_size_vdw (float, optional): Size of bins for the energy
+            bin_size_vdw (float): Size of bins for the energy
                 histogram. Defaults to 1.
-            min_energy_vdw (float, optional): Minimum
+            min_energy_vdw (float): Minimum
                 energy for the energy histogram (defining start of first bin).
                 Defaults to -10.
-            max_energy_vdw (float, optional): Maximum energy for energy
+            max_energy_vdw (float): Maximum energy for energy
                 histogram (defining last bin).
                 Defaults to 0.
-            cutoff (float, optional): Cutoff for the Van-der-Waals interaction.
+            cutoff (float): Cutoff for the Van-der-Waals interaction.
                 Defaults to 12.
-            mof_ff (str, optional): Name of the forcefield used
+            mof_ff (str): Name of the forcefield used
                 for the framework. Defaults to "UFF".
-            mol_ff (str, optional): Name of the forcefield used for the guest molecule.
+            mol_ff (str): Name of the forcefield used for the guest molecule.
                 Defaults to "TraPPE".
-            mol_name (str, optional): Name of the guest molecule.
+            mol_name (str): Name of the guest molecule.
                 Defaults to "CO2".
-            sites (Tuple[str], optional): Name of the Van-der-Waals sites
+            sites (Tuple[str]): Name of the Van-der-Waals sites
                 for which the energy diagrams are computed.
                 Defaults to ("C_co2",).
-            tail_corrections (bool, optional): If true, use analytical
+            tail_corrections (bool): If true, use analytical
                 tail-correction for the contribution of the interaction potential after the
                 cutoff. Defaults to True.
-            mixing_rule (str, optional): Mixing rule for framework and guest
+            mixing_rule (str): Mixing rule for framework and guest
                 molecule force field. Available options are `Jorgenson` and
                 `Lorentz-Berthelot`. Defaults to "Lorentz-Berthelot".
-            shifted (bool, optional): If true, shifts the potential to equal to zero at the
+            shifted (bool): If true, shifts the potential to equal to zero at the
                 cutoff. Defaults to False.
-            separate_interactions (bool, optional): If True use framework's force field
+            separate_interactions (bool): If True use framework's force field
                 for framework-molecule interactions.
                 Defaults to True.
-            run_eqeq (bool, optional): If true, runs EqEq to compute charges.
+            run_eqeq (bool): If true, runs EqEq to compute charges.
                 Defaults to True.
 
         Raises:

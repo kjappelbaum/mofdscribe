@@ -201,18 +201,18 @@ class PoreDiameters(BaseFeaturizer):
 class SurfaceArea(BaseFeaturizer):
     def __init__(
         self,
-        probe_radius: Optional[Union[str, float]] = 0.1,
-        num_samples: Optional[int] = 100,
-        channel_radius: Optional[Union[str, float, None]] = None,
+        probe_radius: Union[str, float] = 0.1,
+        num_samples: int = 100,
+        channel_radius: Union[str, float, None] = None,
     ):
         """Initialize the SurfaceArea featurizer.
 
         Args:
-            probe_radius (Optional[Union[str, float]], optional): Radius of the probe.
+            probe_radius (Union[str, float]): Radius of the probe.
                 Defaults to 0.1.
-            num_samples (Optional[int], optional): Number of samples.
+            num_samples (int): Number of samples.
                 Defaults to 100.
-            channel_radius (Optional[Union[str, float, None]], optional): Channel radius.
+            channel_radius (Union[str, float, None]): Channel radius.
                 Should equal to `probe_radius`. Defaults to None.
         """
         if channel_radius is not None and probe_radius != channel_radius:
@@ -284,18 +284,18 @@ class SurfaceArea(BaseFeaturizer):
 class AccessibleVolume(BaseFeaturizer):
     def __init__(
         self,
-        probe_radius: Optional[Union[str, float]] = 0.1,
-        num_samples: Optional[int] = 100,
-        channel_radius: Optional[Union[str, float, None]] = None,
+        probe_radius: Union[str, float] = 0.1,
+        num_samples: int = 100,
+        channel_radius: Union[str, float, None] = None,
     ):
         """Initialize the AccessibleVolume featurizer.
 
         Args:
-            probe_radius (Optional[Union[str, float]], optional): Radius of the probe.
+            probe_radius (Union[str, float]): Radius of the probe.
                 Defaults to 0.1.
-            num_samples (Optional[int], optional): Number of samples.
+            num_samples (int): Number of samples.
                 Defaults to 100.
-            channel_radius (Optional[Union[str, float, None]], optional): Channel radius.
+            channel_radius (Union[str, float, None]): Channel radius.
                 Should equal to `probe_radius`. Defaults to None.
         """
         if channel_radius is not None and probe_radius != channel_radius:
@@ -389,21 +389,21 @@ class RayTracingHistogram(BaseFeaturizer):
 
     def __init__(
         self,
-        probe_radius: Optional[Union[str, float]] = 0.0,
-        num_samples: Optional[int] = 50000,
-        channel_radius: Optional[Union[str, float, None]] = None,
+        probe_radius: Union[str, float] = 0.0,
+        num_samples: int = 50000,
+        channel_radius: Optional[Union[str, float]] = None,
     ) -> None:
         """Initialize the RayTracingHistogram featurizer.
 
         Args:
-            probe_radius (Union[str, float], optional): Used to estimate the accessible volume.
+            probe_radius (Union[str, float]): Used to estimate the accessible volume.
                 Only the accessible volume is then considered for the histogram.
                 Defaults to 0.0.
-            num_samples (int, optional): Number of rays that are placed through sample.
+            num_samples (int): Number of rays that are placed through sample.
                 Original publication used  1,000,000 sample points for IZA zeolites
                 and 100,000 sample points for hypothetical zeolites.
                 Larger numbers increase the runtime Defaults to 50000.
-            channel_radius (Union[str, float, None], optional):  Radius of a probe
+            channel_radius (Union[str, float, None]):  Radius of a probe
                 used to determine accessibility of the void space.
                 Should typically equal the radius of the `probe_radius`.
                 If set to `None`, we will use the `probe_radius`. Defaults to None.
@@ -500,24 +500,24 @@ class PoreSizeDistribution(BaseFeaturizer):
 
     def __init__(
         self,
-        probe_radius: Optional[Union[str, float]] = 0.0,
-        num_samples: Optional[int] = 5000,
-        channel_radius: Optional[Union[str, float, None]] = None,
-        hist_type: Optional[str] = "derivative",
+        probe_radius: Union[str, float] = 0.0,
+        num_samples: int = 5000,
+        channel_radius: Optional[Union[str, float]] = None,
+        hist_type: str = "derivative",
     ) -> None:
         """Initialize the PoreSizeDistribution featurizer.
 
         Args:
-            probe_radius (Union[str, float], optional): Used to estimate the accessible volume.
+            probe_radius (Union[str, float]): Used to estimate the accessible volume.
                 Only the accessible volume is then considered for the histogram.
                 Defaults to 0.0.
-            num_samples (int, optional): Number of rays that are placed through sample.
+            num_samples (int): Number of rays that are placed through sample.
                 Original publication used  1,000,000 sample points for IZA zeolites and 100,000 sample points
                 for hypothetical zeolites. Larger numbers increase the runtime. Defaults to 50000.
-            channel_radius (Union[str, float, None], optional): Radius of a probe used to determine
+            channel_radius (Union[str, float, None]): Radius of a probe used to determine
                 accessibility of the void space. Should typically equal the radius of the `probe_radius`.
                 If set to `None`, we will use the `probe_radius`. Defaults to None.
-            hist_type (str, optional): Type of the histogram.
+            hist_type (str): Type of the histogram.
                 Available options `count`, `cumulative`, `derivative`.
                 (The derivative distribution describes the change in the cumulative distribution
                 with respect to pore size). Defaults to "derivative".

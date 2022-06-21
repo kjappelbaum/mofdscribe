@@ -7,7 +7,7 @@ faster as it also has a lower-level implementation)
 
 from collections import defaultdict
 from functools import cached_property
-from typing import List, Optional, Tuple, Union
+from typing import List, Tuple, Union
 
 import numpy as np
 from element_coder import encode
@@ -35,29 +35,29 @@ class APRDF(BaseFeaturizer):
 
     def __init__(
         self,
-        cutoff: Optional[float] = 20.0,
-        lower_lim: Optional[float] = 2.0,
-        bin_size: Optional[float] = 0.1,
-        bw: Optional[Union[float, None]] = 0.1,
-        properties: Optional[Tuple[str, int]] = ("X", "electron_affinity"),
-        aggregations: Optional[Tuple[str]] = ("avg", "product", "diff"),
+        cutoff: float = 20.0,
+        lower_lim: float = 2.0,
+        bin_size: float = 0.1,
+        bw: Union[float, None] = 0.1,
+        properties: Tuple[str, int] = ("X", "electron_affinity"),
+        aggregations: Tuple[str] = ("avg", "product", "diff"),
     ):
         """Set up an atomic property (AP) weighted radial distribution function.
 
         Args:
-            cutoff (float, optional): Consider neighbors up to this value (in
+            cutoff (float): Consider neighbors up to this value (in
                 Angstrom). Defaults to 20.0.
-            lower_lim (float, optional): Lowest distance (in Angstrom) to consider.
+            lower_lim (float): Lowest distance (in Angstrom) to consider.
                 Defaults to 2.0.
-            bin_size (float, optional): Bin size for binning.
+            bin_size (float): Bin size for binning.
                 Defaults to 0.1.
-            bw (Union[float, None], optional): Band width for Gaussian smearing.
+            bw (Union[float, None]): Band width for Gaussian smearing.
                 If None, the unsmeared histogram is used. Defaults to 0.1.
-            properties (Tuple[str, int], optional): Properties used for calculation of the AP-RDF.
+            properties (Tuple[str, int]): Properties used for calculation of the AP-RDF.
                 All properties of `pymatgen.core.Species` are available in
                 addition to the integer `1` that will set P_i=P_j=1. Defaults to
                 ("X", "electron_affinity").
-            aggregations (Tuple[str], optional): Methods used to combine the
+            aggregations (Tuple[str]): Methods used to combine the
                 properties.
                 See `mofdscribe.utils.aggregators.AGGREGATORS` for available
                 options. Defaults to ("avg", "product", "diff").

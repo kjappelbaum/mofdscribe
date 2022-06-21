@@ -80,7 +80,7 @@ def _transform_structures(
     atom_types: Tuple[str],
     compute_for_all_elements: bool,
     min_size: int,
-    periodic: Optional[bool] = False,
+    periodic: bool = False,
 ):
     diagrams = defaultdict(lambda: defaultdict(list))
     for structure in structures:
@@ -115,7 +115,7 @@ class PHVect(BaseFeaturizer):
 
     def __init__(
         self,
-        atom_types: Optional[Tuple[str]] = (
+        atom_types: Tuple[str] = (
             "C-H-N-O",
             "F-Cl-Br-I",
             "Cu-Mn-Ni-Mo-Fe-Pt-Zn-Ca-Er-Au-Cd-Co-Gd-Na-Sm-Eu-Tb-V"
@@ -123,21 +123,21 @@ class PHVect(BaseFeaturizer):
             "Ho-Re-Be-Rb-La-Sn-Cs-Pb-Pr-Bi-Tm-Sr-Ti-Hf-Ir-Nb-Pd-Hg-"
             "Th-Np-Lu-Rh-Pu",
         ),
-        compute_for_all_elements: Optional[bool] = True,
-        dimensions: Optional[Tuple[int]] = (1, 2),
-        min_size: Optional[int] = 20,
-        n_components: Optional[int] = 20,
-        apply_umap: Optional[bool] = False,
-        umap_n_components: Optional[int] = 2,
-        umap_metric: Optional[str] = "hellinger",
-        p: Optional[int] = 1,
+        compute_for_all_elements: bool = True,
+        dimensions: Tuple[int] = (1, 2),
+        min_size: int = 20,
+        n_components: int = 20,
+        apply_umap: bool = False,
+        umap_n_components: int = 2,
+        umap_metric: str = "hellinger",
+        p: int = 1,
         random_state: Optional[int] = None,
-        periodic: Optional[bool] = False,
+        periodic: bool = False,
     ) -> None:
         """Construct a PHVect instance.
 
         Args:
-            atom_types (tuple, optional): Atoms that are used to create substructures
+            atom_types (tuple): Atoms that are used to create substructures
                 that are analysed using persistent homology.
                 If multiple atom types separated by hash are provided,
                 e.g. "C-H-N-O", then the substructure consists of all atoms of type C, H, N, or O.
@@ -145,31 +145,31 @@ class PHVect(BaseFeaturizer):
                 "Cu-Mn-Ni-Mo-Fe-Pt-Zn-Ca-Er-Au-Cd-Co-Gd-Na-Sm-Eu-Tb-V-Ag-Nd-U-Ba-Ce-K-Ga-
                 Cr-Al-Li-Sc-Ru-In-Mg-Zr-Dy-W-Yb-Y-Ho-Re-Be-Rb-La-Sn-Cs-Pb-Pr-Bi-Tm-Sr-Ti-
                 Hf-Ir-Nb-Pd-Hg-Th-Np-Lu-Rh-Pu", ).
-            compute_for_all_elements (bool, optional): If true, compute persistence images
+            compute_for_all_elements (bool): If true, compute persistence images
                 for full structure (i.e. with all elements). If false, it will only do it
                 for the substructures specified with `atom_types`. Defaults to True.
-            dimensions (Tuple[int], optional): Dimensions of topological features to consider
+            dimensions (Tuple[int]): Dimensions of topological features to consider
                 for persistence images. Defaults to (1, 2).
-            min_size (int, optional): Minimum supercell size (in Angstrom).
+            min_size (int): Minimum supercell size (in Angstrom).
                 Defaults to 20.
-            n_components (int, optional): The number of components or dimensions to use
+            n_components (int): The number of components or dimensions to use
                 in the vectorized representation. Defaults to 20.
-            apply_umap (bool, optional):  Whether to apply UMAP to the results to generate
+            apply_umap (bool):  Whether to apply UMAP to the results to generate
                 a low dimensional Euclidean space representation of the diagrams.
                 Defaults to False.
-            umap_n_components (int, optional):  The number of dimensions of euclidean space
+            umap_n_components (int):  The number of dimensions of euclidean space
                 to use when representing the diagrams via UMAP. Defaults to 2.
-            umap_metric (str, optional):  What metric to use for the UMAP embedding if ``apply_umap`` is enabled
+            umap_metric (str):  What metric to use for the UMAP embedding if ``apply_umap`` is enabled
                 (this option will be ignored if ``apply_umap`` is ``False``).
                 Should be one of:
                 * ``"wasserstein"``
                 * ``"hellinger"``
                 Note that if ``"wasserstein"`` is used then transforming new data will not be possible.
                 Defaults to "hellinger".
-            p (int, optional):  The p in the p-Wasserstein distance to compute.
-            random_state (_type_, optional): random state propagated to the Gaussian mixture models (and UMAP).
+            p (int):  The p in the p-Wasserstein distance to compute.
+            random_state (_type_): random state propagated to the Gaussian mixture models (and UMAP).
                 Defaults to None.
-            periodic (bool, optional): If true, then periodic Euclidean is used in the analysis (experimental!).
+            periodic (bool): If true, then periodic Euclidean is used in the analysis (experimental!).
                 Defaults to False.
         """
         atom_types = [] if atom_types is None else atom_types

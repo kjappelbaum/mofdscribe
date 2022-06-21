@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """Featurizer that computes 3D voxelgrids."""
-from typing import List, Optional, Tuple, Union
+from typing import List, Tuple, Union
 
 import numpy as np
 from element_coder import encode
@@ -15,7 +15,7 @@ def make_supercell(
     elements: List[int],
     lattice: Tuple[float, float, float],
     size: float,
-    min_size: Optional[float] = -5,
+    min_size: float = -5,
 ) -> np.ndarray:
     """Generate cubic supercell of a given size.
 
@@ -24,7 +24,7 @@ def make_supercell(
         elements (List[int]): atomic numbers of every site
         lattice (Tuple[float, float, float]): lattice constants of the system
         size (float): dimension size of cubic cell, e.g., 10x10x10
-        min_size (float, optional): minimum axes size to keep negative xyz
+        min_size (float): minimum axes size to keep negative xyz
             coordinates from the original cell. Defaults to -5.
 
     Returns:
@@ -105,27 +105,27 @@ class VoxelGrid(BaseFeaturizer):
 
     def __init__(
         self,
-        min_size: Optional[float] = 30,
-        n_x: Optional[int] = 25,
-        n_y: Optional[int] = 25,
-        n_z: Optional[int] = 25,
-        geometry_aggregations: Optional[Union[Tuple[str], None]] = ("binary",),
-        properties: Optional[Union[Tuple[str, int], None]] = ("X", "electron_affinity"),
-        flatten: Optional[bool] = True,
-        regular_bounding_box: Optional[bool] = True,
+        min_size: float = 30,
+        n_x: int = 25,
+        n_y: int = 25,
+        n_z: int = 25,
+        geometry_aggregations: Tuple[str] = ("binary",),
+        properties: Tuple[str, int] = ("X", "electron_affinity"),
+        flatten: bool = True,
+        regular_bounding_box: bool = True,
     ):
         """Initialize a VoxelGrid featurizer.
 
         Args:
-            min_size (float, optional): Minimum supercell size in Angstrom.
+            min_size (float): Minimum supercell size in Angstrom.
                 Defaults to 30.
-            n_x (int, optional): Number of bins in x direction
+            n_x (int): Number of bins in x direction
                 (Hung et al used 30 and 60 at a cell size of 60). Defaults to 25.
-            n_y (int, optional): Number of bins in x direction
+            n_y (int): Number of bins in x direction
                 (Hung et al used 30 and 60 at a cell size of 60). Defaults to 25.
-            n_z (int, optional): Number of bins in x direction
+            n_z (int): Number of bins in x direction
                 (Hung et al used 30 and 60 at a cell size of 60). Defaults to 25.
-            geometry_aggregations (Union[Tuple["density" | "binary" | "TDF"], None], optional):
+            geometry_aggregations (Union[Tuple["density" | "binary" | "TDF"], None]):
                 Mode for encoding the occupation of voxels.
                 * binary: 0 for empty voxels, 1 for occupied.
                 * density: number of points inside voxel / total number of points.
@@ -133,10 +133,10 @@ class VoxelGrid(BaseFeaturizer):
                 between the voxel's center and the closest point. 1 on the surface,
                 0 on voxels further than 2 * voxel side.
                 Defaults to ("binary",).
-            properties (Union[Tuple[str, int], None], optional): Properties used for calculation of the AP-RDF.
+            properties (Union[Tuple[str, int], None]): Properties used for calculation of the AP-RDF.
                 All properties of `pymatgen.core.Species` are available. Defaults to ("X", "electron_affinity").
-            flatten (bool, optional): It true, flatten the 3D voxelgrid to 1D array. Defaults to True.
-            regular_bounding_box (bool, optional): If True, the bounding box of the point cloud will be adjusted
+            flatten (bool): It true, flatten the 3D voxelgrid to 1D array. Defaults to True.
+            regular_bounding_box (bool): If True, the bounding box of the point cloud will be adjusted
                 in order to have all the dimensions of equal length.
                 Defaults to True.
         """

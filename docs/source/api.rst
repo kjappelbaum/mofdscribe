@@ -55,6 +55,13 @@ Chemistry-centred featurization
     :members:
 
 
+SBU-centred featurization
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. automodule:: mofdscribe.sbu.sbu_matches
+    :members:
+
+
 Datasets
 ---------
 

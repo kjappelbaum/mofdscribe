@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Revised autocorrelation functions (RACs) for MOFs."""
 from collections import defaultdict
-from typing import Iterable, List, Optional, Tuple, Union
+from typing import Iterable, List, Tuple, Union
 
 import numpy as np
 from element_coder import encode
@@ -141,27 +141,27 @@ class RACS(BaseFeaturizer):
 
     def __init__(
         self,
-        attributes: Optional[Tuple[Union[int, str]]] = ("X", "electron_affinity", "I", "T"),
-        scopes: Optional[Tuple[int]] = (1, 2, 3),
-        prop_agg: Optional[Tuple[str]] = ("product", "diff"),
-        corr_agg: Optional[Tuple[str]] = ("sum",),
-        bb_agg: Optional[Tuple[str]] = ("avg",),
-        bond_heuristic: Optional[str] = "jmolnn",
+        attributes: Tuple[Union[int, str]] = ("X", "electron_affinity", "I", "T"),
+        scopes: Tuple[int] = (1, 2, 3),
+        prop_agg: Tuple[str] = ("product", "diff"),
+        corr_agg: Tuple[str] = ("sum",),
+        bb_agg: Tuple[str] = ("avg",),
+        bond_heuristic: str = "jmolnn",
     ) -> None:
         """
         Initialize the RACS featurizer.
 
         Args:
-            attributes (Tuple[Union[int, str]], optional): Properties that are correlated.
+            attributes (Tuple[Union[int, str]]): Properties that are correlated.
                 Defaults to ("X", "electron_affinity", "I", "T").
-            scopes (Tuple[int], optional): Number of edges to traverse. Defaults to (1, 2, 3).
-            prop_agg (Tuple[str], optional): Function for aggregating the properties.
+            scopes (Tuple[int]): Number of edges to traverse. Defaults to (1, 2, 3).
+            prop_agg (Tuple[str]): Function for aggregating the properties.
                 Defaults to ("product", "diff").
-            corr_agg (Tuple[str], optional): Function to aggregate the properties across different start/scopes.
+            corr_agg (Tuple[str]): Function to aggregate the properties across different start/scopes.
                 Defaults to ("sum").
-            bb_agg (Tuple[str], optional): Function used to aggregate the properties across different building blocks.
+            bb_agg (Tuple[str]): Function used to aggregate the properties across different building blocks.
                  Defaults to ("avg").
-            bond_heuristic (str, optional): Method used to guess bonds. Defaults to "jmolnn".
+            bond_heuristic (str): Method used to guess bonds. Defaults to "jmolnn".
         """
         self.attributes = attributes
         self.scopes = scopes

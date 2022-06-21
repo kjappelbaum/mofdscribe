@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
-"""Classes that help to perform cross-validation."""
+"""Classes that help performing cross-validation."""
 from collections import Counter
-from typing import Iterable, List, Optional, Tuple
+from typing import Callable, Iterable, List, Tuple, Union
 
 import numpy as np
 
+from .utils import kennard_stone_sampling
 from ..datasets.dataset import StructureDataset
 
 __all__ = (
@@ -14,6 +15,7 @@ __all__ = (
     "Splitter",
     "RandomSplitter",
     "FingerprintSplitter",
+    "KennardStoneSplitter",
 )
 
 
@@ -25,8 +27,8 @@ class Splitter:
         ds: StructureDataset,
         frac_train: float,
         frac_valid: float,
-        sample_frac: Optional[float] = 1.0,
-        shuffle: Optional[bool] = True,
+        sample_frac: float = 1.0,
+        shuffle: bool = True,
         **kwargs,
     ) -> Tuple[Iterable[int], Iterable[int], Iterable[int]]:
         """
@@ -37,9 +39,9 @@ class Splitter:
             frac_train (float): fraction of the data to use for training.
             frac_valid (float): fraction of the data to use for validation.
                 Fraction of the data to use for testing = 1 - frac_train - frac_valid.
-            sample_frac (float, optional): Fraction by which the full dataset is
+            sample_frac (float): Fraction by which the full dataset is
                 downsampled (randomly). Can be useful for debugging. Defaults to 1.0.
-            shuffle (bool, optional): If True, then the splitters attempt to
+            shuffle (bool): If True, then the splitters attempt to
                 shuffle the data at every possible step.
                 For the splitters that internally perform a sorting operation,
                 this means that the ties will be shuffled. In any case,
@@ -82,8 +84,8 @@ class Splitter:
         self,
         ds: StructureDataset,
         frac_train: float,
-        sample_frac: Optional[float] = 1.0,
-        shuffle: Optional[bool] = True,
+        sample_frac: float = 1.0,
+        shuffle: bool = True,
         **kwargs,
     ) -> Tuple[Iterable[int], Iterable[int]]:
         """Get indices for training and test set.
@@ -91,10 +93,10 @@ class Splitter:
         Args:
             ds (StructureDataset): mofdscribe dataset
             frac_train (float): fraction of the data to use for training
-            sample_frac (float, optional): Fraction by which the full dataset
+            sample_frac (float): Fraction by which the full dataset
                 is downsampled (randomly). Can be useful for debugging.
                 Defaults to 1.0.
-            shuffle (bool, optional): If True, then the splitters attempt to
+            shuffle (bool): If True, then the splitters attempt to
                 shuffle the data at every possible step.
                 For the splitters that internally perform a sorting operation,
                 this means that the ties will be shuffled. In any case, if
@@ -129,7 +131,7 @@ class Splitter:
 
         return train_inds, test_inds
 
-    def k_fold(self, ds: StructureDataset, k: int, shuffle: Optional[bool] = True):
+    def k_fold(self, ds: StructureDataset, k: int, shuffle: bool = True):
         """Split the data into k folds."""
         indices = self.get_sorted_indices(ds, shuffle=shuffle)
         indices = np.array(indices)
@@ -165,12 +167,12 @@ class HashSplitter(Splitter):
 
     def __init__(
         self,
-        hash_type: Optional[str] = "undecorated_scaffold_hash",
+        hash_type: str = "undecorated_scaffold_hash",
     ) -> None:
         """Initialize a HashSplitter.
 
         Args:
-            hash_type (str, optional): Hash type to use. Must be one of the
+            hash_type (str): Hash type to use. Must be one of the
                 following:
                 * undecorated_scaffold_hash
                 * decorated_graph_hash
@@ -211,14 +213,12 @@ class HashSplitter(Splitter):
 
         return hashes
 
-    def get_sorted_indices(
-        self, ds: StructureDataset, shuffle: Optional[bool] = True
-    ) -> Iterable[int]:
+    def get_sorted_indices(self, ds: StructureDataset, shuffle: bool = True) -> Iterable[int]:
         """Create a sorted list of indices based on the hashes of the structures.
 
         Args:
             ds (StructureDataset): mofdscribe dataset
-            shuffle (bool, optional): If true, shuffle ties (identical hash).
+            shuffle (bool): If true, shuffle ties (identical hash).
                 Defaults to True.
 
         Returns:
@@ -248,25 +248,23 @@ class DensitySplitter(Splitter):
 
     def __init__(
         self,
-        ascending: Optional[bool] = True,
+        ascending: bool = True,
     ) -> None:
         """Initialize the DensitySplitter class.
 
         Args:
-            ascending (bool, optional): If True, sort densities ascending.
+            ascending (bool): If True, sort densities ascending.
                 Defaults to True.
         """
         self.ascending = ascending
         super().__init__()
 
-    def get_sorted_indices(
-        self, ds: StructureDataset, shuffle: Optional[bool] = True
-    ) -> Iterable[int]:
+    def get_sorted_indices(self, ds: StructureDataset, shuffle: bool = True) -> Iterable[int]:
         """Create a sorted list of indices based on the density of the structures.
 
         Args:
             ds (StructureDataset): mofdscribe dataset
-            shuffle (bool, optional): If true, shuffle ties (identical densities).
+            shuffle (bool): If true, shuffle ties (identical densities).
                 Defaults to True.
 
         Returns:
@@ -294,23 +292,23 @@ class TimeSplitter(Splitter):
 
     def __init__(
         self,
-        ascending: Optional[bool] = True,
+        ascending: bool = True,
     ) -> None:
         """Initialize the TimeSplitter class
 
         Args:
-            ascending (bool, optional): If True, sort times ascending.
+            ascending (bool): If True, sort times ascending.
                 Defaults to True.
         """
         self.ascending = ascending
         super().__init__()
 
-    def get_sorted_indices(self, ds, shuffle: Optional[bool] = True):
+    def get_sorted_indices(self, ds, shuffle: bool = True):
         """Create a sorted list of indices based on the structures' year of publication.
 
         Args:
             ds (StructureDataset): mofdscribe dataset
-            shuffle (bool, optional): If true, shuffle ties (identical years).
+            shuffle (bool): If true, shuffle ties (identical years).
                 Defaults to True.
 
         Returns:
@@ -335,9 +333,7 @@ class RandomSplitter(Splitter):
     Randomly split data into sets/folds
     """
 
-    def get_sorted_indices(
-        self, ds: StructureDataset, shuffle: Optional[bool] = True
-    ) -> Iterable[int]:
+    def get_sorted_indices(self, ds: StructureDataset, shuffle: bool = True) -> Iterable[int]:
         """Simply return a list of indices of length equal to the length of the dataset."""
         indices = np.arange(len(ds))
         if shuffle:
@@ -347,7 +343,12 @@ class RandomSplitter(Splitter):
 
 
 class FingerprintSplitter(Splitter):
-    """Splitter that uses the features of the structures to split the data."""
+    """Splitter that uses the features of the structures to split the data.
+
+    It does not directly compute distances but simply *sorts* the rows
+    using `np.sort`.
+    For distance-based splits, see :py:meth:`~mofdscribe.splitters.KennardStoneSplitter`.
+    """
 
     def __init__(
         self,
@@ -361,9 +362,7 @@ class FingerprintSplitter(Splitter):
         self.feature_names = feature_names
         super().__init__()
 
-    def get_sorted_indices(
-        self, ds: StructureDataset, shuffle: Optional[bool] = True
-    ) -> Iterable[int]:
+    def get_sorted_indices(self, ds: StructureDataset, shuffle: bool = True) -> Iterable[int]:
         """Return a list of indices, sorted by similarity.
 
         Here, rows are sorted according to
@@ -371,7 +370,7 @@ class FingerprintSplitter(Splitter):
 
         Args:
             ds (StructureDataset): A mofdscribe StructureDataset
-            shuffle (Optional[bool], optional): Not used in this method.
+            shuffle (bool): Not used in this method.
                 Defaults to True.
 
         Returns:
@@ -379,3 +378,78 @@ class FingerprintSplitter(Splitter):
         """
         indices = ds._df.sort_values(by=self.feature_names).index.values
         return indices
+
+
+class KennardStoneSplitter(Splitter):
+    """Run the Kennard-Stone sampling algorithm [KennardStone].
+
+    The algorithm selects samples with uniform converage.
+    The initial samples are biased towards the boundaries of the dataset.
+    """
+
+    def __init__(
+        self,
+        feature_names: List[str],
+        scale: bool = True,
+        centrality_measure: str = "mean",
+        metric: Union[Callable, str] = "euclidean",
+        ascending: bool = False,
+    ) -> None:
+        """Construct a KennardStoneSplitter.
+
+        Args:
+            feature_names (List[str]): Names of features to consider.
+            scale (bool): If True, apply z-score normalization
+                prior to running the sampling. Defaults to True.
+            centrality_measure (str): The first sample is selected to be
+                maximally distanct from this value. It can be one of "mean", "median",
+                "random". In case of "random" we simply select a random point.
+                In the case of "mean" and "median" the initial point is maximally distanct
+                from the mean and median of the feature matrix, respectively.
+                Defaults to "mean".
+            metric (Union[Callable, str]): The distance metric to use.
+                If a string, the distance function can be ‘braycurtis’, ‘canberra’, ‘chebyshev’,
+                ‘cityblock’, ‘correlation’, ‘cosine’, ‘dice’, ‘euclidean’, ‘hamming’, ‘jaccard’,
+                ‘jensenshannon’, ‘kulsinski’, ‘kulczynski1’, ‘mahalanobis’, ‘matching’, ‘minkowski’,
+                ‘rogerstanimoto’, ‘russellrao’, ‘seuclidean’, ‘sokalmichener’, ‘sokalsneath’, ‘sqeuclidean’,
+                ‘yule’. Defaults to "euclidean".
+            ascending (bool): If True, sort samples in asceding distance to the center.
+                That is, the first samples (maximally distant to center) would be sampled last.
+                Defaults to False.
+        """
+        self.feature_names = feature_names
+        self.scale = scale
+        self.centrality_measure = centrality_measure
+        self.metric = metric
+        self.ascending = ascending
+        self._sorted_indices = None
+        super().__init__()
+
+    def get_sorted_indices(self, ds: StructureDataset, shuffle: bool = True) -> Iterable[int]:
+        """Return a list of indices, sorted by similarity using the Kennard-Stone algorithm.
+
+        The first sample will be maximally distant from the center.
+
+        Args:
+            ds (StructureDataset): A mofdscribe StructureDataset
+            shuffle (bool): Not used in this method.
+                Defaults to True.
+
+        Returns:
+            Iterable[int]: Sorted indices.
+        """
+        if self._sorted_indices is None:
+            feats = ds._df[self.feature_names].values
+
+            indices = kennard_stone_sampling(
+                feats,
+                scale=self.scale,
+                centrality_measure=self.centrality_measure,
+                metric=self.metric,
+            )
+
+            if self.ascending:
+                indices = indices[::-1]
+
+            self._sorted_indices = indices
+        return self._sorted_indices

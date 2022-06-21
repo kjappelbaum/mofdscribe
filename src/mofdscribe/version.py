@@ -7,7 +7,6 @@ Run with ``python -m mofdscribe.version``
 
 import os
 from subprocess import CalledProcessError, check_output  # noqa: S404
-from typing import Optional
 
 __all__ = [
     "VERSION",
@@ -33,7 +32,7 @@ def get_git_hash() -> str:
             return ret.strip().decode("utf-8")[:8]
 
 
-def get_version(with_git_hash: Optional[bool] = False):
+def get_version(with_git_hash: bool = False):
     """Get the :mod:`mofdscribe` version string, including a git hash."""
     return f"{VERSION}-{get_git_hash()}" if with_git_hash else VERSION
 

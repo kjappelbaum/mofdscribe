@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Utlities for working with persistence diagrams."""
 from collections import defaultdict
-from typing import List, Optional, Tuple
+from typing import List, Tuple
 
 import numpy as np
 from moltda.construct_pd import construct_pds
@@ -23,15 +23,15 @@ def construct_pds_cached(coords, periodic=False):
 # ToDo: only do this for all if we want
 def get_persistent_images_for_structure(
     structure: Structure,
-    elements: Optional[List[List[str]]],
-    compute_for_all_elements: Optional[bool] = True,
-    min_size: Optional[int] = 20,
-    spread: Optional[float] = 0.2,
-    weighting: Optional[str] = "identity",
-    pixels: Optional[Tuple[int]] = (50, 50),
-    max_b: Optional[int] = 18,
-    max_p: Optional[int] = 18,
-    periodic: Optional[bool] = False,
+    elements: List[List[str]],
+    compute_for_all_elements: bool = True,
+    min_size: int = 20,
+    spread: float = 0.2,
+    weighting: str = "identity",
+    pixels: Tuple[int] = (50, 50),
+    max_b: int = 18,
+    max_p: int = 18,
+    periodic: bool = False,
 ) -> dict:
     """
     Get the persistent images for a structure.
@@ -142,10 +142,10 @@ def diagrams_to_bd_arrays(dgms):
 
 def get_diagrams_for_structure(
     structure,
-    elements: Optional[List[List[str]]],
-    compute_for_all_elements: Optional[bool] = True,
-    min_size: Optional[int] = 20,
-    periodic: Optional[bool] = False,
+    elements: List[List[str]],
+    compute_for_all_elements: bool = True,
+    min_size: int = 20,
+    periodic: bool = False,
 ):
     keys = [f"dim{i}" for i in range(3)]
     element_dias = defaultdict(dict)
@@ -194,9 +194,9 @@ def get_diagrams_for_structure(
 def get_persistence_image_limits_for_structure(
     structure: Structure,
     elements: List[List[str]],
-    compute_for_all_elements: Optional[bool] = True,
-    min_size: Optional[int] = 20,
-    periodic: Optional[bool] = False,
+    compute_for_all_elements: bool = True,
+    min_size: int = 20,
+    periodic: bool = False,
 ) -> dict:
     limits = defaultdict(list)
     for element in elements:
@@ -232,7 +232,7 @@ def get_persistence_image_limits_for_structure(
 
 
 def persistent_diagram_stats(
-    diagram: np.ndarray, aggregrations: Tuple[str], nanfiller: Optional[float] = 0
+    diagram: np.ndarray, aggregrations: Tuple[str], nanfiller: float = 0
 ) -> dict:
     """
     Compute statistics for a persistence diagram.

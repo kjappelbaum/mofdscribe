@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Implements persistent homology images"""
 from collections import defaultdict
-from typing import List, Optional, Tuple, Union
+from typing import List, Tuple, Union
 
 import numpy as np
 from matminer.featurizers.base import BaseFeaturizer
@@ -42,7 +42,7 @@ class PHImage(BaseFeaturizer):
 
     def __init__(
         self,
-        atom_types: Optional[Tuple[str]] = (
+        atom_types: Tuple[str] = (
             "C-H-N-O",
             "F-Cl-Br-I",
             "Cu-Mn-Ni-Mo-Fe-Pt-Zn-Ca-Er-Au-Cd-Co-Gd-Na-Sm-Eu-Tb-V"
@@ -50,21 +50,21 @@ class PHImage(BaseFeaturizer):
             "Ho-Re-Be-Rb-La-Sn-Cs-Pb-Pr-Bi-Tm-Sr-Ti-Hf-Ir-Nb-Pd-Hg-"
             "Th-Np-Lu-Rh-Pu",
         ),
-        dimensions: Optional[Tuple[int]] = (0, 1, 2),
-        compute_for_all_elements: Optional[bool] = True,
-        min_size: Optional[int] = 20,
-        image_size: Optional[Tuple[int]] = (20, 20),
-        spread: Optional[float] = 0.2,
-        weight: Optional[str] = "identity",
-        max_b: Optional[Union[int, List[int]]] = 18,
-        max_p: Optional[Union[int, List[int]]] = 18,
-        max_fit_tolerence: Optional[float] = 0.1,
-        periodic: Optional[bool] = False,
+        dimensions: Tuple[int] = (0, 1, 2),
+        compute_for_all_elements: bool = True,
+        min_size: int = 20,
+        image_size: Tuple[int] = (20, 20),
+        spread: float = 0.2,
+        weight: str = "identity",
+        max_b: Union[int, List[int]] = 18,
+        max_p: Union[int, List[int]] = 18,
+        max_fit_tolerence: float = 0.1,
+        periodic: bool = False,
     ) -> None:
         """Construct a PHImage object.
 
         Args:
-            atom_types (Tuple[str], optional): Atoms that are used to create
+            atom_types (Tuple[str]): Atoms that are used to create
                 substructures that are analysed using persistent homology.
                 If multiple atom types separated by hash are provided, e.g.
                 "C-H-N-O", then the substructure consists of all atoms of type
@@ -72,29 +72,29 @@ class PHImage(BaseFeaturizer):
                 "Cu-Mn-Ni-Mo-Fe-Pt-Zn-Ca-Er-Au-Cd-Co-Gd-Na-Sm-Eu-Tb-V-Ag-Nd-U-Ba-
                 Ce-K-Ga-Cr-Al-Li-Sc-Ru-In-Mg-Zr-Dy-W-Yb-Y-Ho-Re-Be-Rb-La-Sn-Cs-Pb-
                 Pr-Bi-Tm-Sr-Ti-Hf-Ir-Nb-Pd-Hg-Th-Np-Lu-Rh-Pu").
-            dimensions (Tuple[int], optional): Dimensions of topological
+            dimensions (Tuple[int]): Dimensions of topological
                 features to consider for persistence images. Defaults to (0, 1, 2).
-            compute_for_all_elements (bool, optional): If true, compute
+            compute_for_all_elements (bool): If true, compute
                 persistence images for full structure (i.e. with all elements). If
                 false, it will only do it for the substructures specified with
                 `atom_types`. Defaults to True.
-            min_size (int, optional): Minimum supercell size (in Angstrom).
+            min_size (int): Minimum supercell size (in Angstrom).
                 Defaults to 20.
-            image_size (Tuple[int], optional): Size of persistent image in pixel.
+            image_size (Tuple[int]): Size of persistent image in pixel.
                 Defaults to (20, 20).
-            spread (float, optional): "Smearing factor" for the
+            spread (float): "Smearing factor" for the
                 Gaussians. Defaults to 0.2.
-            weight (str, optional): Weighting function for calculation of
+            weight (str): Weighting function for calculation of
                 the persistence images. Defaults to "identity".
-            max_b (Union[int, List[int]], optional): Maximum birth time.
+            max_b (Union[int, List[int]]): Maximum birth time.
                 Defaults to 18.
-            max_p (Union[int, List[int]], optional): Maximum
+            max_p (Union[int, List[int]]): Maximum
                 persistence. Defaults to 18.
-            max_fit_tolerence (float, optional): If
+            max_fit_tolerence (float): If
                 `fit` method is used to find the limits of the persistent images,
                 one can appy a tolerance on the the found limits. The maximum
                 will then be max + max_fit_tolerance * max. Defaults to 0.1.
-            periodic (bool, optional): If true, then periodic Euclidean is used
+            periodic (bool): If true, then periodic Euclidean is used
                 in the analysis (experimental!). Defaults to False.
 
         Raises:

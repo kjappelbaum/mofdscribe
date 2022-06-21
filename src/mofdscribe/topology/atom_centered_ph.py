@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Featurizers using persistent homology -- applied in an atom-centred manner."""
 from collections import defaultdict
-from typing import List, Optional, Tuple, Union
+from typing import List, Tuple, Union
 
 import numpy as np
 from matminer.featurizers.base import BaseFeaturizer
@@ -41,20 +41,20 @@ class AtomCenteredPHSite(BaseFeaturizer):
 
     def __init__(
         self,
-        aggregation_functions: Optional[Tuple[str]] = ("min", "max", "mean", "std"),
-        cutoff: Optional[float] = 12,
-        dimensions: Optional[Tuple[int]] = (1, 2),
+        aggregation_functions: Tuple[str] = ("min", "max", "mean", "std"),
+        cutoff: float = 12,
+        dimensions: Tuple[int] = (1, 2),
     ) -> None:
         """
         Construct a new AtomCenteredPHSite featurizer.
 
         Args:
-            aggregation_functions (Tuple[str], optional): Aggregations to
+            aggregation_functions (Tuple[str]): Aggregations to
                 compute on the persistence diagrams (over birth/death time and
                 persistence). Defaults to ("min", "max", "mean", "std").
-            cutoff (float, optional): Consider neighbors of site within this radius (in
+            cutoff (float): Consider neighbors of site within this radius (in
                 Angstrom). Defaults to 12.
-            dimensions (Tuple[int], optional): Betti numbers of consider.
+            dimensions (Tuple[int]): Betti numbers of consider.
                 0 describes isolated components, 1 cycles and 2 cavities.
                 Defaults to (1, 2).
         """
@@ -129,7 +129,7 @@ class AtomCenteredPH(BaseFeaturizer):
 
     def __init__(
         self,
-        atom_types: Optional[Tuple[str]] = (
+        atom_types: Tuple[str] = (
             "C-H-N-O",
             "F-Cl-Br-I",
             "Cu-Mn-Ni-Mo-Fe-Pt-Zn-Ca-Er-Au-Cd-Co-Gd-Na-Sm-Eu-Tb-V"
@@ -137,16 +137,16 @@ class AtomCenteredPH(BaseFeaturizer):
             "Ho-Re-Be-Rb-La-Sn-Cs-Pb-Pr-Bi-Tm-Sr-Ti-Hf-Ir-Nb-Pd-Hg-"
             "Th-Np-Lu-Rh-Pu",
         ),
-        aggregation_functions: Optional[Tuple[str]] = ("min", "max", "mean", "std"),
-        species_aggregation_functions: Optional[Tuple[str]] = ("min", "max", "mean", "std"),
-        cutoff: Optional[float] = 12,
-        dimensions: Optional[Tuple[int]] = (1, 2),
+        aggregation_functions: Tuple[str] = ("min", "max", "mean", "std"),
+        species_aggregation_functions: Tuple[str] = ("min", "max", "mean", "std"),
+        cutoff: float = 12,
+        dimensions: Tuple[int] = (1, 2),
     ) -> None:
         """
         Construct a new AtomCenteredPH featurizer.
 
         Args:
-            atom_types (tuple, optional): Atoms that are used to create substructures
+            atom_types (tuple): Atoms that are used to create substructures
                 that are analysed using persistent homology.
                 If multiple atom types separated by hash are provided, e.g. "C-H-N-O",
                 then the substructure consists of all atoms of type C, H, N, or O.
@@ -154,15 +154,15 @@ class AtomCenteredPH(BaseFeaturizer):
                 "Cu-Mn-Ni-Mo-Fe-Pt-Zn-Ca-Er-Au-Cd-Co-Gd-Na-Sm-Eu-Tb-V-Ag-Nd-U-Ba-Ce-K-Ga-
                 "Cr-Al-Li-Sc-Ru-In-Mg-Zr-Dy-W-Yb-Y-Ho-Re-Be-Rb-La-Sn-Cs-Pb-Pr-Bi-Tm-Sr-Ti-Hf-Ir-
                 "Nb-Pd-Hg-Th-Np-Lu-Rh-Pu", ).
-            aggregation_functions (Tuple[str], optional): Aggregations to compute on the persistence
+            aggregation_functions (Tuple[str]): Aggregations to compute on the persistence
                 diagrams (over birth/death time and persistence).
                 Defaults to ("min", "max", "mean", "std").
-            species_aggregation_functions (Tuple[str], optional): Aggregations to use to combine
+            species_aggregation_functions (Tuple[str]): Aggregations to use to combine
                 features derived for sites of a specific atom type, e.g., the site features of all `C-H-N-O`.
                 Defaults to ("min", "max", "mean", "std").
-            cutoff (float, optional): Consider neighbors of site within this radius (in Angstrom).
+            cutoff (float): Consider neighbors of site within this radius (in Angstrom).
                 Defaults to 12.
-            dimensions (Tuple[int], optional): Betti numbers of consider. 0 describes isolated components,
+            dimensions (Tuple[int]): Betti numbers of consider. 0 describes isolated components,
                 1 cycles and 2 cavities. Defaults to (1, 2).
         """
         self.aggregation_functions = aggregation_functions

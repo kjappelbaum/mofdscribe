@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
 """Helper functions to submit RASPA simulations."""
 
-
 import os
 import subprocess
 from tempfile import TemporaryDirectory
-from typing import Callable, Optional, Union
+from typing import Callable, Union
 
 from pymatgen.core import IStructure, Structure
 
@@ -39,7 +38,7 @@ def run_raspa(
     simulation_script: str,
     ff_params: dict,
     parser: Callable,
-    run_eqeq: Optional[bool] = False,
+    run_eqeq: bool = False,
 ):
     """Submit a simulation to RASPA.
 
@@ -50,7 +49,7 @@ def run_raspa(
         ff_params (dict): settings for the force field builder.
         parser (Callable): function that takes the simulation directory as input
             and returns the output.
-        run_eqeq (bool, optional): If true, runs eqeq before submitting the RASPA simulations.
+        run_eqeq (bool): If true, runs eqeq before submitting the RASPA simulations.
             Defaults to False.
 
     Raises:

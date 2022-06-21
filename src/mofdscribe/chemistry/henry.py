@@ -2,7 +2,7 @@
 """Featurizer that runs RASPA to calculate the Henry coefficient."""
 import os
 from glob import glob
-from typing import List, Optional, Union
+from typing import List, Union
 
 import numpy as np
 from matminer.featurizers.base import BaseFeaturizer
@@ -58,49 +58,49 @@ class Henry(BaseFeaturizer):
 
     def __init__(
         self,
-        raspa_dir: Optional[Union[str, os.PathLike, None]] = None,
-        cycles: Optional[int] = 5_000,
-        temperature: Optional[float] = 300,
-        cutoff: Optional[float] = 12,
-        mof_ff: Optional[str] = "UFF",
-        mol_ff: Optional[str] = "TraPPE",
-        mol_name: Optional[str] = "CO2",
-        tail_corrections: Optional[bool] = True,
-        mixing_rule: Optional[str] = "Lorentz-Berthelot",
-        shifted: Optional[bool] = False,
-        separate_interactions: Optional[bool] = True,
-        run_eqeq: Optional[bool] = True,
+        raspa_dir: Union[str, os.PathLike, None] = None,
+        cycles: int = 5_000,
+        temperature: float = 300,
+        cutoff: float = 12,
+        mof_ff: str = "UFF",
+        mol_ff: str = "TraPPE",
+        mol_name: str = "CO2",
+        tail_corrections: bool = True,
+        mixing_rule: str = "Lorentz-Berthelot",
+        shifted: bool = False,
+        separate_interactions: bool = True,
+        run_eqeq: bool = True,
     ):
         """Initialize the featurizer.
 
         Args:
-            raspa_dir (Union[str, PathLike, None], optional): Path to the raspa
+            raspa_dir (Union[str, PathLike, None]): Path to the raspa
                 directory (with lib, bin, share) subdirectories.
                 If `None` we will look for the `RASPA_DIR` environment variable.
                 Defaults to None.
-            cycles (int, optional): Number of simulation cycles.
+            cycles (int): Number of simulation cycles.
                 Defaults to 5_000.
-            temperature (float, optional): Simulation temperature in
+            temperature (float): Simulation temperature in
                 Kelvin. Defaults to 300.
-            cutoff (float, optional): Cutoff for simulation in Angstrom.
+            cutoff (float): Cutoff for simulation in Angstrom.
                 Defaults to 12.
-            mof_ff (str, optional): Name of the forcefield used for the framework.
+            mof_ff (str): Name of the forcefield used for the framework.
                 Defaults to "UFF".
-            mol_ff (str, optional): Name of the forcefield used for the guest molecule.
+            mol_ff (str): Name of the forcefield used for the guest molecule.
                 Defaults to "TraPPE".
-            mol_name (str, optional): Name of the guest molecule. Defaults to "CO2".
-            tail_corrections (bool, optional): If true, use analytical tail-correction
+            mol_name (str): Name of the guest molecule. Defaults to "CO2".
+            tail_corrections (bool): If true, use analytical tail-correction
                 for the contribution of the interaction potential after the
                 cutoff. Defaults to True.
-            mixing_rule (str, optional): Mixing rule for framework and guest
+            mixing_rule (str): Mixing rule for framework and guest
                 molecule force field. Available options are `Jorgenson` and
                 `Lorentz-Berthelot`. Defaults to "Lorentz-Berthelot".
-            shifted (bool, optional): If true, shifts the potential to equal to zero at the
+            shifted (bool): If true, shifts the potential to equal to zero at the
                 cutoff. Defaults to False.
-            separate_interactions (bool, optional): If True use framework's force field
+            separate_interactions (bool): If True use framework's force field
                 for framework-molecule interactions.
                 Defaults to True.
-            run_eqeq (bool, optional): If true, runs EqEq to compute charges.
+            run_eqeq (bool): If true, runs EqEq to compute charges.
                 Defaults to True.
 
         Raises:

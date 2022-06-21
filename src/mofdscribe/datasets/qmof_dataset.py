@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-"""Subsert of the QMOF dataset."""
+"""Subset of the QMOF dataset."""
 import os
-from typing import Iterable, Optional, Tuple
+from typing import Iterable, Tuple
 
 import numpy as np
 import pandas as pd
@@ -78,18 +78,18 @@ class QMOFDataset(StructureDataset):
 
     def __init__(
         self,
-        version: Optional[str] = "v0.0.1",
-        drop_basename_duplicates: Optional[bool] = True,
-        drop_graph_duplicates: Optional[bool] = True,
+        version: str = "v0.0.1",
+        drop_basename_duplicates: bool = True,
+        drop_graph_duplicates: bool = True,
     ):
         """Construct an instance of the QMOF dataset.
 
         Args:
-            version (Optional[str], optional): version number to use.
+            version (str): version number to use.
                 Defaults to "v0.0.1".
-            drop_basename_duplicates (Optional[bool], optional): If True, keep only one structure
+            drop_basename_duplicates (bool): If True, keep only one structure
                 per CSD basename. Defaults to True.
-            drop_graph_duplicates (Optional[bool], optional): If True, keep only one structure
+            drop_graph_duplicates (bool): If True, keep only one structure
                 per decorated graph hash. Defaults to True.
 
         Raises:
@@ -152,9 +152,7 @@ class QMOFDataset(StructureDataset):
     def available_labels(self) -> Tuple[str]:
         return self._labelnames
 
-    def get_labels(
-        self, idx: Iterable[int], labelnames: Optional[Iterable[str]] = None
-    ) -> np.ndarray:
+    def get_labels(self, idx: Iterable[int], labelnames: Iterable[str] = None) -> np.ndarray:
         labelnames = labelnames if labelnames is not None else self._labelnames
         return self._df.iloc[idx][list(labelnames)].values
 

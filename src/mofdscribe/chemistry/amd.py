@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """Generalized average minimum distance (AMD) featurizer."""
-from typing import List, Optional, Tuple, Union
+from typing import List, Tuple, Union
 
 import numpy as np
 from matminer.featurizers.base import BaseFeaturizer
@@ -29,8 +29,8 @@ class AMD(BaseFeaturizer):
 
     def __init__(
         self,
-        k: Optional[int] = 100,
-        atom_types: Optional[Tuple[str]] = (
+        k: int = 100,
+        atom_types: Tuple[str] = (
             "C-H-N-O",
             "F-Cl-Br-I",
             "Cu-Mn-Ni-Mo-Fe-Pt-Zn-Ca-Er-Au-Cd-Co-Gd-Na-Sm-Eu-Tb-V"
@@ -38,23 +38,23 @@ class AMD(BaseFeaturizer):
             "Ho-Re-Be-Rb-La-Sn-Cs-Pb-Pr-Bi-Tm-Sr-Ti-Hf-Ir-Nb-Pd-Hg-"
             "Th-Np-Lu-Rh-Pu",
         ),
-        compute_for_all_elements: Optional[bool] = True,
-        aggregations: Optional[Tuple[str]] = ("mean",),
+        compute_for_all_elements: bool = True,
+        aggregations: Tuple[str] = ("mean",),
     ) -> None:
         """Initialize the AMD descriptor.
 
         Args:
-            k (int, optional): controls the number of nearest neighbour atoms considered
+            k (int): controls the number of nearest neighbour atoms considered
                 for each atom in the unit cell. Defaults to 100.
-            atom_types (tuple, optional): Atoms that are used to create substructures
+            atom_types (tuple): Atoms that are used to create substructures
                 for which the AMD descriptor is computed.
                 Defaults to ( 'C-H-N-O', 'F-Cl-Br-I',
                 'Cu-Mn-Ni-Mo-Fe-Pt-Zn-Ca-Er-Au-Cd-Co-Gd-Na-Sm-Eu-Tb-V-Ag-Nd-U-Ba-Ce-K-Ga-
                 Cr-Al-Li-Sc-Ru-In-Mg-Zr-Dy-W-Yb-Y-Ho-Re-Be-Rb-La-Sn-Cs-Pb-Pr-Bi-Tm-Sr-Ti-Hf-
                 Ir-Nb-Pd-Hg-Th-Np-Lu-Rh-Pu', ).
-            compute_for_all_elements (bool, optional): If True, compute the AMD descriptor for
+            compute_for_all_elements (bool): If True, compute the AMD descriptor for
                 the original structure with all elements. Defaults to True.
-            aggregations (tuple, optional): Aggregations of the AMD descriptor.
+            aggregations (tuple): Aggregations of the AMD descriptor.
                 The 'mean' is equivalent to the original AMD. Defaults to ('mean',).
         """
         self.k = k

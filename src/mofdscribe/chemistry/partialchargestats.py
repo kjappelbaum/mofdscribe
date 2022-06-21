@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """Partial charge statistics featurizer."""
-from typing import List, Optional, Tuple, Union
+from typing import List, Tuple, Union
 
 import numpy as np
 from matminer.featurizers.base import BaseFeaturizer
@@ -23,12 +23,12 @@ class PartialChargeStats(BaseFeaturizer):
     <https://www.nature.com/articles/s41467-020-17755-8>`_
     """
 
-    def __init__(self, aggregtations: Optional[Tuple[str]] = ("max", "min", "std")) -> None:
+    def __init__(self, aggregtations: Tuple[str] = ("max", "min", "std")) -> None:
         """
         Initialize the PartialChargeStats featurizer.
 
         Args:
-            aggregtations (Tuple[str], optional): Aggregations to compute.
+            aggregtations (Tuple[str]): Aggregations to compute.
                 For available methods, see :py:obj:`mofdscribe.utils.aggregators.ARRAY_AGGREGATORS`.
                 Defaults to ("max", "min", "std").
         """

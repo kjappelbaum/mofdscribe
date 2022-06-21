@@ -62,7 +62,7 @@ def get_structure_graph(structure: IStructure, strategy: Optional[str] = None) -
 
     Args:
         structure (IStructure): Pymatgen structure object.
-        strategy (str, optional): Heuristic for assigning bonds.
+        strategy (str): Heuristic for assigning bonds.
             Must be one of 'jmolnn', 'crystalnn', 'isayevnn'. Defaults to None.
 
     Returns:
@@ -129,10 +129,10 @@ def _select_parts_in_cell(  # pylint:disable=too-many-arguments, too-many-locals
 
 def get_subgraphs_as_molecules(  # pylint:disable=too-many-locals
     structure_graph: StructureGraph,
-    use_weights: Optional[bool] = False,
-    return_unique: Optional[bool] = True,
-    disable_boundary_crossing_check: Optional[bool] = False,
-    filter_in_cell: Optional[bool] = True,
+    use_weights: bool = False,
+    return_unique: bool = True,
+    disable_boundary_crossing_check: bool = False,
+    filter_in_cell: bool = True,
 ) -> Tuple[List[Molecule], List[MoleculeGraph], List[List[int]], List[np.ndarray]]:
     """Extract molecules from a periodic framework.
 

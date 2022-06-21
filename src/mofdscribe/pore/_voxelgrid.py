@@ -24,19 +24,19 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 """
 
-from typing import Iterable, List, Optional
+from typing import Iterable, List
 
 import numpy as np
 from scipy.spatial import cKDTree
 
 
-def cartesian(arrays: List[Iterable], out: Optional[np.ndarray] = None) -> np.ndarray:
+def cartesian(arrays: List[Iterable], out: np.ndarray = None) -> np.ndarray:
     """Generate a Cartesian product of input arrays.
 
     Args:
         arrays (List[Iterable]): list of array-like 1-D arrays to form the
             Cartesian product of.
-        out (Optional[np.ndarray], optional): Array to  place the cartesian product in.
+        out (np.ndarray): Array to  place the cartesian product in.
             Defaults to None.
 
     Returns:
@@ -91,23 +91,23 @@ class VoxelGrid:
 
         Args:
             points (np.ndarray): shape (N,  3)
-            properties (numpy.array, optional): Shape (N, 3). Defaults to None.
-            n_x (int, optional): The number of segments in which each axis will be divided.
+            properties (numpy.array): Shape (N, 3). Defaults to None.
+            n_x (int): The number of segments in which each axis will be divided.
                 Ignored if corresponding size_x, size_y or size_z is not None. Defaults to 1.
-            n_y (int, optional): The number of segments in which each axis will be divided.
+            n_y (int): The number of segments in which each axis will be divided.
                 Ignored if corresponding size_x, size_y or size_z is not None. Defaults to 1.
-            n_z (int, optional):  The number of segments in which each axis will be divided.
+            n_z (int):  The number of segments in which each axis will be divided.
                 Ignored if corresponding size_x, size_y or size_z is not None. Defaults to 1.
-            size_x (float, optional): The desired voxel size along each axis.
+            size_x (float): The desired voxel size along each axis.
                 If not None, the corresponding n_x, n_y or n_z will be ignored.
                 Defaults to None.
-            size_y (float, optional): The desired voxel size along each axis.
+            size_y (float): The desired voxel size along each axis.
                 If not None, the corresponding n_x, n_y or n_z will be ignored.
                 Defaults to None.
-            size_z (float, optional): The desired voxel size along each axis.
+            size_z (float): The desired voxel size along each axis.
                 If not None, the corresponding n_x, n_y or n_z will be ignored.
                 Defaults to None.
-            regular_bounding_box (bool, optional): If True, the bounding box
+            regular_bounding_box (bool): If True, the bounding box
                 of the point cloud will be adjusted in order to have all
                 the dimensions of equal length. Defaults to True.
         """
@@ -203,18 +203,18 @@ class VoxelGrid:
 
         return voxel_n
 
-    def get_feature_vector(self, mode="binary", flatten: Optional[bool] = False):
+    def get_feature_vector(self, mode="binary", flatten: bool = False):
         """Get feature vector.
 
         Args:
-            mode (str, optional): Available modes are:
+            mode (str): Available modes are:
                 * binary: 0 for empty voxels, 1 for occupied.
                 * density: number of points inside voxel / total number of points.
                 * TDF: Truncated Distance Function. Value between 0 and 1 indicating
                 the distance between the voxel's center and the closest point. 1 on the surface,
                 0 on voxels further than 2 * voxel side.
                 Defaults to "binary".
-            flatten (bool, optional): Returns a flattened vector.
+            flatten (bool): Returns a flattened vector.
                 Defaults to False.
 
         Raises:
