@@ -112,7 +112,7 @@ You get also get a specific entry with
 
 .. code-block:: python
 
-    qmof_electronic.get_structure(1)
+    qmof.get_structure(1)
 
 
 Using splitters
@@ -136,6 +136,13 @@ input.
 
     train_idx, valid_idx, test_idx = splitter.train_valid_test_split(ds,
         train_frac=0.7, valid_frac=0.1)
+
+
+Using metrics 
+-----------------
+
+For making machine learning comparable, it is important to report reliable metrics. 
+mofdscribe implements some helpers to make this easier.
 
 
 Referencing datasets and featurizers
