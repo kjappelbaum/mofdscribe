@@ -60,6 +60,7 @@ class PHImage(BaseFeaturizer):
         max_p: Union[int, List[int]] = 18,
         max_fit_tolerence: float = 0.1,
         periodic: bool = False,
+        no_supercell: bool = False,
     ) -> None:
         """Construct a PHImage object.
 
@@ -96,6 +97,8 @@ class PHImage(BaseFeaturizer):
                 will then be max + max_fit_tolerance * max. Defaults to 0.1.
             periodic (bool): If true, then periodic Euclidean is used
                 in the analysis (experimental!). Defaults to False.
+            no_supercell (bool): If true, then the supercell is not created.
+                Defaults to False.
 
         Raises:
             AssertionError: If the length of the max_b and max_p is not equal
@@ -136,6 +139,7 @@ class PHImage(BaseFeaturizer):
 
         self.max_fit_tolerance = max_fit_tolerence
         self.periodic = periodic
+        self.no_supercell = no_supercell
 
     def _get_feature_labels(self) -> List[str]:
         labels = []
@@ -165,6 +169,7 @@ class PHImage(BaseFeaturizer):
             max_b=self.max_b,
             max_p=self.max_p,
             periodic=self.periodic,
+            no_supercell=self.no_supercell,
         )
         features = []
         elements = list(self.atom_types)
@@ -198,6 +203,7 @@ class PHImage(BaseFeaturizer):
                 self.compute_for_all_elements,
                 self.min_size,
                 periodic=self.periodic,
+                no_supercell=self.no_supercell,
             )
             for k, v in lim.items():
                 limits[k].extend(v)

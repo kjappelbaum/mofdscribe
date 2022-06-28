@@ -4,7 +4,7 @@ from typing import List, Tuple, Union
 
 import numpy as np
 from matminer.featurizers.base import BaseFeaturizer
-from pymatgen.core import IStructure, Structure
+from pymatgen.core import IStructure, Structure, Molecule, IMolecule
 
 from mofdscribe.utils import flatten
 
@@ -37,6 +37,7 @@ class PHStats(BaseFeaturizer):
         min_size: int = 20,
         aggregation_functions: Tuple[str] = ("min", "max", "mean", "std"),
         periodic: bool = False,
+        no_supercell: bool = False,
     ) -> None:
         """Initialize the PHStats object.
 
@@ -58,6 +59,8 @@ class PHStats(BaseFeaturizer):
                 Defaults to ("min", "max", "mean", "std").
             periodic (bool): If true, then periodic Euclidean is used in the analysis (experimental!).
                 Defaults to False.
+            no_supercell (bool): If true, then the supercell is not created.
+                Defaults to False.
         """
         atom_types = [] if atom_types is None else atom_types
         self.elements = atom_types
@@ -69,6 +72,7 @@ class PHStats(BaseFeaturizer):
         self.min_size = min_size
         self.aggregation_functions = aggregation_functions
         self.periodic = periodic
+        self.no_supercell = no_supercell
 
     def _get_feature_labels(self) -> List[str]:
         labels = []
@@ -83,13 +87,14 @@ class PHStats(BaseFeaturizer):
     def feature_labels(self) -> List[str]:
         return self._get_feature_labels()
 
-    def featurize(self, structure: Union[Structure, IStructure]) -> np.ndarray:
+    def featurize(self, structure: Union[Structure, IStructure, Molecule, IMolecule]) -> np.ndarray:
         res = get_diagrams_for_structure(
             structure,
             self.elements,
             self.compute_for_all_elements,
             self.min_size,
             periodic=self.periodic,
+            no_supercell=self.no_supercell,
         )
 
         flat_results = []

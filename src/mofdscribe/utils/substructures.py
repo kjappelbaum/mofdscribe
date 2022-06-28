@@ -2,14 +2,16 @@
 """Extract substructures (e.g. of certain element types)."""
 from typing import Collection, List, Union
 
-from pymatgen.core import IStructure, Structure
+from pymatgen.core import IStructure, Structure, Molecule, IMolecule
 
 
-def filter_element(structure: Structure, elements: List[str]) -> Structure:
+def filter_element(
+    structure: Union[Structure, IStructure, Molecule, IMolecule], elements: List[str]
+) -> Structure:
     """Filter a structure by element.
 
     Args:
-        structure (Structure): input structure
+        structure (Union[Structure, IStructure, Molecule, IMolecule]): input structure
         elements (str): element to filter
 
     Returns:
@@ -27,7 +29,12 @@ def filter_element(structure: Structure, elements: List[str]) -> Structure:
             keep_sites.append(site)
     if len(keep_sites) == 0:
         return None
-    return Structure.from_sites(keep_sites)
+
+    input_is_structure = isinstance(structure, (Structure, IStructure))
+    if input_is_structure:
+        return Structure.from_sites(keep_sites)
+    else:  # input is molecule or IMolecule
+        return Molecule.from_sites(keep_sites)
 
 
 def elements_in_structure(structure: Structure) -> List[str]:

@@ -2,6 +2,7 @@
 """Utlities for working with persistence diagrams."""
 from collections import defaultdict
 from typing import List, Tuple
+from loguru import logger
 
 import numpy as np
 from moltda.construct_pd import construct_pds
@@ -105,6 +106,7 @@ def get_persistent_images_for_structure(
                 specs=specs,
             )
         except ValueError:
+            logger.exception(f"Error computing persistent images for {element}")
             images = np.zeros((0, pixels[0], pixels[1]))
             images[:] = np.nan
             pd = np.zeros((0, max_p + 1))
@@ -180,6 +182,7 @@ def get_diagrams_for_structure(
             )
             arrays = _pd_arrays_from_coords(coords, periodic=periodic, bd_arrays=True)
         except Exception:
+            logger.exception(f"Error for element {element}")
             arrays = {key: nan_array for key in keys}
         if not len(arrays) == 4:
             for key in keys:
@@ -222,6 +225,7 @@ def get_persistence_image_limits_for_structure(
             for k, v in pd.items():
                 limits[k].append(get_min_max_from_dia(v))
         except ValueError:
+            logger.exception("Could not extract diagrams for element %s", element)
             pass
 
     if compute_for_all_elements:

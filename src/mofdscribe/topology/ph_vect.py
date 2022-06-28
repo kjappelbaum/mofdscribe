@@ -39,12 +39,18 @@ def _fit_transform_structures(
     compute_for_all_elements: bool,
     min_size: int,
     periodic: bool = False,
+    no_supercell: bool = False,
 ):
     logger.info(f"Computing diagrams for {len(structures)} structures")
     diagrams = defaultdict(lambda: defaultdict(list))
     for structure in structures:
         res = get_diagrams_for_structure(
-            structure, atom_types, compute_for_all_elements, min_size, periodic=periodic
+            structure,
+            atom_types,
+            compute_for_all_elements,
+            min_size,
+            periodic=periodic,
+            no_supercell=no_supercell,
         )
         for element, element_d in res.items():
             for dim, dim_d in element_d.items():
@@ -81,11 +87,17 @@ def _transform_structures(
     compute_for_all_elements: bool,
     min_size: int,
     periodic: bool = False,
+    no_supercell: bool = False,
 ):
     diagrams = defaultdict(lambda: defaultdict(list))
     for structure in structures:
         res = get_diagrams_for_structure(
-            structure, atom_types, compute_for_all_elements, min_size, periodic=periodic
+            structure,
+            atom_types,
+            compute_for_all_elements,
+            min_size,
+            periodic=periodic,
+            no_supercell=no_supercell,
         )
         for element, element_d in res.items():
             for dim, dim_d in element_d.items():
@@ -133,6 +145,7 @@ class PHVect(BaseFeaturizer):
         p: int = 1,
         random_state: Optional[int] = None,
         periodic: bool = False,
+        no_supercell: bool = False,
     ) -> None:
         """Construct a PHVect instance.
 
@@ -171,6 +184,8 @@ class PHVect(BaseFeaturizer):
                 Defaults to None.
             periodic (bool): If true, then periodic Euclidean is used in the analysis (experimental!).
                 Defaults to False.
+            no_supercell (bool): If true, then the supercell is not created.
+                Defaults to False.
         """
         atom_types = [] if atom_types is None else atom_types
         self.elements = atom_types
@@ -198,6 +213,7 @@ class PHVect(BaseFeaturizer):
         self.random_state = random_state
         self._fitted = False
         self.periodic = periodic
+        self.no_supercell = no_supercell
 
     def _get_feature_labels(self) -> List[str]:
         labels = []
@@ -221,6 +237,7 @@ class PHVect(BaseFeaturizer):
             self.compute_for_all_elements,
             self.min_size,
             periodic=self.periodic,
+            no_supercell=self.no_supercell,
         )
         compiled_results = self._reshape_results(res, 1).flatten()
         return compiled_results
@@ -233,6 +250,7 @@ class PHVect(BaseFeaturizer):
             self.compute_for_all_elements,
             self.min_size,
             periodic=self.periodic,
+            no_supercell=self.no_supercell,
         )
         self._fitted = True
         return self

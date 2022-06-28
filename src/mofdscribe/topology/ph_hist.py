@@ -38,6 +38,7 @@ class PHHist(BaseFeaturizer):
         periodic: bool = False,
         y_axis_label: str = "persistence",
         normed: bool = True,
+        no_supercell: bool = False,
     ) -> None:
         """Initialize the PHStats object.
 
@@ -64,6 +65,8 @@ class PHHist(BaseFeaturizer):
                 Defaults to "persistence".
             normed (bool): If true, then the histogram is normalized.
                 Defaults to True.
+            no_supercell (bool): If true, then the supercell is not created.
+                Defaults to False.
         """
         atom_types = [] if atom_types is None else atom_types
         self.elements = atom_types
@@ -78,6 +81,7 @@ class PHHist(BaseFeaturizer):
         self.periodic = periodic
         self.y_axis_label = y_axis_label
         self.normed = normed
+        self.no_supercell = no_supercell
 
     def _get_feature_labels(self) -> List[str]:
         labels = []
@@ -101,6 +105,7 @@ class PHHist(BaseFeaturizer):
             self.compute_for_all_elements,
             self.min_size,
             periodic=self.periodic,
+            no_supercell=self.no_supercell,
         )
 
         flat_results = []
