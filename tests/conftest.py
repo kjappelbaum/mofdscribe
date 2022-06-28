@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 """Test fixtures"""
+import json
 import os
 
 import pytest
-import json
-from pymatgen.core import IStructure, Structure, Molecule
 from pymatgen.analysis.graphs import MoleculeGraph
+from pymatgen.core import IStructure, Molecule, Structure
 
 from mofdscribe.utils.structure_graph import get_structure_graph
 

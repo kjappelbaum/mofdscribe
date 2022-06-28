@@ -207,7 +207,6 @@ def test_adverserial_validator_with_different_dist():
 
     Make sure that we detect this and highlight reasonable features.
     """
-
     dataset = CoREDataset()
     splitter = DensitySplitter()
 

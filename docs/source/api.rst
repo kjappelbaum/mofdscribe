@@ -61,6 +61,9 @@ SBU-centred featurization
 .. automodule:: mofdscribe.sbu.sbu_matches
     :members:
 
+.. automodule:: mofdscribe.sbu.rdkitadaptor
+    :members:
+
 
 Datasets
 ---------

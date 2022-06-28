@@ -18,6 +18,7 @@ import re
 import sys
 from datetime import date
 
+
 sys.path.insert(0, os.path.abspath("../../src"))
 
 # -- Project information -----------------------------------------------------
@@ -66,6 +67,9 @@ extensions = [
     "sphinx.ext.viewcode",
     "sphinx.ext.autosectionlabel",
 ]
+
+
+autodoc_type_aliases = {"ArrayLike": "numpy.typing.ArrayLike"}
 
 copybutton_selector = "div:not(.no-copy)>div.highlight pre"
 copybutton_prompt_text = r">>> |\.\.\. |\$ |In \[\d*\]: | {2,5}\.\.\.: | {5,8}: "

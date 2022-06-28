@@ -8,7 +8,7 @@ from typing import List, Tuple, Union
 import numpy as np
 from loguru import logger
 from matminer.featurizers.base import BaseFeaturizer
-from pymatgen.core import IStructure, Structure
+from pymatgen.core import IStructure, Structure, Molecule, IMolecule
 from superpose3d import Superpose3D
 
 from ..utils.aggregators import ARRAY_AGGREGATORS
@@ -23,7 +23,7 @@ __all__ = ("SBUMatch",)
 
 
 def match_bb(
-    bb: Union[Structure, IStructure],
+    bb: Union[Structure, IStructure, Molecule, IMolecule],
     prototype: str,
     aggregations: Tuple[str],
     allow_rescale: bool = True,
@@ -35,7 +35,7 @@ def match_bb(
     Compute the RMSD between a building block and a prototype.
 
     Args:
-        bb (Structure): The building block to compare.
+        bb (Union[Structure, IStructure, Molecule, IMolecule]): The building block to compare.
         prototype (str): The prototype to compare against.
         aggregations (Tuple[str]): The aggregations to use.
         allow_rescale (bool): Whether to scale the RMSD by the number of atoms.
@@ -85,6 +85,13 @@ class SBUMatch(BaseFeaturizer):
     The "ideal" vertex "structures" of the net can fit better or
     worse with the "shape" of the actual building blocks.
     This featurizer attempts to quantify this mismatch.
+
+    Examples:
+        >>> from mofdscribe.sbu import SBUMatch
+        >>> from pymatgen.core import Structure
+        >>> s = Structure.from_file("tests/test_files/sbu_test_1.cif")
+        >>> sbu_match = SBUMatch(topos=["tbo", "pcu"], aggregations=["mean", "min"])
+        >>> sbu_match.featurize(s)
     """
 
     def __init__(
@@ -144,7 +151,7 @@ class SBUMatch(BaseFeaturizer):
     def feature_labels(self) -> List[str]:
         return self._get_feature_labels()
 
-    def featurize(self, s: Union[Structure, IStructure]) -> np.ndarray:
+    def featurize(self, s: Union[Structure, IStructure, Molecule, IMolecule]) -> np.ndarray:
         """Structure is here spanned by the connecting points of a SBU."""
         features = []
         for topo in self.topos:

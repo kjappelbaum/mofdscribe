@@ -466,8 +466,10 @@ def pymatgen_2_babel_atom_idx_map(pmg_mol: Molecule, ob_mol: ob.OBMol) -> Dict[i
     Returns:
         Dict[int, int]: with atom index in pymatgen mol as key and atom index in babel mol as
             value. Value is `None` if there is not corresponding atom in babel.
-    """
 
+    Raises:
+        RuntimeError: if mapping is not possible.
+    """
     pmg_coords = pmg_mol.cart_coords
     ob_coords = [[a.GetX(), a.GetY(), a.GetZ()] for a in ob.OBMolAtomIter(ob_mol)]
     ob_index = [a.GetIdx() for a in ob.OBMolAtomIter(ob_mol)]

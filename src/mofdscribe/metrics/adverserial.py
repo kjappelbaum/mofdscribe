@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 """Helpers for adverserial validation"""
+from __future__ import annotations
+
 from typing import Union
 
 import numpy as np
@@ -29,6 +31,14 @@ class AdverserialValidator:
     Here, we use simple ensemble classifiers such as random forests
     or extra trees to compute the k-fold crossvalidated area under
     the receiver-operating characteristic curve.
+
+    Example:
+        >>> from mofdscribe.metrics.adverserial import AdverserialValidator
+        >>> x_a = np.array([[1, 2, 3], [4, 5, 6]])
+        >>> x_b = np.array([[1, 2, 3], [4, 5, 6]])
+        >>> validator = AdverserialValidator(x_a, x_b)
+        >>> validator.score().mean()
+        0.5
 
     References:
         .. [Uber] Pan, J.; Pham, V.; Dorairaj, M.; Chen, H.; Lee, J.-Y.
@@ -87,14 +97,6 @@ class AdverserialValidator:
         Returns:
             np.array: Areas under the receiver-operating characteristic curve.
 
-        Example:
-
-            >>> from mofdscribe.metrics.adverserial import AdverserialValidator
-            >>> x_a = np.array([[1, 2, 3], [4, 5, 6]])
-            >>> x_b = np.array([[1, 2, 3], [4, 5, 6]])
-            >>> validator = AdverserialValidator(x_a, x_b)
-            >>> validator.score().mean()
-            0.5
         """
         x, y = self._get_x_y()
         score = cross_val_score(self.model, x, y, scoring="roc_auc")

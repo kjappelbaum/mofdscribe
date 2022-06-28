@@ -56,11 +56,10 @@ class CoREDataset(StructureDataset):
     * 'CH4HPSTP': CH4 high pressure uptake in standard temperature and pressure in vSTP/v
     * 'CH4LPSTP': CH4 low pressure uptake in standard temperature and pressure in vSTP/v
 
-    References
-    ----------
-    .. [Moosavi2020] Moosavi, S. M.; Nandy, A.; Jablonka, K. M.; Ongari, D.; Janet, J. P.; Boyd, P. G.; Lee,
-        Y.; Smit, B.; Kulik, H. J. Understanding the Diversity of the Metal-Organic Framework Ecosystem.
-        Nature Communications 2020, 11 (1), 4068. https://doi.org/10.1038/s41467-020-17755-8.
+    References:
+        .. [Moosavi2020] Moosavi, S. M.; Nandy, A.; Jablonka, K. M.; Ongari, D.; Janet, J. P.; Boyd, P. G.; Lee,
+            Y.; Smit, B.; Kulik, H. J. Understanding the Diversity of the Metal-Organic Framework Ecosystem.
+            Nature Communications 2020, 11 (1), 4068. https://doi.org/10.1038/s41467-020-17755-8.
 
     """
 

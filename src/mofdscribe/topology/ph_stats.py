@@ -55,7 +55,7 @@ class PHStats(BaseFeaturizer):
                 Defaults to 20.
             aggregation_functions (Tuple[str]): Methods used to combine the properties.
                 See `mofdscribe.utils.aggregators.ARRAY_AGGREGATORS` for available options.
-                    Defaults to ("min", "max", "mean", "std").
+                Defaults to ("min", "max", "mean", "std").
             periodic (bool): If true, then periodic Euclidean is used in the analysis (experimental!).
                 Defaults to False.
         """

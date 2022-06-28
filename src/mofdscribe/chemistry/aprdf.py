@@ -31,6 +31,13 @@ class APRDF(BaseFeaturizer):
 
     Here, we allow for a wider choice of option for aggregation of properties
     :math:`P_{i}` and :math:`P_{j}` (not only the product).
+
+    Examples:
+        >>> from mofdscribe.chemistry.aprdf import APRDF
+        >>> from pymatgen.core.structure import Structure
+        >>> s = Structure.from_file("tests/test_files/LiTiO3.cif")
+        >>> aprdf = APRDF()
+        >>> features = aprdf.featurize(s)
     """
 
     def __init__(

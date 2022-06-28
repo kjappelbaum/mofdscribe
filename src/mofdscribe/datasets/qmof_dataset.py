@@ -52,19 +52,17 @@ class QMOFDataset(StructureDataset):
         * outputs.pbe.vbm
         * outputs.pbe.directgap
 
+    References:
+        .. [Rosen2021a] Rosen, A. S.; Iyer, S. M.; Ray, D.; Yao, Z.; Aspuru-Guzik, A.; Gagliardi, L.;
+            Notestein, J. M.; Snurr, R. Q. Machine Learning the Quantum-Chemical Properties
+            of Metal–Organic Frameworks for Accelerated Materials Discovery.
+            Matter 2021, 4 (5), 1578–1597. https://doi.org/10.1016/j.matt.2021.02.015.
 
-
-    References
-    ----------
-    .. [Rosen2021a] Rosen, A. S.; Iyer, S. M.; Ray, D.; Yao, Z.; Aspuru-Guzik, A.; Gagliardi, L.;
-        Notestein, J. M.; Snurr, R. Q. Machine Learning the Quantum-Chemical Properties
-        of Metal–Organic Frameworks for Accelerated Materials Discovery.
-        Matter 2021, 4 (5), 1578–1597. https://doi.org/10.1016/j.matt.2021.02.015.
-
-    .. [Rosen2021b] Rosen, A. S.; Fung, V.; Huck, P.; O'Donnell, C. T.; Horton, M. K.; Truhlar, D. G.; Persson, K. A.;
-        Notestein, J. M.; Snurr, R. Q. High-Throughput Predictions of Metal–Organic Framework Electronic Properties:
-        Theoretical Challenges, Graph Neural Networks, and Data Exploration. ChemRxiv 2021.
-        https://chemrxiv.org/engage/chemrxiv/article-details/61b03430535d63bcdf93968b
+        .. [Rosen2021b] Rosen, A. S.; Fung, V.; Huck, P.; O'Donnell, C. T.; Horton, M. K.; Truhlar, D. G.;
+            Persson, K. A.; Notestein, J. M.; Snurr, R. Q.
+            High-Throughput Predictions of Metal–Organic Framework Electronic Properties:
+            Theoretical Challenges, Graph Neural Networks, and Data Exploration. ChemRxiv 2021.
+            https://chemrxiv.org/engage/chemrxiv/article-details/61b03430535d63bcdf93968b
 
     """
 

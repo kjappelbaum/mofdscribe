@@ -1,6 +1,7 @@
-""""Test the RDkitAdaptor."""
+"""Test the RDkitAdaptor."""
 import numpy as np
 from rdkit.Chem.Descriptors3D import Asphericity
+
 from mofdscribe.sbu.rdkitadaptor import RDKitAdaptor
 
 
