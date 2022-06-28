@@ -22,8 +22,8 @@ def test_phimage_fit(hkust_structure, irmof_structure):
     phi = PHImage()
     phi.fit([hkust_structure, irmof_structure])
 
-    assert len(phi.max_B) == len(phi.max_P) == 4
-    assert phi.max_B[0] == phi.max_B[3] == 0
-    assert 3.0 < phi.max_B[1] < 3.5
+    assert len(phi.max_b) == len(phi.max_p) == 4
+    assert phi.max_b[0] == phi.max_b[3] == 0
+    assert 3.0 < phi.max_b[1] < 3.5
 
-    assert 2.6 < phi.max_P[0] < 3.5
+    assert 2.6 < phi.max_p[0] < 3.5
