@@ -4,7 +4,7 @@ from typing import List, Tuple, Union
 
 import numpy as np
 from matminer.featurizers.base import BaseFeaturizer
-from pymatgen.core import IStructure, Structure
+from pymatgen.core import IMolecule, IStructure, Molecule, Structure
 
 from ._tda_helpers import get_diagrams_for_structure
 
@@ -98,7 +98,7 @@ class PHHist(BaseFeaturizer):
     def feature_labels(self) -> List[str]:
         return self._get_feature_labels()
 
-    def featurize(self, structure: Union[Structure, IStructure]) -> np.ndarray:
+    def featurize(self, structure: Union[Structure, IStructure, Molecule, IMolecule]) -> np.ndarray:
         res = get_diagrams_for_structure(
             structure,
             self.elements,

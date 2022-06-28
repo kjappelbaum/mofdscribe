@@ -4,7 +4,7 @@ from typing import List, Tuple, Union
 
 import numpy as np
 from matminer.featurizers.base import BaseFeaturizer
-from pymatgen.core import IStructure, Structure, Molecule, IMolecule
+from pymatgen.core import IMolecule, IStructure, Molecule, Structure
 
 from mofdscribe.utils import flatten
 

@@ -4,10 +4,16 @@
 import sys
 from shutil import which
 
+import numpy as np
+
 if sys.version_info.major == 3 and sys.version_info.minor >= 10:
     from collections.abc import MutableMapping
 else:
     from collections import MutableMapping
+
+
+def nan_array(size):
+    return np.full(size, np.nan)
 
 
 def is_tool(name: str) -> bool:

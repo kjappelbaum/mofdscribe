@@ -5,7 +5,7 @@ from typing import List, Tuple, Union
 
 import numpy as np
 from matminer.featurizers.base import BaseFeaturizer
-from pymatgen.core import IStructure, Structure
+from pymatgen.core import IMolecule, IStructure, Molecule, Structure
 
 from ._tda_helpers import (
     get_persistence_image_limits_for_structure,
@@ -157,7 +157,7 @@ class PHImage(BaseFeaturizer):
     def feature_labels(self) -> List[str]:
         return self._get_feature_labels()
 
-    def featurize(self, structure: Union[Structure, IStructure]) -> np.ndarray:
+    def featurize(self, structure: Union[Structure, IStructure, Molecule, IMolecule]) -> np.ndarray:
         results = get_persistent_images_for_structure(
             structure,
             elements=self.atom_types,
@@ -181,14 +181,14 @@ class PHImage(BaseFeaturizer):
                 features.append(np.array(results["image"][element][dim]).flatten())
         return np.concatenate(features)
 
-    def fit(self, structures: List[Union[Structure, IStructure]]) -> None:
+    def fit(self, structures: List[Union[Structure, IStructure, Molecule, IMolecule]]) -> None:
         """Use structures to estimate the settings for the featurizer.
 
         Find the limits (maximum/minimum birth/death and persistence)
         for all the structures in the dataset and store them in the object.
 
         Args:
-            structures (List[Union[Structure, IStructure]]): List of structures
+            structures (List[Union[Structure, IStructure, Molecule, IMolecule]]): List of structures
                 to find the limits for.
         """
         if not isinstance(structures, (list, tuple)):

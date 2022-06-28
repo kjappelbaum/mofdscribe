@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Test the adversial validation"""
 import numpy as np
 

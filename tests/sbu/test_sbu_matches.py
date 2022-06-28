@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Test the BB mistmatch measure module."""
 import json
 
@@ -29,5 +30,5 @@ def test_sbu_match():
     feature_labels = sbu_matcher.feature_labels()
     matching = feats[feats < 1_000]
     assert len(matching) > 4
-    assert len(matching) == len(feats)
+    assert len(matching) < len(feats)
     assert len(feats) == len(feature_labels)

@@ -7,7 +7,7 @@ import numpy as np
 from loguru import logger
 from matminer.featurizers.base import BaseFeaturizer
 from pervect import PersistenceVectorizer
-from pymatgen.core import IStructure, Structure
+from pymatgen.core import IMolecule, IStructure, Molecule, Structure
 
 from ._tda_helpers import get_diagrams_for_structure
 
@@ -227,7 +227,7 @@ class PHVect(BaseFeaturizer):
     def feature_labels(self) -> List[str]:
         return self._get_feature_labels()
 
-    def featurize(self, structure: Union[Structure, IStructure]) -> np.ndarray:
+    def featurize(self, structure: Union[Structure, IStructure, Molecule, IMolecule]) -> np.ndarray:
         if not self._fitted:
             raise ValueError("Must call fit before featurizing")
         res = _transform_structures(
@@ -242,7 +242,7 @@ class PHVect(BaseFeaturizer):
         compiled_results = self._reshape_results(res, 1).flatten()
         return compiled_results
 
-    def fit(self, structures: Union[Structure, IStructure]) -> "PHVect":
+    def fit(self, structures: Union[Structure, IStructure, Molecule, IMolecule]) -> "PHVect":
         self.transformers, _ = _fit_transform_structures(
             self.transformers,
             structures,
@@ -264,7 +264,9 @@ class PHVect(BaseFeaturizer):
                 n_col += self.n_components
         return compiled_results
 
-    def fit_transform(self, structures: Union[Structure, IStructure]) -> np.ndarray:
+    def fit_transform(
+        self, structures: Union[Structure, IStructure, Molecule, IMolecule]
+    ) -> np.ndarray:
         self.transformers, results = _fit_transform_structures(
             self.transformers,
             structures,

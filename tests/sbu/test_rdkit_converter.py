@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Test that we can convert pymatgen Molecules to RDkit molecules."""
 from mofdscribe.sbu.utils import create_rdkit_mol_from_mol_graph
 
