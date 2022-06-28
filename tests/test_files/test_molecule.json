@@ -1,0 +1,93 @@
+{
+  "@module": "pymatgen.core.structure",
+  "@class": "Molecule",
+  "charge": 0.0,
+  "spin_multiplicity": 1,
+  "sites": [
+    {
+      "name": "Cu",
+      "species": [{ "element": "Cu", "occu": 1 }],
+      "xyz": [7.5077549999999995, 7.507755, 9.194348129532538e-16],
+      "properties": {}
+    },
+    {
+      "name": "C",
+      "species": [{ "element": "C", "occu": 1 }],
+      "xyz": [7.823870999999998, 5.347629, 1.8176669999999995],
+      "properties": {}
+    },
+    {
+      "name": "O",
+      "species": [{ "element": "O", "occu": 1 }],
+      "xyz": [4.820769000000001, 6.770151000000003, -1.3698359999999976],
+      "properties": {}
+    },
+    {
+      "name": "C",
+      "species": [{ "element": "C", "occu": 1 }],
+      "xyz": [5.347629000000001, 7.823870999999998, -1.817666999999998],
+      "properties": {}
+    },
+    {
+      "name": "Cu",
+      "species": [{ "element": "Cu", "occu": 1 }],
+      "xyz": [5.663745, 5.663745, 6.936087185436826e-16],
+      "properties": {}
+    },
+    {
+      "name": "O",
+      "species": [{ "element": "O", "occu": 1 }],
+      "xyz": [6.401348999999997, 8.350730999999998, 1.369836000000002],
+      "properties": {}
+    },
+    {
+      "name": "O",
+      "species": [{ "element": "O", "occu": 1 }],
+      "xyz": [8.350730999999998, 6.401348999999998, 1.369836000000002],
+      "properties": {}
+    },
+    {
+      "name": "O",
+      "species": [{ "element": "O", "occu": 1 }],
+      "xyz": [6.770151000000002, 4.820769000000001, -1.3698359999999976],
+      "properties": {}
+    },
+    {
+      "name": "O",
+      "species": [{ "element": "O", "occu": 1 }],
+      "xyz": [8.350730999999998, 6.401348999999998, -1.3698359999999974],
+      "properties": {}
+    },
+    {
+      "name": "C",
+      "species": [{ "element": "C", "occu": 1 }],
+      "xyz": [7.823871, 5.347629, -1.817666999999998],
+      "properties": {}
+    },
+    {
+      "name": "C",
+      "species": [{ "element": "C", "occu": 1 }],
+      "xyz": [5.3476289999999995, 7.823870999999998, 1.8176669999999995],
+      "properties": {}
+    },
+    {
+      "name": "O",
+      "species": [{ "element": "O", "occu": 1 }],
+      "xyz": [6.770151000000003, 4.820769000000001, 1.3698360000000018],
+      "properties": {}
+    },
+    {
+      "name": "O",
+      "species": [{ "element": "O", "occu": 1 }],
+      "xyz": [4.820769000000001, 6.770151000000003, 1.3698360000000018],
+      "properties": {}
+    },
+    {
+      "name": "O",
+      "species": [{ "element": "O", "occu": 1 }],
+      "xyz": [6.401348999999996, 8.350730999999998, -1.3698359999999974],
+      "properties": {}
+    }
+  ],
+  "@version": null
+}

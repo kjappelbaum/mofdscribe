@@ -1,7 +1,8 @@
+# -*- coding: utf-8 -*-
 """
-Routines for the conversion between pymatgen molecules and RDKit. 
+Routines for the conversion between pymatgen molecules and RDKit.
 
-Mostly copied from 
+Mostly copied from
 https://github.com/mjwen/bondnet/blob/b719bd85235012c567298cb0da81ef113e3744bc/bondnet/core/rdmol.py#L265
 which is licensed under CDDLv1.0.
 
@@ -615,7 +616,7 @@ def create_rdkit_mol_from_mol_graph(
     mol_graph,
     name: Optional[str] = None,
     force_sanitize: bool = False,
-):
+) -> Chem.Mol:
     """
     Create a rdkit molecule from molecule graph, with bond type perceived by babel.
 
@@ -632,14 +633,16 @@ def create_rdkit_mol_from_mol_graph(
         force_sanitize (bool): whether to force sanitization of the rdkit mol
 
     Returns:
-        m: rdkit Chem.Mol
-        bond_types (dict): bond types assigned to the created rdkit mol
-    """
+        mol (Chem.Mol): rdkit Chem.Mol
 
+    Raises:
+        RuntimeError: if it finds and unexpected bond type or a bond between
+            two metals
+    """
     pymatgen_mol = mol_graph.molecule
     species = [str(s) for s in pymatgen_mol.species]
     coords = pymatgen_mol.cart_coords
-    bonds = [tuple(sorted([i, j])) for i, j, attr in mol_graph.graph.edges.data()]
+    bonds = [tuple(sorted([i, j])) for i, j, _ in mol_graph.graph.edges.data()]
 
     # create babel mol without metals
     pmg_mol_no_metals = remove_metals(pymatgen_mol)
@@ -710,4 +713,4 @@ def create_rdkit_mol_from_mol_graph(
 
     m = create_rdkit_mol(species, coords, bond_types, formal_charge, name, force_sanitize)
 
-    return m, bond_types
+    return m

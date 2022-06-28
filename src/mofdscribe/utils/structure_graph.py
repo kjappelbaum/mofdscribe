@@ -1,14 +1,23 @@
 # -*- coding: utf-8 -*-
 """perform analyses on structure graphs."""
+import os
 from collections import defaultdict
 from functools import lru_cache
 from typing import List, Optional, Set, Tuple
 
 import networkx as nx
 import numpy as np
+import yaml
 from pymatgen.analysis.graphs import MoleculeGraph, StructureGraph
-from pymatgen.analysis.local_env import CrystalNN, IsayevNN, JmolNN
+from pymatgen.analysis.local_env import CovalentBondNN, CrystalNN, CutOffDictNN, IsayevNN, JmolNN
 from pymatgen.core import IStructure, Molecule
+
+THIS_DIR = os.path.dirname(os.path.abspath(__file__))
+
+with open(os.path.join(THIS_DIR, "data", "tuned_vesta.yml"), "r", encoding="utf8") as handle:
+    _VESTA_CUTOFFS = yaml.load(handle, Loader=yaml.UnsafeLoader)  # noqa: S506
+
+_VestaCutoffDictNN = CutOffDictNN(cut_off_dict=_VESTA_CUTOFFS)
 
 
 def get_neighbors_at_distance(
@@ -47,13 +56,17 @@ def get_neighbors_at_distance(
 
 def _get_local_env_strategy(name: Optional[str] = None):
     n = "jmolnn" if name is None else name.lower()
-
+    # ToDo: replace in the future with pattern matching
     if n == "jmolnn":
         return JmolNN()
     elif n == "crystalnn":
         return CrystalNN()
     elif n == "isayevnn":
         return IsayevNN()
+    elif n == "vesta":
+        return _VestaCutoffDictNN
+    elif n == "covalentbondnn":
+        return CovalentBondNN()
 
 
 @lru_cache()

@@ -1,0 +1,293 @@
+{
+  "@module": "pymatgen.analysis.graphs",
+  "@class": "MoleculeGraph",
+  "molecule": {
+    "@module": "pymatgen.core.structure",
+    "@class": "Molecule",
+    "charge": 0.0,
+    "spin_multiplicity": 1,
+    "sites": [
+      {
+        "name": "Cu",
+        "species": [{ "element": "Cu", "occu": 1 }],
+        "xyz": [7.5077549999999995, 7.507755, 9.194348129532538e-16],
+        "properties": {}
+      },
+      {
+        "name": "C",
+        "species": [{ "element": "C", "occu": 1 }],
+        "xyz": [7.823870999999998, 5.347629, 1.8176669999999995],
+        "properties": {}
+      },
+      {
+        "name": "O",
+        "species": [{ "element": "O", "occu": 1 }],
+        "xyz": [4.820769000000001, 6.770151000000003, -1.3698359999999976],
+        "properties": {}
+      },
+      {
+        "name": "C",
+        "species": [{ "element": "C", "occu": 1 }],
+        "xyz": [5.347629000000001, 7.823870999999998, -1.817666999999998],
+        "properties": {}
+      },
+      {
+        "name": "Cu",
+        "species": [{ "element": "Cu", "occu": 1 }],
+        "xyz": [5.663745, 5.663745, 6.936087185436826e-16],
+        "properties": {}
+      },
+      {
+        "name": "O",
+        "species": [{ "element": "O", "occu": 1 }],
+        "xyz": [6.401348999999997, 8.350730999999998, 1.369836000000002],
+        "properties": {}
+      },
+      {
+        "name": "O",
+        "species": [{ "element": "O", "occu": 1 }],
+        "xyz": [8.350730999999998, 6.401348999999998, 1.369836000000002],
+        "properties": {}
+      },
+      {
+        "name": "O",
+        "species": [{ "element": "O", "occu": 1 }],
+        "xyz": [6.770151000000002, 4.820769000000001, -1.3698359999999976],
+        "properties": {}
+      },
+      {
+        "name": "O",
+        "species": [{ "element": "O", "occu": 1 }],
+        "xyz": [8.350730999999998, 6.401348999999998, -1.3698359999999974],
+        "properties": {}
+      },
+      {
+        "name": "C",
+        "species": [{ "element": "C", "occu": 1 }],
+        "xyz": [7.823871, 5.347629, -1.817666999999998],
+        "properties": {}
+      },
+      {
+        "name": "C",
+        "species": [{ "element": "C", "occu": 1 }],
+        "xyz": [5.3476289999999995, 7.823870999999998, 1.8176669999999995],
+        "properties": {}
+      },
+      {
+        "name": "O",
+        "species": [{ "element": "O", "occu": 1 }],
+        "xyz": [6.770151000000003, 4.820769000000001, 1.3698360000000018],
+        "properties": {}
+      },
+      {
+        "name": "O",
+        "species": [{ "element": "O", "occu": 1 }],
+        "xyz": [4.820769000000001, 6.770151000000003, 1.3698360000000018],
+        "properties": {}
+      },
+      {
+        "name": "O",
+        "species": [{ "element": "O", "occu": 1 }],
+        "xyz": [6.401348999999996, 8.350730999999998, -1.3698359999999974],
+        "properties": {}
+      }
+    ]
+  },
+  "graphs": {
+    "directed": true,
+    "multigraph": true,
+    "graph": [
+      ["edge_weight_name", "weight"],
+      ["edge_weight_units", ""],
+      ["name", "bonds"]
+    ],
+    "nodes": [
+      {
+        "specie": "Cu",
+        "coords": {
+          "@module": "numpy",
+          "@class": "array",
+          "dtype": "float64",
+          "data": [7.5077549999999995, 7.507755, 9.194348129532538e-16]
+        },
+        "properties": {},
+        "id": 0
+      },
+      {
+        "specie": "C",
+        "coords": {
+          "@module": "numpy",
+          "@class": "array",
+          "dtype": "float64",
+          "data": [7.823870999999998, 5.347629, 1.8176669999999995]
+        },
+        "properties": {},
+        "id": 1
+      },
+      {
+        "specie": "O",
+        "coords": {
+          "@module": "numpy",
+          "@class": "array",
+          "dtype": "float64",
+          "data": [4.820769000000001, 6.770151000000003, -1.3698359999999976]
+        },
+        "properties": {},
+        "id": 2
+      },
+      {
+        "specie": "C",
+        "coords": {
+          "@module": "numpy",
+          "@class": "array",
+          "dtype": "float64",
+          "data": [5.347629000000001, 7.823870999999998, -1.817666999999998]
+        },
+        "properties": {},
+        "id": 3
+      },
+      {
+        "specie": "Cu",
+        "coords": {
+          "@module": "numpy",
+          "@class": "array",
+          "dtype": "float64",
+          "data": [5.663745, 5.663745, 6.936087185436826e-16]
+        },
+        "properties": {},
+        "id": 4
+      },
+      {
+        "specie": "O",
+        "coords": {
+          "@module": "numpy",
+          "@class": "array",
+          "dtype": "float64",
+          "data": [6.401348999999997, 8.350730999999998, 1.369836000000002]
+        },
+        "properties": {},
+        "id": 5
+      },
+      {
+        "specie": "O",
+        "coords": {
+          "@module": "numpy",
+          "@class": "array",
+          "dtype": "float64",
+          "data": [8.350730999999998, 6.401348999999998, 1.369836000000002]
+        },
+        "properties": {},
+        "id": 6
+      },
+      {
+        "specie": "O",
+        "coords": {
+          "@module": "numpy",
+          "@class": "array",
+          "dtype": "float64",
+          "data": [6.770151000000002, 4.820769000000001, -1.3698359999999976]
+        },
+        "properties": {},
+        "id": 7
+      },
+      {
+        "specie": "O",
+        "coords": {
+          "@module": "numpy",
+          "@class": "array",
+          "dtype": "float64",
+          "data": [8.350730999999998, 6.401348999999998, -1.3698359999999974]
+        },
+        "properties": {},
+        "id": 8
+      },
+      {
+        "specie": "C",
+        "coords": {
+          "@module": "numpy",
+          "@class": "array",
+          "dtype": "float64",
+          "data": [7.823871, 5.347629, -1.817666999999998]
+        },
+        "properties": {},
+        "id": 9
+      },
+      {
+        "specie": "C",
+        "coords": {
+          "@module": "numpy",
+          "@class": "array",
+          "dtype": "float64",
+          "data": [5.3476289999999995, 7.823870999999998, 1.8176669999999995]
+        },
+        "properties": {},
+        "id": 10
+      },
+      {
+        "specie": "O",
+        "coords": {
+          "@module": "numpy",
+          "@class": "array",
+          "dtype": "float64",
+          "data": [6.770151000000003, 4.820769000000001, 1.3698360000000018]
+        },
+        "properties": {},
+        "id": 11
+      },
+      {
+        "specie": "O",
+        "coords": {
+          "@module": "numpy",
+          "@class": "array",
+          "dtype": "float64",
+          "data": [4.820769000000001, 6.770151000000003, 1.3698360000000018]
+        },
+        "properties": {},
+        "id": 12
+      },
+      {
+        "specie": "O",
+        "coords": {
+          "@module": "numpy",
+          "@class": "array",
+          "dtype": "float64",
+          "data": [6.401348999999996, 8.350730999999998, -1.3698359999999974]
+        },
+        "properties": {},
+        "id": 13
+      }
+    ],
+    "adjacency": [
+      [
+        { "id": 8, "key": 0 },
+        { "id": 13, "key": 0 },
+        { "id": 5, "key": 0 },
+        { "id": 6, "key": 0 }
+      ],
+      [
+        { "id": 11, "key": 0 },
+        { "id": 6, "key": 0 }
+      ],
+      [
+        { "id": 3, "key": 0 },
+        { "id": 4, "key": 0 }
+      ],
+      [{ "id": 13, "key": 0 }],
+      [
+        { "id": 7, "key": 0 },
+        { "id": 12, "key": 0 },
+        { "id": 11, "key": 0 }
+      ],
+      [{ "id": 10, "key": 0 }],
+      [],
+      [{ "id": 9, "key": 0 }],
+      [{ "id": 9, "key": 0 }],
+      [],
+      [{ "id": 12, "key": 0 }],
+      [],
+      [],
+      []
+    ]
+  },
+  "@version": null
+}

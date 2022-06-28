@@ -3,7 +3,9 @@
 import os
 
 import pytest
-from pymatgen.core import IStructure, Structure
+import json
+from pymatgen.core import IStructure, Structure, Molecule
+from pymatgen.analysis.graphs import MoleculeGraph
 
 from mofdscribe.utils.structure_graph import get_structure_graph
 
@@ -34,3 +36,19 @@ def hkust_structure_graph():
     return get_structure_graph(
         IStructure.from_file(os.path.join(THIS_DIR, "test_files", "HKUST-1.cif"))
     )
+
+
+@pytest.fixture
+def molecule_graph():
+    """Return a pymatgen MoleculeGraph for a HKUST node"""
+    with open(os.path.join(THIS_DIR, "test_files", "test_molecule_graph.json"), "r") as handle:
+        mol_graph = MoleculeGraph.from_dict(json.loads(handle.read()))
+    return mol_graph
+
+
+@pytest.fixture
+def molecule():
+    """Return a pymatgen Molecule for a HKUST node"""
+    with open(os.path.join(THIS_DIR, "test_files", "test_molecule.json"), "r") as handle:
+        mol = Molecule.from_dict(json.loads(handle.read()))
+    return mol

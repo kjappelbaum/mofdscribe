@@ -23,7 +23,7 @@ __all__ = ("SBUMatch",)
 
 
 def match_bb(
-    bb: Structure,
+    bb: Union[Structure, IStructure],
     prototype: str,
     aggregations: Tuple[str],
     allow_rescale: bool = True,
