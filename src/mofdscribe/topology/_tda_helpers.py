@@ -2,9 +2,9 @@
 """Utlities for working with persistence diagrams."""
 from collections import defaultdict
 from typing import List, Tuple
-from loguru import logger
 
 import numpy as np
+from loguru import logger
 from moltda.construct_pd import construct_pds
 from moltda.read_file import make_supercell
 from moltda.vectorize_pds import diagrams_to_arrays, get_images

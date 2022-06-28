@@ -2,7 +2,7 @@
 """Extract substructures (e.g. of certain element types)."""
 from typing import Collection, List, Union
 
-from pymatgen.core import IStructure, Structure, Molecule, IMolecule
+from pymatgen.core import IMolecule, IStructure, Molecule, Structure
 
 
 def filter_element(
