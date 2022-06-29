@@ -8,7 +8,7 @@ from typing import Callable, Union
 
 from pymatgen.core import IStructure, Structure
 
-from mofdscribe.utils.eqeq import get_eqeq_charges
+from mofdscribe.featurizers.utils.eqeq import get_eqeq_charges
 
 from .ff_builder import ff_builder
 from ..tempdir import TEMPDIR

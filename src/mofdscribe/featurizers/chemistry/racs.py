@@ -9,8 +9,8 @@ from matminer.featurizers.base import BaseFeaturizer
 from pymatgen.analysis.graphs import StructureGraph
 from pymatgen.core import IStructure, Structure
 
-from mofdscribe.utils.aggregators import AGGREGATORS, ARRAY_AGGREGATORS
-from mofdscribe.utils.structure_graph import (
+from mofdscribe.featurizers.utils.aggregators import AGGREGATORS, ARRAY_AGGREGATORS
+from mofdscribe.featurizers.utils.structure_graph import (
     get_connected_site_indices,
     get_neighbors_at_distance,
     get_structure_graph,

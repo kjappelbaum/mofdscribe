@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """Test the helpers for running simulations with RASPA"""
-from mofdscribe.utils.raspa.resize_uc import resize_unit_cell
+from mofdscribe.featurizers.utils.raspa.resize_uc import resize_unit_cell
 
 
 def test_resize_unit_cell(hkust_structure):

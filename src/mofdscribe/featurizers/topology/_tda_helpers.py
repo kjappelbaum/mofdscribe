@@ -11,8 +11,8 @@ from moltda.vectorize_pds import diagrams_to_arrays, get_images
 from pymatgen.core import Structure
 from pymatgen.transformations.advanced_transformations import CubicSupercellTransformation
 
-from mofdscribe.featurizer.utils.aggregators import MA_ARRAY_AGGREGATORS
-from mofdscribe.featurizer.utils.substructures import filter_element
+from mofdscribe.featurizers.utils.aggregators import MA_ARRAY_AGGREGATORS
+from mofdscribe.featurizers.utils.substructures import filter_element
 
 
 # @np_cache

@@ -9,8 +9,8 @@ from moltda.construct_pd import construct_pds
 from moltda.vectorize_pds import diagrams_to_arrays
 from pymatgen.core import IStructure, Structure
 
-from mofdscribe.utils import flatten
-from mofdscribe.utils.aggregators import ARRAY_AGGREGATORS
+from mofdscribe.featurizers.utils import flatten
+from mofdscribe.featurizers.utils.aggregators import ARRAY_AGGREGATORS
 
 from ._tda_helpers import persistent_diagram_stats
 

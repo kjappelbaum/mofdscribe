@@ -9,9 +9,9 @@ import pandas as pd
 from matminer.featurizers.base import BaseFeaturizer
 from pymatgen.core import IStructure, Structure
 
-from mofdscribe.utils.histogram import get_rdf
-from mofdscribe.utils.raspa.resize_uc import resize_unit_cell
-from mofdscribe.utils.raspa.run_raspa import run_raspa
+from mofdscribe.featurizers.utils.histogram import get_rdf
+from mofdscribe.featurizers.utils.raspa.resize_uc import resize_unit_cell
+from mofdscribe.featurizers.utils.raspa.run_raspa import run_raspa
 
 __all__ = ["EnergyGridHistogram"]
 GRID_INPUT_TEMPLATE = """SimulationType  MakeASCIGrid

@@ -6,7 +6,7 @@ import numpy as np
 from matminer.featurizers.base import BaseFeaturizer
 from pymatgen.core import IMolecule, IStructure, Molecule, Structure
 
-from mofdscribe.utils import flatten
+from mofdscribe.featurizers.utils import flatten
 
 from ._tda_helpers import get_diagrams_for_structure, persistent_diagram_stats
 
@@ -55,7 +55,7 @@ class PHStats(BaseFeaturizer):
             min_size (int): Minimum supercell size (in Angstrom).
                 Defaults to 20.
             aggregation_functions (Tuple[str]): Methods used to combine the properties.
-                See `mofdscribe.utils.aggregators.ARRAY_AGGREGATORS` for available options.
+                See `mofdscribe.featurizers.utils.aggregators.ARRAY_AGGREGATORS` for available options.
                 Defaults to ("min", "max", "mean", "std").
             periodic (bool): If true, then periodic Euclidean is used in the analysis (experimental!).
                 Defaults to False.

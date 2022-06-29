@@ -6,7 +6,7 @@ import numpy as np
 from matminer.featurizers.base import BaseFeaturizer
 from pymatgen.core import IStructure, Structure
 
-from mofdscribe.utils.substructures import filter_element
+from mofdscribe.featurizers.utils.substructures import filter_element
 
 __all__ = ["AMD"]
 

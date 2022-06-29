@@ -2,7 +2,7 @@
 """Test the helper functions for dealing with substructures."""
 from pymatgen.core import Structure
 
-from mofdscribe.utils.substructures import get_metal_indices, select_elements
+from mofdscribe.featurizers.utils.substructures import get_metal_indices, select_elements
 
 
 def test_get_metal_indices(irmof_structure):

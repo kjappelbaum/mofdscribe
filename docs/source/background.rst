@@ -46,79 +46,79 @@ Many of the descriptors implemented in mofdscribe have been discussed in our
      - ✅
      - ❌
      - [Moosavi2021]_ [Ongari2019]_ [Wilmer2012]_
-   * - `PartialChargeHistogram <:py:class:`mofdscribe.chemistry.partialchargehistogram.PartialChargeHistogram>`_
+   * - `PartialChargeHistogram <:py:class:`mofdscribe.featurizers.chemistry.partialchargehistogram.PartialChargeHistogram>`_
      - ❌
      - ✅
      - ✅
      - ❌
      - [Ongari2019]_ [Wilmer2012]_
-   * - `AMD <:py:class:`mofdscribe.chemistry.amd.AMD>`_
+   * - `AMD <:py:class:`mofdscribe.featurizers.chemistry.amd.AMD>`_
      - ❌
      - (✅, optionally)
      - ✅
      - ❌
      - [Widdowson2022]_
-   * - `PoreDiameters <:py:class:`mofdscribe.pore.geometric_properties.PoreDiameters>`_
+   * - `PoreDiameters <:py:class:`mofdscribe.featurizers.pore.geometric_properties.PoreDiameters>`_
      - ❌
      - ❌
      - ✅
      - ❌
      - [Willems2011]_
-   * - `SurfaceArea <:py:class:`mofdscribe.pore.geometric_properties.SurfaceArea>`_
+   * - `SurfaceArea <:py:class:`mofdscribe.featurizers.pore.geometric_properties.SurfaceArea>`_
      - ❌
      - ❌
      - ✅
      - ❌
      - [Willems2011]_
-   * - `AccessibleVolume <:py:class:`mofdscribe.pore.geometric_properties.AccessibleVolume>`_
+   * - `AccessibleVolume <:py:class:`mofdscribe.featurizers.pore.geometric_properties.AccessibleVolume>`_
      - ❌
      - ❌
      - ✅
      - ❌
      - [Willems2011]_ [Ongari2017]_
-   * - `RayTracingHistogram <:py:class:`mofdscribe.pore.geometric_properties.RayTracingHistogram>`_
+   * - `RayTracingHistogram <:py:class:`mofdscribe.featurizers.pore.geometric_properties.RayTracingHistogram>`_
      - ❌
      - ❌
      - ✅
      - ❌
      - [Willems2011]_ [Pinheiro2013]_
-   * - `PoreSizeDistribution <:py:class:`mofdscribe.pore.geometric_properties.PoreSizeDistribution>`_
+   * - `PoreSizeDistribution <:py:class:`mofdscribe.featurizers.pore.geometric_properties.PoreSizeDistribution>`_
      - ❌
      - ❌
      - ✅
      - ❌
      - [Willems2011]_ [Pinheiro2013]_
-   * - `VoxelGrid <:py:class:`mofdscribe.pore.voxelgrid.VoxelGrid>`_
+   * - `VoxelGrid <:py:class:`mofdscribe.featurizers.pore.voxelgrid.VoxelGrid>`_
      - ❌
      - ✅
      - ✅
      - ❌
      -
-   * - `PHImage <:py:class:`mofdscribe.topology.ph_image.PHImage>`_
+   * - `PHImage <:py:class:`mofdscribe.featurizers.topology.ph_image.PHImage>`_
      - ❌
      - ✅ (optionally)
      - ✅
      - ❌
      - [Adams2017]_ [Krishnapriyan2021]_ [Krishnapriyan2020]_
-   * - `PHVect <:py:class:`mofdscribe.topology.ph_vect.PHVect>`_
+   * - `PHVect <:py:class:`mofdscribe.featurizers.topology.ph_vect.PHVect>`_
      - ❌
      - ✅ (optionally)
      - ✅
      - ❌
      - [Perea]_ [Tymochko]_
-   * - `PHStats <:py:class:`mofdscribe.topology.ph_stats.PHStats>`_
+   * - `PHStats <:py:class:`mofdscribe.featurizers.topology.ph_stats.PHStats>`_
      - ❌
      - ✅ (optionally)
      - ✅
      - ❌
      -
-   * - `PHHist <:py:class:`mofdscribe.topology.ph_hist.PHHist>`_
+   * - `PHHist <:py:class:`mofdscribe.featurizers.topology.ph_hist.PHHist>`_
      - ❌
      - ✅ (optionally)
      - ✅
      - ❌
      -
-   * - `AtomCenteredPH <:py:class:`mofdscribe.topology.atom_centered_ph.AtomCenteredPH>`_
+   * - `AtomCenteredPH <:py:class:`mofdscribe.featurizers.topology.atom_centered_ph.AtomCenteredPH>`_
      - ❌
      - ✅ (optionally)
      - ✅

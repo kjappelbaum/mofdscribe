@@ -7,8 +7,8 @@ import numpy as np
 from matminer.featurizers.base import BaseFeaturizer
 from pymatgen.core import IMolecule, IStructure, Molecule, Structure
 
-from mofdscribe.featurizer.utils import nan_array
-from mofdscribe.featurizer.utils.aggregators import ARRAY_AGGREGATORS
+from mofdscribe.featurizers.utils import nan_array
+from mofdscribe.featurizers.utils.aggregators import ARRAY_AGGREGATORS
 
 
 @dataclass

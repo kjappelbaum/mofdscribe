@@ -6,7 +6,7 @@ import numpy as np
 from numpy.typing import ArrayLike
 from sklearn.metrics import (
     mean_squared_error,
-    maen_absolute_error,
+    mean_absolute_error,
     r2_score,
     max_error,
     mean_absolute_percentage_error,
@@ -75,7 +75,7 @@ def get_regression_metrics(predictions: ArrayLike, labels: ArrayLike) -> dict:
     """
     metrics = {
         "mean_squared_error": mean_squared_error(labels, predictions),
-        "mae": maen_absolute_error(labels, predictions),
+        "mae": mean_absolute_error(labels, predictions),
         "r2_score": r2_score(labels, predictions),
         "max_error": max_error(labels, predictions),
         "mean_absolute_percentage_error": mean_absolute_percentage_error(labels, predictions),

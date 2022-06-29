@@ -9,7 +9,7 @@ from matminer.featurizers.base import BaseFeaturizer
 from pymatgen.analysis.graphs import MoleculeGraph
 from pymatgen.core import Molecule
 
-from mofdscribe.featurizer.utils.structure_graph import _get_local_env_strategy
+from mofdscribe.featurizers.utils.structure_graph import _get_local_env_strategy
 
 from .utils import create_rdkit_mol_from_mol_graph
 

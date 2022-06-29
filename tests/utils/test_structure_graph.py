@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """Test helper functions for dealing with structure graphs."""
-from mofdscribe.utils.structure_graph import get_neighbors_at_distance
+from mofdscribe.featurizers.utils.structure_graph import get_neighbors_at_distance
 
 
 def test_get_neighbors_at_distance(hkust_structure_graph):

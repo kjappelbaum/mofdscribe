@@ -6,8 +6,8 @@ import numpy as np
 from matminer.featurizers.base import BaseFeaturizer
 from pymatgen.core import IStructure, Structure
 
-from mofdscribe.utils.aggregators import ARRAY_AGGREGATORS
-from mofdscribe.utils.eqeq import get_eqeq_charges
+from mofdscribe.featurizers.utils.aggregators import ARRAY_AGGREGATORS
+from mofdscribe.featurizers.utils.eqeq import get_eqeq_charges
 
 __all__ = ["PartialChargeStats"]
 
@@ -29,7 +29,7 @@ class PartialChargeStats(BaseFeaturizer):
 
         Args:
             aggregtations (Tuple[str]): Aggregations to compute.
-                For available methods, see :py:obj:`mofdscribe.utils.aggregators.ARRAY_AGGREGATORS`.
+                For available methods, see :py:obj:`mofdscribe.featurizers.utils.aggregators.ARRAY_AGGREGATORS`.
                 Defaults to ("max", "min", "std").
         """
         self.aggregations = aggregtations
