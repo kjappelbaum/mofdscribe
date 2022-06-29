@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Implements persistent homology images"""
 from collections import defaultdict
-from typing import List, Tuple, Union
+from typing import List, Tuple, Union, Optional
 
 import numpy as np
 from matminer.featurizers.base import BaseFeaturizer
@@ -42,7 +42,7 @@ class PHImage(BaseFeaturizer):
 
     def __init__(
         self,
-        atom_types: Tuple[str] = (
+        atom_types: Optional[Tuple[str]] = (
             "C-H-N-O",
             "F-Cl-Br-I",
             "Cu-Mn-Ni-Mo-Fe-Pt-Zn-Ca-Er-Au-Cd-Co-Gd-Na-Sm-Eu-Tb-V"
@@ -65,7 +65,7 @@ class PHImage(BaseFeaturizer):
         """Construct a PHImage object.
 
         Args:
-            atom_types (Tuple[str]): Atoms that are used to create
+            atom_types (Tuple[str], optional): Atoms that are used to create
                 substructures that are analysed using persistent homology.
                 If multiple atom types separated by hash are provided, e.g.
                 "C-H-N-O", then the substructure consists of all atoms of type
@@ -130,9 +130,10 @@ class PHImage(BaseFeaturizer):
 
         max_p_ = [0, 0, 0, 0]
         max_b_ = [0, 0, 0, 0]
-        for dim in dimensions:
-            max_p_[dim] = max_p[dim]
-            max_b_[dim] = max_b[dim]
+
+        for i, dim in enumerate(dimensions):
+            max_p_[dim] = max_p[i]
+            max_b_[dim] = max_b[i]
 
         self.max_b = max_b_
         self.max_p = max_p_
