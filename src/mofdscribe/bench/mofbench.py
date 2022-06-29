@@ -1,6 +1,7 @@
 import time
+from abc import ABC, abstractmethod
+
 import numpy as np
-from abc import abstractmethod, ABC
 
 # If i just take an object with those train and fit functions I, in principle, should not care
 # if it spawns extra process on GPU or something like that. I just consume its outputs

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Implements persistent homology images"""
 from collections import defaultdict
-from typing import List, Tuple, Union, Optional
+from typing import List, Optional, Tuple, Union
 
 import numpy as np
 from matminer.featurizers.base import BaseFeaturizer
