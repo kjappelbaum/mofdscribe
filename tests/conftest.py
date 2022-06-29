@@ -7,7 +7,7 @@ import pytest
 from pymatgen.analysis.graphs import MoleculeGraph
 from pymatgen.core import IStructure, Molecule, Structure
 
-from mofdscribe.utils.structure_graph import get_structure_graph
+from mofdscribe.featurizer.utils.structure_graph import get_structure_graph
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 

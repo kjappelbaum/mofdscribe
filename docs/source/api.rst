@@ -1,95 +1,12 @@
 API documentation
 ===================
 
-Featurizers
------------
+.. toctree::
+   :maxdepth: 2
+   :caption: Table of Contents
 
-Pore geometry featurization
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. automodule:: mofdscribe.pore.geometric_properties
-    :members:
-
-
-Voxelgrid
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. automodule:: mofdscribe.pore.voxelgrid
-    :members:
-
-Topological featurization (persistent homology)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. automodule:: mofdscribe.topology.ph_vect
-    :members:
-
-.. automodule:: mofdscribe.topology.ph_image
-    :members:
-
-.. automodule:: mofdscribe.topology.atom_centered_ph
-    :members:
-
-.. automodule:: mofdscribe.topology.ph_stats
-     :members:
-
-.. automodule:: mofdscribe.topology.ph_hist
-     :members:
-
-Chemistry-centred featurization
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. automodule:: mofdscribe.chemistry.racs
-    :members:
-
-.. automodule:: mofdscribe.chemistry.aprdf
-    :members:
-
-.. automodule:: mofdscribe.chemistry.partialchargestats
-    :members:
-
-.. automodule:: mofdscribe.chemistry.partialchargehistogram
-    :members:
-
-.. automodule:: mofdscribe.chemistry.energygrid
-    :members:
-
-.. automodule:: mofdscribe.chemistry.amd
-    :members:
-
-
-SBU-centred featurization
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. automodule:: mofdscribe.sbu.sbu_matches
-    :members:
-
-.. automodule:: mofdscribe.sbu.rdkitadaptor
-    :members:
-
-
-Datasets
----------
-
-Structure datasets
-^^^^^^^^^^^^^^^^^^^
-
-.. automodule:: mofdscribe.datasets.core_dataset
-    :members:
-
-
-.. automodule:: mofdscribe.datasets.qmof_dataset
-    :members:
-
-Metrics
--------
-
-.. automodule:: mofdscribe.metrics.regression
-    :members:
-
-.. automodule:: mofdscribe.metrics.adverserial
-    :members:
-
-
-Splitters
------------
-
-.. automodule:: mofdscribe.splitters.splitters
-    :members:
+   api/featurizers
+   api/data
+   api/splitters
+   api/metrics
+   api/bench
