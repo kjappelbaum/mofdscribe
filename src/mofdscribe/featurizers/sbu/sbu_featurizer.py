@@ -129,7 +129,6 @@ class SBUFeaturizer(BaseFeaturizer):
             - We can also directly pass the graph to the featurizer if it want to work
                 on the graph.
         """
-
         # if i know what the featurizer wants, I can always cast to a structure
         num_features = len(self._featurizer.feature_labels())
         if structure is None and mofbbs is None:
