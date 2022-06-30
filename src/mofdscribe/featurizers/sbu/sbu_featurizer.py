@@ -73,13 +73,19 @@ class SBUFeaturizer(BaseFeaturizer):
 
     def featurize(
         self,
-        mofbbs: MOFBBs,
+        structure: Optional[Union[Structure, IStructure]] = None,
+        mofbbs: Optional[MOFBBs] = None,
     ) -> np.ndarray:
         """
         Compute features on the SBUs and then aggregate them.
 
+        If you provide a structure, we will fragment the MOF into SBUs.
+        If you already have precomputed fragements or only want to consider a subset
+        of the SBUs, you can provide them manually via the `mofbbs` argument.
+
         Args:
-            mofbbs (MOFBBs): The MOF fragments (nodes and linkers).
+            structure (Union[Structure, IStructure], optional): The structure to featurize.
+            mofbbs (MOFBBs, optional): The MOF fragments (nodes and linkers).
 
         Returns:
             A numpy array of features.
