@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 """Compute features on the SBUs and then aggregate them."""
-from pydantic import BaseModel
 from typing import Iterable, List, Optional, Tuple, Union
 
 import numpy as np
 from matminer.featurizers.base import BaseFeaturizer
+from pydantic import BaseModel
 from pymatgen.core import IMolecule, IStructure, Molecule, Structure
 
 from mofdscribe.featurizers.utils import nan_array

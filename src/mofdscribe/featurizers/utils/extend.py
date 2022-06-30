@@ -1,6 +1,7 @@
-from pymatgen.core import Structure, IStructure, Molecule, IMolecule
 from functools import partial
 from typing import Type
+
+from pymatgen.core import IMolecule, IStructure, Molecule, Structure
 
 
 def add_operates_on(cls, type: Type):
