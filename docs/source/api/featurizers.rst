@@ -67,3 +67,6 @@ SBU-centred featurization
 
 .. automodule:: mofdscribe.featurizers.sbu.lsop_featurizer
     :members:
+
+.. automodule:: mofdscribe.featurizers.sbu.nconf20_featurizer
+    :members:
