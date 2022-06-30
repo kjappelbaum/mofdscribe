@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Describe molecules by computing statistics of pairwise distances between their atoms."""
 from typing import List, Tuple, Union
 

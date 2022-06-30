@@ -70,3 +70,6 @@ SBU-centred featurization
 
 .. automodule:: mofdscribe.featurizers.sbu.nconf20_featurizer
     :members:
+
+.. automodule:: mofdscribe.featurizers.sbu.compositionstats_featurizer
+    :members:
