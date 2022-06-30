@@ -2,7 +2,7 @@
 from mofdscribe.featurizers.sbu.distance_stats_featurizer import PairwiseDistanceStats
 
 
-def test_pairwise_distance_stats_featurizer(molecule, linker_molecule):
+def test_pairwise_distance_stats_featurizer(molecule, linker_molecule, triangle_structure):
     """Test the pairwise distance stats featurizer."""
     featurizer = PairwiseDistanceStats()
     feats = featurizer.featurize(molecule)
@@ -15,3 +15,8 @@ def test_pairwise_distance_stats_featurizer(molecule, linker_molecule):
     for f in feats:
         assert f > 0
     assert len(feats) == len(featurizer.feature_labels())
+
+    feats = featurizer.featurize(triangle_structure)
+    assert len(feats) == 4
+    for f in feats:
+        assert f > 0
