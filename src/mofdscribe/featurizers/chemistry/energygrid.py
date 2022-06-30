@@ -12,6 +12,7 @@ from pymatgen.core import IStructure, Structure
 from mofdscribe.featurizers.utils.histogram import get_rdf
 from mofdscribe.featurizers.utils.raspa.resize_uc import resize_unit_cell
 from mofdscribe.featurizers.utils.raspa.run_raspa import run_raspa
+from ..utils.extend import operates_on_istructure, operates_on_structure
 
 __all__ = ["EnergyGridHistogram"]
 GRID_INPUT_TEMPLATE = """SimulationType  MakeASCIGrid
@@ -59,6 +60,8 @@ def read_ascii_grid(filename: Union[str, os.PathLike]) -> pd.DataFrame:
     return df
 
 
+@operates_on_istructure
+@operates_on_structure
 class EnergyGridHistogram(BaseFeaturizer):
     """Computes the energy grid histograms as originally proposed by Bucior et al. [Bucior2019]_.
 

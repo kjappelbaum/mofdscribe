@@ -12,8 +12,11 @@ from pymatgen.core import Molecule
 from mofdscribe.featurizers.utils.structure_graph import _get_local_env_strategy
 
 from .utils import create_rdkit_mol_from_mol_graph
+from ..utils.extend import operates_on_imolecule, operates_on_molecule
 
 
+@operates_on_molecule
+@operates_on_imolecule
 class RDKitAdaptor(BaseFeaturizer):
     """
     Use any featurizer that can operate on RDkit molecules on pymatgen molecules.

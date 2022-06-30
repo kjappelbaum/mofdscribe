@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 """Compute features on the SBUs and then aggregate them."""
+import struct
 from pydantic import BaseModel
 from typing import Iterable, List, Optional, Tuple, Union
 
@@ -90,6 +91,17 @@ class SBUFeaturizer(BaseFeaturizer):
         Returns:
             A numpy array of features.
         """
+
+        # if i know what the featurizer wants, I can always cast to a structure
+
+        if structure is None and mofbbs is None:
+            raise ValueError("You must provide a structure or mofbbs.")
+
+        if structure is not None:
+            from moffragmentor import MOF
+
+            mof = MOF.from_structure(structure)
+
         num_features = len(self._featurizer.feature_labels())
         if mofbbs.linkers is not None:
             linker_feats = [self._featurizer.featurize(linker) for linker in mofbbs.linkers]
