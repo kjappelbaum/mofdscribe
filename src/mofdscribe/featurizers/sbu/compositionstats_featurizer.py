@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
 """Describe the chemical composition of structures."""
-from typing import Tuple, List
-from matminer.featurizers.base import BaseFeaturizer
-from pymatgen.core import Molecule, IMolecule, Structure, IStructure
-from element_coder import encode
-import numpy as np
-from mofdscribe.featurizers.utils.aggregators import ARRAY_AGGREGATORS
 from collections import defaultdict
+from typing import List, Tuple
+
+import numpy as np
+from element_coder import encode
+from matminer.featurizers.base import BaseFeaturizer
+from pymatgen.core import IMolecule, IStructure, Molecule, Structure
+
+from mofdscribe.featurizers.utils.aggregators import ARRAY_AGGREGATORS
 
 
 class CompositionStats(BaseFeaturizer):
