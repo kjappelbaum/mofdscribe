@@ -61,3 +61,9 @@ SBU-centred featurization
 
 .. automodule:: mofdscribe.featurizers.sbu.rdkitadaptor
     :members:
+
+.. automodule:: mofdscribe.featurizers.sbu.sbu_featurizer
+    :members:
+
+.. automodule:: mofdscribe.featurizers.sbu.lsop_featurizer
+    :members:
