@@ -7,11 +7,14 @@ from matminer.featurizers.base import BaseFeaturizer
 from pymatgen.core import IStructure, Structure
 
 from mofdscribe.featurizers.utils.eqeq import get_eqeq_charges
+from mofdscribe.featurizers.utils.extend import operates_on_istructure, operates_on_structure
 from mofdscribe.featurizers.utils.histogram import get_rdf
 
 __all__ = ["PartialChargeHistogram"]
 
 
+@operates_on_istructure
+@operates_on_structure
 class PartialChargeHistogram(BaseFeaturizer):
     """Compute partial charges using the EqEq charge equilibration method.
 

@@ -8,6 +8,7 @@ import numpy as np
 from matminer.featurizers.base import BaseFeaturizer
 from pymatgen.core import IStructure, Structure
 
+from mofdscribe.featurizers.utils.extend import operates_on_istructure, operates_on_structure
 from mofdscribe.featurizers.utils.raspa.parser import parse
 from mofdscribe.featurizers.utils.raspa.resize_uc import resize_unit_cell
 from mofdscribe.featurizers.utils.raspa.run_raspa import run_raspa
@@ -48,6 +49,8 @@ def parse_widom(directory: Union[str, os.PathLike]) -> dict:
     return [res["Average Henry coefficient"]["Henry"][0], res["HoA_K"]]
 
 
+@operates_on_structure
+@operates_on_istructure
 class Henry(BaseFeaturizer):
     """Computes the Henry coefficient for a given molecule using the RASPA [1]_ program.
 

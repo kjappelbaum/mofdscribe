@@ -388,6 +388,7 @@ herein is intended or shall be deemed to constitute any admission
 of liability.
 """
 from collections import defaultdict
+from ctypes import Structure
 from typing import Dict, Iterable, Optional, Tuple
 
 import numpy as np
@@ -716,3 +717,18 @@ def create_rdkit_mol_from_mol_graph(
     m = create_rdkit_mol(species, coords, bond_types, formal_charge, name, force_sanitize)
 
     return m
+
+
+def boxed_molecule(molecule: Molecule) -> Structure:
+    """
+    Create a box molecule from a pymatgen molecule.
+
+    Args:
+        molecule (Molecule): pymatgen molecule
+
+    Returns:
+        structure (Structure): molecule in a box
+    """
+    max_dist = molecule.distance_matrix.max()
+
+    return molecule.get_boxed_structure(a=max_dist, b=max_dist, c=max_dist)

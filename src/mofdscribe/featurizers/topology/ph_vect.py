@@ -9,6 +9,13 @@ from matminer.featurizers.base import BaseFeaturizer
 from pervect import PersistenceVectorizer
 from pymatgen.core import IMolecule, IStructure, Molecule, Structure
 
+from mofdscribe.featurizers.utils.extend import (
+    operates_on_imolecule,
+    operates_on_istructure,
+    operates_on_molecule,
+    operates_on_structure,
+)
+
 from ._tda_helpers import get_diagrams_for_structure
 
 
@@ -115,6 +122,10 @@ def _transform_structures(
     return results
 
 
+@operates_on_imolecule
+@operates_on_molecule
+@operates_on_istructure
+@operates_on_structure
 class PHVect(BaseFeaturizer):
     """Vectorizer for Persistence Diagrams (PDs) using Gaussian mixture models.
 

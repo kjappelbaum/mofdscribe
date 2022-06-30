@@ -7,10 +7,20 @@ from matminer.featurizers.base import BaseFeaturizer
 from pymatgen.core import IMolecule, IStructure, Molecule, Structure
 
 from mofdscribe.featurizers.utils import flatten
+from mofdscribe.featurizers.utils.extend import (
+    operates_on_imolecule,
+    operates_on_istructure,
+    operates_on_molecule,
+    operates_on_structure,
+)
 
 from ._tda_helpers import get_diagrams_for_structure, persistent_diagram_stats
 
 
+@operates_on_imolecule
+@operates_on_molecule
+@operates_on_istructure
+@operates_on_structure
 class PHStats(BaseFeaturizer):
     """Featurizer that computes statistics of persistent images.
 

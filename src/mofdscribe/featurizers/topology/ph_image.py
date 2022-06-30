@@ -1,11 +1,18 @@
 # -*- coding: utf-8 -*-
 """Implements persistent homology images"""
 from collections import defaultdict
-from typing import List, Tuple, Union, Optional
+from typing import List, Optional, Tuple, Union
 
 import numpy as np
 from matminer.featurizers.base import BaseFeaturizer
 from pymatgen.core import IMolecule, IStructure, Molecule, Structure
+
+from mofdscribe.featurizers.utils.extend import (
+    operates_on_imolecule,
+    operates_on_istructure,
+    operates_on_molecule,
+    operates_on_structure,
+)
 
 from ._tda_helpers import (
     get_persistence_image_limits_for_structure,
@@ -13,6 +20,10 @@ from ._tda_helpers import (
 )
 
 
+@operates_on_imolecule
+@operates_on_molecule
+@operates_on_istructure
+@operates_on_structure
 class PHImage(BaseFeaturizer):
     r"""Vectorize persistent diagrams as image.
 

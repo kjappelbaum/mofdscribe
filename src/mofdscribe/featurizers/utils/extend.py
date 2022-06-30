@@ -1,17 +1,19 @@
-from pymatgen.core import Structure, IStructure, Molecule, IMolecule
+"""Decorators and mixins for extending the functionality of featurizers."""
 from functools import partial
 from typing import Type
 
+from pymatgen.core import IMolecule, IStructure, Molecule, Structure
+
 
 def add_operates_on(cls, type: Type):
-    """Adds the `operates_on` classmethod to a featurizer class.
+    """Add the `operates_on` method to a featurizer class.
 
     This is useful for SBUFeaturizers that need to know what type of
     input they need to pass to the featurizer.
 
     Args:
-        cls (type): The class to add the `operates_on` classmethod to.
-        types (Type): The types that the featurizer can operate on.
+        cls (object): The class to add the `operates_on` classmethod to.
+        type (Type): The types that the featurizer can operate on.
 
     Returns:
         cls: The class with the `operates_on` classmethod added.
@@ -19,7 +21,7 @@ def add_operates_on(cls, type: Type):
     try:
         cls._accepted_types.append(type)
     except AttributeError:
-        setattr(cls, "_accepted_types", [type])
+        cls._accepted_types = [type]
 
     def operates_on(self):
         return self._accepted_types

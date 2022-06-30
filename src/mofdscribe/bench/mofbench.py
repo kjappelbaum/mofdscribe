@@ -1,7 +1,11 @@
+# -*- coding: utf-8 -*-
+"""Bases for MOF ML model benchmarking."""
 import time
+from abc import ABC, abstractmethod
+
 import numpy as np
-from abc import abstractmethod, ABC
 from pydantic import BaseModel
+
 from mofdscribe.metrics.metric_collection import RegressionMetricCollection
 
 # If i just take an object with those train and fit functions I, in principle, should not care
@@ -16,6 +20,11 @@ class BenchResult(BaseModel):
 
     time_taken: float
     metrics: RegressionMetricCollection
+    version: str
+    features: str
+    model: str
+    reference: str
+    implementation: str
 
 
 class MOFBench(ABC):
@@ -56,11 +65,10 @@ class MOFBench(ABC):
     def _predict(self, idx: np.ndarray, structures: np.ndarray):
         return self.model.predict(idx, structures)
 
+    @abstractmethod
     def _score(self):
         raise NotImplementedError
 
-    @property
-    def report(self):
-        if not self._fitted:
-            raise ValueError("Model not fitted yet")
-        ...
+    @abstractmethod
+    def bench(self) -> BenchResult:
+        raise NotImplementedError

@@ -1,13 +1,14 @@
 """Make sure that the utils work."""
+import pytest
+from pymatgen.core import IMolecule, IStructure, Molecule, Structure
+
 from mofdscribe.featurizers.chemistry import PartialChargeStats
 from mofdscribe.featurizers.utils.extend import (
-    operates_on_structure,
-    operates_on_molecule,
     operates_on_imolecule,
     operates_on_istructure,
+    operates_on_molecule,
+    operates_on_structure,
 )
-from pymatgen.core import Structure, IStructure, Molecule, IMolecule
-import pytest
 
 
 def test_add_operates_on():
@@ -16,12 +17,15 @@ def test_add_operates_on():
     class TestClass(PartialChargeStats):
         pass
 
-    DecoratorTest = operates_on_structure(TestClass)
+    decorator_test = operates_on_structure(TestClass)
 
-    assert DecoratorTest().operates_on() == [Structure]
+    assert decorator_test().operates_on() == [Structure]
 
     with pytest.raises(AttributeError):
         PartialChargeStats()._accepted_types
+
+    with pytest.raises(AttributeError):
+        PartialChargeStats().operates_on()
 
     @operates_on_molecule
     class DecoratorTest2(PartialChargeStats):
@@ -36,5 +40,4 @@ def test_add_operates_on():
     class DecoratorTest3(PartialChargeStats):
         pass
 
-    print(DecoratorTest3().operates_on())
     assert set(DecoratorTest3().operates_on()) == {Structure, Molecule, IMolecule, IStructure}

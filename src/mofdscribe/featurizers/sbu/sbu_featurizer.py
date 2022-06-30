@@ -1,15 +1,16 @@
 # -*- coding: utf-8 -*-
 """Compute features on the SBUs and then aggregate them."""
-import struct
-from pydantic import BaseModel
 from typing import Iterable, List, Optional, Tuple, Union
 
 import numpy as np
 from matminer.featurizers.base import BaseFeaturizer
+from pydantic import BaseModel
 from pymatgen.core import IMolecule, IStructure, Molecule, Structure
 
 from mofdscribe.featurizers.utils import nan_array
 from mofdscribe.featurizers.utils.aggregators import ARRAY_AGGREGATORS
+
+from .utils import boxed_molecule
 
 
 class MOFBBs(BaseModel):
@@ -27,7 +28,7 @@ class SBUFeaturizer(BaseFeaturizer):
     and them aggregrate them to obtain one fixed-length feature vector for the MOF.
 
     .. warning::
-        Note that, currently. not all featurizers can operate on both
+        Note that, currently, not all featurizers can operate on both
         Structures and Molecules.
         If you want to include featurizers that can only operate on one type
         (e.g. :py:obj:`~mofdscribe.sbu.rdkitadaptor.RDKitAdaptor`
@@ -57,11 +58,32 @@ class SBUFeaturizer(BaseFeaturizer):
 
         Args:
             featurizer (BaseFeaturizer): The featurizer to use.
+                Currently, we do not support `MultipleFeaturizer`s.
+                Please, instead, use multiple SBUFeaturizers.
+                If you use a featurizer that is not implemented in mofdscribe
+                (e.g. a matminer featurizer), you need to wrap using a method
+                that describes on which data objects the featurizer can operate on.
+                If you do not do this, we default to assuming that it operates on structures.
             aggregations (Tuple[str]): The aggregations to use.
                 Must be one of :py:obj:`ARRAY_AGGREGATORS`.
+
+        ToDo:
+            - Support `MultipleFeaturizer`s (should be ok, if we recursively call the operates_on method).
+
         """
         self._featurizer = featurizer
         self._aggregations = aggregations
+        try:
+            _operates_on = featurizer.operates_on()
+            if (Structure in _operates_on) and (Molecule in _operates_on):
+                self._operates_on = "both"
+            elif Structure in _operates_on:
+                self._operates_on = "structure"
+            elif Molecule in _operates_on:
+                self._operates_on = "molecule"
+
+        except AttributeError:
+            self._operates_on = "structure"
 
     def feature_labels(self) -> List[str]:
         labels = []
@@ -84,16 +106,32 @@ class SBUFeaturizer(BaseFeaturizer):
         If you already have precomputed fragements or only want to consider a subset
         of the SBUs, you can provide them manually via the `mofbbs` argument.
 
+        If you manually provide the `mofbbs`,  we will convert molecules to structures
+        where possible.
+
         Args:
             structure (Union[Structure, IStructure], optional): The structure to featurize.
             mofbbs (MOFBBs, optional): The MOF fragments (nodes and linkers).
 
         Returns:
             A numpy array of features.
+
+        Raises:
+            ValueError: If neither `structure` nor `mofbbs` are provided.
+            ValueError: If structures are provided, but the selected featurizer
+                operates on molecules
+            RuntimeError: If an unexpected combination of types and
+                `operates_on` is provided.
+
+        ToDo:
+            - Perhaps use type dispatch instead of different keyword arguments.
+              (we can use fastcore or code it ourselves)
+            - We can also directly pass the graph to the featurizer if it want to work
+                on the graph.
         """
 
         # if i know what the featurizer wants, I can always cast to a structure
-
+        num_features = len(self._featurizer.feature_labels())
         if structure is None and mofbbs is None:
             raise ValueError("You must provide a structure or mofbbs.")
 
@@ -101,15 +139,57 @@ class SBUFeaturizer(BaseFeaturizer):
             from moffragmentor import MOF
 
             mof = MOF.from_structure(structure)
+            fragments = mof.fragment()
 
-        num_features = len(self._featurizer.feature_labels())
-        if mofbbs.linkers is not None:
-            linker_feats = [self._featurizer.featurize(linker) for linker in mofbbs.linkers]
-        else:
+            if self._operates_on == "both" or self._operates_on == "molecule":
+                linkers = [linker.molecule for linker in fragments.linkers]
+                nodes = [node.molecule for node in fragments.nodes]
+            else:
+                linkers = [boxed_molecule(linker.molecule) for linker in fragments.linkers]
+                nodes = [boxed_molecule(node.molecule) for node in fragments.nodes]
+
+        if mofbbs is not None:
+
+            linkers = list(mofbbs.linkers) if mofbbs.linkers is not None else []
+            nodes = list(mofbbs.nodes) if mofbbs.nodes is not None else []
+            types = [type(node) for node in nodes] + [type(linker) for linker in linkers]
+
+            if not len(set(types)) == 1:
+                raise ValueError("All nodes and linkers must be of the same type.")
+
+            this_type = types[0]
+            if (this_type == Structure or this_type == IStructure) and (
+                self._operates_on == "both" or self._operates_on == "structure"
+            ):
+                # this is the simple case, we do not need to convert to molecules
+                pass
+            elif (this_type == Molecule or this_type == IMolecule) and (
+                self._operates_on == "both" or self._operates_on == "molecule"
+            ):
+                # again simple case, we do not need to convert to structures
+
+                pass
+            elif (this_type == Molecule or this_type == IMolecule) and (
+                self._operates_on == "structure"
+            ):
+                # we need to convert to structures
+                nodes = [boxed_molecule(node) for node in nodes]
+                linkers = [boxed_molecule(linker) for linker in linkers]
+            elif (this_type == Structure or this_type == IStructure) and (
+                self._operates_on == "molecule"
+            ):
+                raise ValueError(
+                    "You provided structures for a featurizer that operates on molecules. "
+                    / "Cannot automatically convert to molecules from structures."
+                )
+            else:
+                raise RuntimeError("Unexpected type of nodes or linkers.")
+        linker_feats = [self._featurizer.featurize(linker) for linker in linkers]
+        if not linker_feats:
             linker_feats = [nan_array(num_features)]
-        if mofbbs.nodes is not None:
-            node_feats = [self._featurizer.featurize(node) for node in mofbbs.nodes]
-        else:
+
+        node_feats = [self._featurizer.featurize(node) for node in nodes]
+        if not node_feats:
             node_feats = [nan_array(num_features)]
 
         aggregated_linker_feats = []

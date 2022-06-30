@@ -52,3 +52,11 @@ def molecule():
     with open(os.path.join(THIS_DIR, "test_files", "test_molecule.json"), "r") as handle:
         mol = Molecule.from_dict(json.loads(handle.read()))
     return mol
+
+
+@pytest.fixture
+def triangle_structure():
+    """Return a pymatgen Structure for the `connecting sites` of a BTC linker"""
+    with open(os.path.join(THIS_DIR, "test_files", "triangle_structure.json"), "r") as handle:
+        s = Structure.from_dict(json.loads(handle.read()))
+    return s

@@ -11,11 +11,15 @@ from pymatgen.core import IStructure, Structure
 
 from mofdscribe.featurizers.utils import flatten
 from mofdscribe.featurizers.utils.aggregators import ARRAY_AGGREGATORS
+from mofdscribe.featurizers.utils.extend import operates_on_istructure, operates_on_structure
 
 from ._tda_helpers import persistent_diagram_stats
 
 
 # Todo: allow doing this with cutoff and coordination shells
+# ToDo: check if this works with molecules
+@operates_on_istructure
+@operates_on_structure
 class AtomCenteredPHSite(BaseFeaturizer):
     """Site featurizer for atom-centered statistics of persistence diagrams.
 

@@ -15,10 +15,7 @@ from matminer.featurizers.base import BaseFeaturizer
 from pymatgen.core import IStructure, Structure
 
 from ..utils.aggregators import AGGREGATORS
-from ..utils.extend import (
-    operates_on_structure,
-    operates_on_istructure,
-)
+from ..utils.extend import operates_on_istructure, operates_on_structure
 from ..utils.histogram import get_rdf, smear_histogram
 
 __all__ = ["APRDF"]

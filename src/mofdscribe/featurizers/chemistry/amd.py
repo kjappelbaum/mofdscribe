@@ -5,8 +5,8 @@ from typing import List, Tuple, Union
 import numpy as np
 from matminer.featurizers.base import BaseFeaturizer
 from pymatgen.core import IStructure, Structure
-from mofdscribe.featurizers.utils.extend import operates_on_structure, operates_on_istructure
 
+from mofdscribe.featurizers.utils.extend import operates_on_istructure, operates_on_structure
 from mofdscribe.featurizers.utils.substructures import filter_element
 
 __all__ = ["AMD"]

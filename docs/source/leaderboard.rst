@@ -19,3 +19,5 @@ You want your model to appear here? Then
 2. Create a pull request with the `json` file produced by the :code:`bench` method and fill the pull request template. 
 
 If you have a general-purpose model you might be interested in also submitting it to the `matbench <https://matbench.materialsproject.org>`_ leaderboard. We're currently investigating how to integrate the leaderboard into the matbench project.
+
+If you have a modeling approach for a task that is not yet covered in the leaderboards, please open a new issue, and we'll make sure to add it.

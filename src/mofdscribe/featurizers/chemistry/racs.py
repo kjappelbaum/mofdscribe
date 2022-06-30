@@ -10,6 +10,7 @@ from pymatgen.analysis.graphs import StructureGraph
 from pymatgen.core import IStructure, Structure
 
 from mofdscribe.featurizers.utils.aggregators import AGGREGATORS, ARRAY_AGGREGATORS
+from mofdscribe.featurizers.utils.extend import operates_on_istructure, operates_on_structure
 from mofdscribe.featurizers.utils.structure_graph import (
     get_connected_site_indices,
     get_neighbors_at_distance,
@@ -114,6 +115,8 @@ def _get_racs_for_bbs(
     return aggregated_racs
 
 
+@operates_on_istructure
+@operates_on_structure
 class RACS(BaseFeaturizer):
     r"""Modified version of the revised autocorrelation functions (RACs) for MOFs.
 
