@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """Compute features on the SBUs and then aggregate them."""
-from dataclasses import dataclass
+from pydantic import BaseModel
 from typing import Iterable, List, Optional, Tuple, Union
 
 import numpy as np
@@ -11,8 +11,7 @@ from mofdscribe.featurizers.utils import nan_array
 from mofdscribe.featurizers.utils.aggregators import ARRAY_AGGREGATORS
 
 
-@dataclass
-class MOFBBs:
+class MOFBBs(BaseModel):
     """Container for MOF building blocks."""
 
     nodes: Optional[Iterable[Union[Structure, Molecule, IStructure, IMolecule]]]

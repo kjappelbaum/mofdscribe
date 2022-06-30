@@ -31,6 +31,7 @@ dependencies, the featurizers are currently not integrated in matminer itself.
    :caption: Table of Contents
 
    getting_started
+   leaderboard
    background
    api
 

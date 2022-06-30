@@ -1,12 +1,21 @@
 import time
 import numpy as np
 from abc import abstractmethod, ABC
+from pydantic import BaseModel
+from mofdscribe.metrics.metric_collection import RegressionMetricCollection
 
 # If i just take an object with those train and fit functions I, in principle, should not care
 # if it spawns extra process on GPU or something like that. I just consume its outputs
 # In this way, the underlying implementation might also cache the features, for instance, in some file
 # It will be pretty hard for us to monitor the resources the run needed as the model function could,
 # in principle, spawn extra processess on GPU or something like that.
+
+
+class BenchResult(BaseModel):
+    """Model for benchmark results."""
+
+    time_taken: float
+    metrics: RegressionMetricCollection
 
 
 class MOFBench(ABC):

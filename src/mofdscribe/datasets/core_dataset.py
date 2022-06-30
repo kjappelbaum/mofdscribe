@@ -42,19 +42,20 @@ class CoREDataset(StructureDataset):
 
     The available labels are:
 
-    * 'pure_CO2_kH': Henry coefficient of CO2 obtained by Widom method in mol kg-1 Pa-1
-    * 'pure_CO2_widomHOA': Heat of adsorption of CO2 obtained by Widom method in
-    * 'pure_methane_kH': Henry coefficient of methane obtained by Widom method in mol kg-1 Pa-1
-    * 'pure_methane_widomHOA': Heat of adsorption of methane obtained by Widom method
-    * 'pure_uptake_CO2_298.00_15000': Pure CO2 uptake at 298.00 K and 15000 Pa in mol kg-1
-    * 'pure_uptake_CO2_298.00_1600000': Pure CO2 uptake at 298.00 K and 1600000 Pa in mol kg-1
-    * 'pure_uptake_methane_298.00_580000': Pure methane uptake at 298.00 K and 580000 Pa in mol kg-1
-    * 'pure_uptake_methane_298.00_6500000': Pure methane uptake at 298.00 K and 6500000 Pa in mol kg-1
-    * 'logKH_CO2': Logarithm of Henry coefficient of CO2 obtained by Widom method
-    * 'logKH_CH4': Logarithm of Henry coefficient of methane obtained by Widom method
-    * 'CH4DC': CH4 deliverable capacity in vSTP/v
-    * 'CH4HPSTP': CH4 high pressure uptake in standard temperature and pressure in vSTP/v
-    * 'CH4LPSTP': CH4 low pressure uptake in standard temperature and pressure in vSTP/v
+
+        * 'pure_CO2_kH': Henry coefficient of CO2 obtained by Widom method in mol kg-1 Pa-1
+        * 'pure_CO2_widomHOA': Heat of adsorption of CO2 obtained by Widom method in
+        * 'pure_methane_kH': Henry coefficient of methane obtained by Widom method in mol kg-1 Pa-1
+        * 'pure_methane_widomHOA': Heat of adsorption of methane obtained by Widom method
+        * 'pure_uptake_CO2_298.00_15000': Pure CO2 uptake at 298.00 K and 15000 Pa in mol kg-1
+        * 'pure_uptake_CO2_298.00_1600000': Pure CO2 uptake at 298.00 K and 1600000 Pa in mol kg-1
+        * 'pure_uptake_methane_298.00_580000': Pure methane uptake at 298.00 K and 580000 Pa in mol kg-1
+        * 'pure_uptake_methane_298.00_6500000': Pure methane uptake at 298.00 K and 6500000 Pa in mol kg-1
+        * 'logKH_CO2': Logarithm of Henry coefficient of CO2 obtained by Widom method
+        * 'logKH_CH4': Logarithm of Henry coefficient of methane obtained by Widom method
+        * 'CH4DC': CH4 deliverable capacity in vSTP/v
+        * 'CH4HPSTP': CH4 high pressure uptake in standard temperature and pressure in vSTP/v
+        * 'CH4LPSTP': CH4 low pressure uptake in standard temperature and pressure in vSTP/v
 
     References:
         .. [Moosavi2020] Moosavi, S. M.; Nandy, A.; Jablonka, K. M.; Ongari, D.; Janet, J. P.; Boyd, P. G.; Lee,

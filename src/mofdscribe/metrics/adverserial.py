@@ -10,6 +10,8 @@ from numpy.typing import ArrayLike
 from sklearn.ensemble import ExtraTreesClassifier, RandomForestClassifier
 from sklearn.model_selection import cross_val_score
 
+__all__ = ["AdverserialValidator"]
+
 
 class AdverserialValidator:
     """Helper for adverserial validation.

@@ -84,8 +84,8 @@ And, clearly, you can also use the `mofdscribe` featurizers alongside ones from 
     features = featurizer.featurize_many([s, s2])
 
 
-If you use the `zeo++` or `raspa2` packages, you can customize the temporary
-directory used by the featurizers by exporting `MOFDSCRIBE_TEMPDIR`. If you do
+If you use the :code:`zeo++` or :code:`raspa2` packages, you can customize the temporary
+directory used by the featurizers by exporting :code:`MOFDSCRIBE_TEMPDIR`. If you do
 not specify the temporary directory, the default is the current working
 directory.
 
@@ -143,6 +143,38 @@ Using metrics
 
 For making machine learning comparable, it is important to report reliable metrics. 
 mofdscribe implements some helpers to make this easier.
+
+One interesting metric is the adversarial validation score, which can be a surrogate for how different two datasets, e.g. a train and a test set, are. Under the hood, this is implemented as a classifier that attempts to learn to distinguish the two datasets. If the two datasets are indistinguishable, the classifier will have a ROC-AUC of 0.5.
+
+.. code-block:: python
+
+    from mofdscribe.metrics import AdverserialValidator
+    from mofdscribe.datasets import CoRE
+    from mofdscribe.splitters import RandomSplitter
+
+    FEATURES = ["Di", "Df", "Dif", "density [g/cm^3]",]
+
+    ds = CoRE()    
+    train_idx, test_idx = RandomSplitter().train_test_split(ds)
+
+    adversarial_validation_scorer = AdverserialValidator(ds._df.iloc[train_idx][FEATURES], 
+        ds._df.iloc[test_idx][FEATURES])
+
+    adversarial_validation_scorer.score().mean()
+
+However, you cannot only measure how different two datasets are, but also quantify how well your model does. A handy helper function 
+is :py:meth:`~mofdscribe.metrics.regression.get_regression_metrics`.
+
+.. code-block:: python
+    
+    from mofdscribe.metrics import get_regression_metrics
+    
+    metrics = get_regression_metrics(predictions, labels)
+
+Which returns an object with the most relevant regression metrics.
+
+Running a benchmark
+----------------------
 
 
 Referencing datasets and featurizers
