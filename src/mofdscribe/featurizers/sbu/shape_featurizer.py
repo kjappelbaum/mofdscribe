@@ -1,17 +1,16 @@
 """Implement some shape featurizers from RDKit using the RDKitAdaptor."""
 from typing import List
-from rdkit.Chem.Descriptors3D import (
-    Asphericity as Asphericity_rdkit,
-    Eccentricity as Eccentricity_rdkit,
-    InertialShapeFactor as InertialShapeFactor_rdkit,
-    NPR1 as NPR1_rdkit,
-    NPR2 as NPR2_rdkit,
-    PMI1 as PMI1_rdkit,
-    PMI2 as PMI2_rdkit,
-    PMI3 as PMI3_rdkit,
-    RadiusOfGyration as RadiusOfGyration_rdkit,
-    SpherocityIndex as SpherocityIndex_rdkit,
-)
+
+from rdkit.Chem.Descriptors3D import NPR1 as NPR1_rdkit
+from rdkit.Chem.Descriptors3D import NPR2 as NPR2_rdkit
+from rdkit.Chem.Descriptors3D import PMI1 as PMI1_rdkit
+from rdkit.Chem.Descriptors3D import PMI2 as PMI2_rdkit
+from rdkit.Chem.Descriptors3D import PMI3 as PMI3_rdkit
+from rdkit.Chem.Descriptors3D import Asphericity as Asphericity_rdkit
+from rdkit.Chem.Descriptors3D import Eccentricity as Eccentricity_rdkit
+from rdkit.Chem.Descriptors3D import InertialShapeFactor as InertialShapeFactor_rdkit
+from rdkit.Chem.Descriptors3D import RadiusOfGyration as RadiusOfGyration_rdkit
+from rdkit.Chem.Descriptors3D import SpherocityIndex as SpherocityIndex_rdkit
 
 from .rdkitadaptor import RDKitAdaptor
 
