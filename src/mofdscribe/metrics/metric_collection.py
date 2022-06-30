@@ -1,8 +1,10 @@
 """"Data objects for holding collections of metrics (and performing basic aggregations)."""
-from pydantic import BaseModel
-from .regression import RegressionMetrics
 from typing import List
+
 import numpy as np
+from pydantic import BaseModel
+
+from .regression import RegressionMetrics
 
 
 class RegressionMetricCollection(BaseModel):

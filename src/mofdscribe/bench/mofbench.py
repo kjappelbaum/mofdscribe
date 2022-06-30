@@ -1,7 +1,9 @@
 import time
+from abc import ABC, abstractmethod
+
 import numpy as np
-from abc import abstractmethod, ABC
 from pydantic import BaseModel
+
 from mofdscribe.metrics.metric_collection import RegressionMetricCollection
 
 # If i just take an object with those train and fit functions I, in principle, should not care

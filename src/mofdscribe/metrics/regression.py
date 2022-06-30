@@ -4,15 +4,15 @@ from __future__ import annotations
 
 import numpy as np
 from numpy.typing import ArrayLike
-from sklearn.metrics import (
-    mean_squared_error,
-    mean_absolute_error,
-    r2_score,
-    max_error,
-    mean_absolute_percentage_error,
-    mean_squared_log_error,
-)
 from pydantic import BaseModel
+from sklearn.metrics import (
+    max_error,
+    mean_absolute_error,
+    mean_absolute_percentage_error,
+    mean_squared_error,
+    mean_squared_log_error,
+    r2_score,
+)
 
 __all__ = ["RegressionMetrics", "get_regression_metrics", "top_n_in_top_k"]
 
