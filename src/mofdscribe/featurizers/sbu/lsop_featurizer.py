@@ -95,6 +95,7 @@ class LSOP(BaseFeaturizer):
         lsop = self._lsop.get_order_parameters(
             molecule, len(molecule) - 1, indices_neighs=np.arange(orginal_len)
         )
+        lsop = [f if f is not None else np.nan for f in lsop]
         return np.array(lsop)
 
     def implementors(self) -> List[str]:

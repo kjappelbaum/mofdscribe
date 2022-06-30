@@ -73,3 +73,12 @@ SBU-centred featurization
 
 .. automodule:: mofdscribe.featurizers.sbu.compositionstats_featurizer
     :members:
+
+.. automodule:: mofdscribe.featurizers.sbu.distance_stats_featurizer
+    :members:
+
+.. automodule:: mofdscribe.featurizers.sbu.distance_hist_featurizer
+    :members:   
+
+.. automodule:: mofdscribe.featurizers.sbu.shape_featurizer
+    :members:   

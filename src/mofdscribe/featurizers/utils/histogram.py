@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """Helpers for computing histograms."""
 import math
+from typing import Optional
 
 import numpy as np
 from scipy.stats import gaussian_kde
@@ -11,9 +12,10 @@ def get_rdf(
     lower_lim: float,
     upper_lim: float,
     bin_size: float,
-    num_sites: int,
-    volume: float,
+    num_sites: Optional[int] = None,
+    volume: Optional[float] = None,
     normalized: bool = True,
+    density: bool = False,
 ) -> np.array:
     """Compute the RDF
 
@@ -22,9 +24,10 @@ def get_rdf(
         lower_lim (float): lower limit of the RDF
         upper_lim (float): upper limit of the RDF
         bin_size (float): size of the bins
-        num_sites (int): number of sites in the cell, used for normalization
-        volume (float): volume of the cell, used for normalization
+        num_sites (int, optional): number of sites in the cell, used for normalization
+        volume (float, optional): volume of the cell, used for normalization
         normalized (bool): If True, normalize the RDF. Defaults to True.
+        density (bool): If True, return the density of the RDF. Defaults to False.
 
     Returns:
         np.array: RDF
@@ -32,7 +35,7 @@ def get_rdf(
     dist_hist, dist_bins = np.histogram(
         array,
         bins=np.arange(lower_lim, upper_lim + bin_size, bin_size),
-        density=False,
+        density=density,
     )
 
     if normalized:
