@@ -1,19 +1,18 @@
 # -*- coding: utf-8 -*-
 """Describe molecules by computing a histogram of pairwise distances between their atoms."""
-from typing import List, Tuple, Union
+from typing import List, Union
 
 import numpy as np
 from matminer.featurizers.base import BaseFeaturizer
 from pymatgen.core import IMolecule, IStructure, Molecule, Structure
 
-from mofdscribe.featurizers.utils.aggregators import ARRAY_AGGREGATORS
-from mofdscribe.featurizers.utils.histogram import get_rdf
 from mofdscribe.featurizers.utils.extend import (
     operates_on_imolecule,
     operates_on_istructure,
     operates_on_molecule,
     operates_on_structure,
 )
+from mofdscribe.featurizers.utils.histogram import get_rdf
 
 
 @operates_on_molecule
@@ -43,8 +42,11 @@ class PairwiseDistanceHist(BaseFeaturizer):
         self.bin_size = bin_size
         self.density = density
 
+    def _get_grid(self):
+        return np.arange(self.lower_bound, self.upper_bound, self.bin_size)
+
     def feature_labels(self) -> List[str]:
-        return [f"pairwise_distance_hist_{a}" for a in self.aggregtations]
+        return [f"pairwise_distance_hist_{a}" for a in self._get_grid()]
 
     def featurize(self, structure: Union[Molecule, IMolecule, Structure, IStructure]) -> np.ndarray:
         distances = []

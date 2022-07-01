@@ -10,6 +10,8 @@ from tqdm import tqdm
 
 
 # todo: can we do here something with numba?
+# for numba, we would need to do some rewrite as there is no support
+# for numpy.delete
 def kennard_stone_sampling(
     X: ArrayLike,  # noqa: N803
     scale: bool = True,

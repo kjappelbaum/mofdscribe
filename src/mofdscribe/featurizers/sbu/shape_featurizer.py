@@ -1,19 +1,33 @@
 """Implement some shape featurizers from RDKit using the RDKitAdaptor."""
 from typing import List
-from rdkit.Chem.Descriptors3D import (
-    Asphericity as Asphericity_rdkit,
-    Eccentricity as Eccentricity_rdkit,
-    InertialShapeFactor as InertialShapeFactor_rdkit,
-    NPR1 as NPR1_rdkit,
-    NPR2 as NPR2_rdkit,
-    PMI1 as PMI1_rdkit,
-    PMI2 as PMI2_rdkit,
-    PMI3 as PMI3_rdkit,
-    RadiusOfGyration as RadiusOfGyration_rdkit,
-    SpherocityIndex as SpherocityIndex_rdkit,
-)
+
+from rdkit.Chem.Descriptors3D import NPR1 as NPR1_rdkit
+from rdkit.Chem.Descriptors3D import NPR2 as NPR2_rdkit
+from rdkit.Chem.Descriptors3D import PMI1 as PMI1_rdkit
+from rdkit.Chem.Descriptors3D import PMI2 as PMI2_rdkit
+from rdkit.Chem.Descriptors3D import PMI3 as PMI3_rdkit
+from rdkit.Chem.Descriptors3D import Asphericity as Asphericity_rdkit
+from rdkit.Chem.Descriptors3D import Eccentricity as Eccentricity_rdkit
+from rdkit.Chem.Descriptors3D import InertialShapeFactor as InertialShapeFactor_rdkit
+from rdkit.Chem.Descriptors3D import RadiusOfGyration as RadiusOfGyration_rdkit
+from rdkit.Chem.Descriptors3D import SpherocityIndex as SpherocityIndex_rdkit
 
 from .rdkitadaptor import RDKitAdaptor
+
+
+def _rod_likeness(mol):
+    """Compute the ROD-likeness of a molecule."""
+    return NPR2_rdkit(mol) - NPR1_rdkit(mol)
+
+
+def _disk_likeness(mol):
+    """Compute the disk-likeness of a molecule."""
+    return 2 - 2 * NPR2_rdkit(mol)
+
+
+def _sphericity(mol):
+    """Compute the sphericity of a molecule."""
+    return NPR1_rdkit(mol) + NPR2_rdkit(mol) - 1
 
 
 class Asphericity(RDKitAdaptor):
@@ -200,5 +214,77 @@ class SpherocityIndex(RDKitAdaptor):
             "author = {Roberto Todeschini and Viviana Consonni},"
             "title = {Descriptors from Molecular Geometry},"
             "booktitle = {Handbook of Chemoinformatics}"
+            "}"
+        ]
+
+
+class RodLikeness(RDKitAdaptor):
+    """Featurizer for the RDKit Rod Likeness descriptor."""
+
+    def __init__(self):
+        super().__init__(_rod_likeness, ["rod_likeness"])
+
+    def citations(self) -> List[str]:
+        return self.super().citations() + [
+            "@article{Wirth2013,"
+            "doi = {10.1007/s10822-013-9659-1},"
+            "url = {https://doi.org/10.1007/s10822-013-9659-1},"
+            "year = {2013},"
+            "month = jun,"
+            "publisher = {Springer Science and Business Media {LLC}},"
+            "volume = {27},"
+            "number = {6},"
+            "pages = {511--524},"
+            "author = {Matthias Wirth and Andrea Volkamer and Vincent Zoete and Friedrich Rippmann and Olivier Michielin and Matthias Rarey and Wolfgang H. B. Sauer},"
+            "title = {Protein pocket and ligand shape comparison and its application in virtual screening},"
+            "journal = {Journal of Computer-Aided Molecular Design}"
+            "}"
+        ]
+
+
+class DiskLikeness(RDKitAdaptor):
+    """Featurizer for the RDKit Disk Likeness descriptor."""
+
+    def __init__(self):
+        super().__init__(_disk_likeness, ["disk_likeness"])
+
+    def citations(self) -> List[str]:
+        return self.super().citations() + [
+            "@article{Wirth2013,"
+            "doi = {10.1007/s10822-013-9659-1},"
+            "url = {https://doi.org/10.1007/s10822-013-9659-1},"
+            "year = {2013},"
+            "month = jun,"
+            "publisher = {Springer Science and Business Media {LLC}},"
+            "volume = {27},"
+            "number = {6},"
+            "pages = {511--524},"
+            "author = {Matthias Wirth and Andrea Volkamer and Vincent Zoete and Friedrich Rippmann and Olivier Michielin and Matthias Rarey and Wolfgang H. B. Sauer},"
+            "title = {Protein pocket and ligand shape comparison and its application in virtual screening},"
+            "journal = {Journal of Computer-Aided Molecular Design}"
+            "}"
+        ]
+
+
+class SphereLikeness(RDKitAdaptor):
+    """Featurizer for the RDKit Sphere Likeness descriptor."""
+
+    def __init__(self):
+        super().__init__(_sphericity, ["sphere_likeness"])
+
+    def citations(self) -> List[str]:
+        return self.super().citations() + [
+            "@article{Wirth2013,"
+            "doi = {10.1007/s10822-013-9659-1},"
+            "url = {https://doi.org/10.1007/s10822-013-9659-1},"
+            "year = {2013},"
+            "month = jun,"
+            "publisher = {Springer Science and Business Media {LLC}},"
+            "volume = {27},"
+            "number = {6},"
+            "pages = {511--524},"
+            "author = {Matthias Wirth and Andrea Volkamer and Vincent Zoete and Friedrich Rippmann and Olivier Michielin and Matthias Rarey and Wolfgang H. B. Sauer},"
+            "title = {Protein pocket and ligand shape comparison and its application in virtual screening},"
+            "journal = {Journal of Computer-Aided Molecular Design}"
             "}"
         ]

@@ -11,3 +11,4 @@ def test_pairwise_distance_hist_featurizer(molecule, linker_molecule, triangle_s
         for f in feats:
             assert f >= 0
         assert feats.sum() >= 1
+        assert len(feats) == len(featurizer.feature_labels())

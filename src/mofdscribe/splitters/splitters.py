@@ -385,6 +385,12 @@ class KennardStoneSplitter(Splitter):
 
     The algorithm selects samples with uniform converage.
     The initial samples are biased towards the boundaries of the dataset.
+
+    .. warning::
+
+        This splitter can be slow for large datasets as
+        it requires us to perform distance matrices N times for a dataset
+        with N structures.
     """
 
     def __init__(

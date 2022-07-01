@@ -27,7 +27,7 @@ def match_bb(
     prototype: str,
     aggregations: Tuple[str],
     allow_rescale: bool = True,
-    match: str = "node",
+    match: str = "auto",
     skip_non_fitting_if_possible: bool = True,
     mismatch_fill_value: float = 10_000,
 ) -> float:
@@ -40,7 +40,7 @@ def match_bb(
         aggregations (Tuple[str]): The aggregations to use.
         allow_rescale (bool): Whether to scale the RMSD by the number of atoms.
             Defaults to True.
-        match (str): The type of matching to use. Defaults to 'node'.
+        match (str): The type of matching to use. Defaults to 'auto'.
         skip_non_fitting_if_possible (bool): Whether to skip RMSDs of
             building blocks that do not match due to mismatching coordination numbers.
         mismatch_fill_value (float): The value to fill in for mismatching
@@ -49,7 +49,12 @@ def match_bb(
     Returns:
         The RMSD between the two structures.
     """
-    is_node = 1 if match == "node" else -1
+    if not match == "auto":
+        is_node = 1 if match == "node" else -1
+    else:
+        cn = len(bb)
+        is_node = 0 if cn == 2 else -1
+
     coords_this = bb.cart_coords
     keys_to_match = [k for k in STRUCTURE_ENVS[prototype].keys() if int(k) * (is_node) >= 0]
     rmsds_fitting = []
@@ -86,6 +91,15 @@ class SBUMatch(BaseFeaturizer):
     worse with the "shape" of the actual building blocks.
     This featurizer attempts to quantify this mismatch.
 
+    .. note::
+
+        The edge match values will all be quite close to zero
+        and hence not that meaningful (two points always form a line,
+        there is not much room for mismatch unless the length of the line
+        [which is ignored by default with `allow_rescale=True`]...).
+        In pratice, you should consider treating them seperate
+        from the vertex match values.
+
     Examples:
         >>> from mofdscribe.sbu import SBUMatch
         >>> from pymatgen.core import Structure
@@ -101,7 +115,7 @@ class SBUMatch(BaseFeaturizer):
         return_only_best: bool = True,
         aggregations: Tuple[str] = ("max", "min", "mean", "std"),
         topos: Tuple[str] = ALL_AVAILABLE_TOPOS,
-        match: str = "node",
+        match: str = "auto",
         skip_non_fitting_if_possible: bool = True,
     ) -> None:
         """Create a new SBUMatch featurizer.
@@ -119,8 +133,12 @@ class SBUMatch(BaseFeaturizer):
                 the different possible positions. Defaults to ("max", "min", "mean", "std").
             topos (Tuple[str]): RCSR codes to consider for matching.
                 Defaults to ALL_AVAILABLE_TOPOS.
-            match (str): BB to consider for matching. Must be one of "edge" or "node".
-                Defaults to "node".
+            match (str): BB to consider for matching. Must be one of "auto", "edge" or "node".
+                If the mode is "auto" it assumes that the number of sites in the input building
+                block is equal to the number of connection vertices. Hence, if there are more
+                than two sites, it will match the node. If there are only two sites, it will match
+                the edge.
+                Defaults to "auto".
             skip_non_fitting_if_possible (bool): If True, do not compute RMSD for
                 non-compatible BBs. Defaults to True.
         """

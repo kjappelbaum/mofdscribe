@@ -16,6 +16,7 @@ from mofdscribe.featurizers.utils.extend import (
 )
 
 _default_types = (
+    "cn",
     "tet",
     "oct",
     "bcc",
