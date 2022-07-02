@@ -542,7 +542,7 @@ def create_rdkit_mol(
         try:
             Chem.SanitizeMol(m)
         except Exception as e:
-            logger.warn(f"Cannot sanitize molecule {name}, because {str(e)}")
+            logger.warning(f"Cannot sanitize molecule {name}, because {str(e)}")
     m.AddConformer(conformer, assignId=False)
 
     m.SetProp("_Name", str(name))

@@ -94,6 +94,11 @@ class SBUFeaturizer(BaseFeaturizer):
                     labels.append(f"{bb}_{aggregation}_{label}")
         return labels
 
+    # ToDo:
+    # - Perhaps use type dispatch instead of different keyword arguments.
+    #   (we can use fastcore or code it ourselves)
+    # - We can also directly pass the graph to the featurizer if it want to work
+    #     on the graph.
     def featurize(
         self,
         structure: Optional[Union[Structure, IStructure]] = None,
@@ -122,12 +127,6 @@ class SBUFeaturizer(BaseFeaturizer):
                 operates on molecules
             RuntimeError: If an unexpected combination of types and
                 `operates_on` is provided.
-
-        ToDo:
-            - Perhaps use type dispatch instead of different keyword arguments.
-              (we can use fastcore or code it ourselves)
-            - We can also directly pass the graph to the featurizer if it want to work
-                on the graph.
         """
         # if i know what the featurizer wants, I can always cast to a structure
         num_features = len(self._featurizer.feature_labels())

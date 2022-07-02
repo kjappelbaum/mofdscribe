@@ -74,7 +74,7 @@ class RDKitAdaptor(BaseFeaturizer):
         elif isinstance(feats, (float, int)):
             return np.array([feats])
         else:
-            logger.warn("Featurizer returned an unsupported type: {}".format(type(feats)))
+            logger.warning("Featurizer returned an unsupported type: {}".format(type(feats)))
             return feats
 
     def citations(self) -> List[str]:
