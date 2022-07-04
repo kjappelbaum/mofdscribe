@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 """Classes that help performing cross-validation."""
 from collections import Counter
-from typing import Callable, Iterable, List, Tuple, Union
-
+from tokenize import group
+from typing import Callable, Iterable, List, Tuple, Union, Optional
+from sklearn.model_selection import train_test_split, StratifiedKFold
 import numpy as np
 
-from .utils import kennard_stone_sampling
+from .utils import kennard_stone_sampling, pca_kmeans
 from ..datasets.dataset import StructureDataset
 
 __all__ = (
@@ -16,7 +17,90 @@ __all__ = (
     "RandomSplitter",
     "FingerprintSplitter",
     "KennardStoneSplitter",
+    "ClusterSplitter",
 )
+
+
+class StratifiedSplitter:
+    """Base class for stratified splitters."""
+
+    def train_valid_test_split(
+        self,
+        ds: StructureDataset,
+        frac_train: float,
+        frac_valid: float,
+        sample_frac: float = 1.0,
+        shuffle: bool = True,
+        **kwargs,
+    ) -> Tuple[Iterable[int], Iterable[int], Iterable[int]]:
+        for frac in [frac_train, frac_valid]:
+            if frac >= 1.0:
+                raise ValueError("frac_train and frac_valid must be < 1.0")
+        if sample_frac > 1.0:
+            raise ValueError("sample_frac must be <= 1.0")
+
+        upper_lim = np.ceil(len(ds) * sample_frac)
+
+        all_idx = np.arange(len(ds))
+
+        if shuffle:
+            np.random.shuffle(all_idx)
+        all_idx = all_idx[:upper_lim]
+        groups = self._get_stratification_groups(ds, shuffle=shuffle)[all_idx]
+
+        train_size = upper_lim * frac_train
+        valid_size = upper_lim * frac_valid
+
+        train_idx, test_idx = train_test_split(
+            all_idx, train_size=train_size + valid_size, stratify=groups, shuffle=shuffle
+        )
+
+        train_idx, valid_idx = train_test_split(
+            train_idx, train_size=train_size, stratify=groups[train_idx], shuffle=shuffle
+        )
+
+        return train_idx, valid_idx, test_idx
+
+    def train_test_split(
+        self,
+        ds: StructureDataset,
+        frac_train: float,
+        sample_frac: float = 1.0,
+        shuffle: bool = True,
+        **kwargs,
+    ) -> Tuple[Iterable[int], Iterable[int]]:
+        if frac_train >= 1.0:
+            raise ValueError("frac_train and frac_test must be < 1.0")
+
+        if sample_frac > 1.0:
+            raise ValueError("sample_frac must be <= 1.0")
+
+        upper_lim = np.ceil(len(ds) * sample_frac)
+
+        all_idx = np.arange(len(ds))
+
+        if shuffle:
+            np.random.shuffle(all_idx)
+        all_idx = all_idx[:upper_lim]
+        groups = self._get_stratification_groups(ds, shuffle=shuffle)[all_idx]
+
+        train_size = upper_lim * frac_train
+
+        train_idx, test_idx = train_test_split(
+            all_idx, train_size=train_size, stratify=groups, shuffle=shuffle
+        )
+
+        return train_idx, test_idx
+
+    def k_fold(self, ds: StructureDataset, k: int, shuffle: bool = True):
+        """Split the data into k folds."""
+        all_idx = np.arange(len(ds))
+        groups = self._get_stratification_groups(ds, shuffle=shuffle)[all_idx]
+
+        for train_idx, test_idx in StratifiedKFold(n_splits=k, shuffle=shuffle).split(
+            all_idx, groups
+        ):
+            yield all_idx[train_idx], all_idx[test_idx]
 
 
 class Splitter:
@@ -458,4 +542,44 @@ class KennardStoneSplitter(Splitter):
                 indices = indices[::-1]
 
             self._sorted_indices = indices
+        return self._sorted_indices
+
+
+class ClusterSplitter(Splitter):
+    """Split the data into clusters and keep clusters in different folds (as much as possible).
+
+    The approach has been proposed on `Kaggle <https://www.kaggle.com/code/lucamassaron/are-you-doing-cross-validation-the-best-way/notebook>`_.
+    In principle, we perform the following steps:
+
+    1. Scale the data (optional).
+    2. Perform PCA for de-correlation.
+    3. Perform k-means clustering.
+    """
+
+    def __init__(
+        self,
+        features: List[str],
+        scaled: bool,
+        n_pca_components: Optional[int],
+        n_clusters: int,
+        random_state: int,
+    ):
+        self.features = features
+        self.scaled = scaled
+        self.n_pca_components = n_pca_components
+        self.n_clusters = n_clusters
+        self.random_state = random_state
+        self._sorted_indices = None
+        super().__init__()
+
+    def get_sorted_indices(self, ds: StructureDataset, shuffle: bool = True) -> Iterable[int]:
+        if self._sorted_indices is None:
+            feats = ds._df[self.feature_names].values
+
+            self._sorted_indices = pca_kmeans(
+                feats,
+                n_clusters=self.n_clusters,
+                n_pca_components=self.n_pca_components,
+                random_state=self.random_state,
+            )
         return self._sorted_indices

@@ -6,6 +6,8 @@ import numpy as np
 from numpy.typing import ArrayLike
 from scipy.spatial.distance import cdist
 from sklearn.preprocessing import StandardScaler
+from sklearn.decomposition import PCA
+from sklearn.cluster import KMeans
 from tqdm import tqdm
 
 
@@ -91,3 +93,17 @@ def kennard_stone_sampling(
             pbar.update(1)
 
     return index_selected
+
+
+def pca_kmeans(X, scaled, n_pca_components, n_clusters, random_state=None):
+    """Run PCA and KMeans on the data."""
+    if scaled:
+        X = StandardScaler().fit_transform(X)
+
+    if n_pca_components is not None:
+        pca = PCA(n_components=n_pca_components)
+        X_pca = pca.fit_transform(X)
+    else:
+        X_pca = X
+    kmeans = KMeans(n_clusters=n_clusters, random_state=random_state)
+    return kmeans.fit_predict(X_pca)
