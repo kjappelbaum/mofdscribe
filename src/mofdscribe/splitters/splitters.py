@@ -2,9 +2,10 @@
 """Classes that help performing cross-validation."""
 from collections import Counter
 from tokenize import group
-from typing import Callable, Iterable, List, Tuple, Union, Optional
-from sklearn.model_selection import train_test_split, StratifiedKFold
+from typing import Callable, Iterable, List, Optional, Tuple, Union
+
 import numpy as np
+from sklearn.model_selection import StratifiedKFold, train_test_split
 
 from .utils import kennard_stone_sampling, pca_kmeans
 from ..datasets.dataset import StructureDataset

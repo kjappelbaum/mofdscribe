@@ -5,9 +5,9 @@ from typing import Callable, List, Union
 import numpy as np
 from numpy.typing import ArrayLike
 from scipy.spatial.distance import cdist
-from sklearn.preprocessing import StandardScaler
-from sklearn.decomposition import PCA
 from sklearn.cluster import KMeans
+from sklearn.decomposition import PCA
+from sklearn.preprocessing import StandardScaler
 from tqdm import tqdm
 
 
