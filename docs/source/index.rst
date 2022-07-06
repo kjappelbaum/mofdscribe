@@ -35,6 +35,7 @@ dependencies, the featurizers are currently not integrated in matminer itself.
    leaderboard
    background
    api
+   references
 
 Indices and Tables
 ------------------

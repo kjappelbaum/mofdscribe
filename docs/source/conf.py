@@ -90,6 +90,12 @@ needs_extra_options = [
     "top_50_in_top_50",
     "top_100_in_top_100",
     "top_500_in_top_500",
+    "references",
+    "considers_geometry",
+    "considers_structure_graph",
+    "encodes_chemistry",
+    "scalar",
+    "scope",
 ]
 
 needs_types = [
@@ -101,6 +107,17 @@ needs_types = [
         style="node",
     ),
 ]
+
+needs_types = [
+    dict(
+        directive="featurizer",
+        title="Featurizers",
+        prefix="F_",
+        color="#FFB039",
+        style="node",
+    ),
+]
+
 needs_id_regex = "[A-Za-z0-9 .():_]+"
 
 autodoc_type_aliases = {"ArrayLike": "numpy.typing.ArrayLike"}

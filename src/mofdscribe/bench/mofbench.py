@@ -8,7 +8,6 @@ from abc import ABC, abstractmethod
 from datetime import datetime
 from enum import Enum
 from typing import List, Optional, Union
-from unicodedata import name
 
 import numpy as np
 from pydantic import BaseModel
