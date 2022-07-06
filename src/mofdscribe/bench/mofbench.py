@@ -29,7 +29,7 @@ class BenchTaskEnum(Enum):
 
 def id_for_bench_result(bench_result):
 
-    hasher = hashlib.sha1(str(bench_result).encode("utf8"))
+    hasher = hashlib.sha1(str(bench_result).encode("utf8"))  # noqa: S303 ok to use unsafe hash here
     hash = base64.urlsafe_b64encode(hasher.digest()).decode("ascii")
 
     n = bench_result.name[:2] if bench_result.name else hash[:2]

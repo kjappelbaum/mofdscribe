@@ -53,10 +53,11 @@ def match_bb(
         is_node = 1 if match == "node" else -1
     else:
         cn = len(bb)
-        is_node = 0 if cn == 2 else -1
-
+        is_node = -1 if cn == 2 else 1
+    logger.debug(f"Matching {bb} to {prototype} with {aggregations}. Is node: {is_node}")
     coords_this = bb.cart_coords
     keys_to_match = [k for k in STRUCTURE_ENVS[prototype].keys() if int(k) * (is_node) >= 0]
+    logger.debug(f"Matching {keys_to_match}")
     rmsds_fitting = []
     rmsds_non_fitting = []
     for key in keys_to_match:
@@ -70,7 +71,8 @@ def match_bb(
             rmsds_fitting.append(rmsd)
         else:
             rmsds_non_fitting.append(mismatch_fill_value)
-
+    logger.debug(f"Fitting RMSDs: {rmsds_fitting}")
+    logger.debug(f"Non-fitting RMSDs: {rmsds_non_fitting}")
     rmsds = None
     if (len(rmsds_fitting) > 0) & skip_non_fitting_if_possible:
         rmsds = rmsds_fitting

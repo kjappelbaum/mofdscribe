@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+"""Simple baseline models."""
 from typing import Dict, Optional
 
 import numpy as np
@@ -50,7 +52,7 @@ class DummyRegressor:
         """Initialize the model.
 
         Args:
-            strategy (str, optional): Strategy to use for prediction.
+            strategy (str): Strategy to use for prediction.
                 Defaults to "mean".
         """
         self.model = SklearnDummyRegressor(strategy=strategy)
