@@ -231,7 +231,10 @@ class SpherocityIndex(RDKitAdaptor):
 
 
 class RodLikeness(RDKitAdaptor):
-    """Featurizer for the RDKit Rod Likeness descriptor."""
+    """Featurizer for the RDKit Rod Likeness descriptor.
+
+    This descriptor is computed as NPR2 - NPR1.
+    """
 
     def __init__(self):
         """Construct a new RodLikeness featurizer."""
@@ -257,7 +260,10 @@ class RodLikeness(RDKitAdaptor):
 
 
 class DiskLikeness(RDKitAdaptor):
-    """Featurizer for the RDKit Disk Likeness descriptor."""
+    """Featurizer for the RDKit Disk Likeness descriptor.
+
+    This descriptor is computed as 2 - 2 * NPR2
+    """
 
     def __init__(self):
         """Construct a new DiskLikeness featurizer."""
@@ -283,7 +289,10 @@ class DiskLikeness(RDKitAdaptor):
 
 
 class SphereLikeness(RDKitAdaptor):
-    """Featurizer for the RDKit Sphere Likeness descriptor."""
+    """Featurizer for the RDKit Sphere Likeness descriptor.
+
+    This descriptor is computed as NPR1+NPR2-1.
+    """
 
     def __init__(self):
         """Construct a new SphereLikeness featurizer."""

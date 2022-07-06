@@ -67,3 +67,5 @@ References
 .. [AMD] `Widdowson, D.; Mosca, M. M.; Pulido, A.; Cooper, A. I.; Kurlin, V. Average Minimum Distances of Periodic Point Sets – Foundational Invariants for Mapping Periodic Crystals. MATCH Communications in Mathematical and in Computer Chemistry, 2021, 87, 529–559. <https://doi.org/10.46793/match.87-3.529w>`_ 
 
 .. [PDD] `Widdowson, D.; Kurlin, V. Pointwise Distance Distributions of Periodic Point Sets. arXiv 2021. <https://doi.org/10.48550/ARXIV.2108.04798>`_
+
+.. [Wirth] `Wirth, M.; Volkamer, A.; Zoete, V.; Rippmann, F.; Michielin, O.; Rarey, M.; Sauer, W. H. B. Protein Pocket and Ligand Shape Comparison and Its Application in Virtual Screening. Journal of Computer-Aided Molecular Design, 2013, 27, 511–524. <https://doi.org/10.1007/s10822-013-9659-1>`_
