@@ -12,15 +12,16 @@ by taking `R-{first_letter_of_symbol}-{first_letter_of_feat}{year}{month}{day}{h
 The `.rst` files will end up in the `docs/source/leaderboards/task_models` folder.
 """
 
-import pandas as pd
-from glob import glob
 import os
-from pathlib import Path
-from mofdscribe.bench.mofbench import BenchResult, BenchTaskEnum
 import shutil
+from glob import glob
+from pathlib import Path
 
 import holoviews as hv
+import pandas as pd
 from loguru import logger
+
+from mofdscribe.bench.mofbench import BenchResult, BenchTaskEnum
 
 hv.extension("bokeh")
 
