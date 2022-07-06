@@ -4,9 +4,9 @@ from mofdscribe.featurizers.sbu.distance_hist_featurizer import PairwiseDistance
 
 def test_pairwise_distance_hist_featurizer(molecule, linker_molecule, triangle_structure):
     """Test the pairwise distance hist featurizer."""
-    for molecule in (molecule, linker_molecule, triangle_structure):
+    for mol in (molecule, linker_molecule, triangle_structure):
         featurizer = PairwiseDistanceHist()
-        feats = featurizer.featurize(molecule)
+        feats = featurizer.featurize(mol)
         assert len(feats) == 30
         for f in feats:
             assert f >= 0

@@ -5,9 +5,9 @@ from typing import Callable, List, Union
 import numpy as np
 from numpy.typing import ArrayLike
 from scipy.spatial.distance import cdist
-from sklearn.preprocessing import StandardScaler
-from sklearn.decomposition import PCA
 from sklearn.cluster import KMeans
+from sklearn.decomposition import PCA
+from sklearn.preprocessing import StandardScaler
 from tqdm import tqdm
 
 
@@ -95,15 +95,23 @@ def kennard_stone_sampling(
     return index_selected
 
 
-def pca_kmeans(X, scaled, n_pca_components, n_clusters, random_state=None):
+def pca_kmeans(
+    X,  # noqa: N803
+    scaled,
+    n_pca_components,
+    n_clusters,
+    random_state=None,
+    pca_kwargs=None,
+    kmeans_kwargs=None,
+):
     """Run PCA and KMeans on the data."""
     if scaled:
-        X = StandardScaler().fit_transform(X)
+        X = StandardScaler().fit_transform(X)  # noqa: N806
 
     if n_pca_components is not None:
-        pca = PCA(n_components=n_pca_components)
-        X_pca = pca.fit_transform(X)
+        pca = PCA(n_components=n_pca_components, **(pca_kwargs or {}))
+        X_pca = pca.fit_transform(X)  # noqa: N806
     else:
-        X_pca = X
-    kmeans = KMeans(n_clusters=n_clusters, random_state=random_state)
+        X_pca = X  # noqa: N806
+    kmeans = KMeans(n_clusters=n_clusters, random_state=random_state, **(kmeans_kwargs or {}))
     return kmeans.fit_predict(X_pca)

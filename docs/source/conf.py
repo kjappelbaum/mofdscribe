@@ -66,8 +66,20 @@ extensions = [
     "sphinx_copybutton",
     "sphinx.ext.viewcode",
     "sphinx.ext.autosectionlabel",
+    "sphinxcontrib.needs",
 ]
 
+needs_extra_options = ["mae", "mse", "modelname"]
+
+needs_types = [
+    dict(
+        directive="regressionmetrics",
+        title="Regression Metrics",
+        prefix="R_",
+        color="#DCB239",
+        style="node",
+    ),
+]
 
 autodoc_type_aliases = {"ArrayLike": "numpy.typing.ArrayLike"}
 

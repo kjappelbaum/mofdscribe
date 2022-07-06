@@ -1,40 +1,41 @@
 """Implement some shape featurizers from RDKit using the RDKitAdaptor."""
 from typing import List
 
-from rdkit.Chem.Descriptors3D import NPR1 as NPR1_rdkit
-from rdkit.Chem.Descriptors3D import NPR2 as NPR2_rdkit
-from rdkit.Chem.Descriptors3D import PMI1 as PMI1_rdkit
-from rdkit.Chem.Descriptors3D import PMI2 as PMI2_rdkit
-from rdkit.Chem.Descriptors3D import PMI3 as PMI3_rdkit
-from rdkit.Chem.Descriptors3D import Asphericity as Asphericity_rdkit
-from rdkit.Chem.Descriptors3D import Eccentricity as Eccentricity_rdkit
-from rdkit.Chem.Descriptors3D import InertialShapeFactor as InertialShapeFactor_rdkit
-from rdkit.Chem.Descriptors3D import RadiusOfGyration as RadiusOfGyration_rdkit
-from rdkit.Chem.Descriptors3D import SpherocityIndex as SpherocityIndex_rdkit
+from rdkit.Chem.Descriptors3D import NPR1 as NPR1_RDKIT
+from rdkit.Chem.Descriptors3D import NPR2 as NPR2_RDKIT
+from rdkit.Chem.Descriptors3D import PMI1 as PMI1_RDKIT
+from rdkit.Chem.Descriptors3D import PMI2 as PMI2_RDKIT
+from rdkit.Chem.Descriptors3D import PMI3 as PMI3_RDKIT
+from rdkit.Chem.Descriptors3D import Asphericity as Asphericity_RDKIT
+from rdkit.Chem.Descriptors3D import Eccentricity as Eccentricity_RDKIT
+from rdkit.Chem.Descriptors3D import InertialShapeFactor as InertialShapeFactor_RDKIT
+from rdkit.Chem.Descriptors3D import RadiusOfGyration as RadiusOfGyration_RDKIT
+from rdkit.Chem.Descriptors3D import SpherocityIndex as SpherocityIndex_RDKIT
 
 from .rdkitadaptor import RDKitAdaptor
 
 
 def _rod_likeness(mol):
     """Compute the ROD-likeness of a molecule."""
-    return NPR2_rdkit(mol) - NPR1_rdkit(mol)
+    return NPR2_RDKIT(mol) - NPR1_RDKIT(mol)
 
 
 def _disk_likeness(mol):
     """Compute the disk-likeness of a molecule."""
-    return 2 - 2 * NPR2_rdkit(mol)
+    return 2 - 2 * NPR2_RDKIT(mol)
 
 
 def _sphericity(mol):
     """Compute the sphericity of a molecule."""
-    return NPR1_rdkit(mol) + NPR2_rdkit(mol) - 1
+    return NPR1_RDKIT(mol) + NPR2_RDKIT(mol) - 1
 
 
 class Asphericity(RDKitAdaptor):
     """Featurizer for the RDKit Asphericity descriptor."""
 
     def __init__(self):
-        super().__init__(Asphericity_rdkit, ["asphericity"])
+        """Construct a new Asphericity featurizer."""
+        super().__init__(Asphericity_RDKIT, ["asphericity"])
 
     def citations(self) -> List[str]:
         return self.super().citations() + [
@@ -56,7 +57,8 @@ class Eccentricity(RDKitAdaptor):
     """Featurizer for the RDKit Eccentricity descriptor."""
 
     def __init__(self):
-        super().__init__(Eccentricity_rdkit, ["eccentricity"])
+        """Construct a new Eccentricity featurizer."""
+        super().__init__(Eccentricity_RDKIT, ["eccentricity"])
 
     def citations(self) -> List[str]:
         return self.super().citations() + [
@@ -78,7 +80,8 @@ class InertialShapeFactor(RDKitAdaptor):
     """Featurizer for the RDKit InertialShapeFactor descriptor."""
 
     def __init__(self):
-        super().__init__(InertialShapeFactor_rdkit, ["inertial_shape_factor"])
+        """Construct a new InertialShapeFactor featurizer."""
+        super().__init__(InertialShapeFactor_RDKIT, ["inertial_shape_factor"])
 
     def citations(self) -> List[str]:
         return self.super().citations() + [
@@ -100,7 +103,8 @@ class NPR1(RDKitAdaptor):
     """Featurizer for the RDKit NPR1 descriptor."""
 
     def __init__(self):
-        super().__init__(NPR1_rdkit, ["npr1"])
+        """Construct a new NPR1 featurizer."""
+        super().__init__(NPR1_RDKIT, ["npr1"])
 
     def citations(self) -> List[str]:
         return self.super().citations() + [
@@ -114,7 +118,8 @@ class NPR1(RDKitAdaptor):
             "number = {3}"
             "pages = {987--1003}"
             "author = {Wolfgang H. B. Sauer and Matthias K. Schwarz}"
-            "title = {Molecular Shape Diversity of Combinatorial Libraries:{\hspace{0.167em}} A Prerequisite for Broad Bioactivity}"
+            "title = {Molecular Shape Diversity of Combinatorial Libraries:"
+            " A Prerequisite for Broad Bioactivity}"
             "journal = {Journal of Chemical Information and Computer Sciences"
             ""
         ]
@@ -124,7 +129,8 @@ class NPR2(RDKitAdaptor):
     """Featurizer for the RDKit NPR2 descriptor."""
 
     def __init__(self):
-        super().__init__(NPR2_rdkit, ["npr2"])
+        """Construct a new NPR2 featurizer."""
+        super().__init__(NPR2_RDKIT, ["npr2"])
 
     def citations(self) -> List[str]:
         return self.super().citations() + [
@@ -138,7 +144,8 @@ class NPR2(RDKitAdaptor):
             "number = {3}"
             "pages = {987--1003}"
             "author = {Wolfgang H. B. Sauer and Matthias K. Schwarz}"
-            "title = {Molecular Shape Diversity of Combinatorial Libraries:{\hspace{0.167em}} A Prerequisite for Broad Bioactivity}"
+            "title = {Molecular Shape Diversity of Combinatorial Libraries:"
+            " A Prerequisite for Broad Bioactivity}"
             "journal = {Journal of Chemical Information and Computer Sciences"
             ""
         ]
@@ -148,7 +155,8 @@ class PMI1(RDKitAdaptor):
     """Featurizer for the RDKit PMI1 descriptor."""
 
     def __init__(self):
-        super().__init__(PMI1_rdkit, ["pmi1"])
+        """Construct a new PMI1 featurizer."""
+        super().__init__(PMI1_RDKIT, ["pmi1"])
 
     def citations(self) -> List[str]:
         return super().citations()
@@ -158,7 +166,8 @@ class PMI2(RDKitAdaptor):
     """Featurizer for the RDKit PMI2 descriptor."""
 
     def __init__(self):
-        super().__init__(PMI2_rdkit, ["pmi2"])
+        """Construct a new PMI2 featurizer."""
+        super().__init__(PMI2_RDKIT, ["pmi2"])
 
     def citations(self) -> List[str]:
         return super().citations()
@@ -168,7 +177,8 @@ class PMI3(RDKitAdaptor):
     """Featurizer for the RDKit PMI3 descriptor."""
 
     def __init__(self):
-        super().__init__(PMI3_rdkit, ["pmi3"])
+        """Construct a new PMI3 featurizer."""
+        super().__init__(PMI3_RDKIT, ["pmi3"])
 
     def citations(self) -> List[str]:
         return super().citations()
@@ -178,7 +188,8 @@ class RadiusOfGyration(RDKitAdaptor):
     """Featurizer for the RDKit RadiusOfGyration descriptor."""
 
     def __init__(self):
-        super().__init__(RadiusOfGyration_rdkit, ["radius_of_gyration"])
+        """Construct a new RadiusOfGyration featurizer."""
+        super().__init__(RadiusOfGyration_RDKIT, ["radius_of_gyration"])
 
     def citations(self) -> List[str]:
         return self.super().citations() + [
@@ -200,7 +211,8 @@ class SpherocityIndex(RDKitAdaptor):
     """Featurizer for the RDKit Spherocity Index descriptor."""
 
     def __init__(self):
-        super().__init__(SpherocityIndex_rdkit, ["spherocity"])
+        """Construct a new SpherocityIndex featurizer."""
+        super().__init__(SpherocityIndex_RDKIT, ["spherocity"])
 
     def citations(self) -> List[str]:
         return self.super().citations() + [
@@ -222,6 +234,7 @@ class RodLikeness(RDKitAdaptor):
     """Featurizer for the RDKit Rod Likeness descriptor."""
 
     def __init__(self):
+        """Construct a new RodLikeness featurizer."""
         super().__init__(_rod_likeness, ["rod_likeness"])
 
     def citations(self) -> List[str]:
@@ -235,7 +248,8 @@ class RodLikeness(RDKitAdaptor):
             "volume = {27},"
             "number = {6},"
             "pages = {511--524},"
-            "author = {Matthias Wirth and Andrea Volkamer and Vincent Zoete and Friedrich Rippmann and Olivier Michielin and Matthias Rarey and Wolfgang H. B. Sauer},"
+            "author = {Matthias Wirth and Andrea Volkamer and Vincent Zoete"
+            " and Friedrich Rippmann and Olivier Michielin and Matthias Rarey and Wolfgang H. B. Sauer},"
             "title = {Protein pocket and ligand shape comparison and its application in virtual screening},"
             "journal = {Journal of Computer-Aided Molecular Design}"
             "}"
@@ -246,6 +260,7 @@ class DiskLikeness(RDKitAdaptor):
     """Featurizer for the RDKit Disk Likeness descriptor."""
 
     def __init__(self):
+        """Construct a new DiskLikeness featurizer."""
         super().__init__(_disk_likeness, ["disk_likeness"])
 
     def citations(self) -> List[str]:
@@ -259,7 +274,8 @@ class DiskLikeness(RDKitAdaptor):
             "volume = {27},"
             "number = {6},"
             "pages = {511--524},"
-            "author = {Matthias Wirth and Andrea Volkamer and Vincent Zoete and Friedrich Rippmann and Olivier Michielin and Matthias Rarey and Wolfgang H. B. Sauer},"
+            "author = {Matthias Wirth and Andrea Volkamer and Vincent Zoete"
+            " and Friedrich Rippmann and Olivier Michielin and Matthias Rarey and Wolfgang H. B. Sauer},"
             "title = {Protein pocket and ligand shape comparison and its application in virtual screening},"
             "journal = {Journal of Computer-Aided Molecular Design}"
             "}"
@@ -270,6 +286,7 @@ class SphereLikeness(RDKitAdaptor):
     """Featurizer for the RDKit Sphere Likeness descriptor."""
 
     def __init__(self):
+        """Construct a new SphereLikeness featurizer."""
         super().__init__(_sphericity, ["sphere_likeness"])
 
     def citations(self) -> List[str]:
@@ -283,7 +300,8 @@ class SphereLikeness(RDKitAdaptor):
             "volume = {27},"
             "number = {6},"
             "pages = {511--524},"
-            "author = {Matthias Wirth and Andrea Volkamer and Vincent Zoete and Friedrich Rippmann and Olivier Michielin and Matthias Rarey and Wolfgang H. B. Sauer},"
+            "author = {Matthias Wirth and Andrea Volkamer and Vincent Zoete"
+            " and Friedrich Rippmann and Olivier Michielin and Matthias Rarey and Wolfgang H. B. Sauer},"
             "title = {Protein pocket and ligand shape comparison and its application in virtual screening},"
             "journal = {Journal of Computer-Aided Molecular Design}"
             "}"

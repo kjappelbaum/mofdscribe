@@ -30,6 +30,13 @@ class PairwiseDistanceStats(BaseFeaturizer):
     """
 
     def __init__(self, aggregations: Tuple[str] = ("mean", "std", "max", "min")) -> None:
+        """Create a new PairwiseDistanceStats featurizer.
+
+        Args:
+            aggregations (Tuple[str], optional): Aggregations to compute over the pairwise
+                distances. Must be one of :py:obj:`ARRAY_AGGREGATORS`.
+                Defaults to ("mean", "std", "max", "min").
+        """
         self.aggregtations = aggregations
 
     def feature_labels(self) -> List[str]:

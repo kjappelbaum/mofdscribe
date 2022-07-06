@@ -176,6 +176,8 @@ Which returns an object with the most relevant regression metrics.
 Running a benchmark
 ----------------------
 
+The benchmarks will run k=5-fold cross validation on the dataset. We chose this over a single split, because this is more robust to randomness (and gives at least some indication of the variance of the estimate).
+
 
 Referencing datasets and featurizers
 --------------------------------------

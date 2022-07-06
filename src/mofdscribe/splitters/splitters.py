@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 """Classes that help performing cross-validation."""
 from collections import Counter
-from tokenize import group
-from typing import Callable, Iterable, List, Tuple, Union, Optional
-from sklearn.model_selection import train_test_split, StratifiedKFold
+from typing import Any, Callable, Dict, Iterable, List, Optional, Tuple, Union
+
 import numpy as np
+from sklearn.model_selection import StratifiedKFold, train_test_split
 
 from .utils import kennard_stone_sampling, pca_kmeans
 from ..datasets.dataset import StructureDataset
@@ -39,7 +39,7 @@ class StratifiedSplitter:
         if sample_frac > 1.0:
             raise ValueError("sample_frac must be <= 1.0")
 
-        upper_lim = np.ceil(len(ds) * sample_frac)
+        upper_lim = int(np.ceil(len(ds) * sample_frac))
 
         all_idx = np.arange(len(ds))
 
@@ -48,8 +48,8 @@ class StratifiedSplitter:
         all_idx = all_idx[:upper_lim]
         groups = self._get_stratification_groups(ds, shuffle=shuffle)[all_idx]
 
-        train_size = upper_lim * frac_train
-        valid_size = upper_lim * frac_valid
+        train_size = int(upper_lim * frac_train)
+        valid_size = int(upper_lim * frac_valid)
 
         train_idx, test_idx = train_test_split(
             all_idx, train_size=train_size + valid_size, stratify=groups, shuffle=shuffle
@@ -75,7 +75,7 @@ class StratifiedSplitter:
         if sample_frac > 1.0:
             raise ValueError("sample_frac must be <= 1.0")
 
-        upper_lim = np.ceil(len(ds) * sample_frac)
+        upper_lim = int(np.ceil(len(ds) * sample_frac))
 
         all_idx = np.arange(len(ds))
 
@@ -84,7 +84,7 @@ class StratifiedSplitter:
         all_idx = all_idx[:upper_lim]
         groups = self._get_stratification_groups(ds, shuffle=shuffle)[all_idx]
 
-        train_size = upper_lim * frac_train
+        train_size = int(upper_lim * frac_train)
 
         train_idx, test_idx = train_test_split(
             all_idx, train_size=train_size, stratify=groups, shuffle=shuffle
@@ -92,9 +92,17 @@ class StratifiedSplitter:
 
         return train_idx, test_idx
 
-    def k_fold(self, ds: StructureDataset, k: int, shuffle: bool = True):
+    def k_fold(
+        self, ds: StructureDataset, k: int, shuffle: bool = True, sample_frac: float = 1.0
+    ) -> List[Tuple[int, int]]:
         """Split the data into k folds."""
         all_idx = np.arange(len(ds))
+        if sample_frac > 1.0:
+            raise ValueError("sample_frac must be <= 1.0")
+        number_of_points = int(len(ds) * sample_frac)
+        if shuffle:
+            np.random.shuffle(all_idx)
+        all_idx = all_idx[:number_of_points]
         groups = self._get_stratification_groups(ds, shuffle=shuffle)[all_idx]
 
         for train_idx, test_idx in StratifiedKFold(n_splits=k, shuffle=shuffle).split(
@@ -215,10 +223,23 @@ class Splitter:
 
         return train_inds, test_inds
 
-    def k_fold(self, ds: StructureDataset, k: int, shuffle: bool = True):
+    def k_fold(
+        self,
+        ds: StructureDataset,
+        k: int,
+        shuffle: bool = True,
+        sample_frac: float = 1.0,
+    ):
         """Split the data into k folds."""
         indices = self.get_sorted_indices(ds, shuffle=shuffle)
         indices = np.array(indices)
+        if sample_frac > 1.0:
+            raise ValueError("sample_frac must be <= 1.0")
+        number_of_points = int(len(ds) * sample_frac)
+        if shuffle:
+            np.random.shuffle(indices)
+        indices = indices[:number_of_points]
+
         fold_sizes = np.full(k, len(ds) // k, dtype=int)
         fold_sizes[: len(ds) % k] += 1
         current = 0
@@ -545,10 +566,12 @@ class KennardStoneSplitter(Splitter):
         return self._sorted_indices
 
 
+# ToDo: n_pca_components could also be "auto" based on elbow criterion
 class ClusterSplitter(Splitter):
     """Split the data into clusters and keep clusters in different folds (as much as possible).
 
-    The approach has been proposed on `Kaggle <https://www.kaggle.com/code/lucamassaron/are-you-doing-cross-validation-the-best-way/notebook>`_.
+    The approach has been proposed on
+    `Kaggle <https://www.kaggle.com/code/lucamassaron/are-you-doing-cross-validation-the-best-way/notebook>`_.
     In principle, we perform the following steps:
 
     1. Scale the data (optional).
@@ -558,28 +581,163 @@ class ClusterSplitter(Splitter):
 
     def __init__(
         self,
-        features: List[str],
-        scaled: bool,
-        n_pca_components: Optional[int],
-        n_clusters: int,
-        random_state: int,
+        feature_names: List[str],
+        scaled: bool = True,
+        n_pca_components: Optional[int] = "mle",
+        n_clusters: int = 4,
+        random_state: int = 42,
+        pca_kwargs: Optional[Dict[str, Any]] = None,
+        kmeans_kwargs: Optional[Dict[str, Any]] = None,
     ):
-        self.features = features
+        """Construct a ClusterSplitter.
+
+        Args:
+            feature_names (List[str]): Names of features to consider.
+            scaled (bool): If True, scale the data before clustering.
+                Defaults to True.
+            n_pca_components (Optional[int]): Number of components to use for PCA.
+                If "mle", use the number of components that maximizes the variance.
+                Defaults to "mle".
+            n_clusters (int): Number of clusters to use.
+                Defaults to 4.
+            random_state (int): Random seed.
+                Defaults to 42.
+            pca_kwargs (Optional[Dict[str, Any]]): Keyword arguments to pass to PCA.
+                Defaults to None.
+            kmeans_kwargs (Optional[Dict[str, Any]]): Keyword arguments to pass to k-means.
+                Defaults to None.
+        """
+        self.feature_names = feature_names
         self.scaled = scaled
         self.n_pca_components = n_pca_components
         self.n_clusters = n_clusters
         self.random_state = random_state
         self._sorted_indices = None
+        self.ascending = False
+        self._pca_kwargs = pca_kwargs
+        self._kmeans_kwargs = kmeans_kwargs
         super().__init__()
 
     def get_sorted_indices(self, ds: StructureDataset, shuffle: bool = True) -> Iterable[int]:
         if self._sorted_indices is None:
             feats = ds._df[self.feature_names].values
 
-            self._sorted_indices = pca_kmeans(
+            clusters = pca_kmeans(
                 feats,
                 n_clusters=self.n_clusters,
                 n_pca_components=self.n_pca_components,
                 random_state=self.random_state,
+                scaled=self.scaled,
+                pca_kwargs=self._pca_kwargs,
+                kmeans_kwargs=self._kmeans_kwargs,
             )
+            random_numbers = np.arange(len(clusters))
+            if shuffle:
+                np.random.shuffle(random_numbers)
+
+            t = [(v, i, random_numbers[i]) for i, v in enumerate(clusters)]
+            t.sort(reverse=not self.ascending, key=lambda x: (x[0], x[2]))
+            indices = [i for _, i, _ in t]
+            self._sorted_indices = indices
         return self._sorted_indices
+
+
+class ClusterStratifiedSplitter(StratifiedSplitter):
+    """Split the data into clusters and stratify on those clusters
+
+    The approach has been proposed on
+    `Kaggle <https://www.kaggle.com/code/lucamassaron/are-you-doing-cross-validation-the-best-way/notebook>`_.
+    In principle, we perform the following steps:
+
+    1. Scale the data (optional).
+    2. Perform PCA for de-correlation.
+    3. Perform k-means clustering.
+    """
+
+    def __init__(
+        self,
+        feature_names: List[str],
+        scaled: bool = True,
+        n_pca_components: Optional[int] = "mle",
+        n_clusters: int = 4,
+        random_state: int = 42,
+        pca_kwargs: Optional[Dict[str, Any]] = None,
+        kmeans_kwargs: Optional[Dict[str, Any]] = None,
+    ):
+        """Construct a ClusterStratifiedSplitter.
+
+        Args:
+            feature_names (List[str]): Names of features to consider.
+            scaled (bool): If True, scale the data before clustering.
+                Defaults to True.
+            n_pca_components (Optional[int]): Number of components to use for PCA.
+                If "mle", use the number of components that maximizes the variance.
+                Defaults to "mle".
+            n_clusters (int): Number of clusters to use.
+                Defaults to 4.
+            random_state (int): Random seed.
+                Defaults to 42.
+            pca_kwargs (Optional[Dict[str, Any]]): Keyword arguments to pass to PCA.
+                Defaults to None.
+            kmeans_kwargs (Optional[Dict[str, Any]]): Keyword arguments to pass to k-means.
+                Defaults to None.
+        """
+        self.feature_names = feature_names
+        self.scaled = scaled
+        self.n_pca_components = n_pca_components
+        self.n_clusters = n_clusters
+        self.random_state = random_state
+        self._stratification_groups = None
+        self.ascending = False
+        self._pca_kwargs = pca_kwargs
+        self._kmeans_kwargs = kmeans_kwargs
+        super().__init__()
+
+    def _get_stratification_groups(
+        self, ds: StructureDataset, shuffle: bool = True
+    ) -> Iterable[int]:
+        if self._stratification_groups is None:
+            feats = ds._df[self.feature_names].values
+
+            clusters = pca_kmeans(
+                feats,
+                n_clusters=self.n_clusters,
+                n_pca_components=self.n_pca_components,
+                random_state=self.random_state,
+                scaled=self.scaled,
+                pca_kwargs=self._pca_kwargs,
+                kmeans_kwargs=self._kmeans_kwargs,
+            )
+            self._stratification_groups = clusters
+        return self._stratification_groups
+
+
+class SingleColumnStratifiedSplitter(StratifiedSplitter):
+    """Stratify splits on a single column of dataset dataframe."""
+
+    def __init__(self, feature: str, bins: Union[str, int] = "auto") -> None:
+        """Construct a SingleColumnStratifiedSplitter.
+
+        Args:
+            feature (str): Name of the feature to stratify on.
+            bins (Union[str, int]): Number of bins to use.
+                If "auto",  use the maximum of the ‘sturges’ and ‘fd’ estimators.
+                Provides good all around performance.
+                Defaults to "auto".
+                For all options, see the documentation of the
+                :py:func:`numpy.histogram_bin_edges` function.
+        """
+        self.bins = bins
+        self.feature = feature
+        super().__init__()
+        self._stratification_groups = None
+
+    def _get_stratification_groups(
+        self, ds: StructureDataset, shuffle: bool = True
+    ) -> Iterable[int]:
+        if self._stratification_groups is None:
+            bins = np.histogram_bin_edges(ds._df[self.feature].values, bins=self.bins)[1:]
+            strat = np.digitize(ds._df[self.feature].values, bins=bins, right=True)
+
+            self._stratification_groups = strat
+        return self._stratification_groups

@@ -1,7 +1,7 @@
 MOFBench
 -----------
 
-LogkH
+Base classes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. automodule:: mofdscribe.bench.logkHCO2
+.. automodule:: mofdscribe.bench.mofbench
     :members:

@@ -36,7 +36,18 @@ class PairwiseDistanceHist(BaseFeaturizer):
         bin_size: float = 0.5,
         density: bool = True,
     ) -> None:
+        """Create a new PairwiseDistanceHist featurizer.
 
+        Args:
+            lower_bound (float): Lower bound of the histogram.
+                Defaults to 0.0.
+            upper_bound (float): Upper bound of the histogram.
+                Defaults to 15.0.
+            bin_size (float): Size of the bins.
+                Defaults to 0.5.
+            density (bool): Whether to return the density or the counts.
+                Defaults to True.
+        """
         self.lower_bound = lower_bound
         self.upper_bound = upper_bound
         self.bin_size = bin_size

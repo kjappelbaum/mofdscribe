@@ -1,12 +1,20 @@
-"""In-dataset predictions for the logarithmitic CO2 Henry coefficients"""
-from typing import Optional
+# -*- coding: utf-8 -*-
+"""Test the basic benchmark scaffolding."""
+import os
+from typing import Dict, Optional
 
+import numpy as np
+import pytest
+from pymatgen.core import Structure
+from sklearn.linear_model import LinearRegression
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
+
+from mofdscribe.bench.mofbench import BenchResult, MOFBench, MOFBenchRegression
 from mofdscribe.datasets import CoREDataset
-from mofdscribe.splitters import ClusterStratifiedSplitter, DensitySplitter
+from mofdscribe.splitters import ClusterStratifiedSplitter
 
-from .mofbench import MOFBenchRegression
-
-_FEATURES = [
+FEATURES = [
     "total_POV_gravimetric",
     "mc_CRY-chi-0-all",
     "mc_CRY-chi-1-all",
@@ -186,64 +194,60 @@ _FEATURES = [
     "sum-D_func-alpha-3-all",
 ]
 
-__all__ = ("LogkHCO2InterpolationBench",)
 
+class MyDummyModel:
+    """Dummy model."""
 
-class LogkHCO2InterpolationBench(MOFBenchRegression):
-    """Benchmarking models for the logarithmic CO2 Henry coefficient
-    under in-distribution conditions.
+    def __init__(self, lr_kwargs: Optional[Dict] = None):
+        """Initialize the model.
 
-    In-distribution implies that we use a cluster stratified splitter
-    that ensures that the ratios of different clusters in the training
-    and test set are the same.
-    """
-
-    def __init__(
-        self,
-        model,
-        version: Optional[str] = "v0.0.1",
-        features: Optional[str] = None,
-        model_name: Optional[str] = None,
-        reference: Optional[str] = None,
-        implementation: Optional[str] = None,
-    ):
-        super().__init__(
-            model,
-            ds=CoREDataset(version),
-            splitter=ClusterStratifiedSplitter(_FEATURES),
-            target=["logKH_CO2"],
-            k=5,
-            version=version,
-            features=features,
-            model_name=model_name,
-            reference=reference,
-            implementation=implementation,
+        Args:
+            lr_kwargs (Optional[Dict], optional): Keyword arguments
+                that are passed to the linear regressor.
+                Defaults to None.
+        """
+        self.model = Pipeline(
+            [("scaler", StandardScaler()), ("lr", LinearRegression(**(lr_kwargs or {})))]
         )
 
+    def featurize(self, s: Structure):
+        """You might want to use a lookup in some dataframe instead.
 
-class LogkHCO2ExtrapolationBench(MOFBenchRegression):
-    """Benchmarking models for the logarithmic CO2 Henry coefficient
-    under out-of-distribution conditions.
-    """
+        Or use some mofdscribe featurizers.
+        """
+        return s.density
 
-    def __init__(
-        self,
-        model,
-        version: Optional[str] = "v0.0.1",
-        features: Optional[str] = None,
-        model_name: Optional[str] = None,
-        reference: Optional[str] = None,
-        implementation: Optional[str] = None,
-    ):
-        super().__init__(
-            model,
-            ds=CoREDataset(version),
-            splitter=DensitySplitter(),
+    def train(self, idx, structures, y):
+        x = np.array([self.featurize(s) for s in structures]).reshape(-1, 1)
+        self.model.fit(x, y)
+
+    def predict(self, idx, structures):
+        x = np.array([self.featurize(s) for s in structures]).reshape(-1, 1)
+        return self.model.predict(x)
+
+
+def test_mofbench(tmp_path_factory):
+    """Test the MOFBench class."""
+    with pytest.raises(TypeError):
+        bench = MOFBench(
+            model=MyDummyModel(),
+            ds=CoREDataset(),
+            splitter=ClusterStratifiedSplitter(feature_names=FEATURES),
             target=["logKH_CO2"],
-            k=5,
-            version=version,
-            features=features,
-            model_name=model_name,
-            reference=reference,
-            implementation=implementation,
         )
+    bench = MOFBenchRegression(
+        model=MyDummyModel(),
+        ds=CoREDataset(),
+        splitter=ClusterStratifiedSplitter(feature_names=FEATURES),
+        target=["logKH_CO2"],
+        debug=True,
+    )
+    assert isinstance(bench, MOFBench)
+
+    report = bench.bench()
+    assert isinstance(report, BenchResult)
+    assert isinstance(report.json(), str)
+    path = os.path.join(tmp_path_factory.mktemp("report"), "test.json")
+    report.save_json(path)
+    read_bench = BenchResult.parse_file(path)
+    assert isinstance(read_bench, BenchResult)
