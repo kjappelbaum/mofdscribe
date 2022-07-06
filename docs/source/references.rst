@@ -56,3 +56,14 @@ References
     sets – foundational invariants for mapping periodic crystals. MATCH
     Communications in Mathematical and in Computer Chemistry, 87(3), 529-559
     (2022). <https://doi.org/10.46793/match.87-3.529W>`_
+
+.. [Hung2022] `Hung, T.-H.; Xu, Z.-X.; Kang, D.-Y.; Lin, L.-C. Chemistry-Encoded Convolutional Neural Networks for Predicting Gaseous Adsorption in Porous Materials. The Journal of Physical Chemistry C, 2022, 126, 2813–2822. <https://doi.org/10.1021/acs.jpcc.1c09649>`_
+
+.. [Cho2021] `Cho, E. H.; Lin, L.-C. Nanoporous Material Recognition via 3D Convolutional Neural Networks: Prediction of Adsorption Properties. The Journal of Physical Chemistry Letters, 2021, 12, 2279–2285. <https://doi.org/10.1021/acs.jpclett.1c00293>`_
+
+
+.. [Dubbeldam] `Dubbeldam, D.; Calero, S.; Ellis, D. E.; Snurr, R. Q. RASPA: Molecular Simulation Software for Adsorption and Diffusion in Flexible Nanoporous Materials. Molecular Simulation, 2015, 42, 81–101. <https://doi.org/10.1080/08927022.2015.1010082>`_
+
+.. [AMD] `Widdowson, D.; Mosca, M. M.; Pulido, A.; Cooper, A. I.; Kurlin, V. Average Minimum Distances of Periodic Point Sets – Foundational Invariants for Mapping Periodic Crystals. MATCH Communications in Mathematical and in Computer Chemistry, 2021, 87, 529–559. <https://doi.org/10.46793/match.87-3.529w>`_ 
+
+.. [PDD] `Widdowson, D.; Kurlin, V. Pointwise Distance Distributions of Periodic Point Sets. arXiv 2021. <https://doi.org/10.48550/ARXIV.2108.04798>`_
