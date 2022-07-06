@@ -60,3 +60,18 @@ For this, you can either provide your building blocks that you extracted with an
     :maxdepth: 1  
 
     featurizers/sbu_centered/*
+
+
+Encoding of chemistry 
+-----------------------
+
+Many featurizers that traditionally do not capture the chemistry of the structure are
+implemented in mofdscribe in a way that still allows to capture the chemistry. 
+One example for this are the topology-based descriptors.
+
+We encode the chemistry in those case by computing the descriptor for substructures of subsets of element types; for instance, for the metal- or organic-substructure.
+
+.. image:: figures/persistent_image_chemistry.png
+    :width: 400px
+    :align: center
+    :alt: Chemistry encoding

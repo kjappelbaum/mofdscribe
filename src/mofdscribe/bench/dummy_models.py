@@ -29,10 +29,16 @@ class DensityRegressor:
             ]
         )
 
-    def featurize(self, s: Structure):
+    def featurize(self, s: Structure) -> float:
         """You might want to use a lookup in some dataframe instead.
 
         Or use some mofdscribe featurizers.
+
+        Args:
+            s (Structure): Structure to featurize.
+
+        Returns:
+            float: Density of the structure.
         """
         return s.density
 
