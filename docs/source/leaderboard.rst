@@ -8,7 +8,7 @@ Use the table of contents to navigate to the leaderboards for the various tasks.
    :maxdepth: 2
    :caption: Leaderboards per task
 
-   leaderboards/logkHCO2
+   leaderboards/logkH_CO2_int
 
 Contributing 
 ------------------

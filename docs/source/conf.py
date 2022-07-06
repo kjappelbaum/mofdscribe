@@ -69,7 +69,28 @@ extensions = [
     "sphinxcontrib.needs",
 ]
 
-needs_extra_options = ["mae", "mse", "modelname"]
+needs_extra_options = [
+    "start_time",
+    "end_time",
+    "version",
+    "features",
+    "name",
+    "task",
+    "model_type",
+    "reference",
+    "implementation",
+    "mofdscribe_version",
+    "mean_squared_error",
+    "mean_absolute_error",
+    "r2_score",
+    "max_error",
+    "mean_absolute_percentage_error",
+    "top_5_in_top_5",
+    "top_10_in_top_10",
+    "top_50_in_top_50",
+    "top_100_in_top_100",
+    "top_500_in_top_500",
+]
 
 needs_types = [
     dict(
@@ -80,6 +101,7 @@ needs_types = [
         style="node",
     ),
 ]
+needs_id_regex = "[A-Za-z0-9 .():_]+"
 
 autodoc_type_aliases = {"ArrayLike": "numpy.typing.ArrayLike"}
 

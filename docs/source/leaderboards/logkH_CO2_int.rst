@@ -1,5 +1,5 @@
-Prediction of logarithmic Henry coefficient for carbon dioxide
-==================================================================
+Prediction of logarithmic Henry coefficient for carbon dioxide (in-dataset)
+============================================================================
 
 Task description
 -----------------
@@ -14,22 +14,29 @@ a splitter that stratifies on k-means clusters in the dataset and therefore ensu
 test data is similar to the training data.
 
 
+Overview
+------------
+
+.. raw:: html
+   :file: logKH_CO2_int_plot.html
+
+
 Leaderboard
 -------------
 
 .. needtable::
    :types: regressionmetrics
    :style: datatable
-   :columns: id, modelname, mae, mse
-
-
-
+   :filter: task == "BenchTaskEnum.logKH_CO2_int"
+   :class: table-striped
+   :columns: id, name, mean_squared_error, mean_absolute_error, r2_score,  max_error, top_50_in_top_50, top_100_in_top_100
 
 
 Models
 ------
 
 .. toctree::
-   :maxdepth: 2
+   :glob:
+   :maxdepth: 1
 
-   logKHCO2_models/dummy_mean
+   logKH_CO2_int_models/*

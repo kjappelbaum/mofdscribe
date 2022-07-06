@@ -1,9 +1,14 @@
 # -*- coding: utf-8 -*-
 """Bases for MOF ML model benchmarking."""
+import base64
+import hashlib
+import os
 import time
 from abc import ABC, abstractmethod
 from datetime import datetime
+from enum import Enum
 from typing import List, Optional, Union
+from unicodedata import name
 
 import numpy as np
 from pydantic import BaseModel
@@ -17,6 +22,25 @@ from mofdscribe.version import get_version
 __all__ = ["MOFBenchRegression", "BenchResult"]
 
 
+class BenchTaskEnum(Enum):
+    """Enum for benchmark tasks."""
+
+    logKH_CO2_int = "logKH_CO2_int"
+
+
+def id_for_bench_result(bench_result):
+
+    hasher = hashlib.sha1(str(bench_result).encode("utf8"))
+    hash = base64.urlsafe_b64encode(hasher.digest()).decode("ascii")
+
+    n = bench_result.name[:2] if bench_result.name else hash[:2]
+    f = bench_result.features[:2] if bench_result.features else hash[2:4]
+    m = bench_result.model_type[:2] if bench_result.model_type else hash[4:6]
+    r = bench_result.reference[:2] if bench_result.reference else hash[6:8]
+    datetime_part = bench_result.start_time.strftime("%Y%m%d%H%M%S")
+    return f"R{n}{f}{m}{r}{datetime_part}"
+
+
 class BenchResult(BaseModel):
     """Model for benchmark results."""
 
@@ -26,14 +50,22 @@ class BenchResult(BaseModel):
     metrics: RegressionMetricCollection
     version: Optional[str]
     features: Optional[str]
-    model_name: Optional[str]
+    name: str
+    task: BenchTaskEnum
+    model_type: Optional[str]
     reference: Optional[str]
     implementation: Optional[str]
     mofdscribe_version: str
 
-    def save_json(self, path: str) -> None:
+    def save_json(self, folder: Union[str, os.PathLike]) -> None:
         """Save benchmark results to json file."""
-        with open(path, "w") as handle:
+        with open(
+            os.path.join(
+                folder,
+                f"{id_for_bench_result(self)}.json",
+            ),
+            "w",
+        ) as handle:
             handle.write(self.json())
 
 
@@ -85,10 +117,12 @@ class MOFBench(ABC):
         ds: StructureDataset,
         splitter: Union[Splitter, StratifiedSplitter],
         target: List[str],
+        name: str,
+        task: BenchTaskEnum,
         k: int = 5,
+        model_type: Optional[str] = None,
         version: Optional[str] = None,
         features: Optional[str] = None,
-        model_name: Optional[str] = None,
         reference: Optional[str] = None,
         implementation: Optional[str] = None,
         debug: bool = False,
@@ -99,9 +133,11 @@ class MOFBench(ABC):
         self._fitted = False
         self._ds = ds
         self._splitter = splitter
+        self._task = task
         self._version = version
         self._features = features
-        self._model_name = model_name
+        self._name = name
+        self._model_type = model_type
         self._reference = reference
         self._implementation = implementation
         self._debug = debug
@@ -129,7 +165,9 @@ class MOFBench(ABC):
             metrics=metrics,
             version=self._version,
             features=self._features,
-            model_name=self._model_name,
+            name=self._name,
+            model_type=self._model_type,
+            task=self._task,
             reference=self._reference,
             implementation=self._implementation,
             mofdscribe_version=get_version(),

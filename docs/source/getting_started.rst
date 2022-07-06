@@ -1,42 +1,6 @@
 Getting started
 ==================
 
-Installation
---------------
-Do to the external dependencies, we recommend installation via conda
-
-.. code-block:: shell
-
-    $ conda install -c conda-forge mofdscribe
-
-The most recent release can be installed from
-`PyPI <https://pypi.org/project/mofdscribe>`_ with:
-
-.. code-block:: shell
-
-    $ pip install mofdscribe
-
-However, in this case, the following dependencies need to be manually installed
-(e.g. via conda):
-
-.. code-block:: shell
-
-    conda install -c conda-forge cgal zeopp-lsmo raspa2
-
-The most recent code and data can be installed directly from GitHub with:
-
-.. code-block:: shell
-
-    $ pip install git+https://github.com/kjappelbaum/mofdscribe.git
-
-To install in development mode, use the following:
-
-.. code-block:: shell
-
-    $ git clone git+https://github.com/kjappelbaum/mofdscribe.git
-    $ cd mofdscribe
-    $ pip install -e .
-
 
 Featurizing a MOF
 ------------------
@@ -178,6 +142,78 @@ Running a benchmark
 
 The benchmarks will run k=5-fold cross validation on the dataset. We chose this over a single split, because this is more robust to randomness (and gives at least some indication of the variance of the estimate).
 
+For running a benchmark with your model, your model must be in the form of a class with `train(idx, structures, y)` and `predict(idx, structures)` methods, for example 
+
+.. code-block:: python
+
+    class MyDummyModel:
+        """Dummy model."""
+
+        def __init__(self, lr_kwargs: Optional[Dict] = None):
+            """Initialize the model.
+
+            Args:
+                lr_kwargs (Optional[Dict], optional): Keyword arguments
+                    that are passed to the linear regressor.
+                    Defaults to None.
+            """
+            self.model = Pipeline(
+                [("scaler", StandardScaler()), ("lr", LinearRegression(**(lr_kwargs or {})))]
+            )
+
+        def featurize(self, s: Structure):
+            """You might want to use a lookup in some dataframe instead.
+
+            Or use some mofdscribe featurizers.
+            """
+            return s.density
+
+        def train(self, idx, structures, y):
+            x = np.array([self.featurize(s) for s in structures]).reshape(-1, 1)
+            self.model.fit(x, y)
+
+        def predict(self, idx, structures):
+            x = np.array([self.featurize(s) for s in structures]).reshape(-1, 1)
+            return self.model.predict(x)
+
+If you have a model in this form, you can use a bench class
+
+.. code-block:: python
+
+    from mofdscribe.bench.logKHCO2 import LogkHCO2InterpolationBench
+
+    bench = LogkHCO2InterpolationBench(MyDummyModel(), name='My great model')
+    report = bench.bench()
+    report.save_json(<directory>)
+
+You can test this using some dummy models implemented in mofdscribe
+
+.. code-block:: python
+
+    from mofdscribe.bench.dummy_models import DensityRegressor
+
+    logkHCO2_interpolation_density = LogkHCO2InterpolationBench(
+        DensityRegressor(),
+        version="v0.0.1",
+        name="linear density",
+        features="density",
+        model_type="linear regression /w polynomial features",
+        implementation="mofdscribe",
+        reference="mofdscribe",
+    )
+
+For testing purposes, you can set :code:`debug=True` in the constructors of the benchmark classes.
+
+Which will generate a report file that you can use to make a pull request for adding your model to the leaderboard. 
+
+For this: 
+
+1. Fork the repository.
+2. Make a new branch (e.g. named :code:`add_{modelname}`).
+3. Add your :code:`.json` file to the corresponding :code:`bench_results` sub folder. Do not change the name of the file, it will be used as unique identifier.
+4. We encourage you to also add a :code:`.rst` file with a description of your model into the same directory
+5. Push your branch to the repository.
+6. Make a pull request.
 
 Referencing datasets and featurizers
 --------------------------------------

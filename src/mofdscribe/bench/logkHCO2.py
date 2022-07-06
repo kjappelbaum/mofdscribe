@@ -201,9 +201,10 @@ class LogkHCO2InterpolationBench(MOFBenchRegression):
     def __init__(
         self,
         model,
+        name: str,
         version: Optional[str] = "v0.0.1",
         features: Optional[str] = None,
-        model_name: Optional[str] = None,
+        model_type: Optional[str] = None,
         reference: Optional[str] = None,
         implementation: Optional[str] = None,
     ):
@@ -212,10 +213,12 @@ class LogkHCO2InterpolationBench(MOFBenchRegression):
             ds=CoREDataset(version),
             splitter=ClusterStratifiedSplitter(_FEATURES),
             target=["logKH_CO2"],
+            task="logKH_CO2_int",
             k=5,
             version=version,
             features=features,
-            model_name=model_name,
+            name=name,
+            model_type=model_type,
             reference=reference,
             implementation=implementation,
         )

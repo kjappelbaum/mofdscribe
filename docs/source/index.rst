@@ -30,6 +30,7 @@ dependencies, the featurizers are currently not integrated in matminer itself.
    :maxdepth: 2
    :caption: Table of Contents
 
+   installation
    getting_started
    leaderboard
    background

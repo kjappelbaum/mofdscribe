@@ -10,7 +10,7 @@ from sklearn.linear_model import LinearRegression
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 
-from mofdscribe.bench.mofbench import BenchResult, MOFBench, MOFBenchRegression
+from mofdscribe.bench.mofbench import BenchResult, MOFBench, MOFBenchRegression, id_for_bench_result
 from mofdscribe.datasets import CoREDataset
 from mofdscribe.splitters import ClusterStratifiedSplitter
 
@@ -238,6 +238,8 @@ def test_mofbench(tmp_path_factory):
     bench = MOFBenchRegression(
         model=MyDummyModel(),
         ds=CoREDataset(),
+        name="my model",
+        task="logKH_CO2_int",
         splitter=ClusterStratifiedSplitter(feature_names=FEATURES),
         target=["logKH_CO2"],
         debug=True,
@@ -247,7 +249,9 @@ def test_mofbench(tmp_path_factory):
     report = bench.bench()
     assert isinstance(report, BenchResult)
     assert isinstance(report.json(), str)
-    path = os.path.join(tmp_path_factory.mktemp("report"), "test.json")
+    path = os.path.join(tmp_path_factory.mktemp("report"))
     report.save_json(path)
-    read_bench = BenchResult.parse_file(path)
+    read_bench = BenchResult.parse_file(
+        os.path.join(path, f"{id_for_bench_result(report)}.json"),
+    )
     assert isinstance(read_bench, BenchResult)
