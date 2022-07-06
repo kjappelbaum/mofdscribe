@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 """Metrics for the regression setting."""
 from __future__ import annotations
+
 from typing import List
+
 import numpy as np
 from numpy.typing import ArrayLike
 from pydantic import BaseModel
