@@ -6,6 +6,7 @@ import numpy as np
 
 from mofdscribe.datasets.core_dataset import CoREDataset
 from mofdscribe.splitters.splitters import (
+    LOCOCV,
     ClusterSplitter,
     ClusterStratifiedSplitter,
     DensitySplitter,
@@ -15,7 +16,6 @@ from mofdscribe.splitters.splitters import (
     RandomSplitter,
     SingleColumnStratifiedSplitter,
     TimeSplitter,
-    LOCOCV,
 )
 
 FEATURES = [

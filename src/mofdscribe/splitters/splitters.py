@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """Classes that help performing cross-validation."""
 from collections import Counter
-from os import scandir
 from typing import Any, Callable, Dict, Iterable, List, Optional, Tuple, Union
 
 import numpy as np
@@ -763,10 +762,17 @@ class LOCOCV(Splitter):
     the splitting methods.
 
     References:
+        [Kramer] `Kramer, C.; Gedeck, P. Leave-Cluster-Out Cross-Validation
+            Is Appropriate for Scoring Functions Derived from Diverse Protein Data Sets.
+            Journal of Chemical Information and Modeling, 2010, 50, 1961–1969.
+            <https://doi.org/10.1021/ci100264e>`_
 
-        [Kramer] `Kramer, C.; Gedeck, P. Leave-Cluster-Out Cross-Validation Is Appropriate for Scoring Functions Derived from Diverse Protein Data Sets. Journal of Chemical Information and Modeling, 2010, 50, 1961–1969. <https://doi.org/10.1021/ci100264e>`_
-
-        [Meredig] `Meredig, B.; Antono, E.; Church, C.; Hutchinson, M.; Ling, J.; Paradiso, S.; Blaiszik, B.; Foster, I.; Gibbons, B.; Hattrick-Simpers, J.; Mehta, A.; Ward, L. Can Machine Learning Identify the next High-Temperature Superconductor? Examining Extrapolation Performance for Materials Discovery. Molecular Systems Design &amp; Engineering, 2018, 3, 819–825. <https://doi.org/10.1039/c8me00012c>`_
+        [Meredig] `Meredig, B.; Antono, E.; Church, C.; Hutchinson, M.; Ling, J.; Paradiso,
+            S.; Blaiszik, B.; Foster, I.; Gibbons, B.; Hattrick-Simpers, J.; Mehta, A.; Ward, L.
+            Can Machine Learning Identify the next High-Temperature Superconductor?
+            Examining Extrapolation Performance for Materials Discovery.
+            Molecular Systems Design &amp; Engineering, 2018, 3, 819–825.
+            <https://doi.org/10.1039/c8me00012c>`_
     """
 
     def __init__(
@@ -781,6 +787,7 @@ class LOCOCV(Splitter):
         """Construct a LOCOCV.
 
         Args:
+            feature_names (List[str]): Names of features to consider.
             scaled (bool): If True, scale the data before clustering.
                 Defaults to True.
             n_pca_components (Optional[int]): Number of components to use for PCA.
@@ -866,9 +873,6 @@ class LOCOCV(Splitter):
 
         groups_sorted_by_len = sorted(
             [first_group, second_group, third_group], key=len, reverse=True
-        )
-        print(
-            len(groups_sorted_by_len[0]), len(groups_sorted_by_len[1]), len(groups_sorted_by_len[2])
         )
         return groups_sorted_by_len[0], groups_sorted_by_len[2], groups_sorted_by_len[1]
 

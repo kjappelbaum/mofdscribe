@@ -1,8 +1,8 @@
 """Make sure that the utils work."""
 import pytest
-from pymatgen.core import IMolecule, IStructure, Molecule, Structure
 from matminer.featurizers.base import BaseFeaturizer
-from mofdscribe.featurizers.chemistry import PartialChargeStats
+from pymatgen.core import IMolecule, IStructure, Molecule, Structure
+
 from mofdscribe.featurizers.utils.extend import (
     operates_on_imolecule,
     operates_on_istructure,
