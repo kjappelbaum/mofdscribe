@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """Classes that help performing cross-validation."""
 from collections import Counter
+from os import scandir
 from typing import Any, Callable, Dict, Iterable, List, Optional, Tuple, Union
 
 import numpy as np
@@ -741,3 +742,155 @@ class SingleColumnStratifiedSplitter(StratifiedSplitter):
 
             self._stratification_groups = strat
         return self._stratification_groups
+
+
+class LOCOCV(Splitter):
+    """
+    Leave-one-cluster-out cross-validation.
+
+    The general idea has been discussed before, e.g. in [Kramer]_.
+    Perhaps more widely used in the materials community is [Meredig]_.
+    Here, we perform PCA, followed by k-means clustering.
+
+    * Where k = 2 for a train/test split
+    * Where k = 3 for a train/valid/test split
+    * Where k = k for k-fold crossvalidation
+
+    By default, we will sort outputs such that the cluster sizes are
+    train >= test >= valid.
+
+    We inherit from Splitter for consitency, but reimplement all
+    the splitting methods.
+
+    References:
+
+        [Kramer] `Kramer, C.; Gedeck, P. Leave-Cluster-Out Cross-Validation Is Appropriate for Scoring Functions Derived from Diverse Protein Data Sets. Journal of Chemical Information and Modeling, 2010, 50, 1961–1969. <https://doi.org/10.1021/ci100264e>`_
+
+        [Meredig] `Meredig, B.; Antono, E.; Church, C.; Hutchinson, M.; Ling, J.; Paradiso, S.; Blaiszik, B.; Foster, I.; Gibbons, B.; Hattrick-Simpers, J.; Mehta, A.; Ward, L. Can Machine Learning Identify the next High-Temperature Superconductor? Examining Extrapolation Performance for Materials Discovery. Molecular Systems Design &amp; Engineering, 2018, 3, 819–825. <https://doi.org/10.1039/c8me00012c>`_
+    """
+
+    def __init__(
+        self,
+        scaled: bool = True,
+        n_pca_components: Optional[int] = "mle",
+        random_state: int = 42,
+        pca_kwargs: Optional[Dict[str, Any]] = None,
+        kmeans_kwargs: Optional[Dict[str, Any]] = None,
+    ):
+        """Construct a LOCOCV.
+
+        Args:
+            scaled (bool): If True, scale the data before clustering.
+                Defaults to True.
+            n_pca_components (Optional[int]): Number of components to use for PCA.
+                If "mle", use the number of components that maximizes the variance.
+                Defaults to "mle".
+            random_state (int): Random seed.
+                Defaults to 42.
+            pca_kwargs (Optional[Dict[str, Any]]): Keyword arguments to pass to PCA.
+                Defaults to None.
+            kmeans_kwargs (Optional[Dict[str, Any]]): Keyword arguments to pass to k-means.
+                Defaults to None.
+        """
+        self.scaled = scaled
+        self.n_pca_components = n_pca_components
+        self.random_state = random_state
+        self._pca_kwargs = pca_kwargs
+        self._kmeans_kwargs = kmeans_kwargs
+        self._stratification_groups = None
+        self.ascending = False
+
+    def train_test_split(
+        self,
+        ds: StructureDataset,
+        frac_train: float,
+        sample_frac: float = 1,
+        shuffle: bool = True,
+        **kwargs,
+    ) -> Tuple[Iterable[int], Iterable[int]]:
+        groups = pca_kmeans(
+            ds._df[self.feature_names].values,
+            scaled=self.scaled,
+            n_pca_components=self.n_pca_components,
+            n_clusters=2,
+            random_state=self.random_state,
+            pca_kwargs=self._pca_kwargs,
+            kmeans_kwargs=self._kmeans_kwargs,
+        )
+
+        first_group = np.where(groups == 0)[0]
+        second_group = np.where(groups == 1)[0]
+
+        if shuffle:
+            np.random.shuffle(first_group)
+            np.random.shuffle(second_group)
+
+        # potential downsampling after shuffle
+        first_group = first_group[: int(sample_frac * len(first_group))]
+        second_group = second_group[: int(sample_frac * len(second_group))]
+
+        if len(first_group) > len(second_group):
+            return first_group, second_group
+
+        return second_group, first_group
+
+    def train_valid_test_split(
+        self,
+        ds: StructureDataset,
+        frac_train: float,
+        frac_valid: float,
+        sample_frac: float = 1,
+        shuffle: bool = True,
+        **kwargs,
+    ) -> Tuple[Iterable[int], Iterable[int], Iterable[int]]:
+        groups = pca_kmeans(
+            ds._df[self.feature_names].values,
+            scaled=self.scaled,
+            n_pca_components=self.n_pca_components,
+            n_clusters=3,
+            random_state=self.random_state,
+            pca_kwargs=self._pca_kwargs,
+            kmeans_kwargs=self._kmeans_kwargs,
+        )
+
+        first_group = np.where(groups == 0)[0]
+        second_group = np.where(groups == 1)[0]
+        third_group = np.where(groups == 2)[0]
+
+        if shuffle:
+            np.random.shuffle(first_group)
+            np.random.shuffle(second_group)
+            np.random.shuffle(third_group)
+
+        # potential downsampling after shuffle
+        first_group = first_group[: int(sample_frac * len(first_group))]
+        second_group = second_group[: int(sample_frac * len(second_group))]
+        third_group = third_group[: int(sample_frac * len(third_group))]
+
+        groups_sorted_by_len = sorted(
+            [first_group, second_group, third_group], key=len, reverse=True
+        )
+
+        return groups_sorted_by_len[0], groups_sorted_by_len[2], groups_sorted_by_len[1]
+
+    def k_fold(self, ds: StructureDataset, k: int, shuffle: bool = True, sample_frac: float = 1):
+        groups = pca_kmeans(
+            ds._df[self.feature_names].values,
+            scaled=self.scaled,
+            n_pca_components=self.n_pca_components,
+            n_clusters=k,
+            random_state=self.random_state,
+            pca_kwargs=self._pca_kwargs,
+            kmeans_kwargs=self._kmeans_kwargs,
+        )
+
+        for group in range(k):
+            train = np.where(groups != group)[0]
+            test = np.where(groups == group)[0]
+            if shuffle:
+                np.random.shuffle(train)
+                np.random.shuffle(test)
+            # potential downsampling after shuffle
+            train = train[: int(sample_frac * len(train))]
+            test = test[: int(sample_frac * len(test))]
+            yield train, test

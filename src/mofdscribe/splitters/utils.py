@@ -103,7 +103,7 @@ def pca_kmeans(
     random_state=None,
     pca_kwargs=None,
     kmeans_kwargs=None,
-):
+) -> np.ndarray:
     """Run PCA and KMeans on the data."""
     if scaled:
         X = StandardScaler().fit_transform(X)  # noqa: N806
