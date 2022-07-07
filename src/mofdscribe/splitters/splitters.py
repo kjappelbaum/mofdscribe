@@ -771,6 +771,7 @@ class LOCOCV(Splitter):
 
     def __init__(
         self,
+        feature_names: List[str],
         scaled: bool = True,
         n_pca_components: Optional[int] = "mle",
         random_state: int = 42,
@@ -799,14 +800,13 @@ class LOCOCV(Splitter):
         self._kmeans_kwargs = kmeans_kwargs
         self._stratification_groups = None
         self.ascending = False
+        self.feature_names = feature_names
 
     def train_test_split(
         self,
         ds: StructureDataset,
-        frac_train: float,
         sample_frac: float = 1,
         shuffle: bool = True,
-        **kwargs,
     ) -> Tuple[Iterable[int], Iterable[int]]:
         groups = pca_kmeans(
             ds._df[self.feature_names].values,
@@ -837,11 +837,8 @@ class LOCOCV(Splitter):
     def train_valid_test_split(
         self,
         ds: StructureDataset,
-        frac_train: float,
-        frac_valid: float,
         sample_frac: float = 1,
         shuffle: bool = True,
-        **kwargs,
     ) -> Tuple[Iterable[int], Iterable[int], Iterable[int]]:
         groups = pca_kmeans(
             ds._df[self.feature_names].values,
@@ -870,7 +867,9 @@ class LOCOCV(Splitter):
         groups_sorted_by_len = sorted(
             [first_group, second_group, third_group], key=len, reverse=True
         )
-
+        print(
+            len(groups_sorted_by_len[0]), len(groups_sorted_by_len[1]), len(groups_sorted_by_len[2])
+        )
         return groups_sorted_by_len[0], groups_sorted_by_len[2], groups_sorted_by_len[1]
 
     def k_fold(self, ds: StructureDataset, k: int, shuffle: bool = True, sample_frac: float = 1):
@@ -893,4 +892,7 @@ class LOCOCV(Splitter):
             # potential downsampling after shuffle
             train = train[: int(sample_frac * len(train))]
             test = test[: int(sample_frac * len(test))]
-            yield train, test
+            if len(train) > len(test):
+                yield train, test
+            else:
+                yield test, train

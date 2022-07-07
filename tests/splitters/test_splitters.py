@@ -15,6 +15,7 @@ from mofdscribe.splitters.splitters import (
     RandomSplitter,
     SingleColumnStratifiedSplitter,
     TimeSplitter,
+    LOCOCV,
 )
 
 FEATURES = [
@@ -368,3 +369,24 @@ def test_single_column_stratified_splitter():
     splits = fps.train_valid_test_split(ds, frac_train=0.5, frac_valid=0.3, shuffle=True)
     assert len(splits) == 3
     assert len(splits[0]) > len(splits[1]) > len(splits[2])
+
+
+def test_locov():
+    """Ensure that the splits add up to the total number of structures and are non-overlapping.
+
+    Also make sure that the class ratios are indeed approximately stratified.
+    """
+    ds = CoREDataset()
+    # To make sure that the test does not take too long, we only use a small subset of the dataset.
+    ds._df = ds._df.iloc[:1000]
+    ds._structures = ds._structures[:1000]
+
+    fps = LOCOCV(feature_names=FEATURES)
+    for train, test in fps.k_fold(ds, k=5, shuffle=True):
+
+        assert len(set(list(train) + list(test))) == len(ds)
+        assert set(train) & set(test) == set()
+        assert len(train) > len(test)
+    splits = fps.train_valid_test_split(ds, shuffle=True)
+    assert len(splits) == 3
+    assert len(splits[0]) > len(splits[2]) > len(splits[1])
