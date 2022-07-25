@@ -35,7 +35,7 @@ Instead of subclassing, you can also simply use the following syntax
 .. code-block:: python
 
     from mofdscribe.sbu.rdkitadaptor import RDKitAdaptor
-    from rdkit.Chem.Descriptors3D import InertialShapeFactor 
+    from rdkit.Chem.Descriptors3D import InertialShapeFactor
 
     my_featurizer = RDKitAdaptor(InertialShapeFactor, ["inertial_shape_factor"])
 
@@ -49,7 +49,7 @@ Ligand shape
 .. featurizer::  SphereLikeness
     :id: SphereLikeness
     :considers_geometry: True
-    :considers_structure_graph: True 
+    :considers_structure_graph: True
     :encodes_chemistry: False
     :scope: sbu
     :scalar: True
@@ -59,7 +59,7 @@ Ligand shape
 .. featurizer::  DiskLikeness
     :id: DiskLikeness
     :considers_geometry: True
-    :considers_structure_graph: True 
+    :considers_structure_graph: True
     :encodes_chemistry: False
     :scope: sbu
     :scalar: True
@@ -69,7 +69,7 @@ Ligand shape
 .. featurizer::  RodLikeness
     :id: RodLikeness
     :considers_geometry: True
-    :considers_structure_graph: True 
+    :considers_structure_graph: True
     :encodes_chemistry: False
     :scope: sbu
     :scalar: True
@@ -85,7 +85,7 @@ The following featurizers are the wrapped RDKit implementations (under the same 
 .. featurizer::  SpherocityIndex
     :id: SpherocityIndex
     :considers_geometry: True
-    :considers_structure_graph: True 
+    :considers_structure_graph: True
     :encodes_chemistry: False
     :scope: sbu
     :scalar: True
@@ -93,7 +93,7 @@ The following featurizers are the wrapped RDKit implementations (under the same 
 .. featurizer::  RadiusOfGyration
     :id: RadiusOfGyration
     :considers_geometry: True
-    :considers_structure_graph: True 
+    :considers_structure_graph: True
     :encodes_chemistry: False
     :scope: sbu
     :scalar: True
@@ -101,7 +101,7 @@ The following featurizers are the wrapped RDKit implementations (under the same 
 .. featurizer::  Asphericity
     :id: Asphericity
     :considers_geometry: True
-    :considers_structure_graph: True 
+    :considers_structure_graph: True
     :encodes_chemistry: False
     :scope: sbu
     :scalar: True
@@ -109,7 +109,7 @@ The following featurizers are the wrapped RDKit implementations (under the same 
 .. featurizer::  Eccentricity
     :id: Eccentricity
     :considers_geometry: True
-    :considers_structure_graph: True 
+    :considers_structure_graph: True
     :encodes_chemistry: False
     :scope: sbu
     :scalar: True
@@ -117,7 +117,7 @@ The following featurizers are the wrapped RDKit implementations (under the same 
 .. featurizer::  InertialShapeFactor
     :id: InertialShapeFactor
     :considers_geometry: True
-    :considers_structure_graph: True 
+    :considers_structure_graph: True
     :encodes_chemistry: False
     :scope: sbu
     :scalar: True
@@ -125,7 +125,7 @@ The following featurizers are the wrapped RDKit implementations (under the same 
 .. featurizer::  NPR1
     :id: NPR1
     :considers_geometry: True
-    :considers_structure_graph: True 
+    :considers_structure_graph: True
     :encodes_chemistry: False
     :scope: sbu
     :scalar: True
@@ -133,7 +133,7 @@ The following featurizers are the wrapped RDKit implementations (under the same 
 .. featurizer::  NPR2
     :id: NPR2
     :considers_geometry: True
-    :considers_structure_graph: True 
+    :considers_structure_graph: True
     :encodes_chemistry: False
     :scope: sbu
     :scalar: True
@@ -141,7 +141,7 @@ The following featurizers are the wrapped RDKit implementations (under the same 
 .. featurizer::  PMI1
     :id: PMI1
     :considers_geometry: True
-    :considers_structure_graph: True 
+    :considers_structure_graph: True
     :encodes_chemistry: False
     :scope: sbu
     :scalar: True
@@ -149,15 +149,15 @@ The following featurizers are the wrapped RDKit implementations (under the same 
 .. featurizer::  PMI2
     :id: PMI2
     :considers_geometry: True
-    :considers_structure_graph: True 
+    :considers_structure_graph: True
     :encodes_chemistry: False
     :scope: sbu
     :scalar: True
-    
+
 .. featurizer::  PMI3
     :id: PMI3
     :considers_geometry: True
-    :considers_structure_graph: True 
+    :considers_structure_graph: True
     :encodes_chemistry: False
     :scope: sbu
     :scalar: True

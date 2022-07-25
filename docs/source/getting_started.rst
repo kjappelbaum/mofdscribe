@@ -102,10 +102,10 @@ input.
         train_frac=0.7, valid_frac=0.1)
 
 
-Using metrics 
+Using metrics
 -----------------
 
-For making machine learning comparable, it is important to report reliable metrics. 
+For making machine learning comparable, it is important to report reliable metrics.
 mofdscribe implements some helpers to make this easier.
 
 One interesting metric is the adversarial validation score, which can be a surrogate for how different two datasets, e.g. a train and a test set, are. Under the hood, this is implemented as a classifier that attempts to learn to distinguish the two datasets. If the two datasets are indistinguishable, the classifier will have a ROC-AUC of 0.5.
@@ -118,21 +118,21 @@ One interesting metric is the adversarial validation score, which can be a surro
 
     FEATURES = ["Di", "Df", "Dif", "density [g/cm^3]",]
 
-    ds = CoRE()    
+    ds = CoRE()
     train_idx, test_idx = RandomSplitter().train_test_split(ds)
 
-    adversarial_validation_scorer = AdverserialValidator(ds._df.iloc[train_idx][FEATURES], 
+    adversarial_validation_scorer = AdverserialValidator(ds._df.iloc[train_idx][FEATURES],
         ds._df.iloc[test_idx][FEATURES])
 
     adversarial_validation_scorer.score().mean()
 
-However, you cannot only measure how different two datasets are, but also quantify how well your model does. A handy helper function 
+However, you cannot only measure how different two datasets are, but also quantify how well your model does. A handy helper function
 is :py:meth:`~mofdscribe.metrics.regression.get_regression_metrics`.
 
 .. code-block:: python
-    
+
     from mofdscribe.metrics import get_regression_metrics
-    
+
     metrics = get_regression_metrics(predictions, labels)
 
 Which returns an object with the most relevant regression metrics.
@@ -142,7 +142,7 @@ Running a benchmark
 
 The benchmarks will run k=5-fold cross validation on the dataset. We chose this over a single split, because this is more robust to randomness (and gives at least some indication of the variance of the estimate).
 
-For running a benchmark with your model, your model must be in the form of a class with `train(idx, structures, y)` and `predict(idx, structures)` methods, for example 
+For running a benchmark with your model, your model must be in the form of a class with `fit(idx, structures, y)` and `predict(idx, structures)` methods, for example
 
 .. code-block:: python
 
@@ -168,7 +168,7 @@ For running a benchmark with your model, your model must be in the form of a cla
             """
             return s.density
 
-        def train(self, idx, structures, y):
+        def fit(self, idx, structures, y):
             x = np.array([self.featurize(s) for s in structures]).reshape(-1, 1)
             self.model.fit(x, y)
 
@@ -204,9 +204,9 @@ You can test this using some dummy models implemented in mofdscribe
 
 For testing purposes, you can set :code:`debug=True` in the constructors of the benchmark classes.
 
-Which will generate a report file that you can use to make a pull request for adding your model to the leaderboard. 
+Which will generate a report file that you can use to make a pull request for adding your model to the leaderboard.
 
-For this: 
+For this:
 
 1. Fork the repository.
 2. Make a new branch (e.g. named :code:`add_{modelname}`).

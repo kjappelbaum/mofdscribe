@@ -24,7 +24,7 @@ then (hopefully) can be used to predict the properties of larger structures.
 
 .. toctree::
     :glob:
-    :maxdepth: 1  
+    :maxdepth: 1
 
     featurizers/atom_centered/*
 
@@ -38,7 +38,7 @@ descriptor that only considers the local environment (of e.g., 3 atoms). For thi
 
 .. toctree::
     :glob:
-    :maxdepth: 1  
+    :maxdepth: 1
 
     featurizers/global/*
 
@@ -48,25 +48,25 @@ SBU-centered featurizers
 -----------------------------
 
 Reticular chemistry describes materials built via a tinker-toy approach.
-Hence, a natural approach is to focus on the building blocks. 
+Hence, a natural approach is to focus on the building blocks.
 
-mofdscribe can compute descriptors that are SBU-centred, for instance, using RDKit descriptors on the building blocks. 
+mofdscribe can compute descriptors that are SBU-centred, for instance, using RDKit descriptors on the building blocks.
 
 For this, you can either provide your building blocks that you extracted with any of the available tools, or use our integration with our `moffragmentor <https://github.com/kjappelbaum/moffragmentor>`_ package. In this case, we will fragment the MOF into its building blocks and then compute the features for each building block and let you choose how you want to aggregate them.
 
 
 .. toctree::
     :glob:
-    :maxdepth: 1  
+    :maxdepth: 1
 
     featurizers/sbu_centered/*
 
 
-Encoding of chemistry 
+Encoding of chemistry
 -----------------------
 
 Many featurizers that traditionally do not capture the chemistry of the structure are
-implemented in mofdscribe in a way that still allows to capture the chemistry. 
+implemented in mofdscribe in a way that still allows to capture the chemistry.
 One example for this are the topology-based descriptors.
 
 We encode the chemistry in those case by computing the descriptor for substructures of subsets of element types; for instance, for the metal- or organic-substructure.

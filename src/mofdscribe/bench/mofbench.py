@@ -25,6 +25,7 @@ class BenchTaskEnum(Enum):
     """Enum for benchmark tasks."""
 
     logKH_CO2_int = "logKH_CO2_int"  # noqa: N815
+    logKH_CO2_ext = "logKH_CO2_ext"  # noqa: N815
 
 
 class BenchResult(BaseModel):
@@ -98,7 +99,7 @@ class MOFBench(ABC):
             def featurize(self, s: Structure):
                 return s.density
 
-            def train(self, idx, structures, y):
+            def fit(self, idx, structures, y):
                 x = np.array([self.featurize(s) for s in structures]).reshape(-1, 1)
                 self.model.fit(x, y)
 
@@ -144,7 +145,7 @@ class MOFBench(ABC):
         self._k = k
 
     def _train(self, idx: np.ndarray, structures: np.ndarray, y: np.ndarray):
-        self._model.train(idx, structures, y)
+        self._model.fit(idx, structures, y)
         self._fitted = True
 
     def _predict(self, idx: np.ndarray, structures: np.ndarray):

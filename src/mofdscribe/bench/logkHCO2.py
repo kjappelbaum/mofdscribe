@@ -190,8 +190,7 @@ __all__ = ("LogkHCO2InterpolationBench",)
 
 
 class LogkHCO2InterpolationBench(MOFBenchRegression):
-    """Benchmarking models for the logarithmic CO2 Henry coefficient
-    under in-distribution conditions.
+    """Benchmarking models for the logarithmic CO2 Henry coefficient under in-distribution conditions.
 
     In-distribution implies that we use a cluster stratified splitter
     that ensures that the ratios of different clusters in the training
@@ -208,6 +207,22 @@ class LogkHCO2InterpolationBench(MOFBenchRegression):
         reference: Optional[str] = None,
         implementation: Optional[str] = None,
     ):
+        """Initialize the  log KH CO2 interpolation benchmark.
+
+        Args:
+            model (object): The model to be benchmarked.
+                Must implement the `fit` and `predict` methods.
+            name (str): The name of the modeling approach.
+            version (str, optional): Version of the dataset to use.
+                Defaults to "v0.0.1".
+            features (str, optional): Description of the features used in the model.
+                Defaults to None.
+            model_type (str, optional): Model type (e.g. Conv-Net, BERT, XGBoost).
+                Defaults to None.
+            reference (str, optional): Reference with more details about modeling approach.
+                Defaults to None.
+            implementation (str, optional): Link to implementation. Defaults to None.
+        """
         super().__init__(
             model,
             ds=CoREDataset(version),
@@ -225,28 +240,45 @@ class LogkHCO2InterpolationBench(MOFBenchRegression):
 
 
 class LogkHCO2ExtrapolationBench(MOFBenchRegression):
-    """Benchmarking models for the logarithmic CO2 Henry coefficient
-    under out-of-distribution conditions.
-    """
+    """Benchmarking models for the logarithmic CO2 Henry coefficient under out-of-distribution conditions."""
 
     def __init__(
         self,
         model,
         version: Optional[str] = "v0.0.1",
         features: Optional[str] = None,
-        model_name: Optional[str] = None,
+        name: Optional[str] = None,
+        model_type: Optional[str] = None,
         reference: Optional[str] = None,
         implementation: Optional[str] = None,
     ):
+        """Initialize the  log KH CO2 extrapolation benchmark.
+
+        Args:
+            model (object): The model to be benchmarked.
+                Must implement the `fit` and `predict` methods.
+            name (str): The name of the modeling approach.
+            version (str, optional): Version of the dataset to use.
+                Defaults to "v0.0.1".
+            features (str, optional): Description of the features used in the model.
+                Defaults to None.
+            model_type (str, optional): Model type (e.g. Conv-Net, BERT, XGBoost).
+                Defaults to None.
+            reference (str, optional): Reference with more details about modeling approach.
+                Defaults to None.
+            implementation (str, optional): Link to implementation. Defaults to None.
+        """
         super().__init__(
             model,
             ds=CoREDataset(version),
             splitter=DensitySplitter(),
             target=["logKH_CO2"],
+            task="logKH_CO2_ext",
             k=5,
             version=version,
             features=features,
-            model_name=model_name,
+            name=name,
+            model_type=model_type,
             reference=reference,
             implementation=implementation,
         )

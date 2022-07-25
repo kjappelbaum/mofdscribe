@@ -2,7 +2,7 @@
 Atom-centered Persistent Homology
 .............................................
 
-The idea is to compute persistent-homology described descriptors for local environments. 
+The idea is to compute persistent-homology described descriptors for local environments.
 
 .. figure:: ../../figures/atomcentredph.png
    :align: center
@@ -12,9 +12,9 @@ The idea is to compute persistent-homology described descriptors for local envir
 .. featurizer::  AtomCenteredPH
     :id: AtomCenteredPH
     :considers_geometry: True
-    :considers_structure_graph: False 
+    :considers_structure_graph: False
     :encodes_chemistry: optionally
     :scope: global
     :scalar: False
-    
+
     Initially described in [Jiang2021]_.

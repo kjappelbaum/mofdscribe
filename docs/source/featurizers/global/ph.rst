@@ -37,11 +37,11 @@ that have been introduced by Adams et al. in [Adams2017]_. The idea here is to (
 .. featurizer::  PHImage
     :id: PHImage
     :considers_geometry: True
-    :considers_structure_graph: False 
+    :considers_structure_graph: False
     :encodes_chemistry: optionally
     :scope: global
     :scalar: False
-    
+
     Persistence images have been proposed in [Adams2017]_.
     They have been used in [Krishnapriyan2021]_, [Krishnapriyan2020]_ on which implementation we rely internally.
 
@@ -58,11 +58,11 @@ the mixture weights as vector components). [Perea]_ [Tymochko]_
 .. featurizer::  PHVect
     :id: PHVect
     :considers_geometry: True
-    :considers_structure_graph: False 
+    :considers_structure_graph: False
     :encodes_chemistry: optionally
     :scope: global
     :scalar: False
-    
+
     We use the implementation in the `pervect <https://github.com/scikit-tda/pervect>`_ package, which builds on [Perea]_ [Tymochko]_.
 
 
@@ -73,7 +73,7 @@ In addition to the vectorization approaches describes above we also allow for th
 .. featurizer::  PHStats
     :id: PHStats
     :considers_geometry: True
-    :considers_structure_graph: False 
+    :considers_structure_graph: False
     :encodes_chemistry: optionally
     :scope: global
     :scalar: False
@@ -85,7 +85,7 @@ Clearly, one can also compute histograms of characteristic properties (e.g. birt
 .. featurizer::  PHHist
     :id: PHHist
     :considers_geometry: True
-    :considers_structure_graph: False 
+    :considers_structure_graph: False
     :encodes_chemistry: optionally
     :scope: global
     :scalar: False

@@ -25,14 +25,14 @@ of certain atoms such as the metal and its coordination sphere.
 ligand-, and functional-groups centered RACs.
 
 
-In mofdscribe, you can customize the encodings :math:`P` (using all properties that are available in our `element-coder <https://github.com/kjappelbaum/element-coder>`_ package) as well as the aggregation functions.     
+In mofdscribe, you can customize the encodings :math:`P` (using all properties that are available in our `element-coder <https://github.com/kjappelbaum/element-coder>`_ package) as well as the aggregation functions.
 
 .. featurizer::  RACS
     :id: RACS
     :considers_geometry: False
-    :considers_structure_graph: True 
+    :considers_structure_graph: True
     :encodes_chemistry: optionally
     :scope: local
     :scalar: False
-    
-    Initially described in [Janet2017]_ for metal complexes, extended to MOFs in [Moosavi2021]_ .
+
+    Initially described in [Janet2017]_ for metal complexes, extended to MOFs in [Moosavi2021]_.

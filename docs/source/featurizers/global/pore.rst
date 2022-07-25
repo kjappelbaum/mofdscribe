@@ -17,33 +17,33 @@ accessible pore volumes, ...) are computed with a probe approach. By means of
 .. featurizer::  SurfaceArea
     :id: SurfaceArea
     :considers_geometry: True
-    :considers_structure_graph: False 
+    :considers_structure_graph: False
     :encodes_chemistry: False
     :scope: global
     :scalar: False
-    
+
     We use the implementation in the `zeopp <http://www.zeoplusplus.org/>`_ package [Willems2011]_.
 
 
 .. featurizer::  PoreDiameters
     :id: PoreDiameters
     :considers_geometry: True
-    :considers_structure_graph: False 
+    :considers_structure_graph: False
     :encodes_chemistry: False
     :scope: global
     :scalar: False
-    
+
     We use the implementation in the `zeopp <http://www.zeoplusplus.org/>`_ package [Willems2011]_.
 
 
 .. featurizer::  AccessibleVolume
     :id: AccessibleVolume
     :considers_geometry: True
-    :considers_structure_graph: False 
+    :considers_structure_graph: False
     :encodes_chemistry: False
     :scope: global
     :scalar: False
-    
+
     We use the implementation in the `zeopp <http://www.zeoplusplus.org/>`_ package [Willems2011]_ [Ongari2017]_.
 
 Histograms
@@ -68,20 +68,20 @@ distribution or take the derivative.
 .. featurizer::  RayTracingHistogram
     :id: RayTracingHistogram
     :considers_geometry: True
-    :considers_structure_graph: False 
+    :considers_structure_graph: False
     :encodes_chemistry: False
     :scope: global
     :scalar: False
-    
+
     We use the implementation in the `zeopp <http://www.zeoplusplus.org/>`_ package. The feature itself was described and used in [Pinheiro2013]_.
 
 
 .. featurizer::  PoreSizeDistribution
     :id: PoreSizeDistribution
     :considers_geometry: True
-    :considers_structure_graph: False 
+    :considers_structure_graph: False
     :encodes_chemistry: False
     :scope: global
     :scalar: False
-    
+
     We use the implementation in the `zeopp <http://www.zeoplusplus.org/>`_ package. The feature itself was described and used in [Pinheiro2013]_.

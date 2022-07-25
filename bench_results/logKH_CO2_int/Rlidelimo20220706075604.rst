@@ -1,12 +1,12 @@
 Linear regression using polynomial density features
 ----------------------------------------------------
 
-This baseline uses a simple linear regression on the polynomials up to degree three of the density (as computed using pymatgen). 
+This baseline uses a simple linear regression on the polynomials up to degree three of the density (as computed using pymatgen).
 
 The model is available in :py:obj:`~mofdscribe.bench.dummy_models.DensityRegressor`
 
 .. code-block:: python
-    
+
     from typing import Dict, Optional
 
     import numpy as np

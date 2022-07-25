@@ -78,7 +78,7 @@ SBU-centred featurization
     :members:
 
 .. automodule:: mofdscribe.featurizers.sbu.distance_hist_featurizer
-    :members:   
+    :members:
 
 .. automodule:: mofdscribe.featurizers.sbu.shape_featurizer
-    :members:   
+    :members:
