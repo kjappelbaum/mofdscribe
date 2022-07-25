@@ -158,9 +158,6 @@ class PMI1(RDKitAdaptor):
         """Construct a new PMI1 featurizer."""
         super().__init__(PMI1_RDKIT, ["pmi1"])
 
-    def citations(self) -> List[str]:
-        return super().citations()
-
 
 class PMI2(RDKitAdaptor):
     """Featurizer for the RDKit PMI2 descriptor."""
@@ -169,9 +166,6 @@ class PMI2(RDKitAdaptor):
         """Construct a new PMI2 featurizer."""
         super().__init__(PMI2_RDKIT, ["pmi2"])
 
-    def citations(self) -> List[str]:
-        return super().citations()
-
 
 class PMI3(RDKitAdaptor):
     """Featurizer for the RDKit PMI3 descriptor."""
@@ -179,9 +173,6 @@ class PMI3(RDKitAdaptor):
     def __init__(self):
         """Construct a new PMI3 featurizer."""
         super().__init__(PMI3_RDKIT, ["pmi3"])
-
-    def citations(self) -> List[str]:
-        return super().citations()
 
 
 class RadiusOfGyration(RDKitAdaptor):
