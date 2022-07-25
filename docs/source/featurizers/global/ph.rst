@@ -6,6 +6,11 @@ pore shape, is relevant for the application. Topology is the branch of
 mathematics that deals with shapes and one of the most widely used topological
 techniques to describe shapes is known as persistent homology.
 
+.. note::
+
+    Note that under topology we understand here the embedding topology
+    and not the one of the underlying structure graph (i.e. the connectivity).
+
 Formally speaking, persistent homology tracks the changes of homology groups in
 a filtration. This becomes quite clear in the following example. In this figure,
 we perform a filtration and record the result in a persistence diagram. To make
