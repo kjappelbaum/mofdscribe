@@ -16,6 +16,9 @@ Voxelgrid
 Topological featurization (persistent homology)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Note that under topology we understand here the embedding topology
+and not the one of the underlying structure graph (i.e. the connectivity).
+
 .. automodule:: mofdscribe.featurizers.topology.ph_vect
     :members:
 
