@@ -15,7 +15,9 @@ from pymatgen.io.ase import AseAtomsAdaptor
 
 @lru_cache(maxsize=32)
 def get_eqeq_charges(structure: IStructure) -> Tuple[str, List[float]]:
-    with open(os.devnull, "w") as devnull, contextlib.redirect_stdout(devnull), NamedTemporaryFile("w", suffix=".cif") as f:
+    with open(os.devnull, "w") as devnull, contextlib.redirect_stdout(devnull), NamedTemporaryFile(
+        "w", suffix=".cif"
+    ) as f:
         structure.to("cif", f.name)
         charges = run_on_cif(f.name)
 
