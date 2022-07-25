@@ -49,7 +49,7 @@ def match_bb(
     Returns:
         The RMSD between the two structures.
     """
-    if not match == "auto":
+    if match != "auto":
         is_node = 1 if match == "node" else -1
     else:
         cn = len(bb)
