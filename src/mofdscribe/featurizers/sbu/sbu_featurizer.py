@@ -139,7 +139,7 @@ class SBUFeaturizer(BaseFeaturizer):
             mof = MOF.from_structure(structure)
             fragments = mof.fragment()
 
-            if self._operates_on == "both" or self._operates_on == "molecule":
+            if self._operates_on in ("both", "molecule"):
                 linkers = [linker.molecule for linker in fragments.linkers]
                 nodes = [node.molecule for node in fragments.nodes]
             else:
@@ -156,24 +156,20 @@ class SBUFeaturizer(BaseFeaturizer):
                 raise ValueError("All nodes and linkers must be of the same type.")
 
             this_type = types[0]
-            if (this_type == Structure or this_type == IStructure) and (
-                self._operates_on == "both" or self._operates_on == "structure"
-            ):
+            if this_type in (Structure, IStructure) and self._operates_on in ("both", "structure"):
                 # this is the simple case, we do not need to convert to molecules
                 pass
-            elif (this_type == Molecule or this_type == IMolecule) and (
-                self._operates_on == "both" or self._operates_on == "molecule"
-            ):
+            elif this_type in (Molecule, IMolecule) and self._operates_on in ("both", "molecule"):
                 # again simple case, we do not need to convert to structures
 
                 pass
-            elif (this_type == Molecule or this_type == IMolecule) and (
+            elif this_type in (Molecule, IMolecule) and (
                 self._operates_on == "structure"
             ):
                 # we need to convert to structures
                 nodes = [boxed_molecule(node) for node in nodes]
                 linkers = [boxed_molecule(linker) for linker in linkers]
-            elif (this_type == Structure or this_type == IStructure) and (
+            elif this_type in (Structure, IStructure) and (
                 self._operates_on == "molecule"
             ):
                 raise ValueError(
