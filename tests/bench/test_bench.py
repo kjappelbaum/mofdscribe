@@ -217,7 +217,7 @@ class MyDummyModel:
         """
         return s.density
 
-    def train(self, idx, structures, y):
+    def fit(self, idx, structures, y):
         x = np.array([self.featurize(s) for s in structures]).reshape(-1, 1)
         self.model.fit(x, y)
 

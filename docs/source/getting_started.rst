@@ -142,7 +142,7 @@ Running a benchmark
 
 The benchmarks will run k=5-fold cross validation on the dataset. We chose this over a single split, because this is more robust to randomness (and gives at least some indication of the variance of the estimate).
 
-For running a benchmark with your model, your model must be in the form of a class with `train(idx, structures, y)` and `predict(idx, structures)` methods, for example 
+For running a benchmark with your model, your model must be in the form of a class with `fit(idx, structures, y)` and `predict(idx, structures)` methods, for example 
 
 .. code-block:: python
 
@@ -168,7 +168,7 @@ For running a benchmark with your model, your model must be in the form of a cla
             """
             return s.density
 
-        def train(self, idx, structures, y):
+        def fit(self, idx, structures, y):
             x = np.array([self.featurize(s) for s in structures]).reshape(-1, 1)
             self.model.fit(x, y)
 
