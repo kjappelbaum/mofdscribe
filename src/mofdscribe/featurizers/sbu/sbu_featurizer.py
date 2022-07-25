@@ -163,15 +163,11 @@ class SBUFeaturizer(BaseFeaturizer):
                 # again simple case, we do not need to convert to structures
 
                 pass
-            elif this_type in (Molecule, IMolecule) and (
-                self._operates_on == "structure"
-            ):
+            elif this_type in (Molecule, IMolecule) and (self._operates_on == "structure"):
                 # we need to convert to structures
                 nodes = [boxed_molecule(node) for node in nodes]
                 linkers = [boxed_molecule(linker) for linker in linkers]
-            elif this_type in (Structure, IStructure) and (
-                self._operates_on == "molecule"
-            ):
+            elif this_type in (Structure, IStructure) and (self._operates_on == "molecule"):
                 raise ValueError(
                     "You provided structures for a featurizer that operates on molecules. "
                     / "Cannot automatically convert to molecules from structures."
