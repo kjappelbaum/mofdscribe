@@ -3,7 +3,6 @@
 import numpy as np
 from scipy.stats import gmean, hmean
 
-
 AGGREGATORS = {
     "sum": lambda x: x[0] + x[1],
     "avg": lambda x: (x[0] + x[1]) / 2,
