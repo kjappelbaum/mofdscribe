@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """Functions that can be used to aggregate values/lists of values"""
 import numpy as np
+from scipy.stats import gmean, hmean
+
 
 AGGREGATORS = {
     "sum": lambda x: x[0] + x[1],
@@ -23,6 +25,8 @@ ARRAY_AGGREGATORS = {
     "range": lambda x, **kwargs: np.max(x, **kwargs) - np.min(x, **kwargs),
     "mean": lambda x, **kwargs: np.mean(x, **kwargs),
     "median": lambda x, **kwargs: np.median(x, **kwargs),
+    "geomean": lambda x, **kwargs: gmean(x, **kwargs),
+    "harmmean": lambda x, **kwargs: hmean(x, **kwargs),
 }
 
 
@@ -35,4 +39,6 @@ MA_ARRAY_AGGREGATORS = {
     "range": lambda x, **kwargs: np.ma.max(x, **kwargs) - np.ma.min(x, **kwargs),
     "mean": lambda x, **kwargs: np.ma.mean(x, **kwargs),
     "median": lambda x, **kwargs: np.ma.median(x, **kwargs),
+    "geomean": lambda x, **kwargs: gmean(x, **kwargs),
+    "harmmean": lambda x, **kwargs: hmean(x, **kwargs),
 }
