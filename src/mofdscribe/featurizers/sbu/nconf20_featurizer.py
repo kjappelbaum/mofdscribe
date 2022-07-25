@@ -106,7 +106,7 @@ class NConf20(RDKitAdaptor):
         return super().implementors()
 
     def citations(self) -> List[str]:
-        return [
+        return super().citations() + [
             "@article{Wicker2016,"
             "doi = {10.1021/acs.jcim.6b00565},"
             "url = {https://doi.org/10.1021/acs.jcim.6b00565},"
@@ -120,24 +120,6 @@ class NConf20(RDKitAdaptor):
             "title = {Beyond Rotatable Bond Counts: Capturing 3D Conformational Flexibility in a Single Descriptor},"
             "journal = {Journal of Chemical Information and Modeling}"
             "}",
-            "@misc{https://doi.org/10.5281/zenodo.591637,"
-            "doi = {10.5281/ZENODO.591637},"
-            "url = {https://zenodo.org/record/591637},"
-            "author = {Landrum,  Greg and Tosco,  Paolo and Kelley,"
-            " Brian and {Ric} and {Sriniker} and {Gedeck} and Vianello,  "
-            "Riccardo and {NadineSchneider} and Kawashima,"
-            " Eisuke and Dalke,  Andrew and N,  Dan and Cosgrove,"
-            " David and Jones,  Gareth and Cole,  Brian and Swain,"
-            "  Matt and Turk,  Samo and {AlexanderSavelyev} and Vaucher,  Alain"
-            " and Wójcikowski,  Maciej and {Ichiru Take} and Probst,  Daniel "
-            "and Ujihara,  Kazuya and Scalfani,  Vincent F. and Godin,  Guillaume"
-            " and Pahl,  Axel and {Francois Berenger} and {JLVarjo} "
-            "and {Strets123} and {JP} and {DoliathGavid}},"
-            "    title = {rdkit/rdkit: 2022_03_3 (Q1 2022) Release},"
-            "    publisher = {Zenodo},"
-            "    year = {2022},"
-            "    copyright = {Open Access}"
-            " }",
             "@article{tosco2014bringing,"
             "title={Bringing the MMFF force field to the RDKit: implementation and validation},"
             "author={Tosco, Paolo and Stiefl, Nikolaus and Landrum, Gregory},"
