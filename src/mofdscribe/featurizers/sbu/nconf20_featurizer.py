@@ -102,9 +102,6 @@ class NConf20(RDKitAdaptor):
         """Construct a new nConf20 featurizer."""
         super().__init__(featurizer=_n_conf20, feature_labels=["n_conf20"])
 
-    def implementors(self) -> List[str]:
-        return super().implementors()
-
     def citations(self) -> List[str]:
         return [
             "@article{Wicker2016,"
