@@ -25,11 +25,11 @@ in form of a histogram.
 .. featurizer::  EnergyGridHistogram
     :id: EnergyGridHistogram
     :considers_geometry: True
-    :considers_structure_graph: False 
+    :considers_structure_graph: False
     :encodes_chemistry: True
     :scope: global
     :scalar: False
-    
+
     The feature was proposed in [Bucior2019]_. We use the implementation in [Dubbeldam]_
 
 
@@ -41,7 +41,7 @@ The Henry coefficient is strongly connected to the energy grid and might sometim
 .. featurizer::  Henry
     :id: Henry
     :considers_geometry: True
-    :considers_structure_graph: False 
+    :considers_structure_graph: False
     :encodes_chemistry: True
     :scope: global
     :scalar: False

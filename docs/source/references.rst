@@ -64,7 +64,7 @@ References
 
 .. [Dubbeldam] `Dubbeldam, D.; Calero, S.; Ellis, D. E.; Snurr, R. Q. RASPA: Molecular Simulation Software for Adsorption and Diffusion in Flexible Nanoporous Materials. Molecular Simulation, 2015, 42, 81–101. <https://doi.org/10.1080/08927022.2015.1010082>`_
 
-.. [AMD] `Widdowson, D.; Mosca, M. M.; Pulido, A.; Cooper, A. I.; Kurlin, V. Average Minimum Distances of Periodic Point Sets – Foundational Invariants for Mapping Periodic Crystals. MATCH Communications in Mathematical and in Computer Chemistry, 2021, 87, 529–559. <https://doi.org/10.46793/match.87-3.529w>`_ 
+.. [AMD] `Widdowson, D.; Mosca, M. M.; Pulido, A.; Cooper, A. I.; Kurlin, V. Average Minimum Distances of Periodic Point Sets – Foundational Invariants for Mapping Periodic Crystals. MATCH Communications in Mathematical and in Computer Chemistry, 2021, 87, 529–559. <https://doi.org/10.46793/match.87-3.529w>`_
 
 .. [PDD] `Widdowson, D.; Kurlin, V. Pointwise Distance Distributions of Periodic Point Sets. arXiv 2021. <https://doi.org/10.48550/ARXIV.2108.04798>`_
 

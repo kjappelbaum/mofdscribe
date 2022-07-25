@@ -1,5 +1,5 @@
 Atomic-property labeled radial distribution function (APRDF)
-.............................................
+..............................................................
 
 Radial distribution function (RDF) are widely used in crystallography and
 molecular simulations. They describe the probability of finding a pair of atoms
@@ -18,9 +18,9 @@ properties.
 .. featurizer::  APRDF
     :id: APRDF
     :considers_geometry: True
-    :considers_structure_graph: False 
+    :considers_structure_graph: False
     :encodes_chemistry: optionally
     :scope: global
     :scalar: False
-    
+
     Initially described in [Fernandez2013]_.

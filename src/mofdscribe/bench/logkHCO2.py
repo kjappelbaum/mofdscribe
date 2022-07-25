@@ -190,8 +190,7 @@ __all__ = ("LogkHCO2InterpolationBench",)
 
 
 class LogkHCO2InterpolationBench(MOFBenchRegression):
-    """Benchmarking models for the logarithmic CO2 Henry coefficient
-    under in-distribution conditions.
+    """Benchmarking models for the logarithmic CO2 Henry coefficient under in-distribution conditions.
 
     In-distribution implies that we use a cluster stratified splitter
     that ensures that the ratios of different clusters in the training
@@ -212,7 +211,7 @@ class LogkHCO2InterpolationBench(MOFBenchRegression):
 
         Args:
             model (object): The model to be benchmarked.
-               Must implement the `fit` and `predict` methods.
+                Must implement the `fit` and `predict` methods.
             name (str): The name of the modeling approach.
             version (str, optional): Version of the dataset to use.
                 Defaults to "v0.0.1".
@@ -257,7 +256,7 @@ class LogkHCO2ExtrapolationBench(MOFBenchRegression):
 
         Args:
             model (object): The model to be benchmarked.
-               Must implement the `fit` and `predict` methods.
+                Must implement the `fit` and `predict` methods.
             name (str): The name of the modeling approach.
             version (str, optional): Version of the dataset to use.
                 Defaults to "v0.0.1".

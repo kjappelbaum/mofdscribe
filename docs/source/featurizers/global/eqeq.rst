@@ -13,20 +13,20 @@ and standard deviation or create a histogram.
 .. featurizer::  PartialChargeHistogram
     :id: PartialChargeHistogram
     :considers_geometry: True
-    :considers_structure_graph: False 
+    :considers_structure_graph: False
     :encodes_chemistry: True
     :scope: global
-    :scalar: False  
-    
+    :scalar: False
+
     We use the EqEq implementation described in [Wilmer2012]_, [Ongari2017]_ to compute the charges.
 
 
 .. featurizer::  PartialChargeStats
     :id: PartialChargeStats
     :considers_geometry: True
-    :considers_structure_graph: False 
+    :considers_structure_graph: False
     :encodes_chemistry: True
     :scope: global
-    :scalar: False  
-    
+    :scalar: False
+
     We use the EqEq implementation described in [Wilmer2012]_, [Ongari2017]_ to compute the charges.
