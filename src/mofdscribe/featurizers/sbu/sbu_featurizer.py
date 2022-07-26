@@ -20,6 +20,7 @@ class MOFBBs(BaseModel):
     linkers: Optional[Iterable[Union[Structure, Molecule, IStructure, IMolecule]]]
 
 
+# ToDo: Support `MultipleFeaturizer`s (should be ok, if we recursively call the operates_on method).
 class SBUFeaturizer(BaseFeaturizer):
     """
     Compute features on the SBUs and then aggregate them.
@@ -66,10 +67,6 @@ class SBUFeaturizer(BaseFeaturizer):
                 If you do not do this, we default to assuming that it operates on structures.
             aggregations (Tuple[str]): The aggregations to use.
                 Must be one of :py:obj:`ARRAY_AGGREGATORS`.
-
-        ToDo:
-            - Support `MultipleFeaturizer`s (should be ok, if we recursively call the operates_on method).
-
         """
         self._featurizer = featurizer
         self._aggregations = aggregations
