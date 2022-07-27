@@ -17,10 +17,12 @@ def hkust_structure():
     """Return a pymatgen Structure for HKUST"""
     return Structure.from_file(os.path.join(THIS_DIR, "test_files", "HKUST-1.cif"))
 
+
 @pytest.fixture
 def abacuf_structure():
     """Return a pymatgen Structure for ABACUF"""
     Structure.from_file(os.path.join(THIS_DIR, "test_files", "ABACUF.cif"))
+
 
 @pytest.fixture
 def irmof_structure():
@@ -40,7 +42,6 @@ def hkust_structure_graph():
     return get_structure_graph(
         IStructure.from_file(os.path.join(THIS_DIR, "test_files", "HKUST-1.cif"))
     )
-
 
 
 @pytest.fixture
