@@ -8,7 +8,7 @@ import numpy as np
 import yaml
 from pymatgen.analysis.graphs import StructureGraph
 from pymatgen.core import IStructure
-from structuregraph_helpers.create import get_local_env_method
+from structuregraph_helpers.create import get_local_env_method, get_structure_graph as get_sg
 
 
 def get_neighbors_at_distance(
@@ -57,14 +57,7 @@ def get_structure_graph(structure: IStructure, strategy: Optional[str] = None) -
     Returns:
         StructureGraph: pymatgen StructureGraph object
     """
-    strategy = get_local_env_method(strategy)
-    sg = StructureGraph.with_local_env_strategy(structure, strategy)
-    nx.set_node_attributes(
-        sg.graph,
-        name="idx",
-        values=dict(zip(range(len(sg)), range(len(sg)))),
-    )
-    return sg
+    return get_sg(structure, strategy)
 
 
 def get_connected_site_indices(structure_graph: StructureGraph, site_index: int) -> List[int]:

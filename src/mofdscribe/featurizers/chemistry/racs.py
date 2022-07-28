@@ -149,7 +149,7 @@ class RACS(BaseFeaturizer):
         prop_agg: Tuple[str] = ("product", "diff"),
         corr_agg: Tuple[str] = ("sum",),
         bb_agg: Tuple[str] = ("avg",),
-        bond_heuristic: str = "jmolnn",
+        bond_heuristic: str = "vesta",
     ) -> None:
         """
         Initialize the RACS featurizer.
@@ -164,7 +164,7 @@ class RACS(BaseFeaturizer):
                 Defaults to ("sum").
             bb_agg (Tuple[str]): Function used to aggregate the properties across different building blocks.
                  Defaults to ("avg").
-            bond_heuristic (str): Method used to guess bonds. Defaults to "jmolnn".
+            bond_heuristic (str): Method used to guess bonds. Defaults to "vesta".
         """
         self.attributes = attributes
         self.scopes = scopes
@@ -184,9 +184,11 @@ class RACS(BaseFeaturizer):
         if isinstance(structure, Structure):
             structure = IStructure.from_sites(structure)
         sg = get_structure_graph(structure, self.bond_heuristic)
+
         racs = {}
         bb_indices = get_bb_indices(sg)
         for bb in self._bbs:
+            print(bb, bb_indices[bb])
             racs.update(
                 _get_racs_for_bbs(
                     bb_indices[bb],

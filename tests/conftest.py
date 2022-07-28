@@ -5,7 +5,7 @@ import os
 
 import pytest
 from pymatgen.analysis.graphs import MoleculeGraph
-from pymatgen.core import IStructure, Molecule, Structure
+from pymatgen.core import IStructure, Molecule
 
 from structuregraph_helpers.create import get_structure_graph
 
@@ -16,25 +16,25 @@ THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 @pytest.fixture(scope="session")
 def hkust_structure():
     """Return a pymatgen Structure for HKUST"""
-    return Structure.from_file(os.path.join(THIS_DIR, "test_files", "HKUST-1.cif"))
+    return IStructure.from_file(os.path.join(THIS_DIR, "test_files", "HKUST-1.cif"))
 
 
 @pytest.fixture(scope="session")
 def abacuf_structure():
     """Return a pymatgen Structure for ABACUF"""
-    Structure.from_file(os.path.join(THIS_DIR, "test_files", "ABACUF.cif"))
+    return IStructure.from_file(os.path.join(THIS_DIR, "test_files", "ABACUF.cif"))
 
 
 @pytest.fixture(scope="session")
 def irmof_structure():
     """Return a pymatgen Structure for IRMOF"""
-    return Structure.from_file(os.path.join(THIS_DIR, "test_files", "IRMOF-1.cif"))
+    return IStructure.from_file(os.path.join(THIS_DIR, "test_files", "IRMOF-1.cif"))
 
 
 @pytest.fixture(scope="session")
 def cof_structure():
     """Return a pymatgen Structure for a COF"""
-    return Structure.from_file(os.path.join(THIS_DIR, "test_files", "20450N2_ddec.cif"))
+    return IStructure.from_file(os.path.join(THIS_DIR, "test_files", "20450N2_ddec.cif"))
 
 
 @pytest.fixture(scope="session")
@@ -73,5 +73,5 @@ def linker_molecule():
 def triangle_structure():
     """Return a pymatgen Structure for the `connecting sites` of a BTC linker"""
     with open(os.path.join(THIS_DIR, "test_files", "triangle_structure.json"), "r") as handle:
-        s = Structure.from_dict(json.loads(handle.read()))
+        s = IStructure.from_dict(json.loads(handle.read()))
     return s

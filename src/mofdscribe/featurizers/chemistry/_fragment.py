@@ -60,24 +60,34 @@ def get_node_atoms(structure_graph: StructureGraph) -> Set[int]:
     for atom_index in node_set:
         for index in get_connected_site_indices(structure_graph, atom_index):
             if str(structure_graph.structure[index].specie) == "H":
-                final_node_atom_set.update(index)
+                final_node_atom_set.add(index)
 
     return final_node_atom_set
 
 
 def get_floating_indices(structure_graph: StructureGraph) -> Set[int]:
     """Get the indices of floating (solvent) molecules in the structure."""
-    _, _, idx, _, _ = get_subgraphs_as_molecules(structure_graph)
-    return set(inds for indxs in idx for inds in indxs)
+    _, _, idx, _, _ = get_subgraphs_as_molecules(
+        structure_graph,
+        disable_boundary_crossing_check=False,
+        filter_in_cell=True,
+        return_unique=True,
+    )
+    return set(sum(idx, []))
 
 
 def get_bbs_from_indices(structure_graph: StructureGraph, indices: Set[int]):
     graph_ = structure_graph.__copy__()
     graph_.structure = Structure.from_sites(graph_.structure.sites)
     to_delete = _not_relevant_structure_indices(graph_.structure, indices)
+    assert len(structure_graph) == len(to_delete) + len(indices)
     graph_.remove_nodes(to_delete)
+    assert len(graph_) == len(structure_graph) - len(to_delete)
     mol, return_subgraphs, idx, centers, coordinates = get_subgraphs_as_molecules(
-        graph_, return_unique=False
+        graph_,
+        return_unique=False,
+        disable_boundary_crossing_check=False,
+        filter_in_cell=True,
     )
     return mol, return_subgraphs, idx, centers, coordinates
 
@@ -85,10 +95,8 @@ def get_bbs_from_indices(structure_graph: StructureGraph, indices: Set[int]):
 def get_bb_indices(structure_graph: StructureGraph) -> Dict[str, List[List[int]]]:
     node_atoms = get_node_atoms(structure_graph)
     floating_indices = get_floating_indices(structure_graph)
-
     all_atoms = set(list(range(len(structure_graph))))
     linker_atoms = all_atoms - node_atoms - floating_indices
-
     (
         linker_mol,
         linker_subgraph,
@@ -96,12 +104,11 @@ def get_bb_indices(structure_graph: StructureGraph) -> Dict[str, List[List[int]]
         linker_center,
         linker_coordinates,
     ) = get_bbs_from_indices(structure_graph, linker_atoms)
-
     node_mol, node_subgraph, node_idx, node_center, node_coordinates = get_bbs_from_indices(
         structure_graph, node_atoms
     )
 
-    linker_atom_types = _linker_atom_types(linker_idx, node_idx, structure_graph)
+    linker_atom_types = _linker_atom_types(linker_idx, node_atoms, structure_graph)
 
     linker_atom_types["nodes"] = node_idx
 
@@ -114,15 +121,13 @@ def _linker_atom_types(indices, node_indices, structure_graph):
     scaffold = []
     connecting = []
 
-    flat_node_indices = sum(node_indices, [])
-
     for index_group in indices:
         functional_group_ = []
         scaffold_ = []
         connecting_ = []
         for index in index_group:
             neighors = get_connected_site_indices(structure_graph, index)
-            if any(i in flat_node_indices for i in neighors):
+            if any(i in node_indices for i in neighors):
                 connecting_.append(index)
             elif structure_graph.structure[index].specie.symbol not in ("H", "C"):
                 functional_group_.append(index)
