@@ -6,6 +6,12 @@ import numpy as np
 from loguru import logger
 from mofchecker import MOFChecker
 from pymatgen.core import IStructure, Structure
+from .utils import (
+    get_decorated_graph_hash_cached,
+    get_undecorated_graph_hash_cached,
+    get_decorated_scaffold_hash_cached,
+    get_undecorated_scaffold_hash_cached,
+)
 
 
 class StructureDataset:
@@ -23,10 +29,6 @@ class StructureDataset:
         self._decorated_scaffold_hashes = None
         self._undecorated_scaffold_hashes = None
         self._densities = None
-
-    # todo: think about how we cache without wasting memory
-    def _get_mofchecker_instance(self, idx):
-        return MOFChecker(self.get_structures(idx))
 
     @property
     def available_labels(self) -> Tuple[str]:
@@ -57,28 +59,28 @@ class StructureDataset:
     def get_decorated_graph_hashes(self, idx: Iterable[int]) -> str:
         if self._decorated_graph_hashes is None:
             logger.info("Computing hashes, this can take a while.")
-            hashes = [self._get_mofchecker_instance(i).graph_hash for i in idx]
+            hashes = [get_decorated_graph_hash_cached(self._structures[i]) for i in idx]
             return hashes
         return self._decorated_graph_hashes.iloc[idx]
 
     def get_undecorated_graph_hashes(self, idx: Iterable[int]) -> str:
         if self._undecorated_graph_hashes is None:
             logger.info("Computing hashes, this can take a while.")
-            hashes = [self._get_mofchecker_instance(i).undecorated_graph_hash for i in idx]
+            hashes = [get_undecorated_graph_hash_cached(self._structures[i]) for i in idx]
             return hashes
         return self._undecorated_graph_hashes.iloc[idx]
 
     def get_decorated_scaffold_hashes(self, idx: Iterable[int]) -> str:
         if self._decorated_graph_hashes is None:
             logger.info("Computing hashes, this can take a while.")
-            hashes = [self._get_mofchecker_instance(i).decorated_scaffold_hash for i in idx]
+            hashes = [get_decorated_scaffold_hash_cached(self._structures[i]) for i in idx]
             return hashes
         return self._decorated_scaffold_hashes.iloc[idx]
 
     def get_undecorated_scaffold_hashes(self, idx: Iterable[int]) -> str:
         if self._undecorated_scaffold_hashes is None:
             logger.info("Computing hashes, this can take a while.")
-            hashes = [self._get_mofchecker_instance(i).undecorated_scaffold_hash for i in idx]
+            hashes = [get_undecorated_graph_hash_cached(self._structures[i]) for i in idx]
             return hashes
         return self._undecorated_scaffold_hashes.iloc[idx]
 

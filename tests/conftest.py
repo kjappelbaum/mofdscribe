@@ -7,36 +7,37 @@ import pytest
 from pymatgen.analysis.graphs import MoleculeGraph
 from pymatgen.core import IStructure, Molecule, Structure
 
-from mofdscribe.featurizers.utils.structure_graph import get_structure_graph
+from structuregraph_helpers.create import get_structure_graph
+
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def hkust_structure():
     """Return a pymatgen Structure for HKUST"""
     return Structure.from_file(os.path.join(THIS_DIR, "test_files", "HKUST-1.cif"))
 
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def abacuf_structure():
     """Return a pymatgen Structure for ABACUF"""
     Structure.from_file(os.path.join(THIS_DIR, "test_files", "ABACUF.cif"))
 
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def irmof_structure():
     """Return a pymatgen Structure for IRMOF"""
     return Structure.from_file(os.path.join(THIS_DIR, "test_files", "IRMOF-1.cif"))
 
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def cof_structure():
     """Return a pymatgen Structure for a COF"""
     return Structure.from_file(os.path.join(THIS_DIR, "test_files", "20450N2_ddec.cif"))
 
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def hkust_structure_graph():
     """Return a pymatgen StructureGraph for HKUST"""
     return get_structure_graph(
@@ -44,7 +45,7 @@ def hkust_structure_graph():
     )
 
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def molecule_graph():
     """Return a pymatgen MoleculeGraph for a HKUST node"""
     with open(os.path.join(THIS_DIR, "test_files", "test_molecule_graph.json"), "r") as handle:
@@ -52,7 +53,7 @@ def molecule_graph():
     return mol_graph
 
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def molecule():
     """Return a pymatgen Molecule for a HKUST node"""
     with open(os.path.join(THIS_DIR, "test_files", "test_molecule.json"), "r") as handle:
@@ -60,7 +61,7 @@ def molecule():
     return mol
 
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def linker_molecule():
     """Return a pymatgen Molecule for BTC linker"""
     with open(os.path.join(THIS_DIR, "test_files", "linker_molecule.json"), "r") as handle:
@@ -68,7 +69,7 @@ def linker_molecule():
     return mol
 
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def triangle_structure():
     """Return a pymatgen Structure for the `connecting sites` of a BTC linker"""
     with open(os.path.join(THIS_DIR, "test_files", "triangle_structure.json"), "r") as handle:
