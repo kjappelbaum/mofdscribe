@@ -67,7 +67,7 @@ def get_node_atoms(structure_graph: StructureGraph) -> Set[int]:
 def get_floating_indices(structure_graph: StructureGraph) -> Set[int]:
     """Get the indices of floating (solvent) molecules in the structure."""
     _, _, idx, _, _ = get_subgraphs_as_molecules(structure_graph)
-    return set(idx)
+    return set(inds for indxs in idx for inds in indxs)
 
 
 def get_bbs_from_indices(structure_graph: StructureGraph, indices: Set[int]):
