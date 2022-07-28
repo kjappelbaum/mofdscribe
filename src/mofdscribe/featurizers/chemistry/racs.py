@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Revised autocorrelation functions (RACs) for MOFs."""
 from collections import defaultdict
-from typing import Iterable, List, Tuple, Union
+from typing import Iterable, List, Tuple, Union, Optional
 
 import numpy as np
 from element_coder import encode
@@ -150,6 +150,13 @@ class RACS(BaseFeaturizer):
         corr_agg: Tuple[str] = ("sum",),
         bb_agg: Tuple[str] = ("avg",),
         bond_heuristic: str = "vesta",
+        bbs: Optional[Tuple[str]] = (
+            "linker_all",
+            "linker_connecting",
+            "linker_functional",
+            "linker_scaffold",
+            "nodes",
+        ),
     ) -> None:
         """
         Initialize the RACS featurizer.
@@ -165,6 +172,7 @@ class RACS(BaseFeaturizer):
             bb_agg (Tuple[str]): Function used to aggregate the properties across different building blocks.
                  Defaults to ("avg").
             bond_heuristic (str): Method used to guess bonds. Defaults to "vesta".
+            bbs (Tuple[str]): Building blocks to use. Defaults to ("linker_all", "linker_connecting", "linker_functional", "linker_scaffold", "nodes").
         """
         self.attributes = attributes
         self.scopes = scopes
@@ -172,13 +180,16 @@ class RACS(BaseFeaturizer):
         self.corr_agg = corr_agg
         self.bb_agg = bb_agg
         self.bond_heuristic = bond_heuristic
-        self._bbs = [
-            "linker_all",
-            "linker_connecting",
-            "linker_functional",
-            "linker_scaffold",
-            "nodes",
-        ]
+        if bbs is not None:
+            self._bbs = bbs
+        else:
+            self._bbs = [
+                "linker_all",
+                "linker_connecting",
+                "linker_functional",
+                "linker_scaffold",
+                "nodes",
+            ]
 
     def featurize(self, structure: Union[Structure, IStructure]) -> np.ndarray:
         if isinstance(structure, Structure):
@@ -188,7 +199,6 @@ class RACS(BaseFeaturizer):
         racs = {}
         bb_indices = get_bb_indices(sg)
         for bb in self._bbs:
-            print(bb, bb_indices[bb])
             racs.update(
                 _get_racs_for_bbs(
                     bb_indices[bb],
