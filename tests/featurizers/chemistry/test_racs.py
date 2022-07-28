@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Test the RACs featurizer."""
 from pymatgen.core import IStructure
-
+import numpy as np
 from mofdscribe.featurizers.chemistry._fragment import get_bb_indices
 from mofdscribe.featurizers.chemistry.racs import RACS, _get_racs_for_bbs
 from mofdscribe.featurizers.utils.structure_graph import get_structure_graph
@@ -13,7 +13,7 @@ def test_racs(hkust_structure, irmof_structure, abacuf_structure):
     """Make sure that the featurization works for typical MOFs and the number of
     features is as expected.
     """
-    for structure in [hkust_structure]:  # , irmof_structure, abacuf_structure]:
+    for structure in [hkust_structure, irmof_structure, abacuf_structure]:
         featurizer = RACS()
         feats = featurizer.featurize(structure)
         assert len(feats) == 4 * 3 * 2 * 5  # 4 properties, 3 scopes, 2 aggregations, 5 bb types
@@ -21,18 +21,20 @@ def test_racs(hkust_structure, irmof_structure, abacuf_structure):
         racs = {}
         bb_indices = get_bb_indices(sg)
         for bb in featurizer._bbs:
-            racs.update(
-                _get_racs_for_bbs(
-                    bb_indices[bb],
-                    sg,
-                    featurizer.attributes,
-                    featurizer.scopes,
-                    featurizer.prop_agg,
-                    featurizer.corr_agg,
-                    featurizer.bb_agg,
-                    bb,
-                )
+            v = _get_racs_for_bbs(
+                bb_indices[bb],
+                sg,
+                featurizer.attributes,
+                featurizer.scopes,
+                featurizer.prop_agg,
+                featurizer.corr_agg,
+                featurizer.bb_agg,
+                bb,
             )
+            racs.update(v)
+            if (not "functional" in bb) and ("linker" in bb):
+                print(v)
+                assert np.isnan(np.array(list(v.values()))).sum() == 0
         assert list(racs.keys()) == featurizer.feature_labels()
 
     assert len(featurizer.feature_labels()) == 120
