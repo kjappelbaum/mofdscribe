@@ -8,7 +8,6 @@ from loguru import logger
 from matminer.featurizers.base import BaseFeaturizer
 from pymatgen.analysis.graphs import MoleculeGraph
 from pymatgen.core import Molecule
-
 from structuregraph_helpers.create import get_local_env_method
 
 from .utils import create_rdkit_mol_from_mol_graph

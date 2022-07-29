@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 """Test the RACs featurizer."""
-from pymatgen.core import IStructure
 import numpy as np
+from pymatgen.core import IStructure
+
 from mofdscribe.featurizers.chemistry._fragment import get_bb_indices
 from mofdscribe.featurizers.chemistry.racs import RACS, _get_racs_for_bbs
 from mofdscribe.featurizers.utils.structure_graph import get_structure_graph

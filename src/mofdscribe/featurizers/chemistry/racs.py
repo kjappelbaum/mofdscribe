@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 """Revised autocorrelation functions (RACs) for MOFs."""
 from collections import defaultdict
-from typing import Iterable, List, Tuple, Union, Optional
+from typing import Iterable, List, Optional, Tuple, Union
 
 import numpy as np
 from element_coder import encode
+from loguru import logger
 from matminer.featurizers.base import BaseFeaturizer
 from pymatgen.analysis.graphs import StructureGraph
 from pymatgen.core import IStructure, Structure
-from loguru import logger
 
 from mofdscribe.featurizers.utils.aggregators import AGGREGATORS, ARRAY_AGGREGATORS
 from mofdscribe.featurizers.utils.extend import operates_on_istructure, operates_on_structure

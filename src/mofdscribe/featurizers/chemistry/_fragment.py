@@ -11,16 +11,13 @@ from typing import Dict, List, Set
 
 from pymatgen.analysis.graphs import StructureGraph
 from pymatgen.core import Structure
+from structuregraph_helpers.subgraph import get_subgraphs_as_molecules
 
-from mofdscribe.featurizers.utils.structure_graph import (
-    get_connected_site_indices,
-)
+from mofdscribe.featurizers.utils.structure_graph import get_connected_site_indices
 from mofdscribe.featurizers.utils.substructures import (
     _not_relevant_structure_indices,
     get_metal_indices,
 )
-
-from structuregraph_helpers.subgraph import get_subgraphs_as_molecules
 
 
 def get_node_atoms(structure_graph: StructureGraph) -> Set[int]:

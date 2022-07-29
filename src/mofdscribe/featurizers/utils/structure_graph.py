@@ -8,7 +8,8 @@ import numpy as np
 import yaml
 from pymatgen.analysis.graphs import StructureGraph
 from pymatgen.core import IStructure
-from structuregraph_helpers.create import get_local_env_method, get_structure_graph as get_sg
+from structuregraph_helpers.create import get_local_env_method
+from structuregraph_helpers.create import get_structure_graph as get_sg
 
 
 def get_neighbors_at_distance(

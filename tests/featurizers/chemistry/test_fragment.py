@@ -1,12 +1,14 @@
 from platform import node
+
+from pymatgen.core import Element
+
 from mofdscribe.featurizers.chemistry._fragment import (
-    get_floating_indices,
-    get_node_atoms,
     get_bb_indices,
     get_bbs_from_indices,
+    get_floating_indices,
+    get_node_atoms,
 )
 from mofdscribe.featurizers.utils.structure_graph import get_structure_graph
-from pymatgen.core import Element
 
 
 def test_get_floating_indices(hkust_structure, irmof_structure, abacuf_structure):

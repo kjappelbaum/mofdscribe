@@ -6,9 +6,7 @@ import os
 import pytest
 from pymatgen.analysis.graphs import MoleculeGraph
 from pymatgen.core import IStructure, Molecule
-
 from structuregraph_helpers.create import get_structure_graph
-
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 

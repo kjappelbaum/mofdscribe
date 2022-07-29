@@ -1,14 +1,14 @@
 """Cached graphs."""
 
 from functools import lru_cache
-from structuregraph_helpers.create import get_structure_graph
-from pymatgen.core import IStructure
-from pymatgen.analysis.graphs import StructureGraph
 
+from pymatgen.analysis.graphs import StructureGraph
+from pymatgen.core import IStructure
+from structuregraph_helpers.create import get_structure_graph
 from structuregraph_helpers.hash import (
     decorated_graph_hash,
-    undecorated_graph_hash,
     decorated_scaffold_hash,
+    undecorated_graph_hash,
     undecorated_scaffold_hash,
 )
 

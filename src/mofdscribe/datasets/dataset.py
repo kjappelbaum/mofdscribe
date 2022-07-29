@@ -6,10 +6,11 @@ import numpy as np
 from loguru import logger
 from mofchecker import MOFChecker
 from pymatgen.core import IStructure, Structure
+
 from .utils import (
     get_decorated_graph_hash_cached,
-    get_undecorated_graph_hash_cached,
     get_decorated_scaffold_hash_cached,
+    get_undecorated_graph_hash_cached,
     get_undecorated_scaffold_hash_cached,
 )
 
