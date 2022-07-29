@@ -6,6 +6,7 @@ from mofdscribe.featurizers.topology import PHStats
 from matminer.featurizers.site import SOAP
 from matminer.featurizers.structure import SiteStatsFingerprint
 from pymatgen.core import Structure
+import numpy as np
 
 
 def test_sbu_featurizer(hkust_structure, molecule):
@@ -38,3 +39,11 @@ def test_sbu_featurizer_with_matminer_featurizer(hkust_structure):
 
     linker_feats = [f for f in featurizer.feature_labels() if "linker" in f]
     assert len(linker_feats) == 9504
+
+    # test that our fit method works
+    featurizer = SBUFeaturizer(
+        SiteStatsFingerprint(SOAP.from_preset("formation_energy")), aggregations=("mean",)
+    )
+    featurizer.fit([hkust_structure])
+    features_direct_fit = featurizer.featurize(structure=hkust_structure)
+    assert np.allclose(features, features_direct_fit, rtol=0.01)

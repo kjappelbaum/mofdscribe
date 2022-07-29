@@ -91,42 +91,11 @@ class SBUFeaturizer(BaseFeaturizer):
                     labels.append(f"{bb}_{aggregation}_{label}")
         return labels
 
-    # ToDo:
-    # - Perhaps use type dispatch instead of different keyword arguments.
-    #   (we can use fastcore or code it ourselves)
-    # - We can also directly pass the graph to the featurizer if it want to work
-    #     on the graph.
-    def featurize(
+    def _extract_bbs(
         self,
         structure: Optional[Union[Structure, IStructure]] = None,
         mofbbs: Optional[MOFBBs] = None,
-    ) -> np.ndarray:
-        """
-        Compute features on the SBUs and then aggregate them.
-
-        If you provide a structure, we will fragment the MOF into SBUs.
-        If you already have precomputed fragements or only want to consider a subset
-        of the SBUs, you can provide them manually via the `mofbbs` argument.
-
-        If you manually provide the `mofbbs`,  we will convert molecules to structures
-        where possible.
-
-        Args:
-            structure (Union[Structure, IStructure], optional): The structure to featurize.
-            mofbbs (MOFBBs, optional): The MOF fragments (nodes and linkers).
-
-        Returns:
-            A numpy array of features.
-
-        Raises:
-            ValueError: If neither `structure` nor `mofbbs` are provided.
-            ValueError: If structures are provided, but the selected featurizer
-                operates on molecules
-            RuntimeError: If an unexpected combination of types and
-                `operates_on` is provided.
-        """
-        # if i know what the featurizer wants, I can always cast to a structure
-        num_features = len(self._featurizer.feature_labels())
+    ):
         if structure is None and mofbbs is None:
             raise ValueError("You must provide a structure or mofbbs.")
 
@@ -171,6 +140,73 @@ class SBUFeaturizer(BaseFeaturizer):
                 )
             else:
                 raise RuntimeError("Unexpected type of nodes or linkers.")
+
+        return nodes, linkers
+
+    def fit(
+        self,
+        structures: Optional[Iterable[Structure]] = None,
+        mofbbs: Optional[Iterable[MOFBBs]] = None,
+    ) -> None:
+        """
+        Fit the featurizer to the given structures.
+
+        Args:
+            structure (Union[Structure, IStructure], optional): The structure to featurize.
+            mofbbs (MOFBBs, optional): The MOF fragments (nodes and linkers).
+        """
+        all_nodes, all_linkers = [], []
+        if structures is not None:
+            for structure in structures:
+                nodes, linkers = self._extract_bbs(structure=structure)
+                all_nodes.extend(nodes)
+                all_linkers.extend(linkers)
+        if mofbbs is not None:
+            for mofbbs in mofbbs:
+                nodes, linkers = self._extract_bbs(mofbbs=mofbbs)
+                all_nodes.extend(nodes)
+                all_linkers.extend(linkers)
+
+        all_fragments = all_nodes + all_linkers
+        self._featurizer.fit(all_fragments)
+
+    # ToDo:
+    # - Perhaps use type dispatch instead of different keyword arguments.
+    #   (we can use fastcore or code it ourselves)
+    # - We can also directly pass the graph to the featurizer if it want to work
+    #     on the graph.
+    def featurize(
+        self,
+        structure: Optional[Union[Structure, IStructure]] = None,
+        mofbbs: Optional[MOFBBs] = None,
+    ) -> np.ndarray:
+        """
+        Compute features on the SBUs and then aggregate them.
+
+        If you provide a structure, we will fragment the MOF into SBUs.
+        If you already have precomputed fragements or only want to consider a subset
+        of the SBUs, you can provide them manually via the `mofbbs` argument.
+
+        If you manually provide the `mofbbs`,  we will convert molecules to structures
+        where possible.
+
+        Args:
+            structure (Union[Structure, IStructure], optional): The structure to featurize.
+            mofbbs (MOFBBs, optional): The MOF fragments (nodes and linkers).
+
+        Returns:
+            A numpy array of features.
+
+        Raises:
+            ValueError: If neither `structure` nor `mofbbs` are provided.
+            ValueError: If structures are provided, but the selected featurizer
+                operates on molecules
+            RuntimeError: If an unexpected combination of types and
+                `operates_on` is provided.
+        """
+        # if i know what the featurizer wants, I can always cast to a structure
+        num_features = len(self._featurizer.feature_labels())
+        nodes, linkers = self._extract_bbs(structure, mofbbs)
         linker_feats = [self._featurizer.featurize(linker) for linker in linkers]
         if not linker_feats:
             linker_feats = [nan_array(num_features)]
