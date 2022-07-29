@@ -83,4 +83,4 @@ def floating_structure():
 
 @pytest.fixture(scope="session")
 def hkust_linker_structure():
-    return Structure.from_file(os.path.join(THIS_DIR, "test_files", "HKUST-1-linkers.cif"))
+    return Structure.from_file(os.path.join(THIS_DIR, "test_files", "BTC.cif"))

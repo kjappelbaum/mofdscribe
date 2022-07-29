@@ -109,6 +109,7 @@ class SBUFeaturizer(BaseFeaturizer):
                 linkers = [linker.molecule for linker in fragments.linkers]
                 nodes = [node.molecule for node in fragments.nodes]
             else:
+                # create a boxed structure
                 linkers = [boxed_molecule(linker.molecule) for linker in fragments.linkers]
                 nodes = [boxed_molecule(node.molecule) for node in fragments.nodes]
 

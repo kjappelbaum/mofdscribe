@@ -26,7 +26,10 @@ class PairwiseDistanceHist(BaseFeaturizer):
     For doing so, we will just compute all pairwise distances and then compute
     the histogram of them.
     One might also think of this as pretty rough approximation of something like
-    the AMD fingerpint.
+    the AMD fingerpint
+
+    It also has some similarities to the "Grouped representation of interatomic distances"
+    reported in [Zhang2022]_.
     """
 
     def __init__(

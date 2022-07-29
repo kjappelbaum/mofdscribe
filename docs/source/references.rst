@@ -69,3 +69,5 @@ References
 .. [PDD] `Widdowson, D.; Kurlin, V. Pointwise Distance Distributions of Periodic Point Sets. arXiv 2021. <https://doi.org/10.48550/ARXIV.2108.04798>`_
 
 .. [Wirth] `Wirth, M.; Volkamer, A.; Zoete, V.; Rippmann, F.; Michielin, O.; Rarey, M.; Sauer, W. H. B. Protein Pocket and Ligand Shape Comparison and Its Application in Virtual Screening. Journal of Computer-Aided Molecular Design, 2013, 27, 511–524. <https://doi.org/10.1007/s10822-013-9659-1>`_
+
+.. [Zhang2022] `Zhang, R.; Seth, S.; Cumby, J. Grouped Representation of Interatomic Distances as a Similarity Measure for Crystal Structures. 2022. <https://doi.org/10.26434/chemrxiv-2022-9m4jh>`_
