@@ -13,6 +13,18 @@ Many of the descriptors implemented in mofdscribe have been discussed in our
    :class: table-striped
    :columns: id, considers_geometry, considers_structure_graph, encodes_chemistry, scalar, scope
 
+.. warning:: 
+
+    Note that different featurizers have different ways in which they deal with solvent molecules. 
+    The RACs and SBU-centered features will ignore floating solvent molecules. 
+    Other featurizers, e.g. the APRDF, or pore geometry descriptors will do consider floating solvent molecules
+    in the same way as framework molecules. 
+    
+    If you do not want the solvent molecules to impact the featurization, you'll have to remove it from the structure. 
+
+    Bound solvent is _not_ suppressed by any of the featurizers.
+
+    To identify bound and unbound solvents, you might find the `moffragmentor package <https://github.com/kjappelbaum/moffragmentor>`_ useful.
 
 Atom-centered featurizers
 ------------------------------
