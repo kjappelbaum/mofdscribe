@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 """Test the SBU featurizer."""
 
-from mofdscribe.featurizers.sbu.sbu_featurizer import MOFBBs, SBUFeaturizer
-from mofdscribe.featurizers.topology import PHStats
+import numpy as np
 from matminer.featurizers.site import SOAP
 from matminer.featurizers.structure import SiteStatsFingerprint
 from pymatgen.core import Structure
-import numpy as np
+
+from mofdscribe.featurizers.sbu.sbu_featurizer import MOFBBs, SBUFeaturizer
+from mofdscribe.featurizers.topology import PHStats
 
 
 def test_sbu_featurizer(hkust_structure, molecule):
