@@ -115,6 +115,10 @@ def get_bb_indices(structure_graph: StructureGraph) -> Dict[str, List[List[int]]
     return linker_atom_types
 
 
+def _filter_out_empty_lists(list_of_lists):
+    return [x for x in list_of_lists if x]
+
+
 def _linker_atom_types(indices, node_indices, structure_graph):
     """Group linker atoms in `connecting`, `functional_group` and `scaffold`."""
     functional_group = []
@@ -138,8 +142,8 @@ def _linker_atom_types(indices, node_indices, structure_graph):
         connecting.append(connecting_)
 
     return {
-        "linker_all": indices,
-        "linker_functional": functional_group,
-        "linker_scaffold": scaffold,
-        "linker_connecting": connecting,
+        "linker_all": _filter_out_empty_lists(indices),
+        "linker_functional": _filter_out_empty_lists(functional_group),
+        "linker_scaffold": _filter_out_empty_lists(scaffold),
+        "linker_connecting": _filter_out_empty_lists(connecting),
     }

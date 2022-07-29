@@ -8,6 +8,7 @@ from element_coder import encode
 from matminer.featurizers.base import BaseFeaturizer
 from pymatgen.analysis.graphs import StructureGraph
 from pymatgen.core import IStructure, Structure
+from loguru import logger
 
 from mofdscribe.featurizers.utils.aggregators import AGGREGATORS, ARRAY_AGGREGATORS
 from mofdscribe.featurizers.utils.extend import operates_on_istructure, operates_on_structure
@@ -34,6 +35,7 @@ def _compute_racs(
 ):
     racs = defaultdict(lambda: defaultdict(list))
     if len(start_indices) == 0:
+        logger.debug(f"No start indices for {part_name}")
         for prop in properties:
             for agg in property_aggregations:
                 racs[prop][agg].append(nan_value)
@@ -64,6 +66,7 @@ def _compute_racs(
                             agg_func = AGGREGATORS[agg]
                             racs[prop][agg].append(agg_func((p0, p1)))
             else:
+                logger.debug(f"No neighbors found for {start_atom}")
                 for prop in properties:
                     for agg in property_aggregations:
                         racs[prop][agg].append(nan_value)
@@ -91,6 +94,9 @@ def _get_racs_for_bbs(
 ):
     bb_racs = defaultdict(list)
 
+    if not bb_indices:
+        # one nested list to make it trigger filling it with nan values
+        bb_indices = [[]]
     for start_indices in bb_indices:
         for scope in scopes:
             racs = _compute_racs(
@@ -133,6 +139,9 @@ class RACS(BaseFeaturizer):
     separately. The `bb_agg` feature then determines how those RACs for each BB
     are aggregated. The `sum` is equivalent to the original RACS (i.e. all
     applicable linker atoms would be added to the start/scope lists).
+
+    Note that the "bbs" define the start atoms. However, we still consider the whole
+    neighborhood of each start atom (i.e., including atoms that are not part of this "bb").
 
     Furthermore, here we allow to allow any of the
     :py:class:`pymatgen.core.periodic_table.Specie` properties to be used as
@@ -197,7 +206,10 @@ class RACS(BaseFeaturizer):
         sg = get_structure_graph(structure, self.bond_heuristic)
 
         racs = {}
+        # This finds all indices for a particular subset of atoms
+        # e.g. "nodes", "linker_all", "linker_connecting", "linker_functional", "linker_scaffold"
         bb_indices = get_bb_indices(sg)
+
         for bb in self._bbs:
             racs.update(
                 _get_racs_for_bbs(
