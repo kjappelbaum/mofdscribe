@@ -8,8 +8,7 @@ from loguru import logger
 from matminer.featurizers.base import BaseFeaturizer
 from pymatgen.analysis.graphs import MoleculeGraph
 from pymatgen.core import Molecule
-
-from mofdscribe.featurizers.utils.structure_graph import _get_local_env_strategy
+from structuregraph_helpers.create import get_local_env_method
 
 from .utils import create_rdkit_mol_from_mol_graph
 from ..utils.extend import operates_on_imolecule, operates_on_molecule
@@ -65,7 +64,7 @@ class RDKitAdaptor(BaseFeaturizer):
             molecule_graph = molecule
         else:
             molecule_graph = MoleculeGraph.with_local_env_strategy(
-                molecule, _get_local_env_strategy(self._local_env_strategy)
+                molecule, get_local_env_method(self._local_env_strategy)
             )
         rdkit_mol = create_rdkit_mol_from_mol_graph(molecule_graph)
         feats = self._featurizer(rdkit_mol)
