@@ -128,3 +128,6 @@ class NConf20(RDKitAdaptor):
             "publisher={Springer}"
             "}",
         ]
+
+    def implementors(self) -> List[str]:
+        return super().implementors() + ["Jerome G. P. Wicker and Richard I. Cooper"]

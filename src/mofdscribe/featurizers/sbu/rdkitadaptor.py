@@ -99,4 +99,4 @@ class RDKitAdaptor(BaseFeaturizer):
         ]
 
     def implementors(self) -> List[str]:
-        return ["Kevin Maik Jablonka"]
+        return ["Kevin Maik Jablonka", "Greg Landrum and RDKit authors"]
