@@ -262,4 +262,4 @@ class EnergyGridHistogram(BaseFeaturizer):
         ]
 
     def implementors(self):
-        return ["Kevin Maik Jablonka"]
+        return ["Kevin Maik Jablonka", "David Dubbeldam and RASPA authors"]

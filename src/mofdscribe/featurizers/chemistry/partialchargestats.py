@@ -81,4 +81,4 @@ class PartialChargeStats(BaseFeaturizer):
         ]
 
     def implementors(self):
-        return ["Kevin Maik Jablonka"]
+        return ["Kevin Maik Jablonka", "Daniele Ongari", "Christopher Wilmer"]

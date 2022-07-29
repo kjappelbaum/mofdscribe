@@ -219,7 +219,7 @@ class AtomCenteredPH(BaseFeaturizer):
         return self._get_feature_labels()
 
     def implementors(self) -> List[str]:
-        return ["Kevin Maik Jablonka"]
+        return ["Kevin Maik Jablonka", "Aditi Krishnapriyan"]
 
     def citations(self) -> List[str]:
         return [

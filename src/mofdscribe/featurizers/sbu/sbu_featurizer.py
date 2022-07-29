@@ -225,7 +225,7 @@ class SBUFeaturizer(BaseFeaturizer):
             aggregated_node_feats.extend(ARRAY_AGGREGATORS[aggregation](node_feats, axis=0))
         aggregated_node_feats = np.array(aggregated_node_feats)
 
-        return np.concatenate((aggregated_linker_feats, aggregated_node_feats))
+        return np.concatenate((aggregated_node_feats, aggregated_linker_feats))
 
     def citations(self) -> List[str]:
         return self._featurizer.citations()

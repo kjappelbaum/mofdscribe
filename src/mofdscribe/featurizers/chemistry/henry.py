@@ -164,7 +164,7 @@ class Henry(BaseFeaturizer):
         ]
 
     def implementors(self) -> List[str]:
-        return ["Kevin Maik Jablonka"]
+        return ["Kevin Maik Jablonka", "David Dubbeldam and RASPA authors"]
 
     def citations(self) -> List[str]:
         return [

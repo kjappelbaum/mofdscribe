@@ -5,7 +5,7 @@ import os
 
 import pytest
 from pymatgen.analysis.graphs import MoleculeGraph
-from pymatgen.core import IStructure, Molecule
+from pymatgen.core import IStructure, Molecule, Structure
 from structuregraph_helpers.create import get_structure_graph
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -79,3 +79,8 @@ def triangle_structure():
 def floating_structure():
     """Return IRMOF with floating mol"""
     return IStructure.from_file(os.path.join(THIS_DIR, "test_files", "floating_check.cif"))
+
+
+@pytest.fixture(scope="session")
+def hkust_linker_structure():
+    return Structure.from_file(os.path.join(THIS_DIR, "test_files", "HKUST-1-linkers.cif"))

@@ -271,4 +271,4 @@ class PHImage(BaseFeaturizer):
         ]
 
     def implementors(self) -> List[str]:
-        return ["Kevin Maik Jablonka"]
+        return ["Kevin Maik Jablonka", "Aditi Krishnapriyan"]

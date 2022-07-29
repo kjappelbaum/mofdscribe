@@ -195,7 +195,7 @@ class PoreDiameters(BaseFeaturizer):
         ]
 
     def implementors(self):
-        return ["Kevin Maik Jablonka"]
+        return ["Kevin Maik Jablonka", "Maciej Haranczyk and Zeo++ authors"]
 
 
 class SurfaceArea(BaseFeaturizer):
@@ -278,7 +278,7 @@ class SurfaceArea(BaseFeaturizer):
         ]
 
     def implementors(self) -> List[str]:
-        return ["Kevin Maik Jablonka"]
+        return ["Kevin Maik Jablonka", "Maciej Haranczyk and Zeo++ authors"]
 
 
 class AccessibleVolume(BaseFeaturizer):
@@ -369,7 +369,7 @@ class AccessibleVolume(BaseFeaturizer):
         ]
 
     def implementors(self) -> List[str]:
-        return ["Kevin Maik Jablonka"]
+        return ["Kevin Maik Jablonka", "Maciej Haranczyk and Zeo++ authors"]
 
 
 class RayTracingHistogram(BaseFeaturizer):
@@ -472,7 +472,7 @@ class RayTracingHistogram(BaseFeaturizer):
         ]
 
     def implementors(self) -> List[str]:
-        return ["Kevin Maik Jablonka"]
+        return ["Kevin Maik Jablonka", "Maciej Haranczyk and Zeo++ authors"]
 
 
 class PoreSizeDistribution(BaseFeaturizer):
@@ -599,4 +599,4 @@ class PoreSizeDistribution(BaseFeaturizer):
         ]
 
     def implementors(self):
-        return ["Kevin Maik Jablonka"]
+        return ["Kevin Maik Jablonka", "Maciej Haranczyk and Zeo++ authors"]
