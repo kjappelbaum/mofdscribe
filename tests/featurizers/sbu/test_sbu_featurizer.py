@@ -29,6 +29,7 @@ def test_sbu_featurizer(hkust_structure, molecule):
 
 def test_sbu_featurizer_with_matminer_featurizer(hkust_structure, hkust_linker_structure):
     """Test that we can call SBU featurizers with matminer molecules."""
+    # we disable the periodic keyword to be able to compare with the molecules
     base_feat = SiteStatsFingerprint(SOAP(6, 8, 8, 0.4, False, "gto", False))
     hkust_structure = Structure.from_sites(hkust_structure.sites)
     base_feat.fit([hkust_structure])
