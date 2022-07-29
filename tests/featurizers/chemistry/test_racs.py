@@ -10,7 +10,7 @@ from mofdscribe.featurizers.utils.structure_graph import get_structure_graph
 from ..helpers import is_jsonable
 
 
-def test_racs(hkust_structure, irmof_structure, abacuf_structure):
+def test_racs(hkust_structure, irmof_structure, abacuf_structure, floating_structure):
     """Make sure that the featurization works for typical MOFs and the number of features is as expected."""
     for structure in [hkust_structure, irmof_structure]:
         featurizer = RACS()
@@ -35,7 +35,6 @@ def test_racs(hkust_structure, irmof_structure, abacuf_structure):
             if (not "functional" in bb) and ("linker" in bb):
                 assert np.isnan(np.array(list(v.values()))).sum() == 0
             elif "functional" in bb:
-                print(v)
                 assert np.isnan(np.array(list(v.values()))).sum() == len(v)
         assert list(racs.keys()) == featurizer.feature_labels()
 
@@ -72,3 +71,8 @@ def test_racs(hkust_structure, irmof_structure, abacuf_structure):
     assert len(featurizer.citations()) == 2
     assert is_jsonable(dict(zip(featurizer.feature_labels(), feats)))
     assert feats.ndim == 1
+
+    floating_feats = featurizer.featurize(floating_structure)
+    irmof_feats = featurizer.featurize(irmof_structure)
+
+    assert np.allclose(floating_feats, irmof_feats, rtol=0.01, equal_nan=True)

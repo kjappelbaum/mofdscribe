@@ -73,3 +73,9 @@ def triangle_structure():
     with open(os.path.join(THIS_DIR, "test_files", "triangle_structure.json"), "r") as handle:
         s = IStructure.from_dict(json.loads(handle.read()))
     return s
+
+
+@pytest.fixture(scope="session")
+def floating_structure():
+    """Return IRMOF with floating mol"""
+    return IStructure.from_file(os.path.join(THIS_DIR, "test_files", "floating_check.cif"))
