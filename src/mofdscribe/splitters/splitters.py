@@ -3,10 +3,19 @@
 from collections import Counter
 from typing import Any, Callable, Dict, Iterable, List, Optional, Tuple, Union
 
-import numpy as np
-from sklearn.model_selection import StratifiedKFold, train_test_split
 
-from .utils import kennard_stone_sampling, pca_kmeans
+from loguru import logger
+
+import numpy as np
+from sklearn.model_selection import StratifiedKFold, train_test_split, StratifiedGroupKFold
+
+from .utils import (
+    kennard_stone_sampling,
+    pca_kmeans,
+    grouped_stratified_train_test_partition,
+    stratified_train_test_partition,
+    grouped_train_valid_test_partition,
+)
 from ..datasets.dataset import StructureDataset
 
 __all__ = (
@@ -19,6 +28,129 @@ __all__ = (
     "KennardStoneSplitter",
     "ClusterSplitter",
 )
+
+
+def no_group_warn(groups):
+    if groups is None:
+        logger.warning(
+            "You are not using a grouped split. However, this is typically a good idea to avoid data leakage."
+        )
+
+
+class BaseSplitter:
+    def __init__(
+        self,
+        ds,
+        shuffle: bool = True,
+        random_state: Optional[Union[int, np.random.RandomState]] = None,
+        sample_frac: Optional[float] = None,
+    ):
+        self.ds = ds
+        self.shuffle = shuffle
+        self.random_state = random_state
+        self._len = len(ds)
+        self._sample_frac = sample_frac
+
+    def _get_idxs(self):
+        return np.random.choice(
+            np.arange(self._len), int(self._len * self._sample_frac), replace=False
+        )
+
+    def train_test_split(self, train_size=0.7):
+        groups = self._get_groups()
+        stratification_col = self._get_stratification_col()
+        idx = self._get_idxs()
+        no_group_warn(groups)
+        if groups is not None:
+            if stratification_col is not None:
+                train_idx, _, test_index = grouped_stratified_train_test_partition(
+                    stratification_col[idx],
+                    groups[idx],
+                    train_size,
+                    0,
+                    1 - train_size,
+                    shuffle=self.shuffle,
+                    random_state=self.random_state,
+                )
+            else:
+                train_idx, _, test_index = grouped_train_valid_test_partition(
+                    groups[idx],
+                    train_size,
+                    0,
+                    1 - train_size,
+                    shuffle=self.shuffle,
+                    random_state=self.random_state,
+                )
+
+        else:
+            stratification_col = stratification_col[idx] if stratification_col is not None else None
+            train_idx, _, test_index = stratified_train_test_partition(
+                self._get_idxs(),
+                stratification_col,
+                train_size=train_size,
+                shuffle=self.shuffle,
+                random_state=self.random_state,
+            )
+
+        return train_idx, test_index
+
+    def train_valid_test_split(self, train_size=0.7, valid_size=0.1):
+        groups = self._get_groups()
+        stratification_col = self._get_stratification_col()
+        idx = self._get_idxs()
+        no_group_warn(groups)
+
+        if groups is not None:
+            if stratification_col is not None:
+                train_idx, valid_idx, test_index = grouped_stratified_train_test_partition(
+                    stratification_col[idx],
+                    groups[idx],
+                    train_size,
+                    valid_size,
+                    1 - train_size - valid_size,
+                    shuffle=self.shuffle,
+                    random_state=self.random_state,
+                )
+            else:
+                train_idx, valid_idx, test_index = grouped_train_valid_test_partition(
+                    groups[idx],
+                    train_size,
+                    valid_size,
+                    1 - train_size - valid_size,
+                    shuffle=self.shuffle,
+                    random_state=self.random_state,
+                )
+        else:
+            stratification_col = stratification_col[idx] if stratification_col is not None else None
+            train_idx, _, test_index = stratified_train_test_partition(
+                self._get_idxs(),
+                stratification_col,
+                train_size=train_size,
+                shuffle=self.shuffle,
+                random_state=self.random_state,
+            )
+        return train_idx, valid_idx, test_index
+
+    def kfold_split(self, n_splits=5):
+        groups = self._get_groups()
+        stratification_col = self._get_stratification_col()
+        no_group_warn(groups)
+        idx = self._get_idxs()
+
+        groups = groups[idx] if groups is not None else None
+        stratification_col = stratification_col[idx] if stratification_col is not None else None
+
+        kfold = StratifiedGroupKFold(
+            n_splits=n_splits, shuffle=self.shuffle, random_state=self.random_state
+        )
+        for train_index, test_index in kfold.split(idx, stratification_col, groups=groups):
+            yield train_index, test_index
+
+    def _get_groups(self):
+        return None
+
+    def _get_stratification_col(self):
+        return None
 
 
 class StratifiedSplitter:

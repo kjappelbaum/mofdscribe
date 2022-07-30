@@ -256,7 +256,7 @@ def get_train_valid_test_sizes(size, train_size, valid_size, test_size):
     return train_size, valid_size, test_size
 
 
-def grouped_train_valid_test(
+def grouped_train_valid_test_partition(
     groups, train_size, valid_size, test_size, shuffle=True, random_state=None
 ):
     train_indices = []

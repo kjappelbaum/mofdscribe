@@ -6,7 +6,7 @@ from mofdscribe.splitters.utils import (
     kennard_stone_sampling,
     grouped_stratified_train_test_partition,
     stratified_train_test_partition,
-    grouped_train_valid_test,
+    grouped_train_valid_test_partition,
     get_train_valid_test_sizes,
 )
 
@@ -114,13 +114,13 @@ def test_stratified_train_test_partition():
 
 
 @pytest.mark.parametrize("number_of_groups", [30, 50, 80, 500, 8_000])
-def test_grouped_train_valid_test(number_of_groups):
+def test_grouped_train_valid_test_partition(number_of_groups):
     # we might also want to use grouping without stratification to test
     # extrapolation
     datasize = 10_000
     groups = np.random.choice(np.arange(number_of_groups), size=datasize)
 
-    train_indices, valid_indices, test_indices = grouped_train_valid_test(
+    train_indices, valid_indices, test_indices = grouped_train_valid_test_partition(
         groups, train_size=0.5, valid_size=0.25, test_size=0.25
     )
 
@@ -132,7 +132,7 @@ def test_grouped_train_valid_test(number_of_groups):
     set(test_groups).intersection(set(valid_groups)) == set()
     set(train_groups).intersection(set(valid_groups)) == set()
 
-    train_indices, valid_indices, test_indices = grouped_train_valid_test(
+    train_indices, valid_indices, test_indices = grouped_train_valid_test_partition(
         groups, train_size=0.5, valid_size=0, test_size=0.5
     )
 
