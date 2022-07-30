@@ -6,6 +6,8 @@ from mofdscribe.splitters.utils import (
     kennard_stone_sampling,
     grouped_stratified_train_test_partition,
     stratified_train_test_partition,
+    grouped_train_valid_test,
+    get_train_valid_test_sizes,
 )
 
 
@@ -109,3 +111,39 @@ def test_stratified_train_test_partition():
     assert len(train_indices) + len(test_indices) == datasize
 
     assert len(np.intersect1d(train_indices, test_indices)) == 0
+
+
+@pytest.mark.parametrize("number_of_groups", [30, 50, 80, 500, 8_000])
+def test_grouped_train_valid_test(number_of_groups):
+    # we might also want to use grouping without stratification to test
+    # extrapolation
+    datasize = 10_000
+    groups = np.random.choice(np.arange(number_of_groups), size=datasize)
+
+    train_indices, valid_indices, test_indices = grouped_train_valid_test(
+        groups, train_size=0.5, valid_size=0.25, test_size=0.25
+    )
+
+    assert len(train_indices) + len(test_indices) + len(valid_indices) == datasize
+    test_groups = groups[test_indices]
+    train_groups = groups[train_indices]
+    valid_groups = groups[valid_indices]
+    set(test_groups).intersection(set(train_groups)) == set()
+    set(test_groups).intersection(set(valid_groups)) == set()
+    set(train_groups).intersection(set(valid_groups)) == set()
+
+    train_indices, valid_indices, test_indices = grouped_train_valid_test(
+        groups, train_size=0.5, valid_size=0, test_size=0.5
+    )
+
+    assert len(train_indices) + len(test_indices) == datasize
+    test_groups = groups[test_indices]
+    train_groups = groups[train_indices]
+
+    set(test_groups).intersection(set(train_groups)) == set()
+
+
+def test_get_train_valid_test_sizes():
+    train_size, valid_size, test_size = get_train_valid_test_sizes(100, 0.5, 0.25, 0.25)
+    assert train_size + valid_size + test_size == 100
+    assert train_size + valid_size == 75

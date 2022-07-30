@@ -153,9 +153,9 @@ def stratified_train_test_partition(
                 stratification_col, q, labels=np.arange(len(q) - 1)
             ).astype(int)
 
-    train_size = int(np.floor(train_size * len(stratification_col)))
-    valid_size = int(np.floor(valid_size * len(stratification_col)))
-    test_size = int(len(stratification_col) - train_size - valid_size)
+    train_size, valid_size, test_size = get_train_valid_test_sizes(
+        len(stratification_col), train_size, valid_size, test_size
+    )
 
     train_idx, test_idx, train_strat, _ = train_test_split(
         idxs,
@@ -214,9 +214,9 @@ def grouped_stratified_train_test_partition(
             int
         )
 
-    train_size = int(np.floor(train_size * len(category_for_group)))
-    valid_size = int(np.floor(valid_size * len(category_for_group)))
-    test_size = int(len(category_for_group) - train_size - valid_size)
+    train_size, valid_size, test_size = get_train_valid_test_sizes(
+        len(category_for_group), train_size, valid_size, test_size
+    )
 
     # now we can do the split
     train_groups, test_groups, train_cat, _ = train_test_split(
@@ -245,5 +245,52 @@ def grouped_stratified_train_test_partition(
     else:
         valid_indices = None
     test_indices = np.where(np.isin(group_col, test_groups))[0]
+
+    return train_indices, valid_indices, test_indices
+
+
+def get_train_valid_test_sizes(size, train_size, valid_size, test_size):
+    train_size = int(np.floor(train_size * size))
+    valid_size = int(np.floor(valid_size * size))
+    test_size = int(size - train_size - valid_size)
+    return train_size, valid_size, test_size
+
+
+def grouped_train_valid_test(
+    groups, train_size, valid_size, test_size, shuffle=True, random_state=None
+):
+    train_indices = []
+    valid_indices = []
+    test_indices = []
+
+    unique_groups = np.unique(groups)
+
+    train_size, valid_size, test_size = get_train_valid_test_sizes(
+        len(unique_groups), train_size, valid_size, test_size
+    )
+
+    train_groups, test_groups = train_test_split(
+        unique_groups,
+        train_size=train_size + valid_size,
+        test_size=test_size,
+        shuffle=shuffle,
+        random_state=random_state,
+    )
+
+    if valid_size > 0:
+        train_groups, valid_groups = train_test_split(
+            train_groups,
+            train_size=train_size,
+            shuffle=shuffle,
+            random_state=random_state,
+        )
+
+    # now, get the original indices
+    train_indices = np.where(np.isin(groups, train_groups))[0]
+    if valid_size > 0:
+        valid_indices = np.where(np.isin(groups, valid_groups))[0]
+    else:
+        valid_indices = None
+    test_indices = np.where(np.isin(groups, test_groups))[0]
 
     return train_indices, valid_indices, test_indices
