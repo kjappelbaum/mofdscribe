@@ -1,21 +1,20 @@
 # -*- coding: utf-8 -*-
 """Classes that help performing cross-validation."""
-from collections import Counter
 from typing import Any, Callable, Dict, Iterable, List, Optional, Tuple, Union
-from sklearn.model_selection._split import _validate_shuffle_split
-from loguru import logger
 
 import numpy as np
-from sklearn.model_selection import StratifiedKFold, train_test_split, StratifiedGroupKFold, KFold
 import pandas as pd
+from loguru import logger
+from sklearn.model_selection import KFold, StratifiedGroupKFold, GroupKFold, StratifiedKFold
+
 from .utils import (
+    grouped_stratified_train_test_partition,
+    grouped_train_valid_test_partition,
     is_categorical,
     kennard_stone_sampling,
     pca_kmeans,
-    grouped_stratified_train_test_partition,
-    stratified_train_test_partition,
-    grouped_train_valid_test_partition,
     quantile_binning,
+    stratified_train_test_partition,
 )
 from ..datasets.dataset import StructureDataset
 
@@ -23,9 +22,8 @@ __all__ = (
     "DensitySplitter",
     "HashSplitter",
     "TimeSplitter",
-    "Splitter",
+    "BaseSplitter",
     "RandomSplitter",
-    "FingerprintSplitter",
     "KennardStoneSplitter",
     "ClusterSplitter",
 )
@@ -34,7 +32,7 @@ __all__ = (
 def no_group_warn(groups):
     if groups is None:
         logger.warning(
-            "You are not using a grouped split. However, this is typically a good idea to avoid data leakage."
+            "You are not using a grouped split. However, for retricular materials, grouping is typically a good idea to avoid data leakage."
         )
 
 
@@ -44,7 +42,7 @@ class BaseSplitter:
         ds,
         shuffle: bool = True,
         random_state: Optional[Union[int, np.random.RandomState]] = None,
-        sample_frac: Optional[float] = None,
+        sample_frac: Optional[float] = 1.0,
         stratification_col: Optional[Union[str, np.typing.ArrayLike]] = None,
         center=np.median,
         q=[0, 0.25, 0.5, 0.75, 1],
@@ -63,19 +61,20 @@ class BaseSplitter:
             np.arange(self._len), int(self._len * self._sample_frac), replace=False
         )
 
-    def train_test_split(self, train_size: float = 0.7) -> Tuple[Iterable[int], Iterable[int]]:
+    def train_test_split(self, frac_train: float = 0.7) -> Tuple[Iterable[int], Iterable[int]]:
         groups = self._get_groups()
         stratification_col = self._get_stratification_col()
         idx = self._get_idxs()
+
         no_group_warn(groups)
         if groups is not None:
             if stratification_col is not None:
                 train_idx, _, test_index = grouped_stratified_train_test_partition(
                     stratification_col[idx],
                     groups[idx],
-                    train_size,
+                    frac_train,
                     0,
-                    1 - train_size,
+                    1 - frac_train,
                     shuffle=self.shuffle,
                     random_state=self.random_state,
                     center=self._center,
@@ -84,9 +83,9 @@ class BaseSplitter:
             else:
                 train_idx, _, test_index = grouped_train_valid_test_partition(
                     groups[idx],
-                    train_size,
+                    frac_train,
                     0,
-                    1 - train_size,
+                    1 - frac_train,
                     shuffle=self.shuffle,
                     random_state=self.random_state,
                 )
@@ -96,7 +95,9 @@ class BaseSplitter:
             train_idx, _, test_index = stratified_train_test_partition(
                 self._get_idxs(),
                 stratification_col,
-                train_size=train_size,
+                train_size=frac_train,
+                valid_size=0,
+                test_size=1 - frac_train,
                 shuffle=self.shuffle,
                 random_state=self.random_state,
                 q=self._q,
@@ -105,7 +106,7 @@ class BaseSplitter:
         return train_idx, test_index
 
     def train_valid_test_split(
-        self, train_size: float = 0.7, valid_size: float = 0.1
+        self, frac_train: float = 0.7, frac_valid: float = 0.1
     ) -> Tuple[Iterable[int], Iterable[int], Iterable[int]]:
         groups = self._get_groups()
         stratification_col = self._get_stratification_col()
@@ -117,9 +118,9 @@ class BaseSplitter:
                 train_idx, valid_idx, test_index = grouped_stratified_train_test_partition(
                     stratification_col[idx],
                     groups[idx],
-                    train_size,
-                    valid_size,
-                    1 - train_size - valid_size,
+                    frac_train,
+                    frac_valid,
+                    1 - frac_train - frac_valid,
                     shuffle=self.shuffle,
                     random_state=self.random_state,
                     center=self._center,
@@ -128,25 +129,27 @@ class BaseSplitter:
             else:
                 train_idx, valid_idx, test_index = grouped_train_valid_test_partition(
                     groups[idx],
-                    train_size,
-                    valid_size,
-                    1 - train_size - valid_size,
+                    frac_train,
+                    frac_valid,
+                    1 - frac_train - frac_valid,
                     shuffle=self.shuffle,
                     random_state=self.random_state,
                 )
         else:
             stratification_col = stratification_col[idx] if stratification_col is not None else None
-            train_idx, _, test_index = stratified_train_test_partition(
+            train_idx, valid_idx, test_index = stratified_train_test_partition(
                 self._get_idxs(),
                 stratification_col,
-                train_size=train_size,
+                train_size=frac_train,
+                valid_size=frac_valid,
+                test_size=1 - frac_train - frac_valid,
                 shuffle=self.shuffle,
                 random_state=self.random_state,
                 q=self._q,
             )
         return train_idx, valid_idx, test_index
 
-    def kfold_split(self, n_splits=5) -> Tuple[Iterable[int], Iterable[int]]:
+    def k_fold(self, k=5) -> Tuple[Iterable[int], Iterable[int]]:
         groups = self._get_groups()
         stratification_col = self._get_stratification_col()
         no_group_warn(groups)
@@ -155,13 +158,35 @@ class BaseSplitter:
         groups = groups[idx] if groups is not None else None
         stratification_col = stratification_col[idx] if stratification_col is not None else None
 
-        if not is_categorical(stratification_col):
-            stratification_col = quantile_binning(stratification_col, self._q)
-        kfold = StratifiedGroupKFold(
-            n_splits=n_splits, shuffle=self.shuffle, random_state=self.random_state
-        )
-        for train_index, test_index in kfold.split(idx, stratification_col, groups=groups):
-            yield train_index, test_index
+        if stratification_col is not None:
+            if not is_categorical(stratification_col):
+                stratification_col = quantile_binning(stratification_col, self._q)
+
+            if groups is not None:
+                kfold = StratifiedGroupKFold(
+                    n_splits=k, shuffle=self.shuffle, random_state=self.random_state
+                )
+            else:
+                kfold = StratifiedKFold(
+                    n_splits=k, shuffle=self.shuffle, random_state=self.random_state
+                )
+
+        else:
+            # this is not shuffled?
+            kfold = GroupKFold(n_splits=k)
+
+        if groups is not None:
+            for train_index, test_index in kfold.split(idx, y=stratification_col, groups=groups):
+                if self.shuffle:
+                    np.random.shuffle(train_index)
+                    np.random.shuffle(test_index)
+                yield train_index, test_index
+        else:
+            for train_index, test_index in kfold.split(idx, y=stratification_col):
+                if self.shuffle:
+                    np.random.shuffle(train_index)
+                    np.random.shuffle(test_index)
+                yield train_index, test_index
 
     def _get_groups(self) -> Iterable[Union[int, str]]:
         return None
@@ -189,7 +214,7 @@ class HashSplitter(BaseSplitter):
         ds,
         shuffle: bool = True,
         random_state: Optional[Union[int, np.random.RandomState]] = None,
-        sample_frac: Optional[float] = None,
+        sample_frac: Optional[float] = 1.0,
         hash_type: str = "undecorated_scaffold_hash",
         stratification_col: Optional[Union[str, np.typing.ArrayLike]] = None,
         center=np.median,
@@ -237,10 +262,10 @@ class HashSplitter(BaseSplitter):
         else:
             raise ValueError(f"Unknown hash type: {self.hash_type}")
 
-        return hashes
+        return hashes.values
 
     def _get_groups(self) -> Iterable[int]:
-        return self.get_hashes(self.ds)
+        return self._get_hashes(self.ds)
 
 
 class DensitySplitter(BaseSplitter):
@@ -258,18 +283,18 @@ class DensitySplitter(BaseSplitter):
         ds,
         shuffle: bool = True,
         random_state: Optional[Union[int, np.random.RandomState]] = None,
-        sample_frac: Optional[float] = None,
+        sample_frac: Optional[float] = 1.0,
         stratification_col: Optional[Union[str, np.typing.ArrayLike]] = None,
         center=np.median,
         q=[0, 0.25, 0.5, 0.75, 1],
-        density_q=[0, 0.25, 0.5, 0.75, 1],
+        density_q=[0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0],
     ) -> None:
         """Initialize the DensitySplitter class."""
         self._density_q = density_q
         super().__init__(ds, shuffle, random_state, sample_frac, stratification_col, center, q)
 
     def _get_groups(self) -> Iterable[int]:
-        return quantile_binning(self.ds.get_density(), self._density_q)
+        return quantile_binning(self.ds.get_densities(self._get_idxs()), self._density_q)
 
 
 class TimeSplitter(BaseSplitter):
@@ -284,18 +309,18 @@ class TimeSplitter(BaseSplitter):
         ds,
         shuffle: bool = True,
         random_state: Optional[Union[int, np.random.RandomState]] = None,
-        sample_frac: Optional[float] = None,
+        sample_frac: Optional[float] = 1.0,
         stratification_col: Optional[Union[str, np.typing.ArrayLike]] = None,
         center=np.median,
         q=[0, 0.25, 0.5, 0.75, 1],
-        year_q=[0, 0.25, 0.5, 0.75, 1],
+        year_q=[0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1],
     ) -> None:
         """Initialize the TimeSplitter class"""
         self._year_q = year_q
         super().__init__(ds, shuffle, random_state, sample_frac, stratification_col, center, q)
 
     def _get_groups(self) -> Iterable[int]:
-        return quantile_binning(self._ds.get_years(range(len(self._ds))), self._year_q)
+        return quantile_binning(self.ds.get_years(range(len(self.ds))), self._year_q)
 
 
 class KennardStoneSplitter(BaseSplitter):
@@ -332,7 +357,7 @@ class KennardStoneSplitter(BaseSplitter):
         ds,
         feature_names: List[str],
         random_state: Optional[Union[int, np.random.RandomState]] = None,
-        sample_frac: Optional[float] = None,
+        sample_frac: Optional[float] = 1.0,
         scale: bool = True,
         centrality_measure: str = "mean",
         metric: Union[Callable, str] = "euclidean",
@@ -398,13 +423,13 @@ class KennardStoneSplitter(BaseSplitter):
             self._sorted_indices = indices
         return self._sorted_indices
 
-    def train_test_split(self, train_size: float = 0.7) -> Tuple[Iterable[int], Iterable[int]]:
-        num_train_points = int(train_size * len(self.ds))
+    def train_test_split(self, frac_train: float = 0.7) -> Tuple[Iterable[int], Iterable[int]]:
+        num_train_points = int(frac_train * len(self.ds))
 
         if self.shuffle:
             return (
-                np.random.permutation(self.get_sorted_indices(self.ds))[:num_train_points],
-                np.random.permutation(self.get_sorted_indices(self.ds))[num_train_points:],
+                np.random.permutation(self.get_sorted_indices(self.ds)[:num_train_points]),
+                np.random.permutation(self.get_sorted_indices(self.ds)[num_train_points:]),
             )
         return (
             self.get_sorted_indices(self.ds)[:num_train_points],
@@ -412,10 +437,10 @@ class KennardStoneSplitter(BaseSplitter):
         )
 
     def train_valid_test_split(
-        self, train_size: float = 0.7, valid_size: float = 0.1
+        self, frac_train: float = 0.7, frac_valid: float = 0.1
     ) -> Tuple[Iterable[int], Iterable[int], Iterable[int]]:
-        num_train_points = int(train_size * len(self.ds))
-        num_valid_points = int(valid_size * len(self.ds))
+        num_train_points = int(frac_train * len(self.ds))
+        num_valid_points = int(frac_valid * len(self.ds))
 
         if self.shuffle:
             return (
@@ -437,13 +462,13 @@ class KennardStoneSplitter(BaseSplitter):
             self.get_sorted_indices(self.ds)[num_train_points + num_valid_points :],
         )
 
-    def kfold_split(self, n_splits=5) -> Tuple[Iterable[int], Iterable[int]]:
-        kf = KFold(n_splits=n_splits, shuffle=False, random_state=self.random_state)
-        for train_index, test_index in kf.split(self.get_sorted_indices):
+    def k_fold(self, k=5) -> Tuple[Iterable[int], Iterable[int]]:
+        kf = KFold(n_splits=k, shuffle=False, random_state=self.random_state)
+        for train_index, test_index in kf.split(self.get_sorted_indices(self.ds)):
             if self.shuffle:
                 train_index = np.random.permutation(train_index)
                 test_index = np.random.permutation(test_index)
-            return train_index, test_index
+            yield train_index, test_index
 
 
 class ClusterSplitter(BaseSplitter):
@@ -464,11 +489,10 @@ class ClusterSplitter(BaseSplitter):
         feature_names: List[str],
         shuffle: bool = True,
         random_state: Optional[Union[int, np.random.RandomState]] = None,
-        sample_frac: Optional[float] = None,
+        sample_frac: Optional[float] = 1.0,
         stratification_col: Optional[Union[str, np.typing.ArrayLike]] = None,
         center=np.median,
         q=[0, 0.25, 0.5, 0.75, 1],
-        year_q=[0, 0.25, 0.5, 0.75, 1],
         scaled: bool = True,
         n_pca_components: Optional[int] = "mle",
         n_clusters: int = 4,
@@ -528,7 +552,8 @@ class ClusterSplitter(BaseSplitter):
         return self._sorted_indices
 
     def _get_groups(self) -> Iterable[Union[int, str]]:
-        return self._get_sorted_indices(self.ds, self.shuffle)
+        si = self._get_sorted_indices(self.ds, self.shuffle)
+        return np.array(si)
 
 
 class ClusterStratifiedSplitter(BaseSplitter):
@@ -545,11 +570,14 @@ class ClusterStratifiedSplitter(BaseSplitter):
 
     def __init__(
         self,
+        ds,
         feature_names: List[str],
+        shuffle: bool = True,
+        random_state: Optional[Union[int, np.random.RandomState]] = None,
+        sample_frac: Optional[float] = 1.0,
         scaled: bool = True,
         n_pca_components: Optional[int] = "mle",
         n_clusters: int = 4,
-        random_state: int = 42,
         pca_kwargs: Optional[Dict[str, Any]] = None,
         kmeans_kwargs: Optional[Dict[str, Any]] = None,
     ):
@@ -580,7 +608,7 @@ class ClusterStratifiedSplitter(BaseSplitter):
         self.ascending = False
         self._pca_kwargs = pca_kwargs
         self._kmeans_kwargs = kmeans_kwargs
-        super().__init__()
+        super().__init__(ds, shuffle, random_state, sample_frac, None, None, None)
 
     def _get_stratification_col(self) -> Iterable[int]:
         if self._stratification_groups is None:
@@ -595,7 +623,9 @@ class ClusterStratifiedSplitter(BaseSplitter):
                 pca_kwargs=self._pca_kwargs,
                 kmeans_kwargs=self._kmeans_kwargs,
             )
+
             self._stratification_groups = clusters
+
         return self._stratification_groups
 
 
@@ -630,12 +660,15 @@ class LOCOCV(BaseSplitter):
 
     def __init__(
         self,
+        ds,
         feature_names: List[str],
+        shuffle: bool = True,
+        sample_frac: Optional[float] = 1.0,
         scaled: bool = True,
         n_pca_components: Optional[int] = "mle",
-        random_state: int = 42,
         pca_kwargs: Optional[Dict[str, Any]] = None,
         kmeans_kwargs: Optional[Dict[str, Any]] = None,
+        random_state: Optional[Union[int, np.random.RandomState]] = None,
     ):
         """Construct a LOCOCV.
 
@@ -661,6 +694,7 @@ class LOCOCV(BaseSplitter):
         self._stratification_groups = None
         self.ascending = False
         self.feature_names = feature_names
+        super().__init__(ds, shuffle, random_state, sample_frac, None, None, None)
 
     def train_test_split(
         self,
@@ -683,8 +717,8 @@ class LOCOCV(BaseSplitter):
             np.random.shuffle(second_group)
 
         # potential downsampling after shuffle
-        first_group = first_group[: int(self.sample_frac * len(first_group))]
-        second_group = second_group[: int(self.sample_frac * len(second_group))]
+        first_group = first_group[: int(self._sample_frac * len(first_group))]
+        second_group = second_group[: int(self._sample_frac * len(second_group))]
 
         if len(first_group) > len(second_group):
             return first_group, second_group
@@ -714,9 +748,9 @@ class LOCOCV(BaseSplitter):
             np.random.shuffle(third_group)
 
         # potential downsampling after shuffle
-        first_group = first_group[: int(self.sample_frac * len(first_group))]
-        second_group = second_group[: int(self.sample_frac * len(second_group))]
-        third_group = third_group[: int(self.sample_frac * len(third_group))]
+        first_group = first_group[: int(self._sample_frac * len(first_group))]
+        second_group = second_group[: int(self._sample_frac * len(second_group))]
+        third_group = third_group[: int(self._sample_frac * len(third_group))]
 
         groups_sorted_by_len = sorted(
             [first_group, second_group, third_group], key=len, reverse=True
@@ -741,8 +775,8 @@ class LOCOCV(BaseSplitter):
                 np.random.shuffle(train)
                 np.random.shuffle(test)
             # potential downsampling after shuffle
-            train = train[: int(self.sample_frac * len(train))]
-            test = test[: int(self.sample_frac * len(test))]
+            train = train[: int(self._sample_frac * len(train))]
+            test = test[: int(self._sample_frac * len(test))]
             if len(train) > len(test):
                 yield train, test
             else:

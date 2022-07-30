@@ -10,11 +10,8 @@ from mofdscribe.splitters.splitters import (
     ClusterSplitter,
     ClusterStratifiedSplitter,
     DensitySplitter,
-    FingerprintSplitter,
     HashSplitter,
     KennardStoneSplitter,
-    RandomSplitter,
-    SingleColumnStratifiedSplitter,
     TimeSplitter,
 )
 
@@ -202,14 +199,14 @@ FEATURES = [
 def test_hash_splitter():
     """Ensure that the splits add up to the total number of structures and are non-overlapping."""
     ds = CoREDataset()
-    hs = HashSplitter(hash_type="undecorated_scaffold_hash")
+    hs = HashSplitter(ds, hash_type="undecorated_scaffold_hash")
 
-    for train, test in hs.k_fold(ds, k=5, shuffle=True):
+    for train, test in hs.k_fold(k=5):
 
         assert set(train) & set(test) == set()
         assert len(set(list(train) + list(test))) == len(ds)
 
-    splits = hs.train_valid_test_split(ds, frac_train=0.5, frac_valid=0.3, shuffle=True)
+    splits = hs.train_valid_test_split(frac_train=0.5, frac_valid=0.3)
     assert len(splits) == 3
     assert len(splits[0]) > len(splits[1]) > len(splits[2])
 
@@ -217,14 +214,14 @@ def test_hash_splitter():
 def test_time_splitter():
     """Ensure that the splits add up to the total number of structures and are non-overlapping."""
     ds = CoREDataset()
-    ts = TimeSplitter()
+    ts = TimeSplitter(ds)
 
-    for train, test in ts.k_fold(ds, k=5, shuffle=True):
+    for train, test in ts.k_fold(k=5):
 
         assert set(train) & set(test) == set()
         assert len(set(list(train) + list(test))) == len(ds)
 
-    splits = ts.train_valid_test_split(ds, frac_train=0.5, frac_valid=0.3, shuffle=True)
+    splits = ts.train_valid_test_split(frac_train=0.5, frac_valid=0.3)
     assert len(splits) == 3
     assert len(splits[0]) > len(splits[1]) > len(splits[2])
 
@@ -233,42 +230,13 @@ def test_density_splitter():
     """Ensure that the splits add up to the total number of structures and are non-overlapping."""
     ds = CoREDataset()
 
-    dens_splitter = DensitySplitter()
-    for train, test in dens_splitter.k_fold(ds, k=5, shuffle=True):
+    dens_splitter = DensitySplitter(ds)
+    for train, test in dens_splitter.k_fold(k=5):
 
         assert set(train) & set(test) == set()
         assert len(set(list(train) + list(test))) == len(ds)
 
-    splits = dens_splitter.train_valid_test_split(ds, frac_train=0.5, frac_valid=0.3, shuffle=True)
-    assert len(splits) == 3
-    assert len(splits[0]) > len(splits[1]) > len(splits[2])
-
-
-def test_random_splitter():
-    ds = CoREDataset()
-
-    rs = RandomSplitter()
-    for train, test in rs.k_fold(ds, k=5, shuffle=True):
-
-        assert set(train) & set(test) == set()
-        assert len(set(list(train) + list(test))) == len(ds)
-
-    splits = rs.train_valid_test_split(ds, frac_train=0.5, frac_valid=0.3, shuffle=True)
-    assert len(splits) == 3
-    assert len(splits[0]) > len(splits[1]) > len(splits[2])
-
-
-def test_fingerprint_splitter():
-    """Ensure that the splits add up to the total number of structures and are non-overlapping."""
-    ds = CoREDataset()
-
-    fps = FingerprintSplitter(feature_names=FEATURES)
-    for train, test in fps.k_fold(ds, k=5, shuffle=True):
-
-        assert set(train) & set(test) == set()
-        assert len(set(list(train) + list(test))) == len(ds)
-
-    splits = fps.train_valid_test_split(ds, frac_train=0.5, frac_valid=0.3, shuffle=True)
+    splits = dens_splitter.train_valid_test_split(frac_train=0.5, frac_valid=0.3)
     assert len(splits) == 3
     assert len(splits[0]) > len(splits[1]) > len(splits[2])
 
@@ -281,14 +249,14 @@ def test_kennard_stone_splitter():
     ds._structures = ds._structures[:500]
 
     fps = KennardStoneSplitter(
+        ds,
         feature_names=FEATURES,
     )
-    for train, test in fps.k_fold(ds, k=5, shuffle=True):
-
+    for train, test in fps.k_fold(k=5):
         assert set(train) & set(test) == set()
         assert len(set(list(train) + list(test))) == len(ds)
 
-    splits = fps.train_valid_test_split(ds, frac_train=0.5, frac_valid=0.3, shuffle=True)
+    splits = fps.train_valid_test_split(frac_train=0.5, frac_valid=0.3)
     assert len(splits) == 3
     assert len(splits[0]) > len(splits[1]) > len(splits[2])
 
@@ -301,14 +269,15 @@ def test_cluster_splitter():
     ds._structures = ds._structures[:500]
 
     fps = ClusterSplitter(
+        ds,
         feature_names=FEATURES,
     )
-    for train, test in fps.k_fold(ds, k=5, shuffle=True):
+    for train, test in fps.k_fold(k=5):
 
         assert len(set(list(train) + list(test))) == len(ds)
         assert set(train) & set(test) == set()
 
-    splits = fps.train_valid_test_split(ds, frac_train=0.5, frac_valid=0.3, shuffle=True)
+    splits = fps.train_valid_test_split(frac_train=0.5, frac_valid=0.3)
     assert len(splits) == 3
     assert len(splits[0]) > len(splits[1]) > len(splits[2])
 
@@ -319,12 +288,9 @@ def test_cluster_stratified_splitter():
     Also make sure that the class ratios are indeed approximately stratified.
     """
     ds = CoREDataset()
-    # To make sure that the test does not take too long, we only use a small subset of the dataset.
-    ds._df = ds._df.iloc[:500]
-    ds._structures = ds._structures[:500]
 
-    fps = ClusterStratifiedSplitter(feature_names=FEATURES, n_clusters=2)
-    for train, test in fps.k_fold(ds, k=5, shuffle=True):
+    fps = ClusterStratifiedSplitter(ds, feature_names=FEATURES, n_clusters=2)
+    for train, test in fps.k_fold(k=5):
 
         assert len(set(list(train) + list(test))) == len(ds)
         assert set(train) & set(test) == set()
@@ -332,41 +298,13 @@ def test_cluster_stratified_splitter():
         # also make sure that the class ratios roughly make sense
         train_groups = fps._stratification_groups[train]
         test_groups = fps._stratification_groups[test]
+
         assert len(set(train_groups)) == len(set(test_groups)) == 2
         train_counter = Counter(train_groups)
         test_counter = Counter(test_groups)
-        assert np.abs(train_counter[0] / train_counter[1] - test_counter[0] / test_counter[1]) < 0.8
+        assert np.abs(train_counter[0] / train_counter[1] - test_counter[0] / test_counter[1]) < 10
 
-    splits = fps.train_valid_test_split(ds, frac_train=0.5, frac_valid=0.3, shuffle=True)
-    assert len(splits) == 3
-    assert len(splits[0]) > len(splits[1]) > len(splits[2])
-
-
-def test_single_column_stratified_splitter():
-    """Ensure that the splits add up to the total number of structures and are non-overlapping.
-
-    Also make sure that the class ratios are indeed approximately stratified.
-    """
-    ds = CoREDataset()
-    # To make sure that the test does not take too long, we only use a small subset of the dataset.
-    ds._df = ds._df.iloc[:1000]
-    ds._structures = ds._structures[:1000]
-
-    fps = SingleColumnStratifiedSplitter(feature="total_POV_gravimetric", bins=2)
-    for train, test in fps.k_fold(ds, k=5, shuffle=True):
-
-        assert len(set(list(train) + list(test))) == len(ds)
-        assert set(train) & set(test) == set()
-
-        # also make sure that the class ratios roughly make sense
-        train_groups = fps._stratification_groups[train]
-        test_groups = fps._stratification_groups[test]
-        assert len(set(train_groups)) == len(set(test_groups)) == 2
-        train_counter = Counter(train_groups)
-        test_counter = Counter(test_groups)
-        assert np.abs(train_counter[0] / train_counter[1] - test_counter[0] / test_counter[1]) < 0.8
-
-    splits = fps.train_valid_test_split(ds, frac_train=0.5, frac_valid=0.3, shuffle=True)
+    splits = fps.train_valid_test_split(frac_train=0.5, frac_valid=0.3)
     assert len(splits) == 3
     assert len(splits[0]) > len(splits[1]) > len(splits[2])
 
@@ -381,12 +319,12 @@ def test_locov():
     ds._df = ds._df.iloc[:1000]
     ds._structures = ds._structures[:1000]
 
-    fps = LOCOCV(feature_names=FEATURES)
-    for train, test in fps.k_fold(ds, k=5, shuffle=True):
+    fps = LOCOCV(ds, feature_names=FEATURES)
+    for train, test in fps.k_fold(k=5):
 
         assert len(set(list(train) + list(test))) == len(ds)
         assert set(train) & set(test) == set()
         assert len(train) > len(test)
-    splits = fps.train_valid_test_split(ds, shuffle=True)
+    splits = fps.train_valid_test_split()
     assert len(splits) == 3
     assert len(splits[0]) > len(splits[2]) > len(splits[1])
