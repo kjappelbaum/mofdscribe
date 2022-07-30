@@ -5,7 +5,7 @@ from typing import Any, Callable, Dict, Iterable, List, Optional, Tuple, Union
 import numpy as np
 import pandas as pd
 from loguru import logger
-from sklearn.model_selection import KFold, StratifiedGroupKFold, GroupKFold, StratifiedKFold
+from sklearn.model_selection import GroupKFold, KFold, StratifiedGroupKFold, StratifiedKFold
 
 from .utils import (
     grouped_stratified_train_test_partition,
