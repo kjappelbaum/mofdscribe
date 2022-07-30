@@ -3,16 +3,17 @@
 from typing import Callable, List, Union
 
 import numpy as np
+import pandas as pd
+from loguru import logger
 from numpy.typing import ArrayLike
+from pandas.api.types import infer_dtype
 from scipy.spatial.distance import cdist
 from sklearn.cluster import KMeans
 from sklearn.decomposition import PCA
+from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from tqdm import tqdm
-from pandas.api.types import infer_dtype
-import pandas as pd
-from sklearn.model_selection import train_test_split
-from loguru import logger
+
 
 # todo: can we do here something with numba?
 # for numba, we would need to do some rewrite as there is no support

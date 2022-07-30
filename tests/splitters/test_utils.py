@@ -2,12 +2,13 @@
 
 import numpy as np
 import pytest
+
 from mofdscribe.splitters.utils import (
-    kennard_stone_sampling,
-    grouped_stratified_train_test_partition,
-    stratified_train_test_partition,
-    grouped_train_valid_test_partition,
     get_train_valid_test_sizes,
+    grouped_stratified_train_test_partition,
+    grouped_train_valid_test_partition,
+    kennard_stone_sampling,
+    stratified_train_test_partition,
 )
 
 
