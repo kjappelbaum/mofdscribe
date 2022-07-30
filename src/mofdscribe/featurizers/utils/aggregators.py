@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """Functions that can be used to aggregate values/lists of values"""
 from re import M
+
 import numpy as np
 from scipy.stats import gmean, hmean, median_absolute_deviation
 from scipy.stats.mstats import gmean as mstast_gmean

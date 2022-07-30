@@ -1,6 +1,7 @@
-from mofdscribe.featurizers.utils.aggregators import ARRAY_AGGREGATORS, MA_ARRAY_AGGREGATORS
-import pytest
 import numpy as np
+import pytest
+
+from mofdscribe.featurizers.utils.aggregators import ARRAY_AGGREGATORS, MA_ARRAY_AGGREGATORS
 
 
 def test_aggregators():
