@@ -149,9 +149,7 @@ def stratified_train_test_partition(
                 "Stratifying on non-categorical data. Note that there is still discussion on the usefullness of this method."
             )
 
-            stratification_col = pd.qcut(
-                stratification_col, q, labels=np.arange(len(q) - 1)
-            ).astype(int)
+            stratification_col = quantile_binning(stratification_col, q=q)
 
     train_size, valid_size, test_size = get_train_valid_test_sizes(
         len(stratification_col), train_size, valid_size, test_size
@@ -210,9 +208,7 @@ def grouped_stratified_train_test_partition(
 
     # if we do not have categories, we now need to discretize the stratification_col
     if not categorical:
-        category_for_group = pd.qcut(category_for_group, q, labels=np.arange(len(q) - 1)).astype(
-            int
-        )
+        category_for_group = quantile_binning(category_for_group, q=q)
 
     train_size, valid_size, test_size = get_train_valid_test_sizes(
         len(category_for_group), train_size, valid_size, test_size
@@ -294,3 +290,8 @@ def grouped_train_valid_test_partition(
     test_indices = np.where(np.isin(groups, test_groups))[0]
 
     return train_indices, valid_indices, test_indices
+
+
+def quantile_binning(values, q):
+    values = pd.qcut(values, q, labels=np.arange(len(q) - 1)).astype(int)
+    return values

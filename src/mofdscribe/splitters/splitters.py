@@ -8,13 +8,15 @@ from loguru import logger
 
 import numpy as np
 from sklearn.model_selection import StratifiedKFold, train_test_split, StratifiedGroupKFold
-
+import pandas as pd
 from .utils import (
+    is_categorical,
     kennard_stone_sampling,
     pca_kmeans,
     grouped_stratified_train_test_partition,
     stratified_train_test_partition,
     grouped_train_valid_test_partition,
+    quantile_binning,
 )
 from ..datasets.dataset import StructureDataset
 
@@ -44,19 +46,25 @@ class BaseSplitter:
         shuffle: bool = True,
         random_state: Optional[Union[int, np.random.RandomState]] = None,
         sample_frac: Optional[float] = None,
+        stratification_col: Optional[Union[str, np.typing.ArrayLike]] = None,
+        center=np.median,
+        q=[0, 0.25, 0.5, 0.75, 1],
     ):
         self.ds = ds
         self.shuffle = shuffle
         self.random_state = random_state
         self._len = len(ds)
         self._sample_frac = sample_frac
+        self._stratification_col = stratification_col
+        self._center = center
+        self._q = q
 
     def _get_idxs(self):
         return np.random.choice(
             np.arange(self._len), int(self._len * self._sample_frac), replace=False
         )
 
-    def train_test_split(self, train_size=0.7):
+    def train_test_split(self, train_size: float = 0.7) -> Tuple[Iterable[int], Iterable[int]]:
         groups = self._get_groups()
         stratification_col = self._get_stratification_col()
         idx = self._get_idxs()
@@ -71,6 +79,8 @@ class BaseSplitter:
                     1 - train_size,
                     shuffle=self.shuffle,
                     random_state=self.random_state,
+                    center=self._center,
+                    q=self._q,
                 )
             else:
                 train_idx, _, test_index = grouped_train_valid_test_partition(
@@ -90,11 +100,14 @@ class BaseSplitter:
                 train_size=train_size,
                 shuffle=self.shuffle,
                 random_state=self.random_state,
+                q=self._q,
             )
 
         return train_idx, test_index
 
-    def train_valid_test_split(self, train_size=0.7, valid_size=0.1):
+    def train_valid_test_split(
+        self, train_size: float = 0.7, valid_size: float = 0.1
+    ) -> Tuple[Iterable[int], Iterable[int], Iterable[int]]:
         groups = self._get_groups()
         stratification_col = self._get_stratification_col()
         idx = self._get_idxs()
@@ -110,6 +123,8 @@ class BaseSplitter:
                     1 - train_size - valid_size,
                     shuffle=self.shuffle,
                     random_state=self.random_state,
+                    center=self._center,
+                    q=self._q,
                 )
             else:
                 train_idx, valid_idx, test_index = grouped_train_valid_test_partition(
@@ -128,10 +143,11 @@ class BaseSplitter:
                 train_size=train_size,
                 shuffle=self.shuffle,
                 random_state=self.random_state,
+                q=self._q,
             )
         return train_idx, valid_idx, test_index
 
-    def kfold_split(self, n_splits=5):
+    def kfold_split(self, n_splits=5) -> Tuple[Iterable[int], Iterable[int]]:
         groups = self._get_groups()
         stratification_col = self._get_stratification_col()
         no_group_warn(groups)
@@ -140,258 +156,25 @@ class BaseSplitter:
         groups = groups[idx] if groups is not None else None
         stratification_col = stratification_col[idx] if stratification_col is not None else None
 
+        if not is_categorical(stratification_col):
+            stratification_col = quantile_binning(stratification_col, self._q)
         kfold = StratifiedGroupKFold(
             n_splits=n_splits, shuffle=self.shuffle, random_state=self.random_state
         )
         for train_index, test_index in kfold.split(idx, stratification_col, groups=groups):
             yield train_index, test_index
 
-    def _get_groups(self):
+    def _get_groups(self) -> Iterable[Union[int, str]]:
         return None
 
-    def _get_stratification_col(self):
-        return None
+    def _get_stratification_col(self) -> Iterable[Union[int, float]]:
+        if isinstance(self._stratification_col, str):
+            return self.ds[self._stratification_col].values
+        else:
+            return self._stratification_col
 
 
-class StratifiedSplitter:
-    """Base class for stratified splitters."""
-
-    def train_valid_test_split(
-        self,
-        ds: StructureDataset,
-        frac_train: float,
-        frac_valid: float,
-        sample_frac: float = 1.0,
-        shuffle: bool = True,
-        **kwargs,
-    ) -> Tuple[Iterable[int], Iterable[int], Iterable[int]]:
-        for frac in [frac_train, frac_valid]:
-            if frac >= 1.0:
-                raise ValueError("frac_train and frac_valid must be < 1.0")
-        if sample_frac > 1.0:
-            raise ValueError("sample_frac must be <= 1.0")
-
-        upper_lim = int(np.ceil(len(ds) * sample_frac))
-
-        all_idx = np.arange(len(ds))
-
-        if shuffle:
-            np.random.shuffle(all_idx)
-        all_idx = all_idx[:upper_lim]
-        groups = self._get_stratification_groups(ds, shuffle=shuffle)[all_idx]
-
-        train_size = int(upper_lim * frac_train)
-        valid_size = int(upper_lim * frac_valid)
-
-        train_idx, test_idx = train_test_split(
-            all_idx, train_size=train_size + valid_size, stratify=groups, shuffle=shuffle
-        )
-
-        train_idx, valid_idx = train_test_split(
-            train_idx, train_size=train_size, stratify=groups[train_idx], shuffle=shuffle
-        )
-
-        return train_idx, valid_idx, test_idx
-
-    def train_test_split(
-        self,
-        ds: StructureDataset,
-        frac_train: float,
-        sample_frac: float = 1.0,
-        shuffle: bool = True,
-        **kwargs,
-    ) -> Tuple[Iterable[int], Iterable[int]]:
-        if frac_train >= 1.0:
-            raise ValueError("frac_train and frac_test must be < 1.0")
-
-        if sample_frac > 1.0:
-            raise ValueError("sample_frac must be <= 1.0")
-
-        upper_lim = int(np.ceil(len(ds) * sample_frac))
-
-        all_idx = np.arange(len(ds))
-
-        if shuffle:
-            np.random.shuffle(all_idx)
-        all_idx = all_idx[:upper_lim]
-        groups = self._get_stratification_groups(ds, shuffle=shuffle)[all_idx]
-
-        train_size = int(upper_lim * frac_train)
-
-        train_idx, test_idx = train_test_split(
-            all_idx, train_size=train_size, stratify=groups, shuffle=shuffle
-        )
-
-        return train_idx, test_idx
-
-    def k_fold(
-        self, ds: StructureDataset, k: int, shuffle: bool = True, sample_frac: float = 1.0
-    ) -> List[Tuple[int, int]]:
-        """Split the data into k folds."""
-        all_idx = np.arange(len(ds))
-        if sample_frac > 1.0:
-            raise ValueError("sample_frac must be <= 1.0")
-        number_of_points = int(len(ds) * sample_frac)
-        if shuffle:
-            np.random.shuffle(all_idx)
-        all_idx = all_idx[:number_of_points]
-        groups = self._get_stratification_groups(ds, shuffle=shuffle)[all_idx]
-
-        for train_idx, test_idx in StratifiedKFold(n_splits=k, shuffle=shuffle).split(
-            all_idx, groups
-        ):
-            yield all_idx[train_idx], all_idx[test_idx]
-
-
-class Splitter:
-    """Base class for splitters."""
-
-    def train_valid_test_split(
-        self,
-        ds: StructureDataset,
-        frac_train: float,
-        frac_valid: float,
-        sample_frac: float = 1.0,
-        shuffle: bool = True,
-        **kwargs,
-    ) -> Tuple[Iterable[int], Iterable[int], Iterable[int]]:
-        """
-        Get train, valid, and test indices.
-
-        Args:
-            ds (StructureDataset): a mofdscribe dataset
-            frac_train (float): fraction of the data to use for training.
-            frac_valid (float): fraction of the data to use for validation.
-                Fraction of the data to use for testing = 1 - frac_train - frac_valid.
-            sample_frac (float): Fraction by which the full dataset is
-                downsampled (randomly). Can be useful for debugging. Defaults to 1.0.
-            shuffle (bool): If True, then the splitters attempt to
-                shuffle the data at every possible step.
-                For the splitters that internally perform a sorting operation,
-                this means that the ties will be shuffled. In any case,
-                if shuffle is set to True,
-                then the folds will be shuffled after the split. Defaults to True.
-            **kwargs: additional arguments for the splitter
-
-        Raises:
-            ValueError: if frac_train + frac_valid > 1.0
-            ValueError: if sample_frac > 1.0
-
-        Returns:
-            Tuple[Iterable[int], Iterable[int], Iterable[int]]: train, valid,
-            test indices
-        """
-        for frac in [frac_train, frac_valid]:
-            if frac >= 1.0:
-                raise ValueError("frac_train and frac_valid must be < 1.0")
-        if sample_frac > 1.0:
-            raise ValueError("sample_frac must be <= 1.0")
-        number_of_points = int(len(ds) * sample_frac)
-        number_of_train_points = int(frac_train * number_of_points)
-        number_of_valid_points = int(frac_valid * number_of_points)
-
-        indices = self.get_sorted_indices(ds, shuffle=shuffle)
-
-        train_inds = indices[:number_of_train_points]
-        valid_inds = indices[
-            number_of_train_points : number_of_train_points + number_of_valid_points
-        ]
-        test_inds = indices[number_of_train_points + number_of_valid_points :]
-
-        if shuffle:
-            np.random.shuffle(train_inds)
-            np.random.shuffle(valid_inds)
-            np.random.shuffle(test_inds)
-        return train_inds, valid_inds, test_inds
-
-    def train_test_split(
-        self,
-        ds: StructureDataset,
-        frac_train: float,
-        sample_frac: float = 1.0,
-        shuffle: bool = True,
-        **kwargs,
-    ) -> Tuple[Iterable[int], Iterable[int]]:
-        """Get indices for training and test set.
-
-        Args:
-            ds (StructureDataset): mofdscribe dataset
-            frac_train (float): fraction of the data to use for training
-            sample_frac (float): Fraction by which the full dataset
-                is downsampled (randomly). Can be useful for debugging.
-                Defaults to 1.0.
-            shuffle (bool): If True, then the splitters attempt to
-                shuffle the data at every possible step.
-                For the splitters that internally perform a sorting operation,
-                this means that the ties will be shuffled. In any case, if
-                shuffle is set to True, then the folds will be shuffled after
-                the split. Defaults to True.
-            **kwargs: Aditional options for the splitter
-
-        Raises:
-            ValueError: if frac_train + frac_valid > 1.0
-            ValueError: if sample_frac > 1.0
-
-        Returns:
-            Tuple[Iterable[int], Iterable[int]]: train, test indices
-        """
-        if frac_train >= 1.0:
-            raise ValueError("frac_train and frac_test must be < 1.0")
-
-        if sample_frac > 1.0:
-            raise ValueError("sample_frac must be <= 1.0")
-        number_of_points = int(len(ds) * sample_frac)
-        number_of_train_points = int(frac_train * number_of_points)
-
-        indices = self.get_sorted_indices(ds, shuffle=shuffle)
-
-        train_inds = indices[:number_of_train_points]
-
-        test_inds = indices[number_of_train_points:]
-
-        if shuffle:
-            np.random.shuffle(train_inds)
-            np.random.shuffle(test_inds)
-
-        return train_inds, test_inds
-
-    def k_fold(
-        self,
-        ds: StructureDataset,
-        k: int,
-        shuffle: bool = True,
-        sample_frac: float = 1.0,
-    ):
-        """Split the data into k folds."""
-        indices = self.get_sorted_indices(ds, shuffle=shuffle)
-        indices = np.array(indices)
-        if sample_frac > 1.0:
-            raise ValueError("sample_frac must be <= 1.0")
-        number_of_points = int(len(ds) * sample_frac)
-        if shuffle:
-            np.random.shuffle(indices)
-        indices = indices[:number_of_points]
-
-        fold_sizes = np.full(k, len(ds) // k, dtype=int)
-        fold_sizes[: len(ds) % k] += 1
-        current = 0
-        for fold_size in fold_sizes:
-            start, stop = current, current + fold_size
-            test_index = indices[start:stop]
-
-            test_mask = np.zeros(len(ds), dtype=bool)
-            test_mask[test_index] = True
-            train_fold = indices[np.logical_not(test_mask)]
-            test_fold = indices[test_mask]
-            if shuffle:
-                np.random.shuffle(train_fold)
-                np.random.shuffle(test_fold)
-
-            yield train_fold, test_fold
-            current = stop
-
-
-class HashSplitter(Splitter):
+class HashSplitter(BaseSplitter):
     """Splitter that uses graph hashes to split the data in more stringent ways.
 
     Note that the hashes we use do not allow for a meaningful measure of
@@ -404,7 +187,14 @@ class HashSplitter(Splitter):
 
     def __init__(
         self,
+        ds,
+        shuffle: bool = True,
+        random_state: Optional[Union[int, np.random.RandomState]] = None,
+        sample_frac: Optional[float] = None,
         hash_type: str = "undecorated_scaffold_hash",
+        stratification_col: Optional[Union[str, np.typing.ArrayLike]] = None,
+        center=np.median,
+        q=[0, 0.25, 0.5, 0.75, 1],
     ) -> None:
         """Initialize a HashSplitter.
 
@@ -418,9 +208,9 @@ class HashSplitter(Splitter):
                 Defaults to "undecorated_scaffold_hash".
         """
         self.hash_type = hash_type
-        super().__init__()
+        super().__init__(ds, shuffle, random_state, sample_frac, stratification_col, center, q)
 
-    def get_hashes(self, ds: StructureDataset) -> Iterable[str]:
+    def _get_hashes(self, ds: StructureDataset) -> Iterable[str]:
         """Retrieve the list of hashes from the dataset
 
         Args:
@@ -450,77 +240,40 @@ class HashSplitter(Splitter):
 
         return hashes
 
-    def get_sorted_indices(self, ds: StructureDataset, shuffle: bool = True) -> Iterable[int]:
-        """Create a sorted list of indices based on the hashes of the structures.
-
-        Args:
-            ds (StructureDataset): mofdscribe dataset
-            shuffle (bool): If true, shuffle ties (identical hash).
-                Defaults to True.
-
-        Returns:
-            Iterable[int]: sorted indices
-        """
-        hashes = self.get_hashes(ds)
-        # we use these numbers to shuffle the data in case of ties
-        random_numbers = np.arange(len(hashes))
-        if shuffle:
-            np.random.shuffle(random_numbers)
-
-        c = Counter(hashes)
-        t = [(c[v], v, i, random_numbers[i]) for i, v in enumerate(hashes)]
-        t.sort(reverse=True, key=lambda x: (x[0], x[3]))
-        indices = [i for _, _, i, _ in t]
-
-        return indices
+    def _get_groups(self) -> Iterable[int]:
+        return self.get_hashes(self.ds)
 
 
-class DensitySplitter(Splitter):
+class DensitySplitter(BaseSplitter):
     """Splitter that uses the density of the structures to split the data.
 
-    For this, we sort structures according to their density and then split the
-    data. This ensures that the validation is quite stringent as the different
-    folds will have different densities.
+    For this, we sort structures according to their density and then group the based on the density.
+    You can modify the number of groups using the :attr:`density_q` parameter, those values indicate
+    the quantiles which we use for the grouping.
+
+    This ensures that the validation is quite stringent as the different folds will have different densities.
     """
 
     def __init__(
         self,
-        ascending: bool = True,
+        ds,
+        shuffle: bool = True,
+        random_state: Optional[Union[int, np.random.RandomState]] = None,
+        sample_frac: Optional[float] = None,
+        stratification_col: Optional[Union[str, np.typing.ArrayLike]] = None,
+        center=np.median,
+        q=[0, 0.25, 0.5, 0.75, 1],
+        density_q=[0, 0.25, 0.5, 0.75, 1],
     ) -> None:
-        """Initialize the DensitySplitter class.
+        """Initialize the DensitySplitter class."""
+        self._density_q = density_q
+        super().__init__(ds, shuffle, random_state, sample_frac, stratification_col, center, q)
 
-        Args:
-            ascending (bool): If True, sort densities ascending.
-                Defaults to True.
-        """
-        self.ascending = ascending
-        super().__init__()
-
-    def get_sorted_indices(self, ds: StructureDataset, shuffle: bool = True) -> Iterable[int]:
-        """Create a sorted list of indices based on the density of the structures.
-
-        Args:
-            ds (StructureDataset): mofdscribe dataset
-            shuffle (bool): If true, shuffle ties (identical densities).
-                Defaults to True.
-
-        Returns:
-            Iterable[int]: sorted indices
-        """
-        densities = ds.get_densities(range(len(ds)))
-        # we use these numbers to shuffle the data in case of ties
-        random_numbers = np.arange(len(densities))
-        if shuffle:
-            np.random.shuffle(random_numbers)
-
-        t = [(v, i, random_numbers[i]) for i, v in enumerate(densities)]
-        t.sort(reverse=not self.ascending, key=lambda x: (x[0], x[2]))
-        indices = [i for _, i, _ in t]
-
-        return indices
+    def _get_groups(self) -> Iterable[int]:
+        return quantile_binning(self.ds.get_density(), self._density_q)
 
 
-class TimeSplitter(Splitter):
+class TimeSplitter(BaseSplitter):
     """This splitter sorts structures according to their publication date.
 
     That is, the training set will contain structures that are "older" (have
@@ -529,57 +282,24 @@ class TimeSplitter(Splitter):
 
     def __init__(
         self,
-        ascending: bool = True,
+        ds,
+        shuffle: bool = True,
+        random_state: Optional[Union[int, np.random.RandomState]] = None,
+        sample_frac: Optional[float] = None,
+        stratification_col: Optional[Union[str, np.typing.ArrayLike]] = None,
+        center=np.median,
+        q=[0, 0.25, 0.5, 0.75, 1],
+        year_q=[0, 0.25, 0.5, 0.75, 1],
     ) -> None:
-        """Initialize the TimeSplitter class
+        """Initialize the TimeSplitter class"""
+        self._year_q = year_q
+        super().__init__(ds, shuffle, random_state, sample_frac, stratification_col, center, q)
 
-        Args:
-            ascending (bool): If True, sort times ascending.
-                Defaults to True.
-        """
-        self.ascending = ascending
-        super().__init__()
-
-    def get_sorted_indices(self, ds, shuffle: bool = True):
-        """Create a sorted list of indices based on the structures' year of publication.
-
-        Args:
-            ds (StructureDataset): mofdscribe dataset
-            shuffle (bool): If true, shuffle ties (identical years).
-                Defaults to True.
-
-        Returns:
-            Iterable[int]: sorted indices
-        """
-        densities = ds.get_years(range(len(ds)))
-        # we use these numbers to shuffle the data in case of ties
-        random_numbers = np.arange(len(densities))
-        if shuffle:
-            np.random.shuffle(random_numbers)
-
-        t = [(v, i, random_numbers[i]) for i, v in enumerate(densities)]
-        t.sort(reverse=not self.ascending, key=lambda x: (x[0], x[2]))
-        indices = [i for _, i, _ in t]
-
-        return indices
+    def _get_groups(self) -> Iterable[int]:
+        return quantile_binning(self._ds.get_years(range(len(self._ds))), self._year_q)
 
 
-class RandomSplitter(Splitter):
-    """The "conventional" splitter.
-
-    Randomly split data into sets/folds
-    """
-
-    def get_sorted_indices(self, ds: StructureDataset, shuffle: bool = True) -> Iterable[int]:
-        """Simply return a list of indices of length equal to the length of the dataset."""
-        indices = np.arange(len(ds))
-        if shuffle:
-            np.random.shuffle(indices)
-
-        return indices
-
-
-class FingerprintSplitter(Splitter):
+class FingerprintSplitter(BaseSplitter):
     """Splitter that uses the features of the structures to split the data.
 
     It does not directly compute distances but simply *sorts* the rows
@@ -617,7 +337,7 @@ class FingerprintSplitter(Splitter):
         return indices
 
 
-class KennardStoneSplitter(Splitter):
+class KennardStoneSplitter(BaseSplitter):
     """Run the Kennard-Stone sampling algorithm [KennardStone].
 
     The algorithm selects samples with uniform converage.
@@ -699,7 +419,7 @@ class KennardStoneSplitter(Splitter):
 
 
 # ToDo: n_pca_components could also be "auto" based on elbow criterion
-class ClusterSplitter(Splitter):
+class ClusterSplitter(BaseSplitter):
     """Split the data into clusters and keep clusters in different folds (as much as possible).
 
     The approach has been proposed on
@@ -774,7 +494,7 @@ class ClusterSplitter(Splitter):
         return self._sorted_indices
 
 
-class ClusterStratifiedSplitter(StratifiedSplitter):
+class ClusterStratifiedSplitter(BaseSplitter):
     """Split the data into clusters and stratify on those clusters
 
     The approach has been proposed on
@@ -844,38 +564,7 @@ class ClusterStratifiedSplitter(StratifiedSplitter):
         return self._stratification_groups
 
 
-class SingleColumnStratifiedSplitter(StratifiedSplitter):
-    """Stratify splits on a single column of dataset dataframe."""
-
-    def __init__(self, feature: str, bins: Union[str, int] = "auto") -> None:
-        """Construct a SingleColumnStratifiedSplitter.
-
-        Args:
-            feature (str): Name of the feature to stratify on.
-            bins (Union[str, int]): Number of bins to use.
-                If "auto",  use the maximum of the ‘sturges’ and ‘fd’ estimators.
-                Provides good all around performance.
-                Defaults to "auto".
-                For all options, see the documentation of the
-                :py:func:`numpy.histogram_bin_edges` function.
-        """
-        self.bins = bins
-        self.feature = feature
-        super().__init__()
-        self._stratification_groups = None
-
-    def _get_stratification_groups(
-        self, ds: StructureDataset, shuffle: bool = True
-    ) -> Iterable[int]:
-        if self._stratification_groups is None:
-            bins = np.histogram_bin_edges(ds._df[self.feature].values, bins=self.bins)[1:]
-            strat = np.digitize(ds._df[self.feature].values, bins=bins, right=True)
-
-            self._stratification_groups = strat
-        return self._stratification_groups
-
-
-class LOCOCV(Splitter):
+class LOCOCV(BaseSplitter):
     """
     Leave-one-cluster-out cross-validation.
 
@@ -889,9 +578,6 @@ class LOCOCV(Splitter):
 
     By default, we will sort outputs such that the cluster sizes are
     train >= test >= valid.
-
-    We inherit from Splitter for consitency, but reimplement all
-    the splitting methods.
 
     References:
         [Kramer] `Kramer, C.; Gedeck, P. Leave-Cluster-Out Cross-Validation

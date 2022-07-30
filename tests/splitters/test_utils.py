@@ -143,6 +143,32 @@ def test_grouped_train_valid_test_partition(number_of_groups):
     set(test_groups).intersection(set(train_groups)) == set()
 
 
+def test_grouped_train_valid_test_partition_string_groups():
+    datasize = 10_000
+    groups = np.random.choice(["a", "b", "c", "d", "e", "f"], size=datasize)
+    train_indices, valid_indices, test_indices = grouped_train_valid_test_partition(
+        groups, train_size=0.5, valid_size=0.25, test_size=0.25
+    )
+
+    assert len(train_indices) + len(test_indices) + len(valid_indices) == datasize
+    test_groups = groups[test_indices]
+    train_groups = groups[train_indices]
+    valid_groups = groups[valid_indices]
+    set(test_groups).intersection(set(train_groups)) == set()
+    set(test_groups).intersection(set(valid_groups)) == set()
+    set(train_groups).intersection(set(valid_groups)) == set()
+
+    train_indices, valid_indices, test_indices = grouped_train_valid_test_partition(
+        groups, train_size=0.5, valid_size=0, test_size=0.5
+    )
+
+    assert len(train_indices) + len(test_indices) == datasize
+    test_groups = groups[test_indices]
+    train_groups = groups[train_indices]
+
+    set(test_groups).intersection(set(train_groups)) == set()
+
+
 def test_get_train_valid_test_sizes():
     train_size, valid_size, test_size = get_train_valid_test_sizes(100, 0.5, 0.25, 0.25)
     assert train_size + valid_size + test_size == 100
