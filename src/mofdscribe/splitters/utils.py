@@ -12,6 +12,7 @@ from tqdm import tqdm
 from pandas.api.types import infer_dtype
 import pandas as pd
 from sklearn.model_selection import train_test_split
+from loguru import logger
 
 # todo: can we do here something with numba?
 # for numba, we would need to do some rewrite as there is no support
@@ -130,6 +131,56 @@ def handle_stratification_col(stratification_col):
         return stratification_col
 
 
+def stratified_train_test_partition(
+    idxs,
+    stratification_col,
+    train_size,
+    valid_size,
+    test_size,
+    shuffle=True,
+    random_state=None,
+    q=[0, 0.25, 0.5, 0.75, 1],
+):
+    if stratification_col is not None:
+        if is_categorical(stratification_col):
+            stratification_col = stratification_col
+        else:
+            logger.warning(
+                "Stratifying on non-categorical data. Note that there is still discussion on the usefullness of this method."
+            )
+
+            stratification_col = pd.qcut(
+                stratification_col, q, labels=np.arange(len(q) - 1)
+            ).astype(int)
+
+    train_size = int(np.floor(train_size * len(stratification_col)))
+    valid_size = int(np.floor(valid_size * len(stratification_col)))
+    test_size = int(len(stratification_col) - train_size - valid_size)
+
+    train_idx, test_idx, train_strat, _ = train_test_split(
+        idxs,
+        stratification_col,
+        train_size=train_size + valid_size,
+        test_size=test_size,
+        shuffle=shuffle,
+        random_state=random_state,
+        stratify=stratification_col,
+    )
+
+    if valid_size > 0:
+        train_idx, valid_idx = train_test_split(
+            train_idx,
+            train_size=train_size,
+            shuffle=shuffle,
+            random_state=random_state,
+            stratify=train_strat,
+        )
+    else:
+        valid_idx = None
+
+    return train_idx, valid_idx, test_idx
+
+
 def grouped_stratified_train_test_partition(
     stratification_col,
     group_col,
@@ -168,7 +219,7 @@ def grouped_stratified_train_test_partition(
     test_size = int(len(category_for_group) - train_size - valid_size)
 
     # now we can do the split
-    train_groups, test_groups, train_cat, test_cat = train_test_split(
+    train_groups, test_groups, train_cat, _ = train_test_split(
         groups,
         category_for_group,
         train_size=train_size + valid_size,
