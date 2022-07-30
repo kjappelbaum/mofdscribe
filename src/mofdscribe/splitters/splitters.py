@@ -2,12 +2,11 @@
 """Classes that help performing cross-validation."""
 from collections import Counter
 from typing import Any, Callable, Dict, Iterable, List, Optional, Tuple, Union
-
-
+from sklearn.model_selection._split import _validate_shuffle_split
 from loguru import logger
 
 import numpy as np
-from sklearn.model_selection import StratifiedKFold, train_test_split, StratifiedGroupKFold
+from sklearn.model_selection import StratifiedKFold, train_test_split, StratifiedGroupKFold, KFold
 import pandas as pd
 from .utils import (
     is_categorical,
@@ -299,64 +298,46 @@ class TimeSplitter(BaseSplitter):
         return quantile_binning(self._ds.get_years(range(len(self._ds))), self._year_q)
 
 
-class FingerprintSplitter(BaseSplitter):
-    """Splitter that uses the features of the structures to split the data.
-
-    It does not directly compute distances but simply *sorts* the rows
-    using `np.sort`.
-    For distance-based splits, see :py:meth:`~mofdscribe.splitters.KennardStoneSplitter`.
-    """
-
-    def __init__(
-        self,
-        feature_names: List[str],
-    ) -> None:
-        """Construct a FingerPrintSplitter.
-
-        Args:
-            feature_names (List[str]): Names of features to consider.
-        """
-        self.feature_names = feature_names
-        super().__init__()
-
-    def get_sorted_indices(self, ds: StructureDataset, shuffle: bool = True) -> Iterable[int]:
-        """Return a list of indices, sorted by similarity.
-
-        Here, rows are sorted according to
-        their similarity (considering the features specified in the class construction)
-
-        Args:
-            ds (StructureDataset): A mofdscribe StructureDataset
-            shuffle (bool): Not used in this method.
-                Defaults to True.
-
-        Returns:
-            Iterable[int]: Sorted indices.
-        """
-        indices = ds._df.sort_values(by=self.feature_names).index.values
-        return indices
-
-
 class KennardStoneSplitter(BaseSplitter):
-    """Run the Kennard-Stone sampling algorithm [KennardStone].
+    """Run the Kennard-Stone sampling algorithm [KennardStone]_.
 
     The algorithm selects samples with uniform converage.
     The initial samples are biased towards the boundaries of the dataset.
+    Hence, it might be biased by outliers.
+
+    This algorithm ensures a flat coverage of the dataset.
+    It is also known as CADEX algorithm and has been later refined
+    in the DUPLEX algorithm.
 
     .. warning::
 
         This splitter can be slow for large datasets as
         it requires us to perform distance matrices N times for a dataset
         with N structures.
+
+
+    .. warning::
+
+        Stratification is not supported for this splitter.
+
+
+    .. warning::
+
+        I couldn't find a good reference for the k-fold version of
+        this algorihm.
     """
 
     def __init__(
         self,
+        ds,
         feature_names: List[str],
+        random_state: Optional[Union[int, np.random.RandomState]] = None,
+        sample_frac: Optional[float] = None,
         scale: bool = True,
         centrality_measure: str = "mean",
         metric: Union[Callable, str] = "euclidean",
         ascending: bool = False,
+        shuffle: bool = True,
     ) -> None:
         """Construct a KennardStoneSplitter.
 
@@ -386,9 +367,9 @@ class KennardStoneSplitter(BaseSplitter):
         self.metric = metric
         self.ascending = ascending
         self._sorted_indices = None
-        super().__init__()
+        super().__init__(ds, shuffle, random_state, sample_frac, None, None, None)
 
-    def get_sorted_indices(self, ds: StructureDataset, shuffle: bool = True) -> Iterable[int]:
+    def get_sorted_indices(self, ds: StructureDataset) -> Iterable[int]:
         """Return a list of indices, sorted by similarity using the Kennard-Stone algorithm.
 
         The first sample will be maximally distant from the center.
@@ -417,10 +398,56 @@ class KennardStoneSplitter(BaseSplitter):
             self._sorted_indices = indices
         return self._sorted_indices
 
+    def train_test_split(self, train_size: float = 0.7) -> Tuple[Iterable[int], Iterable[int]]:
+        num_train_points = int(train_size * len(self.ds))
 
-# ToDo: n_pca_components could also be "auto" based on elbow criterion
+        if self.shuffle:
+            return (
+                np.random.permutation(self.get_sorted_indices(self.ds))[:num_train_points],
+                np.random.permutation(self.get_sorted_indices(self.ds))[num_train_points:],
+            )
+        return (
+            self.get_sorted_indices(self.ds)[:num_train_points],
+            self.get_sorted_indices(self.ds)[num_train_points:],
+        )
+
+    def train_valid_test_split(
+        self, train_size: float = 0.7, valid_size: float = 0.1
+    ) -> Tuple[Iterable[int], Iterable[int], Iterable[int]]:
+        num_train_points = int(train_size * len(self.ds))
+        num_valid_points = int(valid_size * len(self.ds))
+
+        if self.shuffle:
+            return (
+                np.random.permutation(self.get_sorted_indices(self.ds)[:num_train_points]),
+                np.random.permutation(
+                    self.get_sorted_indices(self.ds)[
+                        num_train_points : num_train_points + num_valid_points
+                    ]
+                ),
+                np.random.permutation(
+                    self.get_sorted_indices(self.ds)[num_train_points + num_valid_points :]
+                ),
+            )
+        return (
+            self.get_sorted_indices(self.ds)[:num_train_points],
+            self.get_sorted_indices(self.ds)[
+                num_train_points : num_train_points + num_valid_points
+            ],
+            self.get_sorted_indices(self.ds)[num_train_points + num_valid_points :],
+        )
+
+    def kfold_split(self, n_splits=5) -> Tuple[Iterable[int], Iterable[int]]:
+        kf = KFold(n_splits=n_splits, shuffle=False, random_state=self.random_state)
+        for train_index, test_index in kf.split(self.get_sorted_indices):
+            if self.shuffle:
+                train_index = np.random.permutation(train_index)
+                test_index = np.random.permutation(test_index)
+            return train_index, test_index
+
+
 class ClusterSplitter(BaseSplitter):
-    """Split the data into clusters and keep clusters in different folds (as much as possible).
+    """Split the data into clusters and use the clusters as groups.
 
     The approach has been proposed on
     `Kaggle <https://www.kaggle.com/code/lucamassaron/are-you-doing-cross-validation-the-best-way/notebook>`_.
@@ -433,11 +460,18 @@ class ClusterSplitter(BaseSplitter):
 
     def __init__(
         self,
+        ds,
         feature_names: List[str],
+        shuffle: bool = True,
+        random_state: Optional[Union[int, np.random.RandomState]] = None,
+        sample_frac: Optional[float] = None,
+        stratification_col: Optional[Union[str, np.typing.ArrayLike]] = None,
+        center=np.median,
+        q=[0, 0.25, 0.5, 0.75, 1],
+        year_q=[0, 0.25, 0.5, 0.75, 1],
         scaled: bool = True,
         n_pca_components: Optional[int] = "mle",
         n_clusters: int = 4,
-        random_state: int = 42,
         pca_kwargs: Optional[Dict[str, Any]] = None,
         kmeans_kwargs: Optional[Dict[str, Any]] = None,
     ):
@@ -468,9 +502,9 @@ class ClusterSplitter(BaseSplitter):
         self.ascending = False
         self._pca_kwargs = pca_kwargs
         self._kmeans_kwargs = kmeans_kwargs
-        super().__init__()
+        super().__init__(ds, shuffle, random_state, sample_frac, stratification_col, center, q)
 
-    def get_sorted_indices(self, ds: StructureDataset, shuffle: bool = True) -> Iterable[int]:
+    def _get_sorted_indices(self, ds: StructureDataset, shuffle: bool = True) -> Iterable[int]:
         if self._sorted_indices is None:
             feats = ds._df[self.feature_names].values
 
@@ -492,6 +526,9 @@ class ClusterSplitter(BaseSplitter):
             indices = [i for _, i, _ in t]
             self._sorted_indices = indices
         return self._sorted_indices
+
+    def _get_groups(self) -> Iterable[Union[int, str]]:
+        return self._get_sorted_indices(self.ds, self.shuffle)
 
 
 class ClusterStratifiedSplitter(BaseSplitter):
@@ -545,11 +582,9 @@ class ClusterStratifiedSplitter(BaseSplitter):
         self._kmeans_kwargs = kmeans_kwargs
         super().__init__()
 
-    def _get_stratification_groups(
-        self, ds: StructureDataset, shuffle: bool = True
-    ) -> Iterable[int]:
+    def _get_stratification_col(self) -> Iterable[int]:
         if self._stratification_groups is None:
-            feats = ds._df[self.feature_names].values
+            feats = self.ds._df[self.feature_names].values
 
             clusters = pca_kmeans(
                 feats,
@@ -629,12 +664,9 @@ class LOCOCV(BaseSplitter):
 
     def train_test_split(
         self,
-        ds: StructureDataset,
-        sample_frac: float = 1,
-        shuffle: bool = True,
     ) -> Tuple[Iterable[int], Iterable[int]]:
         groups = pca_kmeans(
-            ds._df[self.feature_names].values,
+            self.ds._df[self.feature_names].values,
             scaled=self.scaled,
             n_pca_components=self.n_pca_components,
             n_clusters=2,
@@ -646,13 +678,13 @@ class LOCOCV(BaseSplitter):
         first_group = np.where(groups == 0)[0]
         second_group = np.where(groups == 1)[0]
 
-        if shuffle:
+        if self.shuffle:
             np.random.shuffle(first_group)
             np.random.shuffle(second_group)
 
         # potential downsampling after shuffle
-        first_group = first_group[: int(sample_frac * len(first_group))]
-        second_group = second_group[: int(sample_frac * len(second_group))]
+        first_group = first_group[: int(self.sample_frac * len(first_group))]
+        second_group = second_group[: int(self.sample_frac * len(second_group))]
 
         if len(first_group) > len(second_group):
             return first_group, second_group
@@ -661,12 +693,9 @@ class LOCOCV(BaseSplitter):
 
     def train_valid_test_split(
         self,
-        ds: StructureDataset,
-        sample_frac: float = 1,
-        shuffle: bool = True,
     ) -> Tuple[Iterable[int], Iterable[int], Iterable[int]]:
         groups = pca_kmeans(
-            ds._df[self.feature_names].values,
+            self.ds._df[self.feature_names].values,
             scaled=self.scaled,
             n_pca_components=self.n_pca_components,
             n_clusters=3,
@@ -679,24 +708,24 @@ class LOCOCV(BaseSplitter):
         second_group = np.where(groups == 1)[0]
         third_group = np.where(groups == 2)[0]
 
-        if shuffle:
+        if self.shuffle:
             np.random.shuffle(first_group)
             np.random.shuffle(second_group)
             np.random.shuffle(third_group)
 
         # potential downsampling after shuffle
-        first_group = first_group[: int(sample_frac * len(first_group))]
-        second_group = second_group[: int(sample_frac * len(second_group))]
-        third_group = third_group[: int(sample_frac * len(third_group))]
+        first_group = first_group[: int(self.sample_frac * len(first_group))]
+        second_group = second_group[: int(self.sample_frac * len(second_group))]
+        third_group = third_group[: int(self.sample_frac * len(third_group))]
 
         groups_sorted_by_len = sorted(
             [first_group, second_group, third_group], key=len, reverse=True
         )
         return groups_sorted_by_len[0], groups_sorted_by_len[2], groups_sorted_by_len[1]
 
-    def k_fold(self, ds: StructureDataset, k: int, shuffle: bool = True, sample_frac: float = 1):
+    def k_fold(self, k: int) -> Tuple[Iterable[int], Iterable[int]]:
         groups = pca_kmeans(
-            ds._df[self.feature_names].values,
+            self.ds._df[self.feature_names].values,
             scaled=self.scaled,
             n_pca_components=self.n_pca_components,
             n_clusters=k,
@@ -708,12 +737,12 @@ class LOCOCV(BaseSplitter):
         for group in range(k):
             train = np.where(groups != group)[0]
             test = np.where(groups == group)[0]
-            if shuffle:
+            if self.shuffle:
                 np.random.shuffle(train)
                 np.random.shuffle(test)
             # potential downsampling after shuffle
-            train = train[: int(sample_frac * len(train))]
-            test = test[: int(sample_frac * len(test))]
+            train = train[: int(self.sample_frac * len(train))]
+            test = test[: int(self.sample_frac * len(test))]
             if len(train) > len(test):
                 yield train, test
             else:
