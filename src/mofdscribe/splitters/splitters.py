@@ -2,20 +2,21 @@
 """Classes that help performing cross-validation."""
 from collections import Counter
 from typing import Any, Callable, Dict, Iterable, List, Optional, Tuple, Union
-from sklearn.model_selection._split import _validate_shuffle_split
-from loguru import logger
 
 import numpy as np
-from sklearn.model_selection import StratifiedKFold, train_test_split, StratifiedGroupKFold, KFold
 import pandas as pd
+from loguru import logger
+from sklearn.model_selection import KFold, StratifiedGroupKFold, StratifiedKFold, train_test_split
+from sklearn.model_selection._split import _validate_shuffle_split
+
 from .utils import (
+    grouped_stratified_train_test_partition,
+    grouped_train_valid_test_partition,
     is_categorical,
     kennard_stone_sampling,
     pca_kmeans,
-    grouped_stratified_train_test_partition,
-    stratified_train_test_partition,
-    grouped_train_valid_test_partition,
     quantile_binning,
+    stratified_train_test_partition,
 )
 from ..datasets.dataset import StructureDataset
 
