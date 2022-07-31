@@ -4,6 +4,8 @@
 Our splitters attempt to reduce any potential for data leakage by using grouping by default--
 and prioritizing grouping over stratficiation or exactly matching the requested train test ratio. 
 
+See also the `sklearn docs <https://scikit-learn.org/stable/modules/cross_validation.html#cross-validation-iterators-for-grouped-data>`_.
+
 .. warning:: 
 
     Due to the grouping operations, the train/test ratios the methods produce will not exactly 
@@ -14,7 +16,6 @@ from typing import Any, Callable, Dict, Iterable, List, Optional, Tuple, Union
 
 import numpy as np
 import pandas as pd
-from loguru import logger
 from sklearn.model_selection import GroupKFold, KFold, StratifiedGroupKFold, StratifiedKFold
 
 from .utils import (
@@ -23,6 +24,7 @@ from .utils import (
     grouped_train_valid_test_partition,
     is_categorical,
     kennard_stone_sampling,
+    no_group_warn,
     pca_kmeans,
     quantile_binning,
     stratified_train_test_partition,
@@ -40,27 +42,58 @@ __all__ = (
 )
 
 
-def no_group_warn(groups):
-    if groups is None:
-        logger.warning(
-            "You are not using a grouped split. However, for retricular materials, grouping is typically a good idea to avoid data leakage."
-        )
-
-
 class BaseSplitter:
+    """A :code:`BaseSplitter` implements the basic logic for dataset partition as well as k-fold cross-validation.
+
+    Methods that inherit from this class typically implement the
+
+        * :code: `_get_stratification_col`: Should return an ArrayLike object of floats, categories, or ints.
+            If it is categorical data, the :code:`BaseSplitter` will handle the discretization.
+        * :code: `_get_groups`: Should return an ArrayLike object of categories (integers or strings)
+
+    methods.
+    Internally, the :code:`BaseSplitter` uses those to group and/or stratify the splits.
+    """
+
     def __init__(
         self,
-        ds,
+        ds: StructureDataset,
         shuffle: bool = True,
         random_state: Optional[Union[int, np.random.RandomState]] = None,
         sample_frac: Optional[float] = 1.0,
         stratification_col: Optional[Union[str, np.typing.ArrayLike]] = None,
-        center=np.median,
-        q=[0, 0.25, 0.5, 0.75, 1],
+        center: callable = np.median,
+        q: Iterable[float] = [0, 0.25, 0.5, 0.75, 1],
     ):
-        self.ds = ds
-        self.shuffle = shuffle
-        self.random_state = random_state
+        """Initialize a BaseSplitter.
+
+        Args:
+            ds (StructureDataset): A structure dataset.
+                The :code:`BaseSplitter` only requires the length magic method to be implemented.
+                However, other splitters might require additional methods.
+            shuffle (bool, optional): If True, perform a shuffled split.
+                Defaults to True.
+            random_state (Optional[Union[int, np.random.RandomState]], optional):
+                Random state for the shuffling. Defaults to None.
+            sample_frac (Optional[float], optional):
+                This can be used for downsampling. It will randomly select a subset of
+                indices from all indices *before* splittings. For instance :code:`sample_frac=0.8`
+                will randomly select 80% of the indices before splitting.
+                Defaults to 1.0.
+            stratification_col (Optional[Union[str, np.typing.ArrayLike]], optional): Data used for stratification.
+                If it is categorical (see :py:meth:`mofdscribe.splitters.utils.is_categorical`)
+                then we directly use it for stratification. Otherwise, we use quantile binning.
+                Defaults to None.
+            center (callable, optional): Aggregation function to compute a measure of centrality
+                of all the points in a group such that this can then be used for stratification.
+                This is only used for continuos inputs. For categorical inputs, we always use
+                the mode. Defaults to np.median.
+            q (Iterable[float], optional): List of quantiles used for quantile binning.
+                Defaults to [0, 0.25, 0.5, 0.75, 1]. Defaults to [0, 0.25, 0.5, 0.75, 1].
+        """
+        self._ds = ds
+        self._shuffle = shuffle
+        self._random_state = random_state
         self._len = len(ds)
         self._sample_frac = sample_frac
         self._stratification_col = stratification_col
@@ -87,8 +120,8 @@ class BaseSplitter:
                     frac_train,
                     0,
                     1 - frac_train,
-                    shuffle=self.shuffle,
-                    random_state=self.random_state,
+                    shuffle=self._shuffle,
+                    random_state=self._random_state,
                     center=self._center,
                     q=self._q,
                 )
@@ -98,8 +131,8 @@ class BaseSplitter:
                     frac_train,
                     0,
                     1 - frac_train,
-                    shuffle=self.shuffle,
-                    random_state=self.random_state,
+                    shuffle=self._shuffle,
+                    random_state=self._random_state,
                 )
 
         else:
@@ -110,8 +143,8 @@ class BaseSplitter:
                 train_size=frac_train,
                 valid_size=0,
                 test_size=1 - frac_train,
-                shuffle=self.shuffle,
-                random_state=self.random_state,
+                shuffle=self._shuffle,
+                random_state=self._random_state,
                 q=self._q,
             )
 
@@ -139,8 +172,8 @@ class BaseSplitter:
                     frac_train,
                     frac_valid,
                     1 - frac_train - frac_valid,
-                    shuffle=self.shuffle,
-                    random_state=self.random_state,
+                    shuffle=self._shuffle,
+                    random_state=self._random_state,
                     center=self._center,
                     q=self._q,
                 )
@@ -150,8 +183,8 @@ class BaseSplitter:
                     frac_train,
                     frac_valid,
                     1 - frac_train - frac_valid,
-                    shuffle=self.shuffle,
-                    random_state=self.random_state,
+                    shuffle=self._shuffle,
+                    random_state=self._random_state,
                 )
         else:
             stratification_col = stratification_col[idx] if stratification_col is not None else None
@@ -161,8 +194,8 @@ class BaseSplitter:
                 train_size=frac_train,
                 valid_size=frac_valid,
                 test_size=1 - frac_train - frac_valid,
-                shuffle=self.shuffle,
-                random_state=self.random_state,
+                shuffle=self._shuffle,
+                random_state=self._random_state,
                 q=self._q,
             )
         return train_idx, valid_idx, test_index
@@ -182,11 +215,11 @@ class BaseSplitter:
 
             if groups is not None:
                 kfold = StratifiedGroupKFold(
-                    n_splits=k, shuffle=self.shuffle, random_state=self.random_state
+                    n_splits=k, shuffle=self._shuffle, random_state=self._random_state
                 )
             else:
                 kfold = StratifiedKFold(
-                    n_splits=k, shuffle=self.shuffle, random_state=self.random_state
+                    n_splits=k, shuffle=self._shuffle, random_state=self._random_state
                 )
 
         else:
@@ -195,13 +228,13 @@ class BaseSplitter:
 
         if groups is not None:
             for train_index, test_index in kfold.split(idx, y=stratification_col, groups=groups):
-                if self.shuffle:
+                if self._shuffle:
                     np.random.shuffle(train_index)
                     np.random.shuffle(test_index)
                 yield train_index, test_index
         else:
             for train_index, test_index in kfold.split(idx, y=stratification_col):
-                if self.shuffle:
+                if self._shuffle:
                     np.random.shuffle(train_index)
                     np.random.shuffle(test_index)
                 yield train_index, test_index
@@ -211,7 +244,7 @@ class BaseSplitter:
 
     def _get_stratification_col(self) -> Iterable[Union[int, float]]:
         if isinstance(self._stratification_col, str):
-            return self.ds[self._stratification_col].values
+            return self._ds[self._stratification_col].values
         else:
             return self._stratification_col
 
@@ -283,7 +316,7 @@ class HashSplitter(BaseSplitter):
         return hashes.values
 
     def _get_groups(self) -> Iterable[int]:
-        return self._get_hashes(self.ds)
+        return self._get_hashes(self._ds)
 
 
 class DensitySplitter(BaseSplitter):
@@ -312,7 +345,7 @@ class DensitySplitter(BaseSplitter):
         super().__init__(ds, shuffle, random_state, sample_frac, stratification_col, center, q)
 
     def _get_groups(self) -> Iterable[int]:
-        return quantile_binning(self.ds.get_densities(self._get_idxs()), self._density_q)
+        return quantile_binning(self._ds.get_densities(self._get_idxs()), self._density_q)
 
 
 class TimeSplitter(BaseSplitter):
@@ -338,7 +371,7 @@ class TimeSplitter(BaseSplitter):
         super().__init__(ds, shuffle, random_state, sample_frac, stratification_col, center, q)
 
     def _get_groups(self) -> Iterable[int]:
-        return quantile_binning(self.ds.get_years(range(len(self.ds))), self._year_q)
+        return quantile_binning(self._ds.get_years(range(len(self._ds))), self._year_q)
 
 
 class KennardStoneSplitter(BaseSplitter):
@@ -450,48 +483,48 @@ class KennardStoneSplitter(BaseSplitter):
         return self._sorted_indices
 
     def train_test_split(self, frac_train: float = 0.7) -> Tuple[Iterable[int], Iterable[int]]:
-        num_train_points = int(frac_train * len(self.ds))
+        num_train_points = int(frac_train * len(self._ds))
 
-        if self.shuffle:
+        if self._shuffle:
             return (
-                np.random.permutation(self.get_sorted_indices(self.ds)[:num_train_points]),
-                np.random.permutation(self.get_sorted_indices(self.ds)[num_train_points:]),
+                np.random.permutation(self.get_sorted_indices(self._ds)[:num_train_points]),
+                np.random.permutation(self.get_sorted_indices(self._ds)[num_train_points:]),
             )
         return (
-            self.get_sorted_indices(self.ds)[:num_train_points],
-            self.get_sorted_indices(self.ds)[num_train_points:],
+            self.get_sorted_indices(self._ds)[:num_train_points],
+            self.get_sorted_indices(self._ds)[num_train_points:],
         )
 
     def train_valid_test_split(
         self, frac_train: float = 0.7, frac_valid: float = 0.1
     ) -> Tuple[Iterable[int], Iterable[int], Iterable[int]]:
-        num_train_points = int(frac_train * len(self.ds))
-        num_valid_points = int(frac_valid * len(self.ds))
+        num_train_points = int(frac_train * len(self._ds))
+        num_valid_points = int(frac_valid * len(self._ds))
 
-        if self.shuffle:
+        if self._shuffle:
             return (
-                np.random.permutation(self.get_sorted_indices(self.ds)[:num_train_points]),
+                np.random.permutation(self.get_sorted_indices(self._ds)[:num_train_points]),
                 np.random.permutation(
-                    self.get_sorted_indices(self.ds)[
+                    self.get_sorted_indices(self._ds)[
                         num_train_points : num_train_points + num_valid_points
                     ]
                 ),
                 np.random.permutation(
-                    self.get_sorted_indices(self.ds)[num_train_points + num_valid_points :]
+                    self.get_sorted_indices(self._ds)[num_train_points + num_valid_points :]
                 ),
             )
         return (
-            self.get_sorted_indices(self.ds)[:num_train_points],
-            self.get_sorted_indices(self.ds)[
+            self.get_sorted_indices(self._ds)[:num_train_points],
+            self.get_sorted_indices(self._ds)[
                 num_train_points : num_train_points + num_valid_points
             ],
-            self.get_sorted_indices(self.ds)[num_train_points + num_valid_points :],
+            self.get_sorted_indices(self._ds)[num_train_points + num_valid_points :],
         )
 
     def k_fold(self, k=5) -> Tuple[Iterable[int], Iterable[int]]:
-        kf = KFold(n_splits=k, shuffle=False, random_state=self.random_state)
-        for train_index, test_index in kf.split(self.get_sorted_indices(self.ds)):
-            if self.shuffle:
+        kf = KFold(n_splits=k, shuffle=False, random_state=self._random_state)
+        for train_index, test_index in kf.split(self.get_sorted_indices(self._ds)):
+            if self._shuffle:
                 train_index = np.random.permutation(train_index)
                 test_index = np.random.permutation(test_index)
             yield train_index, test_index
@@ -547,7 +580,7 @@ class ClusterSplitter(BaseSplitter):
         self.scaled = scaled
         self.n_pca_components = n_pca_components
         self.n_clusters = n_clusters
-        self.random_state = random_state
+        self._random_state = random_state
         self._sorted_indices = None
         self.ascending = False
         self._pca_kwargs = pca_kwargs
@@ -562,7 +595,7 @@ class ClusterSplitter(BaseSplitter):
                 feats,
                 n_clusters=self.n_clusters,
                 n_pca_components=self.n_pca_components,
-                random_state=self.random_state,
+                random_state=self._random_state,
                 scaled=self.scaled,
                 pca_kwargs=self._pca_kwargs,
                 kmeans_kwargs=self._kmeans_kwargs,
@@ -578,7 +611,7 @@ class ClusterSplitter(BaseSplitter):
         return self._sorted_indices
 
     def _get_groups(self) -> Iterable[Union[int, str]]:
-        si = self._get_sorted_indices(self.ds, self.shuffle)
+        si = self._get_sorted_indices(self._ds, self._shuffle)
         return np.array(si)
 
 
@@ -629,7 +662,7 @@ class ClusterStratifiedSplitter(BaseSplitter):
         self.scaled = scaled
         self.n_pca_components = n_pca_components
         self.n_clusters = n_clusters
-        self.random_state = random_state
+        self._random_state = random_state
         self._stratification_groups = None
         self.ascending = False
         self._pca_kwargs = pca_kwargs
@@ -638,13 +671,13 @@ class ClusterStratifiedSplitter(BaseSplitter):
 
     def _get_stratification_col(self) -> Iterable[int]:
         if self._stratification_groups is None:
-            feats = self.ds._df[self.feature_names].values
+            feats = self._ds._df[self.feature_names].values
 
             clusters = pca_kmeans(
                 feats,
                 n_clusters=self.n_clusters,
                 n_pca_components=self.n_pca_components,
-                random_state=self.random_state,
+                random_state=self._random_state,
                 scaled=self.scaled,
                 pca_kwargs=self._pca_kwargs,
                 kmeans_kwargs=self._kmeans_kwargs,
@@ -714,7 +747,7 @@ class LOCOCV(BaseSplitter):
         """
         self.scaled = scaled
         self.n_pca_components = n_pca_components
-        self.random_state = random_state
+        self._random_state = random_state
         self._pca_kwargs = pca_kwargs
         self._kmeans_kwargs = kmeans_kwargs
         self._stratification_groups = None
@@ -726,11 +759,11 @@ class LOCOCV(BaseSplitter):
         self,
     ) -> Tuple[Iterable[int], Iterable[int]]:
         groups = pca_kmeans(
-            self.ds._df[self.feature_names].values,
+            self._ds._df[self.feature_names].values,
             scaled=self.scaled,
             n_pca_components=self.n_pca_components,
             n_clusters=2,
-            random_state=self.random_state,
+            random_state=self._random_state,
             pca_kwargs=self._pca_kwargs,
             kmeans_kwargs=self._kmeans_kwargs,
         )
@@ -738,7 +771,7 @@ class LOCOCV(BaseSplitter):
         first_group = np.where(groups == 0)[0]
         second_group = np.where(groups == 1)[0]
 
-        if self.shuffle:
+        if self._shuffle:
             np.random.shuffle(first_group)
             np.random.shuffle(second_group)
 
@@ -755,11 +788,11 @@ class LOCOCV(BaseSplitter):
         self,
     ) -> Tuple[Iterable[int], Iterable[int], Iterable[int]]:
         groups = pca_kmeans(
-            self.ds._df[self.feature_names].values,
+            self._ds._df[self.feature_names].values,
             scaled=self.scaled,
             n_pca_components=self.n_pca_components,
             n_clusters=3,
-            random_state=self.random_state,
+            random_state=self._random_state,
             pca_kwargs=self._pca_kwargs,
             kmeans_kwargs=self._kmeans_kwargs,
         )
@@ -768,7 +801,7 @@ class LOCOCV(BaseSplitter):
         second_group = np.where(groups == 1)[0]
         third_group = np.where(groups == 2)[0]
 
-        if self.shuffle:
+        if self._shuffle:
             np.random.shuffle(first_group)
             np.random.shuffle(second_group)
             np.random.shuffle(third_group)
@@ -785,11 +818,11 @@ class LOCOCV(BaseSplitter):
 
     def k_fold(self, k: int) -> Tuple[Iterable[int], Iterable[int]]:
         groups = pca_kmeans(
-            self.ds._df[self.feature_names].values,
+            self._ds._df[self.feature_names].values,
             scaled=self.scaled,
             n_pca_components=self.n_pca_components,
             n_clusters=k,
-            random_state=self.random_state,
+            random_state=self._random_state,
             pca_kwargs=self._pca_kwargs,
             kmeans_kwargs=self._kmeans_kwargs,
         )
@@ -797,7 +830,7 @@ class LOCOCV(BaseSplitter):
         for group in range(k):
             train = np.where(groups != group)[0]
             test = np.where(groups == group)[0]
-            if self.shuffle:
+            if self._shuffle:
                 np.random.shuffle(train)
                 np.random.shuffle(test)
             # potential downsampling after shuffle

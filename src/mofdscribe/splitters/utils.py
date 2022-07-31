@@ -431,3 +431,11 @@ def check_fraction(train_fraction: float, valid_fraction: float, test_fraction: 
 
     if not (train_fraction + valid_fraction + test_fraction) == 1:
         raise ValueError("Train, valid, test fractions must sum to 1.")
+
+
+def no_group_warn(groups: Optional[np.typing.ArrayLike]) -> None:
+    """Raise warning if groups is None."""
+    if groups is None:
+        logger.warning(
+            "You are not using a grouped split. However, for retricular materials, grouping is typically a good idea to avoid data leakage."
+        )
