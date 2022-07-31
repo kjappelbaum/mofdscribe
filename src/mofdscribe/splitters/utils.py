@@ -24,8 +24,8 @@ from tqdm import tqdm
 def kennard_stone_sampling(
     X: ArrayLike,  # noqa: N803
     scale: bool = True,
-    centrality_measure: str = 'mean',
-    metric: Union[Callable, str] = 'euclidean',
+    centrality_measure: str = "mean",
+    metric: Union[Callable, str] = "euclidean",
 ) -> List[int]:
     """Run the Kennard-Stone sampling algorithm [KennardStone].
 
@@ -73,14 +73,14 @@ def kennard_stone_sampling(
 
     original_X = X.copy()  # noqa: N806
 
-    if centrality_measure == 'mean':
+    if centrality_measure == "mean":
         distance_to_center = cdist(X, X.mean(axis=0).reshape(1, -1), metric=metric)
-    elif centrality_measure == 'median':
+    elif centrality_measure == "median":
         distance_to_center = cdist(X, np.median(X, axis=0).reshape(1, -1), metric=metric)
-    elif centrality_measure == 'random':
+    elif centrality_measure == "random":
         distance_to_center = cdist(X, X[np.random.choice(X.shape[0])].reshape(1, -1), metric=metric)
     else:
-        raise ValueError(f'Unknown centrality measure: {centrality_measure}')
+        raise ValueError(f"Unknown centrality measure: {centrality_measure}")
 
     index_farthest = np.argmax(distance_to_center)
 
@@ -150,7 +150,7 @@ def pca_kmeans(
 
 def is_categorical(x: Union[float, int, np.typing.ArrayLike]) -> bool:
     """Return true if x is categorial or composed of integers."""
-    return infer_dtype(x) == 'category' or infer_dtype(x) == 'integer'
+    return infer_dtype(x) == "category" or infer_dtype(x) == "integer"
 
 
 def stratified_train_test_partition(
@@ -194,7 +194,7 @@ def stratified_train_test_partition(
             stratification_col = stratification_col
         else:
             logger.warning(
-                'Stratifying on non-categorical data. Note that there is still discussion on the usefullness of this method.'
+                "Stratifying on non-categorical data. Note that there is still discussion on the usefullness of this method."
             )
 
             stratification_col = quantile_binning(stratification_col, q=q)
@@ -415,22 +415,22 @@ def quantile_binning(values: np.typing.ArrayLike, q: Iterable[float]) -> np.arra
 def check_fraction(train_fraction: float, valid_fraction: float, test_fraction: float) -> None:
     """Check that the fractions are all between 0 and 1 and that they sum up to 1."""
     for name, fraction in [
-        ('train fraction', train_fraction),
-        ('valid fraction', valid_fraction),
-        ('test fraction', test_fraction),
+        ("train fraction", train_fraction),
+        ("valid fraction", valid_fraction),
+        ("test fraction", test_fraction),
     ]:
         if not (fraction <= 1) & (fraction >= 0):
             raise ValueError(
-                f'{name} is {fraction}. However, train/valid/test fractions must be between 0 and 1.'
+                f"{name} is {fraction}. However, train/valid/test fractions must be between 0 and 1."
             )
 
     if not (train_fraction + valid_fraction + test_fraction) == 1:
-        raise ValueError('Train, valid, test fractions must sum to 1.')
+        raise ValueError("Train, valid, test fractions must sum to 1.")
 
 
 def no_group_warn(groups: Optional[np.typing.ArrayLike]) -> None:
     """Raise warning if groups is None."""
     if groups is None:
         logger.warning(
-            'You are not using a grouped split. However, for retricular materials, grouping is typically a good idea to avoid data leakage.'
+            "You are not using a grouped split. However, for retricular materials, grouping is typically a good idea to avoid data leakage."
         )

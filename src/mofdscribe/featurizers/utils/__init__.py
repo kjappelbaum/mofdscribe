@@ -30,7 +30,7 @@ def is_tool(name: str) -> bool:
     return which(name) is not None
 
 
-def flatten(d: dict, parent_key: str = '', sep: str = '.') -> dict:
+def flatten(d: dict, parent_key: str = "", sep: str = ".") -> dict:
     items = []
     for k, v in d.items():
         new_key = parent_key + sep + k if parent_key else k

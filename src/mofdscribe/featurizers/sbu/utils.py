@@ -403,53 +403,53 @@ from rdkit.Geometry import Point3D
 
 METALS = {
     # first group
-    'Li': 1,
-    'Na': 1,
-    'K': 1,
-    'Rb': 1,
-    'Cs': 1,
+    "Li": 1,
+    "Na": 1,
+    "K": 1,
+    "Rb": 1,
+    "Cs": 1,
     # second group
-    'Be': 2,
-    'Mg': 2,
-    'Ca': 2,
-    'Sr': 2,
-    'Ba': 2,
-    'Al': 3,
-    'Sc': 1,
-    'Ti': 4,
-    'V': 2,
-    'Cr': 2,
-    'Mn': 2,
-    'Fe': 2,
-    'Co': 2,
-    'Ni': 2,
-    'Cu': 2,
-    'Zn': 2,
-    'Zr': 4,
+    "Be": 2,
+    "Mg": 2,
+    "Ca": 2,
+    "Sr": 2,
+    "Ba": 2,
+    "Al": 3,
+    "Sc": 1,
+    "Ti": 4,
+    "V": 2,
+    "Cr": 2,
+    "Mn": 2,
+    "Fe": 2,
+    "Co": 2,
+    "Ni": 2,
+    "Cu": 2,
+    "Zn": 2,
+    "Zr": 4,
     # Lanthanides and Actinides
-    'La': 3,
-    'Ce': 3,
-    'Pr': 3,
-    'Nd': 3,
-    'Pm': 3,
-    'Sm': 3,
-    'Eu': 3,
-    'Gd': 3,
-    'Tb': 3,
-    'Dy': 3,
-    'Ho': 3,
-    'Er': 3,
-    'Tm': 3,
-    'Yb': 3,
-    'Lu': 3,
-    'Hf': 4,
-    'Ta': 4,
-    'U': 4,
-    'W': 4,
-    'Re': 4,
-    'Os': 4,
-    'Ir': 4,
-    'Pt': 4,
+    "La": 3,
+    "Ce": 3,
+    "Pr": 3,
+    "Nd": 3,
+    "Pm": 3,
+    "Sm": 3,
+    "Eu": 3,
+    "Gd": 3,
+    "Tb": 3,
+    "Dy": 3,
+    "Ho": 3,
+    "Er": 3,
+    "Tm": 3,
+    "Yb": 3,
+    "Lu": 3,
+    "Hf": 4,
+    "Ta": 4,
+    "U": 4,
+    "W": 4,
+    "Re": 4,
+    "Os": 4,
+    "Ir": 4,
+    "Pt": 4,
 }
 
 
@@ -483,7 +483,7 @@ def pymatgen_2_babel_atom_idx_map(pmg_mol: Molecule, ob_mol: ob.OBMol) -> Dict[i
                 mapping[i] = idx
                 break
         else:
-            raise RuntimeError('Cannot create atom index mapping pymatgen and ob mols')
+            raise RuntimeError("Cannot create atom index mapping pymatgen and ob mols")
 
     return mapping
 
@@ -542,10 +542,10 @@ def create_rdkit_mol(
         try:
             Chem.SanitizeMol(m)
         except Exception as e:
-            logger.warning(f'Cannot sanitize molecule {name}, because {str(e)}')
+            logger.warning(f"Cannot sanitize molecule {name}, because {str(e)}")
     m.AddConformer(conformer, assignId=False)
 
-    m.SetProp('_Name', str(name))
+    m.SetProp("_Name", str(name))
 
     return m
 
@@ -685,13 +685,13 @@ def create_rdkit_mol_from_mol_graph(
                 elif v == 5:
                     tp = BondType.AROMATIC
                 else:
-                    raise RuntimeError(f'Got unexpected babel bond order: {v}')
+                    raise RuntimeError(f"Got unexpected babel bond order: {v}")
 
         except KeyError:
             atom1_spec, atom2_spec = [species[a] for a in bd]
 
             if atom1_spec in METALS and atom2_spec in METALS:
-                raise RuntimeError('Got a bond between two metal atoms')
+                raise RuntimeError("Got a bond between two metal atoms")
 
             # bond involves one and only one metal atom (atom not in ob mol case above)
             elif atom1_spec in METALS or atom2_spec in METALS:

@@ -33,14 +33,14 @@ from .utils import (
 from ..datasets.dataset import StructureDataset
 
 __all__ = (
-    'DensitySplitter',
-    'HashSplitter',
-    'TimeSplitter',
-    'BaseSplitter',
-    'RandomSplitter',
-    'KennardStoneSplitter',
-    'ClusterSplitter',
-    'LOCOCV',
+    "DensitySplitter",
+    "HashSplitter",
+    "TimeSplitter",
+    "BaseSplitter",
+    "RandomSplitter",
+    "KennardStoneSplitter",
+    "ClusterSplitter",
+    "LOCOCV",
 )
 
 
@@ -302,7 +302,7 @@ class HashSplitter(BaseSplitter):
     def __init__(
         self,
         ds: StructureDataset,
-        hash_type: str = 'undecorated_scaffold_hash',
+        hash_type: str = "undecorated_scaffold_hash",
         shuffle: bool = True,
         random_state: Optional[Union[int, np.random.RandomState]] = None,
         sample_frac: Optional[float] = 1.0,
@@ -363,16 +363,16 @@ class HashSplitter(BaseSplitter):
             Iterable[str]: list of hashes
         """
         number_of_points = len(self._ds)
-        if self.hash_type == 'undecorated_scaffold_hash':
+        if self.hash_type == "undecorated_scaffold_hash":
             hashes = self._ds.get_undecorated_scaffold_hashes(range(number_of_points))
-        elif self.hash_type == 'decorated_graph_hash':
+        elif self.hash_type == "decorated_graph_hash":
             hashes = self._ds.get_decorated_graph_hashes(range(number_of_points))
-        elif self.hash_type == 'decorated_scaffold_hash':
+        elif self.hash_type == "decorated_scaffold_hash":
             hashes = self._ds.get_decorated_scaffold_hashes(range(number_of_points))
-        elif self.hash_type == 'undecorated_graph_hash':
+        elif self.hash_type == "undecorated_graph_hash":
             hashes = self._ds.get_undecorated_graph_hashes(range(number_of_points))
         else:
-            raise ValueError(f'Unknown hash type: {self.hash_type}')
+            raise ValueError(f"Unknown hash type: {self.hash_type}")
 
         return hashes.values
 
@@ -539,8 +539,8 @@ class KennardStoneSplitter(BaseSplitter):
         random_state: Optional[Union[int, np.random.RandomState]] = None,
         sample_frac: Optional[float] = 1.0,
         scale: bool = True,
-        centrality_measure: str = 'mean',
-        metric: Union[Callable, str] = 'euclidean',
+        centrality_measure: str = "mean",
+        metric: Union[Callable, str] = "euclidean",
         ascending: bool = False,
         shuffle: bool = True,
     ) -> None:
@@ -677,7 +677,7 @@ class ClusterSplitter(BaseSplitter):
         center=np.median,
         q=[0, 0.25, 0.5, 0.75, 1],
         scaled: bool = True,
-        n_pca_components: Optional[int] = 'mle',
+        n_pca_components: Optional[int] = "mle",
         n_clusters: int = 4,
         pca_kwargs: Optional[Dict[str, Any]] = None,
         kmeans_kwargs: Optional[Dict[str, Any]] = None,
@@ -762,7 +762,7 @@ class ClusterStratifiedSplitter(BaseSplitter):
         random_state: Optional[Union[int, np.random.RandomState]] = None,
         sample_frac: Optional[float] = 1.0,
         scaled: bool = True,
-        n_pca_components: Optional[int] = 'mle',
+        n_pca_components: Optional[int] = "mle",
         n_clusters: int = 4,
         pca_kwargs: Optional[Dict[str, Any]] = None,
         kmeans_kwargs: Optional[Dict[str, Any]] = None,
@@ -842,7 +842,7 @@ class LOCOCV(BaseSplitter):
         random_state: Optional[Union[int, np.random.RandomState]] = None,
         sample_frac: Optional[float] = 1.0,
         scaled: bool = True,
-        n_pca_components: Optional[int] = 'mle',
+        n_pca_components: Optional[int] = "mle",
         pca_kwargs: Optional[Dict[str, Any]] = None,
         kmeans_kwargs: Optional[Dict[str, Any]] = None,
     ):

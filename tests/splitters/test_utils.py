@@ -22,14 +22,14 @@ def test_kennard_stone_sampling():
     assert indices == [2, 0, 1]
 
     # Make sure also the other options do not complain
-    indices = kennard_stone_sampling(X, centrality_measure='median')
+    indices = kennard_stone_sampling(X, centrality_measure="median")
     assert indices == [2, 0, 1]
 
-    indices = kennard_stone_sampling(X, centrality_measure='random')
+    indices = kennard_stone_sampling(X, centrality_measure="random")
     assert len(indices) == 3  # we cannot guarantee the order of the indices
 
 
-@pytest.mark.parametrize('number_of_groups', [30, 50, 80, 500, 8_000])
+@pytest.mark.parametrize("number_of_groups", [30, 50, 80, 500, 8_000])
 def test_grouped_stratified_train_test_partition(number_of_groups):
     # perhaps use hypothesis for fuzzing the data
     datasize = 10_000
@@ -116,7 +116,7 @@ def test_stratified_train_test_partition():
     assert len(np.intersect1d(train_indices, test_indices)) == 0
 
 
-@pytest.mark.parametrize('number_of_groups', [30, 50, 80, 500, 8_000])
+@pytest.mark.parametrize("number_of_groups", [30, 50, 80, 500, 8_000])
 def test_grouped_train_valid_test_partition(number_of_groups):
     # we might also want to use grouping without stratification to test
     # extrapolation
@@ -148,7 +148,7 @@ def test_grouped_train_valid_test_partition(number_of_groups):
 
 def test_grouped_train_valid_test_partition_string_groups():
     datasize = 10_000
-    groups = np.random.choice(['a', 'b', 'c', 'd', 'e', 'f'], size=datasize)
+    groups = np.random.choice(["a", "b", "c", "d", "e", "f"], size=datasize)
     train_indices, valid_indices, test_indices = grouped_train_valid_test_partition(
         groups, train_size=0.5, valid_size=0.25, test_size=0.25
     )

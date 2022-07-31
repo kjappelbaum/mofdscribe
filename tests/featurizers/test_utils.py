@@ -20,7 +20,7 @@ class TestFeaturizer(BaseFeaturizer):
         return [0]
 
     def feature_labels(self):
-        return ['test']
+        return ["test"]
 
     def implementors(self):
         return []

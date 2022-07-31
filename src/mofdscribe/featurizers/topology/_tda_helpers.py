@@ -53,7 +53,7 @@ def get_persistent_images_for_structure(
     compute_for_all_elements: bool = True,
     min_size: int = 20,
     spread: float = 0.2,
-    weighting: str = 'identity',
+    weighting: str = "identity",
     pixels: Tuple[int] = (50, 50),
     max_b: int = 18,
     max_p: int = 18,
@@ -89,7 +89,7 @@ def get_persistent_images_for_structure(
     element_images = defaultdict(dict)
     specs = []
     for mb, mp in zip(max_b, max_p):
-        specs.append({'minBD': 0, 'maxB': mb, 'maxP': mp})
+        specs.append({"minBD": 0, "maxB": mb, "maxP": mp})
     for element in elements:
         try:
             filtered_structure = filter_element(structure, element)
@@ -106,15 +106,15 @@ def get_persistent_images_for_structure(
                 specs=specs,
             )
         except ValueError:
-            logger.exception(f'Error computing persistent images for {element}')
+            logger.exception(f"Error computing persistent images for {element}")
             images = np.zeros((0, pixels[0], pixels[1]))
             images[:] = np.nan
             pd = np.zeros((0, max_p + 1))
             pd[:] = np.nan
 
         # ToDo: make sure that we have the correct length
-        element_images['image'][element] = images
-        element_images['array'][element] = pd
+        element_images["image"][element] = images
+        element_images["array"][element] = pd
 
     if compute_for_all_elements:
         coords = _coords_for_structure(
@@ -123,8 +123,8 @@ def get_persistent_images_for_structure(
         pd = _pd_arrays_from_coords(coords, periodic=periodic)
 
         images = get_images(pd, spread=spread, weighting=weighting, pixels=pixels, specs=specs)
-        element_images['image']['all'] = images
-        element_images['array']['all'] = pd
+        element_images["image"]["all"] = images
+        element_images["array"]["all"] = pd
 
     return element_images
 
@@ -132,7 +132,7 @@ def get_persistent_images_for_structure(
 def get_min_max_from_dia(dia, birth_persistence: bool = True):
     if len(dia) == 0:
         return [0, 0, 0, 0]
-    d = np.array([[x['birth'], x['death']] for x in dia])
+    d = np.array([[x["birth"], x["death"]] for x in dia])
 
     if birth_persistence:
         # convert to birth - persistence
@@ -154,10 +154,10 @@ def diagrams_to_bd_arrays(dgms):
             mask = np.isfinite(arr).all(axis=1)
 
             arr = arr[mask]
-            dgm_arrays[f'dim{dim}'] = arr
+            dgm_arrays[f"dim{dim}"] = arr
 
         else:
-            dgm_arrays[f'dim{dim}'] = np.zeros((0, 2))
+            dgm_arrays[f"dim{dim}"] = np.zeros((0, 2))
 
     return dgm_arrays
 
@@ -170,7 +170,7 @@ def get_diagrams_for_structure(
     periodic: bool = False,
     no_supercell: bool = False,
 ):
-    keys = [f'dim{i}' for i in range(3)]
+    keys = [f"dim{i}" for i in range(3)]
     element_dias = defaultdict(dict)
     nan_array = np.zeros((0, 2))
     nan_array[:] = np.nan
@@ -182,7 +182,7 @@ def get_diagrams_for_structure(
             )
             arrays = _pd_arrays_from_coords(coords, periodic=periodic, bd_arrays=True)
         except Exception:
-            logger.exception(f'Error for element {element}')
+            logger.exception(f"Error for element {element}")
             arrays = {key: nan_array for key in keys}
         if not len(arrays) == 4:
             for key in keys:
@@ -195,13 +195,13 @@ def get_diagrams_for_structure(
             structure, min_size=min_size, periodic=periodic, no_supercell=no_supercell
         )
         arrays = _pd_arrays_from_coords(coords, periodic=periodic, bd_arrays=True)
-        element_dias['all'] = arrays
+        element_dias["all"] = arrays
         if len(arrays) != 4:
             for key in keys:
                 if key not in arrays:
                     arrays[key] = nan_array
     if len(element_dias) != len(elements) + int(compute_for_all_elements):
-        raise ValueError('Something went wrong with the diagram extraction.')
+        raise ValueError("Something went wrong with the diagram extraction.")
     return element_dias
 
 
@@ -225,7 +225,7 @@ def get_persistence_image_limits_for_structure(
             for k, v in pd.items():
                 limits[k].append(get_min_max_from_dia(v))
         except ValueError:
-            logger.exception('Could not extract diagrams for element %s', element)
+            logger.exception("Could not extract diagrams for element %s", element)
             pass
 
     if compute_for_all_elements:
@@ -255,20 +255,20 @@ def persistent_diagram_stats(
         where persistence_parameter is one of ['birth', 'death', 'persistence']
     """
     stats = {
-        'birth': {},
-        'death': {},
-        'persistence': {},
+        "birth": {},
+        "death": {},
+        "persistence": {},
     }
 
     try:
-        d = np.array([[x['birth'], x['death'], x['death'] - x['birth']] for x in diagram])
+        d = np.array([[x["birth"], x["death"], x["death"] - x["birth"]] for x in diagram])
     except IndexError:
         d = np.array([[x[0], x[1], x[1] - x[0]] for x in diagram])
     d = np.ma.masked_invalid(d)
 
     for aggregation in aggregrations:
         agg_func = MA_ARRAY_AGGREGATORS[aggregation]
-        for i, key in enumerate(['birth', 'death', 'persistence']):
+        for i, key in enumerate(["birth", "death", "persistence"]):
             try:
                 stats[key][aggregation] = agg_func(d[:, i])
             except IndexError:

@@ -11,6 +11,6 @@ def test_df_model():
     X = CoREDataset()._df[_FEATURES]  # noqa: N806
     model = RandomForestRegressor(n_estimators=100)
     df_model = DFModel(model, X)
-    bench = LogkHCO2ExtrapolationBench(df_model, name='bla')
+    bench = LogkHCO2ExtrapolationBench(df_model, name="bla")
     res = bench.bench()
     assert isinstance(res, BenchResult)
