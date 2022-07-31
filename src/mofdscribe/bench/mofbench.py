@@ -15,7 +15,7 @@ from pydantic import BaseModel
 from mofdscribe.datasets.dataset import StructureDataset
 from mofdscribe.metrics.metric_collection import RegressionMetricCollection
 from mofdscribe.metrics.regression import get_regression_metrics
-from mofdscribe.splitters.splitters import Splitter, StratifiedSplitter
+from mofdscribe.splitters.splitters import BaseSplitter
 from mofdscribe.version import get_version
 
 __all__ = ["MOFBenchRegression", "BenchResult"]
@@ -115,7 +115,7 @@ class MOFBench(ABC):
         self,
         model,
         ds: StructureDataset,
-        splitter: Union[Splitter, StratifiedSplitter],
+        splitter: BaseSplitter,
         target: List[str],
         name: str,
         task: BenchTaskEnum,

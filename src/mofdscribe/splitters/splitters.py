@@ -4,7 +4,8 @@
 Our splitters attempt to reduce any potential for data leakage by using grouping by default--
 and prioritizing grouping over stratficiation or exactly matching the requested train test ratio.
 
-See also the `sklearn docs <https://scikit-learn.org/stable/modules/cross_validation.html#cross-validation-iterators-for-grouped-data>`_.
+See also the `sklearn docs
+<https://scikit-learn.org/stable/modules/cross_validation.html#cross-validation-iterators-for-grouped-data>`_.
 
 .. warning::
 
@@ -12,11 +13,9 @@ See also the `sklearn docs <https://scikit-learn.org/stable/modules/cross_valida
     match the one you requested.
     For this reason, please get the length of the train/test/valid indices the methods produce.
 """
-from ast import Str
 from typing import Any, Callable, Dict, Iterable, List, Optional, Tuple, Union
 
 import numpy as np
-import pandas as pd
 from sklearn.model_selection import GroupKFold, KFold, StratifiedGroupKFold, StratifiedKFold
 
 from .utils import (
@@ -37,10 +36,10 @@ __all__ = (
     "HashSplitter",
     "TimeSplitter",
     "BaseSplitter",
-    "RandomSplitter",
     "KennardStoneSplitter",
     "ClusterSplitter",
     "LOCOCV",
+    "ClusterStratifiedSplitter",
 )
 
 
@@ -65,7 +64,7 @@ class BaseSplitter:
         sample_frac: Optional[float] = 1.0,
         stratification_col: Optional[Union[str, np.typing.ArrayLike]] = None,
         center: callable = np.median,
-        q: Iterable[float] = [0, 0.25, 0.5, 0.75, 1],
+        q: Iterable[float] = (0, 0.25, 0.5, 0.75, 1),
     ):
         """Initialize a BaseSplitter.
 
@@ -73,7 +72,7 @@ class BaseSplitter:
             ds (StructureDataset): A structure dataset.
                 The :code:`BaseSplitter` only requires the length magic method to be implemented.
                 However, other splitters might require additional methods.
-            shuffle (bool, optional): If True, perform a shuffled split.
+            shuffle (bool): If True, perform a shuffled split.
                 Defaults to True.
             random_state (Optional[Union[int, np.random.RandomState]], optional):
                 Random state for the shuffling. Defaults to None.
@@ -82,16 +81,16 @@ class BaseSplitter:
                 indices from all indices *before* splittings. For instance :code:`sample_frac=0.8`
                 will randomly select 80% of the indices before splitting.
                 Defaults to 1.0.
-            stratification_col (Optional[Union[str, np.typing.ArrayLike]], optional): Data used for stratification.
+            stratification_col (Union[str, np.typing.ArrayLike], optional): Data used for stratification.
                 If it is categorical (see :py:meth:`mofdscribe.splitters.utils.is_categorical`)
                 then we directly use it for stratification. Otherwise, we use quantile binning.
                 Defaults to None.
-            center (callable, optional): Aggregation function to compute a measure of centrality
+            center (callable): Aggregation function to compute a measure of centrality
                 of all the points in a group such that this can then be used for stratification.
                 This is only used for continuos inputs. For categorical inputs, we always use
                 the mode. Defaults to np.median.
             q (Iterable[float], optional): List of quantiles used for quantile binning.
-                Defaults to [0, 0.25, 0.5, 0.75, 1]. Defaults to [0, 0.25, 0.5, 0.75, 1].
+                Defaults to (0, 0.25, 0.5, 0.75, 1).
         """
         self._ds = ds
         self._shuffle = shuffle
@@ -112,7 +111,7 @@ class BaseSplitter:
         """Perform a train/test partition.
 
         Args:
-            frac_train (float, optional): Fraction of the data to use for the training set.
+            frac_train (float): Fraction of the data to use for the training set.
                 Defaults to 0.7.
 
         Returns:
@@ -168,9 +167,9 @@ class BaseSplitter:
         """Perform a train/valid/test partition.
 
         Args:
-            frac_train (float, optional): Fraction of data to use for the training set.
+            frac_train (float): Fraction of data to use for the training set.
                 Defaults to 0.7.
-            frac_valid (float, optional): Fraction of data to use for the validation set.
+            frac_valid (float): Fraction of data to use for the validation set.
                 Defaults to 0.1.
 
         Returns:
@@ -226,9 +225,10 @@ class BaseSplitter:
         """Peform k-fold crossvalidation.
 
         Args:
-            k (int, optional): Number of folds. Defaults to 5.
+            k (int): Number of folds. Defaults to 5.
+
         Yields:
-            Iterator[Tuple[Iterable[int], Iterable[int]]]: Train indices, test indices.
+            Tuple[Iterable[int], Iterable[int]]: Train indices, test indices.
         """
         groups = self._get_groups()
         stratification_col = self._get_stratification_col()
@@ -288,7 +288,8 @@ class HashSplitter(BaseSplitter):
 
     .. note::
 
-        Weisfeiller-Lehman graph hashes do not give a guarantee for graph-isomorphism. That is, there might be identical hashes that do not correspond to isomorphic graphs.
+        Weisfeiller-Lehman graph hashes do not give a guarantee for graph-isomorphism.
+        That is, there might be identical hashes that do not correspond to isomorphic graphs.
 
     .. note::
 
@@ -296,7 +297,8 @@ class HashSplitter(BaseSplitter):
 
     .. note::
 
-        We speak about Weisfeiller-Lehman hashes as they are the defaults for the mofdscribe datasets. However, you can also overwrite this method with a custom hashing function.
+        We speak about Weisfeiller-Lehman hashes as they are the defaults for the mofdscribe datasets.
+        However, you can also overwrite this method with a custom hashing function.
     """
 
     def __init__(
@@ -308,7 +310,7 @@ class HashSplitter(BaseSplitter):
         sample_frac: Optional[float] = 1.0,
         stratification_col: Optional[Union[str, np.typing.ArrayLike]] = None,
         center=np.median,
-        q: Iterable[float] = [0, 0.25, 0.5, 0.75, 1],
+        q: Iterable[float] = (0, 0.25, 0.5, 0.75, 1),
     ) -> None:
         """Initialize a HashSplitter.
 
@@ -323,16 +325,16 @@ class HashSplitter(BaseSplitter):
                 * decorated_scaffold_hash
                 * undecorated_graph_hash
                 Defaults to "undecorated_scaffold_hash".
-            shuffle (bool, optional): If True, perform a shuffled split.
+            shuffle (bool): If True, perform a shuffled split.
                 Defaults to True.
-            random_state (Optional[Union[int, np.random.RandomState]], optional):
+            random_state (Union[int, np.random.RandomState], optional):
                 Random state for the shuffling. Defaults to None.
-            sample_frac (Optional[float], optional):
+            sample_frac (float, optional):
                 This can be used for downsampling. It will randomly select a subset of
                 indices from all indices *before* splittings. For instance :code:`sample_frac=0.8`
                 will randomly select 80% of the indices before splitting.
                 Defaults to 1.0.
-            stratification_col (Optional[Union[str, np.typing.ArrayLike]], optional): Data used for stratification.
+            stratification_col (Union[str, np.typing.ArrayLike], optional): Data used for stratification.
                 If it is categorical (see :py:meth:`mofdscribe.splitters.utils.is_categorical`)
                 then we directly use it for stratification. Otherwise, we use quantile binning.
                 Defaults to None.
@@ -341,16 +343,13 @@ class HashSplitter(BaseSplitter):
                 This is only used for continuos inputs. For categorical inputs, we always use
                 the mode. Defaults to np.median.
             q (Iterable[float], optional): List of quantiles used for quantile binning.
-                Defaults to [0, 0.25, 0.5, 0.75, 1]. Defaults to [0, 0.25, 0.5, 0.75, 1].
+                Defaults to (0, 0.25, 0.5, 0.75, 1).
         """
         self.hash_type = hash_type
         super().__init__(ds, shuffle, random_state, sample_frac, stratification_col, center, q)
 
     def _get_hashes(self) -> Iterable[str]:
         """Retrieve the list of hashes from the dataset
-
-        Args:
-            ds (StructureDataset): mofdscribe dataset.
 
         Raises:
             ValueError: If the hash type is not one of the following:
@@ -393,19 +392,20 @@ class DensitySplitter(BaseSplitter):
 
         * density is often one of the most important descriptors for gas uptake properties.
 
-        * there is often is a very large difference in density distribution between hypothetical and experimental databases.
+        * there is often is a very large difference in density distribution
+            between hypothetical and experimental databases.
     """
 
     def __init__(
         self,
         ds: StructureDataset,
-        density_q: Iterable[float] = [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0],
+        density_q: Iterable[float] = (0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0),
         shuffle: bool = True,
         random_state: Optional[Union[int, np.random.RandomState]] = None,
         sample_frac: Optional[float] = 1.0,
         stratification_col: Optional[Union[str, np.typing.ArrayLike]] = None,
         center: callable = np.median,
-        q: Iterable[float] = [0, 0.25, 0.5, 0.75, 1],
+        q: Iterable[float] = (0, 0.25, 0.5, 0.75, 1),
     ) -> None:
         """Initialize the DensitySplitter class.
 
@@ -413,27 +413,27 @@ class DensitySplitter(BaseSplitter):
             ds (StructureDataset): A structure dataset.
                 The :code:`BaseSplitter` only requires the length magic method to be implemented.
                 However, other splitters might require additional methods.
-            density_q (Iterable[float], optional): List of quantiles used for quantile binning for the density.
-                Defaults to [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
-            shuffle (bool, optional): If True, perform a shuffled split.
+            density_q (Iterable[float]): List of quantiles used for quantile binning for the density.
+                Defaults to (0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0)
+            shuffle (bool): If True, perform a shuffled split.
                 Defaults to True.
-            random_state (Optional[Union[int, np.random.RandomState]], optional):
+            random_state (Union[int, np.random.RandomState], optional):
                 Random state for the shuffling. Defaults to None.
-            sample_frac (Optional[float], optional):
+            sample_frac (float, optional):
                 This can be used for downsampling. It will randomly select a subset of
                 indices from all indices *before* splittings. For instance :code:`sample_frac=0.8`
                 will randomly select 80% of the indices before splitting.
                 Defaults to 1.0.
-            stratification_col (Optional[Union[str, np.typing.ArrayLike]], optional): Data used for stratification.
+            stratification_col (Union[str, np.typing.ArrayLike], optional): Data used for stratification.
                 If it is categorical (see :py:meth:`mofdscribe.splitters.utils.is_categorical`)
                 then we directly use it for stratification. Otherwise, we use quantile binning.
                 Defaults to None.
-            center (callable, optional): Aggregation function to compute a measure of centrality
+            center (callable): Aggregation function to compute a measure of centrality
                 of all the points in a group such that this can then be used for stratification.
                 This is only used for continuos inputs. For categorical inputs, we always use
                 the mode. Defaults to np.median.
             q (Iterable[float], optional): List of quantiles used for quantile binning.
-                Defaults to [0, 0.25, 0.5, 0.75, 1]. Defaults to [0, 0.25, 0.5, 0.75, 1].
+                Defaults to (0, 0.25, 0.5, 0.75, 1]. Defaults to [0, 0.25, 0.5, 0.75, 1).
         """
         self._density_q = density_q
         super().__init__(ds, shuffle, random_state, sample_frac, stratification_col, center, q)
@@ -461,40 +461,41 @@ class TimeSplitter(BaseSplitter):
     def __init__(
         self,
         ds: StructureDataset,
-        year_q: Iterable[float] = [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1],
+        year_q: Iterable[float] = (0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1),
         shuffle: bool = True,
         random_state: Optional[Union[int, np.random.RandomState]] = None,
         sample_frac: Optional[float] = 1.0,
         stratification_col: Optional[Union[str, np.typing.ArrayLike]] = None,
         center: callable = np.median,
-        q: Iterable[float] = [0, 0.25, 0.5, 0.75, 1],
+        q: Iterable[float] = (0, 0.25, 0.5, 0.75, 1),
     ) -> None:
         """Initialize the TimeSplitter class.
 
-        ds (StructureDataset): A structure dataset.
-            The :code:`BaseSplitter` only requires the length magic method to be implemented.
-            However, other splitters might require additional methods.
-        year_q (Iterable[float]): List of quantiles used for quantile binning on the years.
-            Defaults to [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1].
-        shuffle (bool, optional): If True, perform a shuffled split.
-            Defaults to True.
-        random_state (Optional[Union[int, np.random.RandomState]], optional):
-            Random state for the shuffling. Defaults to None.
-        sample_frac (Optional[float], optional):
-            This can be used for downsampling. It will randomly select a subset of
-            indices from all indices *before* splittings. For instance :code:`sample_frac=0.8`
-            will randomly select 80% of the indices before splitting.
-            Defaults to 1.0.
-        stratification_col (Optional[Union[str, np.typing.ArrayLike]], optional): Data used for stratification.
-            If it is categorical (see :py:meth:`mofdscribe.splitters.utils.is_categorical`)
-            then we directly use it for stratification. Otherwise, we use quantile binning.
-            Defaults to None.
-        center (callable, optional): Aggregation function to compute a measure of centrality
-            of all the points in a group such that this can then be used for stratification.
-            This is only used for continuos inputs. For categorical inputs, we always use
-            the mode. Defaults to np.median.
-        q (Iterable[float], optional): List of quantiles used for quantile binning.
-            Defaults to [0, 0.25, 0.5, 0.75, 1]. Defaults to [0, 0.25, 0.5, 0.75, 1].
+        Args:
+            ds (StructureDataset): A structure dataset.
+                The :code:`BaseSplitter` only requires the length magic method to be implemented.
+                However, other splitters might require additional methods.
+            year_q (Iterable[float]): List of quantiles used for quantile binning on the years.
+                Defaults to (0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1).
+            shuffle (bool): If True, perform a shuffled split.
+                Defaults to True.
+            random_state (Union[int, np.random.RandomState], optional):
+                Random state for the shuffling. Defaults to None.
+            sample_frac (float, optional):
+                This can be used for downsampling. It will randomly select a subset of
+                indices from all indices *before* splittings. For instance :code:`sample_frac=0.8`
+                will randomly select 80% of the indices before splitting.
+                Defaults to 1.0.
+            stratification_col (Union[str, np.typing.ArrayLike], optional): Data used for stratification.
+                If it is categorical (see :py:meth:`mofdscribe.splitters.utils.is_categorical`)
+                then we directly use it for stratification. Otherwise, we use quantile binning.
+                Defaults to None.
+            center (callable): Aggregation function to compute a measure of centrality
+                of all the points in a group such that this can then be used for stratification.
+                This is only used for continuos inputs. For categorical inputs, we always use
+                the mode. Defaults to np.median.
+            q (Iterable[float], optional): List of quantiles used for quantile binning.
+                Defaults to (0, 0.25, 0.5, 0.75, 1).
         """
         self._year_q = year_q
         super().__init__(ds, shuffle, random_state, sample_frac, stratification_col, center, q)
@@ -536,13 +537,13 @@ class KennardStoneSplitter(BaseSplitter):
         self,
         ds: StructureDataset,
         feature_names: List[str],
+        shuffle: bool = True,
         random_state: Optional[Union[int, np.random.RandomState]] = None,
         sample_frac: Optional[float] = 1.0,
         scale: bool = True,
         centrality_measure: str = "mean",
         metric: Union[Callable, str] = "euclidean",
         ascending: bool = False,
-        shuffle: bool = True,
     ) -> None:
         """Construct a KennardStoneSplitter.
 
@@ -551,6 +552,15 @@ class KennardStoneSplitter(BaseSplitter):
                 The :code:`BaseSplitter` only requires the length magic method to be implemented.
                 However, other splitters might require additional methods.
             feature_names (List[str]): Names of features to consider.
+            shuffle (bool): If True, perform a shuffled split.
+                Defaults to True.
+            random_state (Union[int, np.random.RandomState], optional):
+                Random state for the shuffling. Defaults to None.
+            sample_frac (float, optional):
+                This can be used for downsampling. It will randomly select a subset of
+                indices from all indices *before* splittings. For instance :code:`sample_frac=0.8`
+                will randomly select 80% of the indices before splitting.
+                Defaults to 1.0.
             scale (bool): If True, apply z-score normalization
                 prior to running the sampling. Defaults to True.
             centrality_measure (str): The first sample is selected to be
@@ -584,8 +594,6 @@ class KennardStoneSplitter(BaseSplitter):
 
         Args:
             ds (StructureDataset): A mofdscribe StructureDataset
-            shuffle (bool): Not used in this method.
-                Defaults to True.
 
         Returns:
             Iterable[int]: Sorted indices.
@@ -674,10 +682,10 @@ class ClusterSplitter(BaseSplitter):
         random_state: Optional[Union[int, np.random.RandomState]] = None,
         sample_frac: Optional[float] = 1.0,
         stratification_col: Optional[Union[str, np.typing.ArrayLike]] = None,
-        center=np.median,
-        q=[0, 0.25, 0.5, 0.75, 1],
+        center: callable = np.median,
+        q: Iterable[float] = (0, 0.25, 0.5, 0.75, 1),
         scaled: bool = True,
-        n_pca_components: Optional[int] = "mle",
+        n_pca_components: Optional[Union[int, str]] = "mle",
         n_clusters: int = 4,
         pca_kwargs: Optional[Dict[str, Any]] = None,
         kmeans_kwargs: Optional[Dict[str, Any]] = None,
@@ -689,18 +697,39 @@ class ClusterSplitter(BaseSplitter):
                 The :code:`BaseSplitter` only requires the length magic method to be implemented.
                 However, other splitters might require additional methods.
             feature_names (List[str]): Names of features to consider.
+                        shuffle (bool): If True, perform a shuffled split.
+                Defaults to True.
+            shuffle (bool): If True, perform a shuffled split.
+                Defaults to True.
+            random_state (Union[int, np.random.RandomState], optional):
+                Random state for the shuffling. Defaults to None.
+            sample_frac (float, optional):
+                This can be used for downsampling. It will randomly select a subset of
+                indices from all indices *before* splittings. For instance :code:`sample_frac=0.8`
+                will randomly select 80% of the indices before splitting.
+                Defaults to 1.0.
+            stratification_col (Union[str, np.typing.ArrayLike], optional): Data used for stratification.
+                If it is categorical (see :py:meth:`mofdscribe.splitters.utils.is_categorical`)
+                then we directly use it for stratification. Otherwise, we use quantile binning.
+                Defaults to None.
+            center (callable): Aggregation function to compute a measure of centrality
+                of all the points in a group such that this can then be used for stratification.
+                This is only used for continuos inputs. For categorical inputs, we always use
+                the mode. Defaults to np.median.
+            q (Iterable[float], optional): List of quantiles used for quantile binning.
+                Defaults to (0, 0.25, 0.5, 0.75, 1]. Defaults to [0, 0.25, 0.5, 0.75, 1).
             scaled (bool): If True, scale the data before clustering.
                 Defaults to True.
-            n_pca_components (Optional[int]): Number of components to use for PCA.
+            n_pca_components (Union[int, str]): Number of components to use for PCA.
                 If "mle", use the number of components that maximizes the variance.
                 Defaults to "mle".
             n_clusters (int): Number of clusters to use.
                 Defaults to 4.
             random_state (int): Random seed.
                 Defaults to 42.
-            pca_kwargs (Optional[Dict[str, Any]]): Keyword arguments to pass to PCA.
+            pca_kwargs (Dict[str, Any]): Keyword arguments to pass to PCA.
                 Defaults to None.
-            kmeans_kwargs (Optional[Dict[str, Any]]): Keyword arguments to pass to k-means.
+            kmeans_kwargs (Dict[str, Any]): Keyword arguments to pass to k-means.
                 Defaults to None.
         """
         self.feature_names = feature_names
@@ -774,18 +803,27 @@ class ClusterStratifiedSplitter(BaseSplitter):
                 The :code:`BaseSplitter` only requires the length magic method to be implemented.
                 However, other splitters might require additional methods.
             feature_names (List[str]): Names of features to consider.
+            shuffle (bool): If True, perform a shuffled split.
+                Defaults to True.
+            random_state (Union[int, np.random.RandomState], optional):
+                Random state for the shuffling. Defaults to None.
+            sample_frac (float, optional):
+                This can be used for downsampling. It will randomly select a subset of
+                indices from all indices *before* splittings. For instance :code:`sample_frac=0.8`
+                will randomly select 80% of the indices before splitting.
+                Defaults to 1.0.
             scaled (bool): If True, scale the data before clustering.
                 Defaults to True.
-            n_pca_components (Optional[int]): Number of components to use for PCA.
+            n_pca_components (int): Number of components to use for PCA.
                 If "mle", use the number of components that maximizes the variance.
                 Defaults to "mle".
             n_clusters (int): Number of clusters to use.
                 Defaults to 4.
             random_state (int): Random seed.
                 Defaults to 42.
-            pca_kwargs (Optional[Dict[str, Any]]): Keyword arguments to pass to PCA.
+            pca_kwargs (Dict[str, Any]): Keyword arguments to pass to PCA.
                 Defaults to None.
-            kmeans_kwargs (Optional[Dict[str, Any]]): Keyword arguments to pass to k-means.
+            kmeans_kwargs (Dict[str, Any]): Keyword arguments to pass to k-means.
                 Defaults to None.
         """
         self.feature_names = feature_names
@@ -853,21 +891,26 @@ class LOCOCV(BaseSplitter):
                 The :code:`BaseSplitter` only requires the length magic method to be implemented.
                 However, other splitters might require additional methods.
             feature_names (List[str]): Names of features to consider.
-            shuffle (bool, optional): If True, perform a shuffled split.
+            shuffle (bool): If True, perform a shuffled split.
                 Defaults to True.
-            random_state (Optional[Union[int, np.random.RandomState]], optional):
+            random_state (Union[int, np.random.RandomState], optional):
                 Random state for the shuffling. Defaults to None.
+            sample_frac (float, optional):
+                This can be used for downsampling. It will randomly select a subset of
+                indices from all indices *before* splittings. For instance :code:`sample_frac=0.8`
+                will randomly select 80% of the indices before splitting.
+                Defaults to 1.0.
             scaled (bool): If True, scale the data before clustering.
                 Defaults to True.
-            n_pca_components (Optional[int]): Number of components to use for PCA.
+            n_pca_components (int): Number of components to use for PCA.
                 If "mle", use the number of components that maximizes the variance.
                 Defaults to "mle".
             random_state (int): Random seed.
                 Defaults to 42.
-            pca_kwargs (Optional[Dict[str, Any]], optional): Additional keyword arguments for
+            pca_kwargs (Dict[str, Any], optional): Additional keyword arguments for
                 sklearn's :py:class:`sklearn.decomposition.PCA`. Defaults to None.
-            kmeans_kwargs (Optional[Dict[str, Any]], optional):  Additional keyword arguments for
-            s   klearn's :py:class:`sklearn.clustering.KMeans`. Defaults to None.
+            kmeans_kwargs (Dict[str, Any], optional):  Additional keyword arguments for
+                sklearn's :py:class:`sklearn.clustering.KMeans`. Defaults to None.
         """
         self.scaled = scaled
         self.n_pca_components = n_pca_components
@@ -883,10 +926,6 @@ class LOCOCV(BaseSplitter):
         self,
     ) -> Tuple[Iterable[int], Iterable[int]]:
         """Perform a train/test partition.
-
-        Args:
-            frac_train (float, optional): Fraction of the data to use for the training set.
-                Defaults to 0.7.
 
         Returns:
             Tuple[Iterable[int], Iterable[int]]: Train indices, test indices
@@ -921,12 +960,6 @@ class LOCOCV(BaseSplitter):
         self,
     ) -> Tuple[Iterable[int], Iterable[int], Iterable[int]]:
         """Perform a train/valid/test partition.
-
-        Args:
-            frac_train (float, optional): Fraction of data to use for the training set.
-                Defaults to 0.7.
-            frac_valid (float, optional): Fraction of data to use for the validation set.
-                Defaults to 0.1.
 
         Returns:
             Tuple[Iterable[int], Iterable[int], Iterable[int]]: Training, validation, test set.
@@ -964,7 +997,8 @@ class LOCOCV(BaseSplitter):
         """Peform k-fold crossvalidation.
 
         Args:
-            k (int, optional): Number of folds. Defaults to 5.
+            k (int): Number of folds. Defaults to 5.
+
         Yields:
             Iterator[Tuple[Iterable[int], Iterable[int]]]: Train indices, test indices.
         """

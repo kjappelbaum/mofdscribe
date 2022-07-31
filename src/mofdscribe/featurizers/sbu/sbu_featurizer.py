@@ -153,8 +153,8 @@ class SBUFeaturizer(BaseFeaturizer):
         Fit the featurizer to the given structures.
 
         Args:
-            structure (Union[Structure, IStructure], optional): The structure to featurize.
-            mofbbs (MOFBBs, optional): The MOF fragments (nodes and linkers).
+            structures (Iterable[Structure], optional): The structures to featurize.
+            mofbbs (Iterable[MOFBBs], optional): The MOF fragments (nodes and linkers).
         """
         all_nodes, all_linkers = [], []
         if structures is not None:
@@ -163,8 +163,8 @@ class SBUFeaturizer(BaseFeaturizer):
                 all_nodes.extend(nodes)
                 all_linkers.extend(linkers)
         if mofbbs is not None:
-            for mofbbs in mofbbs:
-                nodes, linkers = self._extract_bbs(mofbbs=mofbbs)
+            for mofbb in mofbbs:
+                nodes, linkers = self._extract_bbs(mofbbs=mofbb)
                 all_nodes.extend(nodes)
                 all_linkers.extend(linkers)
 
@@ -197,13 +197,6 @@ class SBUFeaturizer(BaseFeaturizer):
 
         Returns:
             A numpy array of features.
-
-        Raises:
-            ValueError: If neither `structure` nor `mofbbs` are provided.
-            ValueError: If structures are provided, but the selected featurizer
-                operates on molecules
-            RuntimeError: If an unexpected combination of types and
-                `operates_on` is provided.
         """
         # if i know what the featurizer wants, I can always cast to a structure
         num_features = len(self._featurizer.feature_labels())

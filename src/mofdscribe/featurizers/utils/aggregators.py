@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 """Functions that can be used to aggregate values/lists of values"""
-from re import M
 
 import numpy as np
 from scipy.stats import gmean, hmean
@@ -13,12 +12,18 @@ def ma_percentile(values, percentile):
     return np.nanpercentile(mdata, percentile)
 
 
-def trimean(values):
-    """Calculate the trimean of the values:
+def trimean(values: np.typing.ArrayLike) -> float:
+    r"""Calculate the trimean of the values:
 
     .. math::
 
         TM={\frac {Q_{1}+2Q_{2}+Q_{3}}{4}}
+
+    Args:
+        values (np.typing.ArrayLike): values to compute the trimean for
+
+    Returns:
+        float: trimean
     """
     q1 = np.percentile(values, 25)
     q2 = np.percentile(values, 50)

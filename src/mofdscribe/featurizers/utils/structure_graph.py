@@ -3,12 +3,8 @@
 from functools import lru_cache
 from typing import List, Optional, Set, Tuple
 
-import networkx as nx
-import numpy as np
-import yaml
 from pymatgen.analysis.graphs import StructureGraph
 from pymatgen.core import IStructure
-from structuregraph_helpers.create import get_local_env_method
 from structuregraph_helpers.create import get_structure_graph as get_sg
 
 

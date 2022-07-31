@@ -32,7 +32,7 @@ def test_racs(hkust_structure, irmof_structure, abacuf_structure, floating_struc
             )
             racs.update(v)
             # There are no functional groups in those MOFs, so we except nans for this "scope"
-            if (not "functional" in bb) and ("linker" in bb):
+            if ("functional" not in bb) and ("linker" in bb):
                 assert np.isnan(np.array(list(v.values()))).sum() == 0
             elif "functional" in bb:
                 assert np.isnan(np.array(list(v.values()))).sum() == len(v)

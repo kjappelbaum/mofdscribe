@@ -51,15 +51,14 @@ def test_grouped_stratified_train_test_partition(number_of_groups):
     test_groups = groups[test_indices]
     train_groups = groups[train_indices]
     valid_groups = groups[valid_indices]
-    set(test_groups).intersection(set(train_groups)) == set()
-    set(test_groups).intersection(set(valid_groups)) == set()
-    set(train_groups).intersection(set(valid_groups)) == set()
+    assert set(test_groups).intersection(set(train_groups)) == set()
+    assert set(test_groups).intersection(set(valid_groups)) == set()
+    assert set(train_groups).intersection(set(valid_groups)) == set()
 
     # since we stratify we should have comparable medians
     train_mean = np.median(y[train_indices])
     valid_mean = np.median(y[valid_indices])
     test_mean = np.median(y[test_indices])
-    print(train_mean, valid_mean, test_mean)
     assert (
         pytest.approx(train_mean, abs=0.1)
         == pytest.approx(valid_mean, abs=0.1)
@@ -99,7 +98,6 @@ def test_stratified_train_test_partition():
     train_mean = np.median(y[train_indices])
     valid_mean = np.median(y[valid_indices])
     test_mean = np.median(y[test_indices])
-    print(train_mean, valid_mean, test_mean)
     assert (
         pytest.approx(train_mean, abs=0.1)
         == pytest.approx(valid_mean, abs=0.1)
@@ -131,9 +129,9 @@ def test_grouped_train_valid_test_partition(number_of_groups):
     test_groups = groups[test_indices]
     train_groups = groups[train_indices]
     valid_groups = groups[valid_indices]
-    set(test_groups).intersection(set(train_groups)) == set()
-    set(test_groups).intersection(set(valid_groups)) == set()
-    set(train_groups).intersection(set(valid_groups)) == set()
+    assert set(test_groups).intersection(set(train_groups)) == set()
+    assert set(test_groups).intersection(set(valid_groups)) == set()
+    assert set(train_groups).intersection(set(valid_groups)) == set()
 
     train_indices, valid_indices, test_indices = grouped_train_valid_test_partition(
         groups, train_size=0.5, valid_size=0, test_size=0.5
@@ -169,7 +167,7 @@ def test_grouped_train_valid_test_partition_string_groups():
     test_groups = groups[test_indices]
     train_groups = groups[train_indices]
 
-    set(test_groups).intersection(set(train_groups)) == set()
+    assert set(test_groups).intersection(set(train_groups)) == set()
 
 
 def test_get_train_valid_test_sizes():

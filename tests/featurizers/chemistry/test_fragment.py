@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from platform import node
 
 from pymatgen.core import Element
 

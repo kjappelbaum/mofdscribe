@@ -4,7 +4,6 @@
 import numpy as np
 from matminer.featurizers.site import SOAP
 from matminer.featurizers.structure import SiteStatsFingerprint
-from moffragmentor import MOF
 from pymatgen.core import Structure
 
 from mofdscribe.featurizers.sbu.sbu_featurizer import MOFBBs, SBUFeaturizer

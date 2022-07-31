@@ -124,13 +124,14 @@ def pca_kmeans(
 
     Args:
         X (np.ndarray): Input data
+        scaled (bool): If True, use standard scaling for clustering
         n_pca_components (Union[int, str]): number of principal components to keep
         n_clusters (int): number of clusters
         random_state (Optional[Union[int, np.random.RandomState]], optional): Random state for sklearn.
             Defaults to None.
-        pca_kwargs (Optional[Dict[str, Any]], optional): Additional keyword arguments for
+        pca_kwargs (Dict[str, Any], optional): Additional keyword arguments for
             sklearn's :py:class:`sklearn.decomposition.PCA`. Defaults to None.
-        kmeans_kwargs (Optional[Dict[str, Any]], optional):  Additional keyword arguments for
+        kmeans_kwargs (Dict[str, Any], optional):  Additional keyword arguments for
             sklearn's :py:class:`sklearn.clustering.KMeans`. Defaults to None.
 
     Returns:
@@ -161,7 +162,7 @@ def stratified_train_test_partition(
     test_size: float,
     shuffle: bool = True,
     random_state: Optional[Union[int, np.random.RandomState]] = None,
-    q: Iterable[float] = [0, 0.25, 0.5, 0.75, 1],
+    q: Iterable[float] = (0, 0.25, 0.5, 0.75, 1),
 ) -> Tuple[np.array, np.array, np.array]:
     """Perform a stratified train/test split.
 
@@ -180,11 +181,11 @@ def stratified_train_test_partition(
         train_size (float): Size of the training set as fraction.
         valid_size (float): Size of the validation set as fraction.
         test_size (float): Size of the test set as fraction.
-        shuffle (bool, optional): If True, perform a shuffled split. Defaults to True.
-        random_state (Optional[Union[int, np.random.RandomState]], optional):
+        shuffle (bool): If True, perform a shuffled split. Defaults to True.
+        random_state (Union[int, np.random.RandomState], optional):
             Random state for the suffler. Defaults to None.
         q (Iterable[float], optional): List of quantiles used for quantile binning.
-            Defaults to [0, 0.25, 0.5, 0.75, 1].
+            Defaults to (0, 0.25, 0.5, 0.75, 1).
 
     Returns:
         Tuple[np.array, np.array, np.array]: Train, validation, test indices.
@@ -194,7 +195,8 @@ def stratified_train_test_partition(
             stratification_col = stratification_col
         else:
             logger.warning(
-                "Stratifying on non-categorical data. Note that there is still discussion on the usefullness of this method."
+                "Stratifying on non-categorical data. "
+                "Note that there is still discussion on the usefullness of this method."
             )
 
             stratification_col = quantile_binning(stratification_col, q=q)
@@ -235,10 +237,10 @@ def grouped_stratified_train_test_partition(
     test_size: float,
     shuffle: bool = True,
     random_state: Optional[Union[int, np.random.RandomState]] = None,
-    q: Iterable[float] = [0, 0.25, 0.5, 0.75, 1],
+    q: Iterable[float] = (0, 0.25, 0.5, 0.75, 1),
     center: callable = np.median,
 ) -> Tuple[np.array, np.array, np.array]:
-    """Grouped stratified train-test partition.
+    """Return grouped stratified train-test partition.
 
     First, we compute the most common stratification category / centrality measure
     of the stratification column for every group.
@@ -266,8 +268,8 @@ def grouped_stratified_train_test_partition(
         train_size (float): Size of the training set as fraction.
         valid_size (float): Size of the validation set as fraction.
         test_size (float): Size of the test set as fraction.
-        shuffle (bool, optional): If True, perform a shuffled split. Defaults to True.
-        random_state (Optional[Union[int, np.random.RandomState]], optional):
+        shuffle (bool): If True, perform a shuffled split. Defaults to True.
+        random_state (Union[int, np.random.RandomState], optional):
             Random state for the suffler. Defaults to None.
         q (Iterable[float], optional): List of quantiles used for quantile binning.
             Defaults to [0, 0.25, 0.5, 0.75, 1].
@@ -362,8 +364,8 @@ def grouped_train_valid_test_partition(
         train_size (float): Size of the training set as fraction.
         valid_size (float): Size of the validation set as fraction.
         test_size (float): Size of the test set as fraction.
-        shuffle (bool, optional): If True, perform a shuffled split. Defaults to True.
-        random_state (Optional[Union[int, np.random.RandomState]], optional):
+        shuffle (bool): If True, perform a shuffled split. Defaults to True.
+        random_state (Union[int, np.random.RandomState], optional):
             Random state for the suffler. Defaults to None.
 
     Returns:
@@ -432,5 +434,6 @@ def no_group_warn(groups: Optional[np.typing.ArrayLike]) -> None:
     """Raise warning if groups is None."""
     if groups is None:
         logger.warning(
-            "You are not using a grouped split. However, for retricular materials, grouping is typically a good idea to avoid data leakage."
+            "You are not using a grouped split."
+            " However, for retricular materials, grouping is typically a good idea to avoid data leakage."
         )

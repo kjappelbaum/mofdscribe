@@ -181,7 +181,8 @@ class RACS(BaseFeaturizer):
             bb_agg (Tuple[str]): Function used to aggregate the properties across different building blocks.
                  Defaults to ("avg").
             bond_heuristic (str): Method used to guess bonds. Defaults to "vesta".
-            bbs (Tuple[str]): Building blocks to use. Defaults to ("linker_all", "linker_connecting", "linker_functional", "linker_scaffold", "nodes").
+            bbs (Tuple[str]): Building blocks to use. Defaults to ("linker_all",
+                "linker_connecting", "linker_functional", "linker_scaffold", "nodes").
         """
         self.attributes = attributes
         self.scopes = scopes
