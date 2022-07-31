@@ -16,7 +16,7 @@ __all__ = ["PartialChargeStats"]
 @operates_on_istructure
 @operates_on_structure
 class PartialChargeStats(BaseFeaturizer):
-    """Compute partial charges using the EqEq charge equilibration method.
+    """Compute partial charges using the EqEq charge equilibration method [Ongari2019]_.
 
     Then derive a fix-length feature vector from the partial charges using
     aggregative statistics.

@@ -41,8 +41,7 @@ References
 .. [Janet2017] `Janet, J. P.; Kulik, H. J. J. Phys. Chem. A 2017, 121 (46),
     8939–8954 <https://doi.org/10.1021/acs.jpca.7b08750>`_
 
-.. [Ongari2019] `Ongari et al., J. Chem. Theory Comput. 2019, 15, 1, 382–401
-    <https://doi.org/10.1021/acs.jctc.9b01096>`_
+.. [Ongari2019] `Ongari et al., J. Chem. Theory Comput. 2019, 15, 1, 382–401`_
 
 .. [Wilmer2012] `Wilmer et al., J. Phys. Chem. Lett. 2012, 3, 17, 2506–2511
     <https://pubs.acs.org/doi/abs/10.1021/jz3008485>`_
@@ -71,3 +70,32 @@ References
 .. [Wirth] `Wirth, M.; Volkamer, A.; Zoete, V.; Rippmann, F.; Michielin, O.; Rarey, M.; Sauer, W. H. B. Protein Pocket and Ligand Shape Comparison and Its Application in Virtual Screening. Journal of Computer-Aided Molecular Design, 2013, 27, 511–524. <https://doi.org/10.1007/s10822-013-9659-1>`_
 
 .. [Zhang2022] `Zhang, R.; Seth, S.; Cumby, J. Grouped Representation of Interatomic Distances as a Similarity Measure for Crystal Structures. 2022. <https://doi.org/10.26434/chemrxiv-2022-9m4jh>`_
+
+.. [WL] `B. Weisfeiler, A. Lehman, The reduction of a graph to canonical form and the algebra which appears therein, 1968 (English translation) <https://www.iti.zcu.cz/wl2018/pdf/wl_paper_translation.pdf>`_
+
+.. [Bouritsas] `Bouritsas, G.; Frasca, F.; Zafeiriou, S.; Bronstein, M. M. Improving Graph Neural Network Expressivity via Subgraph Isomorphism Counting. arXiv 2020. <https://doi.org/10.48550/ARXIV.2006.09252>`_
+
+.. [MoleculeNet] `Wu, Z.; Ramsundar, B.; Feinberg, E. N.; Gomes, J.; Geniesse, C.; Pappu, A. S.; Leswing, K.; Pande, V. MoleculeNet: A Benchmark for Molecular Machine Learning. Chemical Science 2018, 9 (2), 513–530 <https://doi.org/10.1039/c7sc02664a>`_
+
+.. [Palizhati] `Palizhati, A.; Torrisi, S. B.; Aykol, M.; Suram, S. K.; Hummelshøj, J. S.; Montoya, J. H. Agents for Sequential Learning Using Multiple-Fidelity Data. Scientific Reports 2022, 12 (1). <https://doi.org/10.1038/s41598-022-08413-8>`_
+
+.. [Sheridan] `Sheridan, R. P. Time-Split Cross-Validation as a Method for Estimating the Goodness of Prospective Prediction. Journal of Chemical Information and Modeling 2013, 53 (4), 783–790. <https://doi.org/10.1021/ci400084k>`_
+
+.. [KennardStone] `R. W. Kennard & L. A. Stone (1969): Computer Aided Design of Experiments,
+    Technometrics, 11:1, 137-148.
+    <https://www.tandfonline.com/doi/abs/10.1080/00401706.1969.10490666>`_
+
+.. [Snee] Snee, R.D., 1977. Validation of regression models: methods and examples.
+Technometrics 19, 415-428.
+
+.. [Kramer] `Kramer, C.; Gedeck, P. Leave-Cluster-Out Cross-Validation
+    Is Appropriate for Scoring Functions Derived from Diverse Protein Data Sets.
+    Journal of Chemical Information and Modeling, 2010, 50, 1961–1969.
+    <https://doi.org/10.1021/ci100264e>`_
+
+.. [Meredig] `Meredig, B.; Antono, E.; Church, C.; Hutchinson, M.; Ling, J.; Paradiso,
+    S.; Blaiszik, B.; Foster, I.; Gibbons, B.; Hattrick-Simpers, J.; Mehta, A.; Ward, L.
+    Can Machine Learning Identify the next High-Temperature Superconductor?
+    Examining Extrapolation Performance for Materials Discovery.
+    Molecular Systems Design &amp; Engineering, 2018, 3, 819–825.
+    <https://doi.org/10.1039/c8me00012c>`_

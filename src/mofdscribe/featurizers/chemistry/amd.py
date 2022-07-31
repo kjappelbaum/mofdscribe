@@ -15,7 +15,7 @@ __all__ = ["AMD"]
 @operates_on_istructure
 @operates_on_structure
 class AMD(BaseFeaturizer):
-    """Implements the generalized average minimum distance (AMD) isometry invariant.
+    """Implements the generalized average minimum distance (AMD) isometry invariant [Widdowson2022]_.
 
     Note that it currently does not implement averages according to
     multiplicity of sites (as the original code supports).

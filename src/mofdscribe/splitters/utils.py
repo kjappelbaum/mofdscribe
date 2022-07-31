@@ -66,11 +66,6 @@ def kennard_stone_sampling(
 
     Returns:
         List[int]: indices sorted by their Max-Min distance.
-
-    References:
-        [KennardStone] R. W. Kennard & L. A. Stone (1969): Computer Aided Design of Experiments,
-            Technometrics, 11:1, 137-148.
-            https://www.tandfonline.com/doi/abs/10.1080/00401706.1969.10490666
     """
     if scale:
         scaler = StandardScaler()

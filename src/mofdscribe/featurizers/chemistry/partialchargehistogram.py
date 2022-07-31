@@ -16,7 +16,7 @@ __all__ = ["PartialChargeHistogram"]
 @operates_on_istructure
 @operates_on_structure
 class PartialChargeHistogram(BaseFeaturizer):
-    """Compute partial charges using the EqEq charge equilibration method.
+    """Compute partial charges using the EqEq charge equilibration method [Ongari2019]_.
 
     Then derive a fix-length feature vector from the partial charges by binning
     charges in a histogram.
