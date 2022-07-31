@@ -16,35 +16,35 @@ from mofdscribe.featurizers.utils.extend import (
 )
 
 _default_types = (
-    'cn',
-    'tet',
-    'oct',
-    'bcc',
-    'sq_pyr',
-    'sq_pyr_legacy',
-    'tri_bipyr',
-    'sq_bipyr',
-    'oct_legacy',
-    'tri_plan',
-    'sq_plan',
-    'pent_plan',
-    'tri_pyr',
-    'pent_pyr',
-    'hex_pyr',
-    'pent_bipyr',
-    'hex_bipyr',
-    'T',
-    'cuboct',
-    'oct_max',
-    'tet_max',
-    'tri_plan_max',
-    'sq_plan_max',
-    'pent_plan_max',
-    'cuboct_max',
-    'bent',
-    'see_saw_rect',
-    'hex_plan_max',
-    'sq_face_cap_trig_pris',
+    "cn",
+    "tet",
+    "oct",
+    "bcc",
+    "sq_pyr",
+    "sq_pyr_legacy",
+    "tri_bipyr",
+    "sq_bipyr",
+    "oct_legacy",
+    "tri_plan",
+    "sq_plan",
+    "pent_plan",
+    "tri_pyr",
+    "pent_pyr",
+    "hex_pyr",
+    "pent_bipyr",
+    "hex_bipyr",
+    "T",
+    "cuboct",
+    "oct_max",
+    "tet_max",
+    "tri_plan_max",
+    "sq_plan_max",
+    "pent_plan_max",
+    "cuboct_max",
+    "bent",
+    "see_saw_rect",
+    "hex_plan_max",
+    "sq_face_cap_trig_pris",
 )
 
 
@@ -86,7 +86,7 @@ class LSOP(BaseFeaturizer):
         self.types = types
 
     def feature_labels(self) -> List[str]:
-        return [f'lsop_{val}' for val in self.types]
+        return [f"lsop_{val}" for val in self.types]
 
     def featurize(self, s: Union[Structure, IStructure, Molecule, IMolecule]) -> np.ndarray:
         molecule = Molecule.from_sites(s.sites)
@@ -100,21 +100,21 @@ class LSOP(BaseFeaturizer):
         return np.array(lsop)
 
     def implementors(self) -> List[str]:
-        return ['Kevin Maik Jablonka']
+        return ["Kevin Maik Jablonka"]
 
     def citations(self) -> List[str]:
         return [
-            '@article{Zimmermann2020,'
-            'doi = {10.1039/c9ra07755c},'
-            'url = {https://doi.org/10.1039/c9ra07755c},'
-            'year = {2020},'
-            'publisher = {Royal Society of Chemistry ({RSC})},'
-            'volume = {10},'
-            'number = {10},'
-            'pages = {6063--6081},'
-            'author = {Nils E. R. Zimmermann and Anubhav Jain},'
-            'title = {Local structure order parameters and site fingerprints'
-            ' for quantification of coordination environment and crystal structure similarity},'
-            'journal = {{RSC} Advances}'
-            '}'
+            "@article{Zimmermann2020,"
+            "doi = {10.1039/c9ra07755c},"
+            "url = {https://doi.org/10.1039/c9ra07755c},"
+            "year = {2020},"
+            "publisher = {Royal Society of Chemistry ({RSC})},"
+            "volume = {10},"
+            "number = {10},"
+            "pages = {6063--6081},"
+            "author = {Nils E. R. Zimmermann and Anubhav Jain},"
+            "title = {Local structure order parameters and site fingerprints"
+            " for quantification of coordination environment and crystal structure similarity},"
+            "journal = {{RSC} Advances}"
+            "}"
         ]

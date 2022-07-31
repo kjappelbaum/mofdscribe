@@ -163,7 +163,7 @@ class VoxelGrid:
 
         self.n_voxels = np.prod(self.x_y_z)
 
-        self.id = 'V({},{},{})'.format(self.x_y_z, self.sizes, self.regular_bounding_box)
+        self.id = "V({},{},{})".format(self.x_y_z, self.sizes, self.regular_bounding_box)
 
         # find where each point lies in corresponding segmented axis
         # -1 so index are 0-based; clip for edge cases
@@ -203,7 +203,7 @@ class VoxelGrid:
 
         return voxel_n
 
-    def get_feature_vector(self, mode='binary', flatten: bool = False):
+    def get_feature_vector(self, mode="binary", flatten: bool = False):
         """Get feature vector.
 
         Args:
@@ -225,15 +225,15 @@ class VoxelGrid:
         """
         vector = np.zeros(self.n_voxels)
 
-        if mode == 'binary':
+        if mode == "binary":
             vector[np.unique(self.voxel_n)] = 1
 
-        elif mode == 'density':
+        elif mode == "density":
             count = np.bincount(self.voxel_n)
             vector[: len(count)] = count
             vector /= len(self.voxel_n)
 
-        elif mode == 'TDF':
+        elif mode == "TDF":
             kdt = cKDTree(self._points)
             vector, i = kdt.query(self.voxel_centers, n_jobs=-1)
 
@@ -242,7 +242,7 @@ class VoxelGrid:
             vector[unique_voxels] = self.averaged_properties[:, mode]
 
         else:
-            raise NotImplementedError('{} is not a supported feature vector mode'.format(mode))
+            raise NotImplementedError("{} is not a supported feature vector mode".format(mode))
 
         if flatten:
             return vector

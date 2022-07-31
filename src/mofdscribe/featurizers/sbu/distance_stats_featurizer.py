@@ -29,7 +29,7 @@ class PairwiseDistanceStats(BaseFeaturizer):
     the AMD fingerpint.
     """
 
-    def __init__(self, aggregations: Tuple[str] = ('mean', 'std', 'max', 'min')) -> None:
+    def __init__(self, aggregations: Tuple[str] = ("mean", "std", "max", "min")) -> None:
         """Create a new PairwiseDistanceStats featurizer.
 
         Args:
@@ -40,7 +40,7 @@ class PairwiseDistanceStats(BaseFeaturizer):
         self.aggregtations = aggregations
 
     def feature_labels(self) -> List[str]:
-        return [f'pairwise_distance_stats_{a}' for a in self.aggregtations]
+        return [f"pairwise_distance_stats_{a}" for a in self.aggregtations]
 
     def featurize(self, structure: Union[Molecule, IMolecule, Structure, IStructure]) -> np.ndarray:
         distances = []
@@ -55,7 +55,7 @@ class PairwiseDistanceStats(BaseFeaturizer):
         return np.array(features)
 
     def implementors(self) -> List[str]:
-        return ['Kevin Maik Jablonka']
+        return ["Kevin Maik Jablonka"]
 
     def citations(self) -> List[str]:
         return []

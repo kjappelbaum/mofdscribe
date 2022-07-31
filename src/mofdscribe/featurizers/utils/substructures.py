@@ -19,8 +19,8 @@ def filter_element(
     """
     elements_ = []
     for atom_type in elements:
-        if '-' in atom_type:
-            elements_.extend(atom_type.split('-'))
+        if "-" in atom_type:
+            elements_.extend(atom_type.split("-"))
         else:
             elements_.append(atom_type)
     keep_sites = []

@@ -12,18 +12,18 @@ def test_aggregators():
     )
 
     true_values = {
-        'sum': 28,
-        'avg': 4,
-        'max': 7,
-        'min': 1,
-        'range': 6,
-        'std': 2,
-        'mean': 4,
-        'median': 4,
-        'harmean': 2.6997245179063363,
-        'geomean': 3.3800151591412964,
-        'mad': 2.0,
-        'trimean': 4.0,
+        "sum": 28,
+        "avg": 4,
+        "max": 7,
+        "min": 1,
+        "range": 6,
+        "std": 2,
+        "mean": 4,
+        "median": 4,
+        "harmean": 2.6997245179063363,
+        "geomean": 3.3800151591412964,
+        "mad": 2.0,
+        "trimean": 4.0,
     }
 
     for aggregator_name, aggregator in ARRAY_AGGREGATORS.items():

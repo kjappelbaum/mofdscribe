@@ -32,8 +32,8 @@ class CompositionStats(BaseFeaturizer):
 
     def __init__(
         self,
-        encodings: Tuple[str] = ('mod_pettifor', 'X'),
-        aggregtations: Tuple[str] = ('mean', 'std', 'max', 'min'),
+        encodings: Tuple[str] = ("mod_pettifor", "X"),
+        aggregtations: Tuple[str] = ("mean", "std", "max", "min"),
     ) -> None:
         """Initialize a CompositionStats featurizer.
 
@@ -53,7 +53,7 @@ class CompositionStats(BaseFeaturizer):
 
         for encoding in self.encodings:
             for agg in self.aggregtations:
-                feature_labels.append(f'composition_stats_{encoding}_{agg}')
+                feature_labels.append(f"composition_stats_{encoding}_{agg}")
 
         return feature_labels
 
@@ -71,7 +71,7 @@ class CompositionStats(BaseFeaturizer):
         return np.array(features)
 
     def implementors(self) -> List[str]:
-        return ['Kevin Maik Jablonka']
+        return ["Kevin Maik Jablonka"]
 
     def citations(self) -> List[str]:
         return []

@@ -36,21 +36,21 @@ class Asphericity(RDKitAdaptor):
 
     def __init__(self):
         """Construct a new Asphericity featurizer."""
-        super().__init__(Asphericity_RDKIT, ['asphericity'])
+        super().__init__(Asphericity_RDKIT, ["asphericity"])
 
     def citations(self) -> List[str]:
         return self.super().citations() + [
-            '@incollection{Todeschini2008,'
-            'doi = {10.1002/9783527618279.ch37},'
-            'url = {https://doi.org/10.1002/9783527618279.ch37},'
-            'year = {2008},'
-            'month = may,'
-            'publisher = {Wiley-{VCH} Verlag {GmbH}},'
-            'pages = {1004--1033},'
-            'author = {Roberto Todeschini and Viviana Consonni},'
-            'title = {Descriptors from Molecular Geometry},'
-            'booktitle = {Handbook of Chemoinformatics}'
-            '}'
+            "@incollection{Todeschini2008,"
+            "doi = {10.1002/9783527618279.ch37},"
+            "url = {https://doi.org/10.1002/9783527618279.ch37},"
+            "year = {2008},"
+            "month = may,"
+            "publisher = {Wiley-{VCH} Verlag {GmbH}},"
+            "pages = {1004--1033},"
+            "author = {Roberto Todeschini and Viviana Consonni},"
+            "title = {Descriptors from Molecular Geometry},"
+            "booktitle = {Handbook of Chemoinformatics}"
+            "}"
         ]
 
 
@@ -59,21 +59,21 @@ class Eccentricity(RDKitAdaptor):
 
     def __init__(self):
         """Construct a new Eccentricity featurizer."""
-        super().__init__(Eccentricity_RDKIT, ['eccentricity'])
+        super().__init__(Eccentricity_RDKIT, ["eccentricity"])
 
     def citations(self) -> List[str]:
         return self.super().citations() + [
-            '@incollection{Todeschini2008,'
-            'doi = {10.1002/9783527618279.ch37},'
-            'url = {https://doi.org/10.1002/9783527618279.ch37},'
-            'year = {2008},'
-            'month = may,'
-            'publisher = {Wiley-{VCH} Verlag {GmbH}},'
-            'pages = {1004--1033},'
-            'author = {Roberto Todeschini and Viviana Consonni},'
-            'title = {Descriptors from Molecular Geometry},'
-            'booktitle = {Handbook of Chemoinformatics}'
-            '}'
+            "@incollection{Todeschini2008,"
+            "doi = {10.1002/9783527618279.ch37},"
+            "url = {https://doi.org/10.1002/9783527618279.ch37},"
+            "year = {2008},"
+            "month = may,"
+            "publisher = {Wiley-{VCH} Verlag {GmbH}},"
+            "pages = {1004--1033},"
+            "author = {Roberto Todeschini and Viviana Consonni},"
+            "title = {Descriptors from Molecular Geometry},"
+            "booktitle = {Handbook of Chemoinformatics}"
+            "}"
         ]
 
 
@@ -82,21 +82,21 @@ class InertialShapeFactor(RDKitAdaptor):
 
     def __init__(self):
         """Construct a new InertialShapeFactor featurizer."""
-        super().__init__(InertialShapeFactor_RDKIT, ['inertial_shape_factor'])
+        super().__init__(InertialShapeFactor_RDKIT, ["inertial_shape_factor"])
 
     def citations(self) -> List[str]:
         return self.super().citations() + [
-            '@incollection{Todeschini2008,'
-            'doi = {10.1002/9783527618279.ch37},'
-            'url = {https://doi.org/10.1002/9783527618279.ch37},'
-            'year = {2008},'
-            'month = may,'
-            'publisher = {Wiley-{VCH} Verlag {GmbH}},'
-            'pages = {1004--1033},'
-            'author = {Roberto Todeschini and Viviana Consonni},'
-            'title = {Descriptors from Molecular Geometry},'
-            'booktitle = {Handbook of Chemoinformatics}'
-            '}'
+            "@incollection{Todeschini2008,"
+            "doi = {10.1002/9783527618279.ch37},"
+            "url = {https://doi.org/10.1002/9783527618279.ch37},"
+            "year = {2008},"
+            "month = may,"
+            "publisher = {Wiley-{VCH} Verlag {GmbH}},"
+            "pages = {1004--1033},"
+            "author = {Roberto Todeschini and Viviana Consonni},"
+            "title = {Descriptors from Molecular Geometry},"
+            "booktitle = {Handbook of Chemoinformatics}"
+            "}"
         ]
 
 
@@ -105,24 +105,24 @@ class NPR1(RDKitAdaptor):
 
     def __init__(self):
         """Construct a new NPR1 featurizer."""
-        super().__init__(NPR1_RDKIT, ['npr1'])
+        super().__init__(NPR1_RDKIT, ["npr1"])
 
     def citations(self) -> List[str]:
         return self.super().citations() + [
-            '@article{Sauer2003'
-            'doi = {10.1021/ci025599w}'
-            'url = {https://doi.org/10.1021/ci025599w}'
-            'year = {2003}'
-            'month = mar'
-            'publisher = {American Chemical Society ({ACS})}'
-            'volume = {43}'
-            'number = {3}'
-            'pages = {987--1003}'
-            'author = {Wolfgang H. B. Sauer and Matthias K. Schwarz}'
-            'title = {Molecular Shape Diversity of Combinatorial Libraries:'
-            ' A Prerequisite for Broad Bioactivity}'
-            'journal = {Journal of Chemical Information and Computer Sciences'
-            ''
+            "@article{Sauer2003"
+            "doi = {10.1021/ci025599w}"
+            "url = {https://doi.org/10.1021/ci025599w}"
+            "year = {2003}"
+            "month = mar"
+            "publisher = {American Chemical Society ({ACS})}"
+            "volume = {43}"
+            "number = {3}"
+            "pages = {987--1003}"
+            "author = {Wolfgang H. B. Sauer and Matthias K. Schwarz}"
+            "title = {Molecular Shape Diversity of Combinatorial Libraries:"
+            " A Prerequisite for Broad Bioactivity}"
+            "journal = {Journal of Chemical Information and Computer Sciences"
+            ""
         ]
 
 
@@ -131,24 +131,24 @@ class NPR2(RDKitAdaptor):
 
     def __init__(self):
         """Construct a new NPR2 featurizer."""
-        super().__init__(NPR2_RDKIT, ['npr2'])
+        super().__init__(NPR2_RDKIT, ["npr2"])
 
     def citations(self) -> List[str]:
         return self.super().citations() + [
-            '@article{Sauer2003'
-            'doi = {10.1021/ci025599w}'
-            'url = {https://doi.org/10.1021/ci025599w}'
-            'year = {2003}'
-            'month = mar'
-            'publisher = {American Chemical Society ({ACS})}'
-            'volume = {43}'
-            'number = {3}'
-            'pages = {987--1003}'
-            'author = {Wolfgang H. B. Sauer and Matthias K. Schwarz}'
-            'title = {Molecular Shape Diversity of Combinatorial Libraries:'
-            ' A Prerequisite for Broad Bioactivity}'
-            'journal = {Journal of Chemical Information and Computer Sciences'
-            ''
+            "@article{Sauer2003"
+            "doi = {10.1021/ci025599w}"
+            "url = {https://doi.org/10.1021/ci025599w}"
+            "year = {2003}"
+            "month = mar"
+            "publisher = {American Chemical Society ({ACS})}"
+            "volume = {43}"
+            "number = {3}"
+            "pages = {987--1003}"
+            "author = {Wolfgang H. B. Sauer and Matthias K. Schwarz}"
+            "title = {Molecular Shape Diversity of Combinatorial Libraries:"
+            " A Prerequisite for Broad Bioactivity}"
+            "journal = {Journal of Chemical Information and Computer Sciences"
+            ""
         ]
 
 
@@ -157,7 +157,7 @@ class PMI1(RDKitAdaptor):
 
     def __init__(self):
         """Construct a new PMI1 featurizer."""
-        super().__init__(PMI1_RDKIT, ['pmi1'])
+        super().__init__(PMI1_RDKIT, ["pmi1"])
 
 
 class PMI2(RDKitAdaptor):
@@ -165,7 +165,7 @@ class PMI2(RDKitAdaptor):
 
     def __init__(self):
         """Construct a new PMI2 featurizer."""
-        super().__init__(PMI2_RDKIT, ['pmi2'])
+        super().__init__(PMI2_RDKIT, ["pmi2"])
 
 
 class PMI3(RDKitAdaptor):
@@ -173,7 +173,7 @@ class PMI3(RDKitAdaptor):
 
     def __init__(self):
         """Construct a new PMI3 featurizer."""
-        super().__init__(PMI3_RDKIT, ['pmi3'])
+        super().__init__(PMI3_RDKIT, ["pmi3"])
 
 
 class RadiusOfGyration(RDKitAdaptor):
@@ -181,21 +181,21 @@ class RadiusOfGyration(RDKitAdaptor):
 
     def __init__(self):
         """Construct a new RadiusOfGyration featurizer."""
-        super().__init__(RadiusOfGyration_RDKIT, ['radius_of_gyration'])
+        super().__init__(RadiusOfGyration_RDKIT, ["radius_of_gyration"])
 
     def citations(self) -> List[str]:
         return self.super().citations() + [
-            '@incollection{Todeschini2008,'
-            'doi = {10.1002/9783527618279.ch37},'
-            'url = {https://doi.org/10.1002/9783527618279.ch37},'
-            'year = {2008},'
-            'month = may,'
-            'publisher = {Wiley-{VCH} Verlag {GmbH}},'
-            'pages = {1004--1033},'
-            'author = {Roberto Todeschini and Viviana Consonni},'
-            'title = {Descriptors from Molecular Geometry},'
-            'booktitle = {Handbook of Chemoinformatics}'
-            '}'
+            "@incollection{Todeschini2008,"
+            "doi = {10.1002/9783527618279.ch37},"
+            "url = {https://doi.org/10.1002/9783527618279.ch37},"
+            "year = {2008},"
+            "month = may,"
+            "publisher = {Wiley-{VCH} Verlag {GmbH}},"
+            "pages = {1004--1033},"
+            "author = {Roberto Todeschini and Viviana Consonni},"
+            "title = {Descriptors from Molecular Geometry},"
+            "booktitle = {Handbook of Chemoinformatics}"
+            "}"
         ]
 
 
@@ -204,21 +204,21 @@ class SpherocityIndex(RDKitAdaptor):
 
     def __init__(self):
         """Construct a new SpherocityIndex featurizer."""
-        super().__init__(SpherocityIndex_RDKIT, ['spherocity'])
+        super().__init__(SpherocityIndex_RDKIT, ["spherocity"])
 
     def citations(self) -> List[str]:
         return self.super().citations() + [
-            '@incollection{Todeschini2008,'
-            'doi = {10.1002/9783527618279.ch37},'
-            'url = {https://doi.org/10.1002/9783527618279.ch37},'
-            'year = {2008},'
-            'month = may,'
-            'publisher = {Wiley-{VCH} Verlag {GmbH}},'
-            'pages = {1004--1033},'
-            'author = {Roberto Todeschini and Viviana Consonni},'
-            'title = {Descriptors from Molecular Geometry},'
-            'booktitle = {Handbook of Chemoinformatics}'
-            '}'
+            "@incollection{Todeschini2008,"
+            "doi = {10.1002/9783527618279.ch37},"
+            "url = {https://doi.org/10.1002/9783527618279.ch37},"
+            "year = {2008},"
+            "month = may,"
+            "publisher = {Wiley-{VCH} Verlag {GmbH}},"
+            "pages = {1004--1033},"
+            "author = {Roberto Todeschini and Viviana Consonni},"
+            "title = {Descriptors from Molecular Geometry},"
+            "booktitle = {Handbook of Chemoinformatics}"
+            "}"
         ]
 
 
@@ -230,24 +230,24 @@ class RodLikeness(RDKitAdaptor):
 
     def __init__(self):
         """Construct a new RodLikeness featurizer."""
-        super().__init__(_rod_likeness, ['rod_likeness'])
+        super().__init__(_rod_likeness, ["rod_likeness"])
 
     def citations(self) -> List[str]:
         return self.super().citations() + [
-            '@article{Wirth2013,'
-            'doi = {10.1007/s10822-013-9659-1},'
-            'url = {https://doi.org/10.1007/s10822-013-9659-1},'
-            'year = {2013},'
-            'month = jun,'
-            'publisher = {Springer Science and Business Media {LLC}},'
-            'volume = {27},'
-            'number = {6},'
-            'pages = {511--524},'
-            'author = {Matthias Wirth and Andrea Volkamer and Vincent Zoete'
-            ' and Friedrich Rippmann and Olivier Michielin and Matthias Rarey and Wolfgang H. B. Sauer},'
-            'title = {Protein pocket and ligand shape comparison and its application in virtual screening},'
-            'journal = {Journal of Computer-Aided Molecular Design}'
-            '}'
+            "@article{Wirth2013,"
+            "doi = {10.1007/s10822-013-9659-1},"
+            "url = {https://doi.org/10.1007/s10822-013-9659-1},"
+            "year = {2013},"
+            "month = jun,"
+            "publisher = {Springer Science and Business Media {LLC}},"
+            "volume = {27},"
+            "number = {6},"
+            "pages = {511--524},"
+            "author = {Matthias Wirth and Andrea Volkamer and Vincent Zoete"
+            " and Friedrich Rippmann and Olivier Michielin and Matthias Rarey and Wolfgang H. B. Sauer},"
+            "title = {Protein pocket and ligand shape comparison and its application in virtual screening},"
+            "journal = {Journal of Computer-Aided Molecular Design}"
+            "}"
         ]
 
 
@@ -259,24 +259,24 @@ class DiskLikeness(RDKitAdaptor):
 
     def __init__(self):
         """Construct a new DiskLikeness featurizer."""
-        super().__init__(_disk_likeness, ['disk_likeness'])
+        super().__init__(_disk_likeness, ["disk_likeness"])
 
     def citations(self) -> List[str]:
         return self.super().citations() + [
-            '@article{Wirth2013,'
-            'doi = {10.1007/s10822-013-9659-1},'
-            'url = {https://doi.org/10.1007/s10822-013-9659-1},'
-            'year = {2013},'
-            'month = jun,'
-            'publisher = {Springer Science and Business Media {LLC}},'
-            'volume = {27},'
-            'number = {6},'
-            'pages = {511--524},'
-            'author = {Matthias Wirth and Andrea Volkamer and Vincent Zoete'
-            ' and Friedrich Rippmann and Olivier Michielin and Matthias Rarey and Wolfgang H. B. Sauer},'
-            'title = {Protein pocket and ligand shape comparison and its application in virtual screening},'
-            'journal = {Journal of Computer-Aided Molecular Design}'
-            '}'
+            "@article{Wirth2013,"
+            "doi = {10.1007/s10822-013-9659-1},"
+            "url = {https://doi.org/10.1007/s10822-013-9659-1},"
+            "year = {2013},"
+            "month = jun,"
+            "publisher = {Springer Science and Business Media {LLC}},"
+            "volume = {27},"
+            "number = {6},"
+            "pages = {511--524},"
+            "author = {Matthias Wirth and Andrea Volkamer and Vincent Zoete"
+            " and Friedrich Rippmann and Olivier Michielin and Matthias Rarey and Wolfgang H. B. Sauer},"
+            "title = {Protein pocket and ligand shape comparison and its application in virtual screening},"
+            "journal = {Journal of Computer-Aided Molecular Design}"
+            "}"
         ]
 
 
@@ -288,22 +288,22 @@ class SphereLikeness(RDKitAdaptor):
 
     def __init__(self):
         """Construct a new SphereLikeness featurizer."""
-        super().__init__(_sphericity, ['sphere_likeness'])
+        super().__init__(_sphericity, ["sphere_likeness"])
 
     def citations(self) -> List[str]:
         return self.super().citations() + [
-            '@article{Wirth2013,'
-            'doi = {10.1007/s10822-013-9659-1},'
-            'url = {https://doi.org/10.1007/s10822-013-9659-1},'
-            'year = {2013},'
-            'month = jun,'
-            'publisher = {Springer Science and Business Media {LLC}},'
-            'volume = {27},'
-            'number = {6},'
-            'pages = {511--524},'
-            'author = {Matthias Wirth and Andrea Volkamer and Vincent Zoete'
-            ' and Friedrich Rippmann and Olivier Michielin and Matthias Rarey and Wolfgang H. B. Sauer},'
-            'title = {Protein pocket and ligand shape comparison and its application in virtual screening},'
-            'journal = {Journal of Computer-Aided Molecular Design}'
-            '}'
+            "@article{Wirth2013,"
+            "doi = {10.1007/s10822-013-9659-1},"
+            "url = {https://doi.org/10.1007/s10822-013-9659-1},"
+            "year = {2013},"
+            "month = jun,"
+            "publisher = {Springer Science and Business Media {LLC}},"
+            "volume = {27},"
+            "number = {6},"
+            "pages = {511--524},"
+            "author = {Matthias Wirth and Andrea Volkamer and Vincent Zoete"
+            " and Friedrich Rippmann and Olivier Michielin and Matthias Rarey and Wolfgang H. B. Sauer},"
+            "title = {Protein pocket and ligand shape comparison and its application in virtual screening},"
+            "journal = {Journal of Computer-Aided Molecular Design}"
+            "}"
         ]

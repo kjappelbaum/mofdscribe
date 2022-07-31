@@ -41,7 +41,7 @@ References
 .. [Janet2017] `Janet, J. P.; Kulik, H. J. J. Phys. Chem. A 2017, 121 (46),
     8939–8954 <https://doi.org/10.1021/acs.jpca.7b08750>`_
 
-.. [Ongari2019] `Ongari et al., J. Chem. Theory Comput. 2019, 15, 1, 382–401`_
+.. [Ongari2019] `Ongari et al., J. Chem. Theory Comput. 2019, 15, 1, 382–401 <http://pubs.acs.org/doi/10.1021/acs.jctc.8b00669>`_
 
 .. [Wilmer2012] `Wilmer et al., J. Phys. Chem. Lett. 2012, 3, 17, 2506–2511
     <https://pubs.acs.org/doi/abs/10.1021/jz3008485>`_
@@ -59,7 +59,6 @@ References
 .. [Hung2022] `Hung, T.-H.; Xu, Z.-X.; Kang, D.-Y.; Lin, L.-C. Chemistry-Encoded Convolutional Neural Networks for Predicting Gaseous Adsorption in Porous Materials. The Journal of Physical Chemistry C, 2022, 126, 2813–2822. <https://doi.org/10.1021/acs.jpcc.1c09649>`_
 
 .. [Cho2021] `Cho, E. H.; Lin, L.-C. Nanoporous Material Recognition via 3D Convolutional Neural Networks: Prediction of Adsorption Properties. The Journal of Physical Chemistry Letters, 2021, 12, 2279–2285. <https://doi.org/10.1021/acs.jpclett.1c00293>`_
-
 
 .. [Dubbeldam] `Dubbeldam, D.; Calero, S.; Ellis, D. E.; Snurr, R. Q. RASPA: Molecular Simulation Software for Adsorption and Diffusion in Flexible Nanoporous Materials. Molecular Simulation, 2015, 42, 81–101. <https://doi.org/10.1080/08927022.2015.1010082>`_
 
@@ -86,7 +85,7 @@ References
     <https://www.tandfonline.com/doi/abs/10.1080/00401706.1969.10490666>`_
 
 .. [Snee] Snee, R.D., 1977. Validation of regression models: methods and examples.
-Technometrics 19, 415-428.
+    Technometrics 19, 415-428.
 
 .. [Kramer] `Kramer, C.; Gedeck, P. Leave-Cluster-Out Cross-Validation
     Is Appropriate for Scoring Functions Derived from Diverse Protein Data Sets.
