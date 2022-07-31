@@ -109,8 +109,8 @@ class VoxelGrid(BaseFeaturizer):
         n_x: int = 25,
         n_y: int = 25,
         n_z: int = 25,
-        geometry_aggregations: Tuple[str] = ("binary",),
-        properties: Tuple[str, int] = ("X", "electron_affinity"),
+        geometry_aggregations: Tuple[str] = ('binary',),
+        properties: Tuple[str, int] = ('X', 'electron_affinity'),
         flatten: bool = True,
         regular_bounding_box: bool = True,
     ):
@@ -196,10 +196,10 @@ class VoxelGrid(BaseFeaturizer):
         feature_labels = []
         for geometry_aggregation in self.geometry_aggregations:
             for voxel in range(self._num_voxels):
-                feature_labels.append(f"voxelgrid_{geometry_aggregation}_{voxel}")
+                feature_labels.append(f'voxelgrid_{geometry_aggregation}_{voxel}')
         for prop in self.properties:
             for voxel in range(self._num_voxels):
-                feature_labels.append(f"voxelgrid_{prop}_{voxel}")
+                feature_labels.append(f'voxelgrid_{prop}_{voxel}')
 
         return feature_labels
 
@@ -208,36 +208,36 @@ class VoxelGrid(BaseFeaturizer):
 
     def citations(self) -> List[str]:
         return [
-            "@article{Hung2022,"
-            "doi = {10.1021/acs.jpcc.1c09649},"
-            "url = {https://doi.org/10.1021/acs.jpcc.1c09649},"
-            "year = {2022},"
-            "month = jan,"
-            "publisher = {American Chemical Society ({ACS})},"
-            "volume = {126},"
-            "number = {5},"
-            "pages = {2813--2822},"
-            "author = {Ting-Hsiang Hung and Zhi-Xun Xu and Dun-Yen Kang "
-            "and Li-Chiang Lin},"
-            "title = {Chemistry-Encoded Convolutional Neural Networks for "
-            "Predicting Gaseous Adsorption in Porous Materials},"
-            "journal = {The Journal of Physical Chemistry C}"
-            "}",
-            "@article{Cho2021,"
-            "doi = {10.1021/acs.jpclett.1c00293},"
-            "url = {https://doi.org/10.1021/acs.jpclett.1c00293},"
-            "year = {2021},"
-            "month = mar,"
-            "publisher = {American Chemical Society ({ACS})},"
-            "volume = {12},"
-            "number = {9},"
-            "pages = {2279--2285},"
-            "author = {Eun Hyun Cho and Li-Chiang Lin},"
-            "title = {Nanoporous Material Recognition via 3D Convolutional "
-            "Neural Networks: Prediction of Adsorption Properties},"
-            "journal = {The Journal of Physical Chemistry Letters}"
-            "}",
+            '@article{Hung2022,'
+            'doi = {10.1021/acs.jpcc.1c09649},'
+            'url = {https://doi.org/10.1021/acs.jpcc.1c09649},'
+            'year = {2022},'
+            'month = jan,'
+            'publisher = {American Chemical Society ({ACS})},'
+            'volume = {126},'
+            'number = {5},'
+            'pages = {2813--2822},'
+            'author = {Ting-Hsiang Hung and Zhi-Xun Xu and Dun-Yen Kang '
+            'and Li-Chiang Lin},'
+            'title = {Chemistry-Encoded Convolutional Neural Networks for '
+            'Predicting Gaseous Adsorption in Porous Materials},'
+            'journal = {The Journal of Physical Chemistry C}'
+            '}',
+            '@article{Cho2021,'
+            'doi = {10.1021/acs.jpclett.1c00293},'
+            'url = {https://doi.org/10.1021/acs.jpclett.1c00293},'
+            'year = {2021},'
+            'month = mar,'
+            'publisher = {American Chemical Society ({ACS})},'
+            'volume = {12},'
+            'number = {9},'
+            'pages = {2279--2285},'
+            'author = {Eun Hyun Cho and Li-Chiang Lin},'
+            'title = {Nanoporous Material Recognition via 3D Convolutional '
+            'Neural Networks: Prediction of Adsorption Properties},'
+            'journal = {The Journal of Physical Chemistry Letters}'
+            '}',
         ]
 
     def implementors(self) -> List[str]:
-        return ["Kevin Maik Jablonka"]
+        return ['Kevin Maik Jablonka']

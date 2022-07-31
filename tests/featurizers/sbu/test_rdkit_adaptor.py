@@ -8,7 +8,7 @@ from mofdscribe.featurizers.sbu.rdkitadaptor import RDKitAdaptor
 
 def test_rdkit_adaptor(molecule_graph, molecule):
     """Test that we can call RDKit featurizers with pymatgen molecules."""
-    adaptor = RDKitAdaptor(Asphericity, ["asphericity"], "vesta")
+    adaptor = RDKitAdaptor(Asphericity, ['asphericity'], 'vesta')
 
     features_a = adaptor.featurize(molecule)
     assert features_a.shape == (1,)

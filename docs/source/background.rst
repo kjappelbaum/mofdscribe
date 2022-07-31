@@ -13,14 +13,14 @@ Many of the descriptors implemented in mofdscribe have been discussed in our
    :class: table-striped
    :columns: id, considers_geometry, considers_structure_graph, encodes_chemistry, scalar, scope
 
-.. warning:: 
+.. warning::
 
-    Note that different featurizers have different ways in which they deal with solvent molecules. 
-    The RACs and SBU-centered features will ignore floating solvent molecules. 
+    Note that different featurizers have different ways in which they deal with solvent molecules.
+    The RACs and SBU-centered features will ignore floating solvent molecules.
     Other featurizers, e.g. the APRDF, or pore geometry descriptors will do consider floating solvent molecules
-    in the same way as framework molecules. 
-    
-    If you do not want the solvent molecules to impact the featurization, you'll have to remove it from the structure. 
+    in the same way as framework molecules.
+
+    If you do not want the solvent molecules to impact the featurization, you'll have to remove it from the structure.
 
     Bound solvent is *not* suppressed by any of the featurizers.
 
@@ -62,7 +62,7 @@ SBU-centered featurizers
 Reticular chemistry describes materials built via a tinker-toy approach.
 Hence, a natural approach is to focus on the building blocks.
 
-mofdscribe can compute descriptors that are SBU-centred, for instance, using RDKit descriptors on the building blocks.  However, you are not limited to descriptors operating on molecules -- you can convert any featurizer into an SBU-centered fearturizer: 
+mofdscribe can compute descriptors that are SBU-centred, for instance, using RDKit descriptors on the building blocks.  However, you are not limited to descriptors operating on molecules -- you can convert any featurizer into an SBU-centered fearturizer:
 
 .. code-block:: python
 

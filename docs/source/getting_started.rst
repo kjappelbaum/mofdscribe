@@ -84,8 +84,8 @@ Using splitters
 
 For model validation it is important to use stringent splits into folds. In many
 cases, a random split is not ideal for materials discovery application, where
-extrapolation is often more relevant than interpolation. 
-To model extrapolative behavior, 
+extrapolation is often more relevant than interpolation.
+To model extrapolative behavior,
 one can some splitting strategies implemented in mofdscribe.
 They all assume :py:meth:`~mofdscribe.datasets.dataset.StructureDataset` as
 input.
@@ -103,7 +103,7 @@ input.
 
 
 All splitters are implemented based on :py:meth:`~mofdscribe.splitters.splitters.BaseSplitter`.
-If you want to implement a custom grouping or stratification strategy, you'll need to implement the 
+If you want to implement a custom grouping or stratification strategy, you'll need to implement the
 
     * :code: `_get_stratification_col`: Should return an ArrayLike object of floats, categories, or ints.
                 If it is categorical data, the :code:`BaseSplitter` will handle the discretization.

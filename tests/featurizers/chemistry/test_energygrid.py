@@ -11,10 +11,10 @@ THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 
 def test_read_ascii_grid():
     """Ensure that we can parse an ASCII grid file."""
-    file_name = os.path.join(THIS_DIR, "..", "test_files", "asci_grid_C_co2.grid")
+    file_name = os.path.join(THIS_DIR, '..', 'test_files', 'asci_grid_C_co2.grid')
     result = read_ascii_grid(file_name)
     assert len(result) == 22185
-    assert result["energy"].dtype == float
+    assert result['energy'].dtype == float
 
 
 def test_energygrid(hkust_structure):

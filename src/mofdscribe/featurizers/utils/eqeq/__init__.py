@@ -15,18 +15,18 @@ from pymatgen.io.ase import AseAtomsAdaptor
 
 @lru_cache(maxsize=32)
 def get_eqeq_charges(structure: IStructure) -> Tuple[str, List[float]]:
-    with open(os.devnull, "w") as devnull:
+    with open(os.devnull, 'w') as devnull:
         with contextlib.redirect_stdout(devnull):
-            with NamedTemporaryFile("w", suffix=".cif") as f:
-                structure.to("cif", f.name)
+            with NamedTemporaryFile('w', suffix='.cif') as f:
+                structure.to('cif', f.name)
                 charges = run_on_cif(f.name)
 
     atoms = AseAtomsAdaptor().get_atoms(structure)
     charge_dict = dict(zip(range(len(atoms)), charges))
-    d = {"atom_site_charge": {0: charge_dict}}
+    d = {'atom_site_charge': {0: charge_dict}}
 
     bo = BytesIO()
 
     write_cif(bo, atoms, loop_keys=d)
 
-    return bo.getvalue().decode("utf-8"), charges
+    return bo.getvalue().decode('utf-8'), charges

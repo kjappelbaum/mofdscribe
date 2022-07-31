@@ -54,19 +54,19 @@ class PHImage(BaseFeaturizer):
     def __init__(
         self,
         atom_types: Optional[Tuple[str]] = (
-            "C-H-N-O",
-            "F-Cl-Br-I",
-            "Cu-Mn-Ni-Mo-Fe-Pt-Zn-Ca-Er-Au-Cd-Co-Gd-Na-Sm-Eu-Tb-V"
-            "-Ag-Nd-U-Ba-Ce-K-Ga-Cr-Al-Li-Sc-Ru-In-Mg-Zr-Dy-W-Yb-Y-"
-            "Ho-Re-Be-Rb-La-Sn-Cs-Pb-Pr-Bi-Tm-Sr-Ti-Hf-Ir-Nb-Pd-Hg-"
-            "Th-Np-Lu-Rh-Pu",
+            'C-H-N-O',
+            'F-Cl-Br-I',
+            'Cu-Mn-Ni-Mo-Fe-Pt-Zn-Ca-Er-Au-Cd-Co-Gd-Na-Sm-Eu-Tb-V'
+            '-Ag-Nd-U-Ba-Ce-K-Ga-Cr-Al-Li-Sc-Ru-In-Mg-Zr-Dy-W-Yb-Y-'
+            'Ho-Re-Be-Rb-La-Sn-Cs-Pb-Pr-Bi-Tm-Sr-Ti-Hf-Ir-Nb-Pd-Hg-'
+            'Th-Np-Lu-Rh-Pu',
         ),
         dimensions: Tuple[int] = (0, 1, 2),
         compute_for_all_elements: bool = True,
         min_size: int = 20,
         image_size: Tuple[int] = (20, 20),
         spread: float = 0.2,
-        weight: str = "identity",
+        weight: str = 'identity',
         max_b: Union[int, List[int]] = 18,
         max_p: Union[int, List[int]] = 18,
         max_fit_tolerence: float = 0.1,
@@ -126,7 +126,7 @@ class PHImage(BaseFeaturizer):
         if isinstance(max_b, (list, tuple)):
             if len(max_b) != len(dimensions):
                 raise AssertionError(
-                    "max_b must be a list of length equal to the number of dimensions"
+                    'max_b must be a list of length equal to the number of dimensions'
                 )
         else:
             max_b = [max_b] * len(dimensions)
@@ -134,7 +134,7 @@ class PHImage(BaseFeaturizer):
         if isinstance(max_p, (list, tuple)):
             if len(max_p) != len(dimensions):
                 raise AssertionError(
-                    "max_p must be a list of length equal to the number of dimensions"
+                    'max_p must be a list of length equal to the number of dimensions'
                 )
         else:
             max_p = [max_p] * len(dimensions)
@@ -157,12 +157,12 @@ class PHImage(BaseFeaturizer):
         labels = []
         _elements = list(self.atom_types)
         if self.compute_for_all_elements:
-            _elements.append("all")
+            _elements.append('all')
         for element in _elements:
             for dim in self.dimensions:
                 for pixel_a in range(self.image_size[0]):
                     for pixel_b in range(self.image_size[1]):
-                        labels.append(f"phimage_{element}_{dim}_{pixel_a}_{pixel_b}")
+                        labels.append(f'phimage_{element}_{dim}_{pixel_a}_{pixel_b}')
 
         return labels
 
@@ -186,11 +186,11 @@ class PHImage(BaseFeaturizer):
         features = []
         elements = list(self.atom_types)
         if self.compute_for_all_elements:
-            elements.append("all")
+            elements.append('all')
         for element in elements:
             for dim in self.dimensions:
 
-                features.append(np.array(results["image"][element][dim]).flatten())
+                features.append(np.array(results['image'][element][dim]).flatten())
         return np.concatenate(features)
 
     def fit(self, structures: List[Union[Structure, IStructure, Molecule, IMolecule]]) -> None:
@@ -236,39 +236,39 @@ class PHImage(BaseFeaturizer):
 
     def citations(self) -> List[str]:
         return [
-            "@article{doi:10.1021/acs.jpcc.0c01167,"
-            "author = {Krishnapriyan, Aditi S. and Haranczyk, Maciej and Morozov, Dmitriy},"
-            "title = {Topological Descriptors Help Predict Guest Adsorption in Nanoporous Materials},"
-            "journal = {The Journal of Physical Chemistry C},"
-            "volume = {124},"
-            "number = {17},"
-            "pages = {9360-9368},"
-            "year = {2020},"
-            "doi = {10.1021/acs.jpcc.0c01167},"
-            "}",
-            "@article{krishnapriyan_machine_2021,"
-            "title={Machine learning with persistent homology and chemical word embeddings "
-            "improves prediction accuracy and interpretability in metal-organic frameworks},"
-            r"author={Krishnapriyan, Aditi S and Montoya, Joseph and Haranczyk, Maciej and "
-            r"Hummelsh{\o}j, Jens and Morozov, Dmitriy},"
-            "journal = {Scientific Reports},"
-            "volume = {11},"
-            "numer = {1},"
-            "issn = {2045-2322},"
-            "pages = {8888},"
-            "year={2021},"
-            "doi = {10.1038/s41598-021-88027-8}"
-            "}",
-            "@article{adams2017persistence,"
-            "title={Persistence images: A stable vector representation of persistent homology},"
-            "author={Adams, Henry and Emerson, Tegan and Kirby, Michael and Neville, Rachel "
-            "and Peterson, Chris and Shipman, Patrick and Chepushtanova, Sofya and Hanson, "
-            "Eric and Motta, Francis and Ziegelmeier, Lori},"
-            "journal={Journal of Machine Learning Research},"
-            "volume={18},"
-            "year={2017}"
-            "}",
+            '@article{doi:10.1021/acs.jpcc.0c01167,'
+            'author = {Krishnapriyan, Aditi S. and Haranczyk, Maciej and Morozov, Dmitriy},'
+            'title = {Topological Descriptors Help Predict Guest Adsorption in Nanoporous Materials},'
+            'journal = {The Journal of Physical Chemistry C},'
+            'volume = {124},'
+            'number = {17},'
+            'pages = {9360-9368},'
+            'year = {2020},'
+            'doi = {10.1021/acs.jpcc.0c01167},'
+            '}',
+            '@article{krishnapriyan_machine_2021,'
+            'title={Machine learning with persistent homology and chemical word embeddings '
+            'improves prediction accuracy and interpretability in metal-organic frameworks},'
+            r'author={Krishnapriyan, Aditi S and Montoya, Joseph and Haranczyk, Maciej and '
+            r'Hummelsh{\o}j, Jens and Morozov, Dmitriy},'
+            'journal = {Scientific Reports},'
+            'volume = {11},'
+            'numer = {1},'
+            'issn = {2045-2322},'
+            'pages = {8888},'
+            'year={2021},'
+            'doi = {10.1038/s41598-021-88027-8}'
+            '}',
+            '@article{adams2017persistence,'
+            'title={Persistence images: A stable vector representation of persistent homology},'
+            'author={Adams, Henry and Emerson, Tegan and Kirby, Michael and Neville, Rachel '
+            'and Peterson, Chris and Shipman, Patrick and Chepushtanova, Sofya and Hanson, '
+            'Eric and Motta, Francis and Ziegelmeier, Lori},'
+            'journal={Journal of Machine Learning Research},'
+            'volume={18},'
+            'year={2017}'
+            '}',
         ]
 
     def implementors(self) -> List[str]:
-        return ["Kevin Maik Jablonka", "Aditi Krishnapriyan"]
+        return ['Kevin Maik Jablonka', 'Aditi Krishnapriyan']

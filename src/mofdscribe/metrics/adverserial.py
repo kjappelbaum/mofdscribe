@@ -10,7 +10,7 @@ from numpy.typing import ArrayLike
 from sklearn.ensemble import ExtraTreesClassifier, RandomForestClassifier
 from sklearn.model_selection import cross_val_score
 
-__all__ = ["AdverserialValidator"]
+__all__ = ['AdverserialValidator']
 
 
 class AdverserialValidator:
@@ -55,7 +55,7 @@ class AdverserialValidator:
         self,
         x_a: Union[ArrayLike, pd.DataFrame],
         x_b: Union[ArrayLike, pd.DataFrame],
-        modeltype: str = "rf",
+        modeltype: str = 'rf',
         k: int = 5,
     ):
         """Initiate a AdverserialValidator instance.
@@ -69,12 +69,12 @@ class AdverserialValidator:
         Raises:
             ValueError: If the chosen modeltype is not supported.
         """
-        if modeltype == "rf":
+        if modeltype == 'rf':
             self.model = RandomForestClassifier()
-        elif modeltype == "et":
+        elif modeltype == 'et':
             self.model = ExtraTreesClassifier()
         else:
-            raise ValueError(f"Model {modeltype} not implements. Available models are rf, et.")
+            raise ValueError(f'Model {modeltype} not implements. Available models are rf, et.')
 
         self.x_a = x_a
         self.x_b = x_b
@@ -101,7 +101,7 @@ class AdverserialValidator:
 
         """
         x, y = self._get_x_y()
-        score = cross_val_score(self.model, x, y, scoring="roc_auc")
+        score = cross_val_score(self.model, x, y, scoring='roc_auc')
         return score
 
     def get_feature_importance(self) -> np.array:

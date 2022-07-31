@@ -23,9 +23,9 @@ class DensityRegressor:
         """
         self.model = Pipeline(
             [
-                ("scaler", StandardScaler()),
-                ("poly", PolynomialFeatures(degree=3)),
-                ("lr", LinearRegression(**(lr_kwargs or {}))),
+                ('scaler', StandardScaler()),
+                ('poly', PolynomialFeatures(degree=3)),
+                ('lr', LinearRegression(**(lr_kwargs or {}))),
             ]
         )
 
@@ -54,7 +54,7 @@ class DensityRegressor:
 class DummyRegressor:
     """Dummy regressor model."""
 
-    def __init__(self, strategy: str = "mean"):
+    def __init__(self, strategy: str = 'mean'):
         """Initialize the model.
 
         Args:

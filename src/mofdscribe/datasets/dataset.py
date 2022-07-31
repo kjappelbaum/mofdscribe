@@ -46,7 +46,7 @@ class StructureDataset:
 
     def get_years(self, idx: int) -> int:
         if self._years is None:
-            raise ValueError("Years are not available.")
+            raise ValueError('Years are not available.')
         return self._years.iloc[idx].values
 
     # ToDo: think about how we can cache this in memory
@@ -59,28 +59,28 @@ class StructureDataset:
     # ToDo: parallelize hash computation
     def get_decorated_graph_hashes(self, idx: Iterable[int]) -> str:
         if self._decorated_graph_hashes is None:
-            logger.info("Computing hashes, this can take a while.")
+            logger.info('Computing hashes, this can take a while.')
             hashes = [get_decorated_graph_hash_cached(self._structures[i]) for i in idx]
             return hashes
         return self._decorated_graph_hashes.iloc[idx]
 
     def get_undecorated_graph_hashes(self, idx: Iterable[int]) -> str:
         if self._undecorated_graph_hashes is None:
-            logger.info("Computing hashes, this can take a while.")
+            logger.info('Computing hashes, this can take a while.')
             hashes = [get_undecorated_graph_hash_cached(self._structures[i]) for i in idx]
             return hashes
         return self._undecorated_graph_hashes.iloc[idx]
 
     def get_decorated_scaffold_hashes(self, idx: Iterable[int]) -> str:
         if self._decorated_graph_hashes is None:
-            logger.info("Computing hashes, this can take a while.")
+            logger.info('Computing hashes, this can take a while.')
             hashes = [get_decorated_scaffold_hash_cached(self._structures[i]) for i in idx]
             return hashes
         return self._decorated_scaffold_hashes.iloc[idx]
 
     def get_undecorated_scaffold_hashes(self, idx: Iterable[int]) -> str:
         if self._undecorated_scaffold_hashes is None:
-            logger.info("Computing hashes, this can take a while.")
+            logger.info('Computing hashes, this can take a while.')
             hashes = [get_undecorated_graph_hash_cached(self._structures[i]) for i in idx]
             return hashes
         return self._undecorated_scaffold_hashes.iloc[idx]

@@ -161,4 +161,3 @@ The following featurizers are the wrapped RDKit implementations (under the same 
     :encodes_chemistry: False
     :scope: sbu
     :scalar: True
-

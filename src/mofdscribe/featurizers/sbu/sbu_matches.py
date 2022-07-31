@@ -14,12 +14,12 @@ from superpose3d import Superpose3D
 from ..utils.aggregators import ARRAY_AGGREGATORS
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
-with open(os.path.join(THIS_DIR, "prototype_env.json"), "r") as handle:
+with open(os.path.join(THIS_DIR, 'prototype_env.json'), 'r') as handle:
     STRUCTURE_ENVS = json.loads(handle.read())
 
 ALL_AVAILABLE_TOPOS = tuple(STRUCTURE_ENVS.keys())
 
-__all__ = ("SBUMatch",)
+__all__ = ('SBUMatch',)
 
 
 def match_bb(
@@ -27,7 +27,7 @@ def match_bb(
     prototype: str,
     aggregations: Tuple[str],
     allow_rescale: bool = True,
-    match: str = "auto",
+    match: str = 'auto',
     skip_non_fitting_if_possible: bool = True,
     mismatch_fill_value: float = 10_000,
 ) -> float:
@@ -49,15 +49,15 @@ def match_bb(
     Returns:
         The RMSD between the two structures.
     """
-    if match != "auto":
-        is_node = 1 if match == "node" else -1
+    if match != 'auto':
+        is_node = 1 if match == 'node' else -1
     else:
         cn = len(bb)
         is_node = -1 if cn == 2 else 1
-    logger.debug(f"Matching {bb} to {prototype} with {aggregations}. Is node: {is_node}")
+    logger.debug(f'Matching {bb} to {prototype} with {aggregations}. Is node: {is_node}')
     coords_this = bb.cart_coords
     keys_to_match = [k for k in STRUCTURE_ENVS[prototype].keys() if int(k) * (is_node) >= 0]
-    logger.debug(f"Matching {keys_to_match}")
+    logger.debug(f'Matching {keys_to_match}')
     rmsds_fitting = []
     rmsds_non_fitting = []
     for key in keys_to_match:
@@ -71,8 +71,8 @@ def match_bb(
             rmsds_fitting.append(rmsd)
         else:
             rmsds_non_fitting.append(mismatch_fill_value)
-    logger.debug(f"Fitting RMSDs: {rmsds_fitting}")
-    logger.debug(f"Non-fitting RMSDs: {rmsds_non_fitting}")
+    logger.debug(f'Fitting RMSDs: {rmsds_fitting}')
+    logger.debug(f'Non-fitting RMSDs: {rmsds_non_fitting}')
     rmsds = None
     if (len(rmsds_fitting) > 0) & skip_non_fitting_if_possible:
         rmsds = rmsds_fitting
@@ -81,7 +81,7 @@ def match_bb(
     aggregation_results = OrderedDict()
 
     for aggregation in aggregations:
-        aggregation_results[f"{prototype}_{aggregation}"] = ARRAY_AGGREGATORS[aggregation](rmsds)
+        aggregation_results[f'{prototype}_{aggregation}'] = ARRAY_AGGREGATORS[aggregation](rmsds)
 
     return aggregation_results
 
@@ -115,9 +115,9 @@ class SBUMatch(BaseFeaturizer):
         allow_rescale: bool = True,
         mismatch_fill_value: float = 1_000,
         return_only_best: bool = True,
-        aggregations: Tuple[str] = ("max", "min", "mean", "std"),
+        aggregations: Tuple[str] = ('max', 'min', 'mean', 'std'),
         topos: Tuple[str] = ALL_AVAILABLE_TOPOS,
-        match: str = "auto",
+        match: str = 'auto',
         skip_non_fitting_if_possible: bool = True,
     ) -> None:
         """Create a new SBUMatch featurizer.
@@ -149,10 +149,10 @@ class SBUMatch(BaseFeaturizer):
         self.topos = topos
         self.return_only_best = return_only_best
         if not return_only_best and aggregations is None:
-            logger.error("If return_only_best is False, aggregations must be set.")
+            logger.error('If return_only_best is False, aggregations must be set.')
         self.aggregations = aggregations
         if self.return_only_best:
-            self.aggregations = ("min",)
+            self.aggregations = ('min',)
 
         self.match = match
         self.skip_non_fitting_if_possible = skip_non_fitting_if_possible
@@ -161,10 +161,10 @@ class SBUMatch(BaseFeaturizer):
         labels = []
         for topo in self.topos:
             if self.return_only_best:
-                labels.append(f"sbumatch_{self.allow_rescale}_{topo}")
+                labels.append(f'sbumatch_{self.allow_rescale}_{topo}')
             else:
                 for aggregation in self.aggregations:
-                    labels.append(f"sbumatch_{self.allow_rescale}_{topo}_{aggregation}")
+                    labels.append(f'sbumatch_{self.allow_rescale}_{topo}_{aggregation}')
 
         return labels
 
@@ -189,7 +189,7 @@ class SBUMatch(BaseFeaturizer):
         return np.array(features)
 
     def citations(self):
-        return ["Kevin Maik Jablonka and Berend Smit, TBA."]
+        return ['Kevin Maik Jablonka and Berend Smit, TBA.']
 
     def implementors(self):
-        return ["Kevin Maik Jablonka"]
+        return ['Kevin Maik Jablonka']

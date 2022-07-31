@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Helper to build bench model for models that operate on pre-computed feature frames."""
 import pandas as pd
 

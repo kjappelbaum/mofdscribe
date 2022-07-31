@@ -12,14 +12,14 @@ HKUST_node = '{"@module": "pymatgen.core.structure", "@class": "Structure", "cha
 def test_match_bb():
     """Ensure that the basic unit of BB matching is working."""
     s = Structure.from_dict(json.loads(HKUST_node))
-    results = match_bb(s, "tbo", aggregations=("min", "max", "mean", "std"))
+    results = match_bb(s, 'tbo', aggregations=('min', 'max', 'mean', 'std'))
     assert len(results) == 4
-    assert results["tbo_min"] < 4
-    assert results["tbo_max"] == results["tbo_min"]
+    assert results['tbo_min'] < 4
+    assert results['tbo_max'] == results['tbo_min']
 
-    results = match_bb(s, "pcu", aggregations=("min", "max", "mean", "std"))
+    results = match_bb(s, 'pcu', aggregations=('min', 'max', 'mean', 'std'))
     assert len(results) == 4
-    assert results["pcu_min"] == 10_000
+    assert results['pcu_min'] == 10_000
 
 
 def test_sbu_match():

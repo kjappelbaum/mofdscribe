@@ -18,14 +18,14 @@ from mofdscribe.metrics.regression import get_regression_metrics
 from mofdscribe.splitters.splitters import Splitter, StratifiedSplitter
 from mofdscribe.version import get_version
 
-__all__ = ["MOFBenchRegression", "BenchResult"]
+__all__ = ['MOFBenchRegression', 'BenchResult']
 
 
 class BenchTaskEnum(Enum):
     """Enum for benchmark tasks."""
 
-    logKH_CO2_int = "logKH_CO2_int"  # noqa: N815
-    logKH_CO2_ext = "logKH_CO2_ext"  # noqa: N815
+    logKH_CO2_int = 'logKH_CO2_int'  # noqa: N815
+    logKH_CO2_ext = 'logKH_CO2_ext'  # noqa: N815
 
 
 class BenchResult(BaseModel):
@@ -49,24 +49,24 @@ class BenchResult(BaseModel):
         with open(
             os.path.join(
                 folder,
-                f"{id_for_bench_result(self)}.json",
+                f'{id_for_bench_result(self)}.json',
             ),
-            "w",
+            'w',
         ) as handle:
             handle.write(self.json())
 
 
 def id_for_bench_result(bench_result: BenchResult) -> str:
     """Generate an ID for a benchmark result."""
-    hasher = hashlib.sha1(str(bench_result).encode("utf8"))  # noqa: S303 ok to use unsafe hash here
-    hash = base64.urlsafe_b64encode(hasher.digest()).decode("ascii")
+    hasher = hashlib.sha1(str(bench_result).encode('utf8'))  # noqa: S303 ok to use unsafe hash here
+    hash = base64.urlsafe_b64encode(hasher.digest()).decode('ascii')
 
     n = bench_result.name[:2] if bench_result.name else hash[:2]
     f = bench_result.features[:2] if bench_result.features else hash[2:4]
     m = bench_result.model_type[:2] if bench_result.model_type else hash[4:6]
     r = bench_result.reference[:2] if bench_result.reference else hash[6:8]
-    datetime_part = bench_result.start_time.strftime("%Y%m%d%H%M%S")
-    return f"R{n}{f}{m}{r}{datetime_part}"
+    datetime_part = bench_result.start_time.strftime('%Y%m%d%H%M%S')
+    return f'R{n}{f}{m}{r}{datetime_part}'
 
 
 class MOFBench(ABC):

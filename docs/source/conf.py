@@ -18,27 +18,26 @@ import re
 import sys
 from datetime import date
 
-
-sys.path.insert(0, os.path.abspath("../../src"))
+sys.path.insert(0, os.path.abspath('../../src'))
 
 # -- Project information -----------------------------------------------------
 
-project = "mofdscribe"
-copyright = f"{date.today().year}, Kevin M. Jablonka"
-author = "Kevin M. Jablonka"
+project = 'mofdscribe'
+copyright = f'{date.today().year}, Kevin M. Jablonka'
+author = 'Kevin M. Jablonka'
 
 # The full version, including alpha/beta/rc tags.
-release = "0.0.1-dev"
+release = '0.0.1-dev'
 
 # The short X.Y version.
 parsed_version = re.match(
-    r"(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)(?:-(?P<release>[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+(?P<build>[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?",
+    r'(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)(?:-(?P<release>[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+(?P<build>[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?',
     release,
 )
-version = parsed_version.expand(r"\g<major>.\g<minor>.\g<patch>")
+version = parsed_version.expand(r'\g<major>.\g<minor>.\g<patch>')
 
-if parsed_version.group("release"):
-    tags.add("prerelease")
+if parsed_version.group('release'):
+    tags.add('prerelease')
 
 # -- General configuration ---------------------------------------------------
 
@@ -51,84 +50,84 @@ if parsed_version.group("release"):
 add_module_names = False
 
 # A list of prefixes that are ignored when creating the module index. (new in Sphinx 0.6)
-modindex_common_prefix = ["mofdscribe."]
+modindex_common_prefix = ['mofdscribe.']
 
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    "sphinx.ext.autodoc",
-    "sphinx.ext.coverage",
-    "sphinx.ext.napoleon",
-    "sphinx_autodoc_typehints",
-    "sphinx.ext.githubpages",
-    "sphinxcontrib.katex",
-    "sphinx_copybutton",
-    "sphinx.ext.viewcode",
-    "sphinx.ext.autosectionlabel",
-    "sphinxcontrib.needs",
-    "sphinx.ext.intersphinx",
+    'sphinx.ext.autodoc',
+    'sphinx.ext.coverage',
+    'sphinx.ext.napoleon',
+    'sphinx_autodoc_typehints',
+    'sphinx.ext.githubpages',
+    'sphinxcontrib.katex',
+    'sphinx_copybutton',
+    'sphinx.ext.viewcode',
+    'sphinx.ext.autosectionlabel',
+    'sphinxcontrib.needs',
+    'sphinx.ext.intersphinx',
 ]
 
 intersphinx_mapping = {
-    "pandas": ("https://pandas.pydata.org/docs/", None),
-    "sklearn": ("https://scikit-learn.org/stable/", None),
-    "numpy": ("https://numpy.org/doc/stable/", None),
-    "scipy": ("https://docs.scipy.org/doc/scipy/", None),
+    'pandas': ('https://pandas.pydata.org/docs/', None),
+    'sklearn': ('https://scikit-learn.org/stable/', None),
+    'numpy': ('https://numpy.org/doc/stable/', None),
+    'scipy': ('https://docs.scipy.org/doc/scipy/', None),
 }
 
 needs_extra_options = [
-    "start_time",
-    "end_time",
-    "version",
-    "features",
-    "name",
-    "task",
-    "model_type",
-    "reference",
-    "implementation",
-    "mofdscribe_version",
-    "mean_squared_error",
-    "mean_absolute_error",
-    "r2_score",
-    "max_error",
-    "mean_absolute_percentage_error",
-    "top_5_in_top_5",
-    "top_10_in_top_10",
-    "top_50_in_top_50",
-    "top_100_in_top_100",
-    "top_500_in_top_500",
-    "references",
-    "considers_geometry",
-    "considers_structure_graph",
-    "encodes_chemistry",
-    "scalar",
-    "scope",
+    'start_time',
+    'end_time',
+    'version',
+    'features',
+    'name',
+    'task',
+    'model_type',
+    'reference',
+    'implementation',
+    'mofdscribe_version',
+    'mean_squared_error',
+    'mean_absolute_error',
+    'r2_score',
+    'max_error',
+    'mean_absolute_percentage_error',
+    'top_5_in_top_5',
+    'top_10_in_top_10',
+    'top_50_in_top_50',
+    'top_100_in_top_100',
+    'top_500_in_top_500',
+    'references',
+    'considers_geometry',
+    'considers_structure_graph',
+    'encodes_chemistry',
+    'scalar',
+    'scope',
 ]
 
 needs_types = [
     dict(
-        directive="regressionmetrics",
-        title="Regression Metrics",
-        prefix="R_",
-        color="#DCB239",
-        style="node",
+        directive='regressionmetrics',
+        title='Regression Metrics',
+        prefix='R_',
+        color='#DCB239',
+        style='node',
     ),
     dict(
-        directive="featurizer",
-        title="Featurizers",
-        prefix="F_",
-        color="#FFB039",
-        style="node",
+        directive='featurizer',
+        title='Featurizers',
+        prefix='F_',
+        color='#FFB039',
+        style='node',
     ),
 ]
 
-needs_id_regex = "[A-Za-z0-9 .():_]+"
+needs_id_regex = '[A-Za-z0-9 .():_]+'
 
-autodoc_type_aliases = {"ArrayLike": "numpy.typing.ArrayLike"}
+autodoc_type_aliases = {'ArrayLike': 'numpy.typing.ArrayLike'}
 
-copybutton_selector = "div:not(.no-copy)>div.highlight pre"
-copybutton_prompt_text = r">>> |\.\.\. |\$ |In \[\d*\]: | {2,5}\.\.\.: | {5,8}: "
+copybutton_selector = 'div:not(.no-copy)>div.highlight pre'
+copybutton_prompt_text = r'>>> |\.\.\. |\$ |In \[\d*\]: | {2,5}\.\.\.: | {5,8}: '
 copybutton_prompt_is_regexp = True
 
 # generate autosummary pages
@@ -136,23 +135,23 @@ autosummary_generate = True
 
 
 # Add any paths that contain templates here, relative to this directory.
-templates_path = ["_templates"]
+templates_path = ['_templates']
 
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
 #
 # source_suffix = ['.rst', '.md']
-source_suffix = ".rst"
+source_suffix = '.rst'
 
 # The master toctree document.
-master_doc = "index"
+master_doc = 'index'
 
 # The language for content autogenerated by Sphinx. Refer to documentation
 # for a list of supported languages.
 #
 # This is also used if you do content translation via gettext catalogs.
 # Usually you set "language" from the command line for these cases.
-language = "en"
+language = 'en'
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -160,27 +159,27 @@ language = "en"
 exclude_patterns = []
 
 # The name of the Pygments (syntax highlighting) style to use.
-pygments_style = "sphinx"
+pygments_style = 'sphinx'
 
 # -- Options for HTML output -------------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = "sphinx_book_theme"
+html_theme = 'sphinx_book_theme'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
 #
 html_theme_options = {
-    "path_to_docs": "docs",
-    "repository_url": "https://github.com/kjappelbaum/mofdscribe",
-    "use_repository_button": True,
-    "use_edit_page_button": True,
-    "use_issues_button": True,
-    "launch_buttons": {
-        "binderhub_url": "https://mybinder.org/v2/gh/kjappelbaum/pyepal/HEAD?filepath=examples",
+    'path_to_docs': 'docs',
+    'repository_url': 'https://github.com/kjappelbaum/mofdscribe',
+    'use_repository_button': True,
+    'use_edit_page_button': True,
+    'use_issues_button': True,
+    'launch_buttons': {
+        'binderhub_url': 'https://mybinder.org/v2/gh/kjappelbaum/pyepal/HEAD?filepath=examples',
     },
 }
 
@@ -202,13 +201,13 @@ html_theme_options = {
 # The name of an image file (relative to this directory) to place at the top
 # of the sidebar.
 #
-if os.path.exists("figures/logo.png"):
-    html_logo = "figures/logo.png"
+if os.path.exists('figures/logo.png'):
+    html_logo = 'figures/logo.png'
 
 # -- Options for HTMLHelp output ---------------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = "mofdscribedoc"
+htmlhelp_basename = 'mofdscribedoc'
 
 # -- Options for LaTeX output ------------------------------------------------
 
@@ -250,8 +249,8 @@ htmlhelp_basename = "mofdscribedoc"
 man_pages = [
     (
         master_doc,
-        "mofdscribe",
-        "mofdscribe Documentation",
+        'mofdscribe',
+        'mofdscribe Documentation',
         [author],
         1,
     ),
@@ -265,12 +264,12 @@ man_pages = [
 texinfo_documents = [
     (
         master_doc,
-        "mofdscribe",
-        "mofdscribe Documentation",
+        'mofdscribe',
+        'mofdscribe Documentation',
         author,
-        "Kevin M. Jablonka",
-        "Ecosystem for digital reticular chemistry",
-        "Miscellaneous",
+        'Kevin M. Jablonka',
+        'Ecosystem for digital reticular chemistry',
+        'Miscellaneous',
     ),
 ]
 
@@ -297,11 +296,11 @@ texinfo_documents = [
 
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {
-    "https://docs.python.org/3/": None,
+    'https://docs.python.org/3/': None,
 }
 
-autoclass_content = "both"
+autoclass_content = 'both'
 
 # Don't sort alphabetically, explained at:
 # https://stackoverflow.com/questions/37209921/python-how-not-to-sort-sphinx-output-in-alphabetical-order
-autodoc_member_order = "bysource"
+autodoc_member_order = 'bysource'

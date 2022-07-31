@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from mofdscribe.featurizers.sbu.compositionstats_featurizer import CompositionStats
 
 

@@ -10,5 +10,3 @@ Structure datasets
 
 .. automodule:: mofdscribe.datasets.qmof_dataset
     :members:
-
-

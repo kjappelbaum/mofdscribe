@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Cached graphs."""
 
 from functools import lru_cache

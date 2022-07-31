@@ -15,7 +15,7 @@ from sklearn.metrics import (
     r2_score,
 )
 
-__all__ = ["RegressionMetrics", "get_regression_metrics", "top_n_in_top_k"]
+__all__ = ['RegressionMetrics', 'get_regression_metrics', 'top_n_in_top_k']
 
 
 def top_n_in_top_k(
@@ -110,16 +110,16 @@ def get_regression_metrics(predictions: ArrayLike, labels: ArrayLike) -> Regress
     """
     metrics = RegressionMetrics(
         **{
-            "mean_squared_error": mean_squared_error(labels, predictions),
-            "mean_absolute_error": mean_absolute_error(labels, predictions),
-            "r2_score": r2_score(labels, predictions),
-            "max_error": max_error(labels, predictions),
-            "mean_absolute_percentage_error": mean_absolute_percentage_error(labels, predictions),
-            "top_5_in_top_5": top_n_in_top_k(predictions, labels, k=5, n=5),
-            "top_10_in_top_10": top_n_in_top_k(predictions, labels, k=10, n=10),
-            "top_50_in_top_50": top_n_in_top_k(predictions, labels, k=50, n=50),
-            "top_100_in_top_100": top_n_in_top_k(predictions, labels, k=100, n=100),
-            "top_500_in_top_500": top_n_in_top_k(predictions, labels, k=500, n=500),
+            'mean_squared_error': mean_squared_error(labels, predictions),
+            'mean_absolute_error': mean_absolute_error(labels, predictions),
+            'r2_score': r2_score(labels, predictions),
+            'max_error': max_error(labels, predictions),
+            'mean_absolute_percentage_error': mean_absolute_percentage_error(labels, predictions),
+            'top_5_in_top_5': top_n_in_top_k(predictions, labels, k=5, n=5),
+            'top_10_in_top_10': top_n_in_top_k(predictions, labels, k=10, n=10),
+            'top_50_in_top_50': top_n_in_top_k(predictions, labels, k=50, n=50),
+            'top_100_in_top_100': top_n_in_top_k(predictions, labels, k=100, n=100),
+            'top_500_in_top_500': top_n_in_top_k(predictions, labels, k=500, n=500),
         }
     )
 

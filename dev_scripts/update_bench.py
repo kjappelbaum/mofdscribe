@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 This script does the following
 
@@ -12,17 +13,18 @@ by taking `R-{first_letter_of_symbol}-{first_letter_of_feat}{year}{month}{day}{h
 The `.rst` files will end up in the `docs/source/leaderboards/task_models` folder.
 """
 
-import pandas as pd
-from glob import glob
 import os
-from pathlib import Path
-from mofdscribe.bench.mofbench import BenchResult, BenchTaskEnum
 import shutil
+from glob import glob
+from pathlib import Path
 
 import holoviews as hv
+import pandas as pd
 from loguru import logger
 
-hv.extension("bokeh")
+from mofdscribe.bench.mofbench import BenchResult, BenchTaskEnum
+
+hv.extension('bokeh')
 
 
 METRIC_CARD_TEMPLATE = """Metric card
@@ -52,44 +54,44 @@ METRIC_CARD_TEMPLATE = """Metric card
    :top_500_in_top_500: {top_500_in_top_500}
 """
 
-DOC_DIR = "../docs"
+DOC_DIR = '../docs'
 
 
 def make_plot(df, outname):
     cols = [
-        "mean squared error",
-        "mean absolute error",
-        "r2 score",
-        "max error",
-        "mean absolute percentage error",
-        "top 5 in top 5",
-        "top 10 in top 10",
-        "top 50 in top 50",
-        "top 100 in top 100",
-        "top 500 in top 500",
+        'mean squared error',
+        'mean absolute error',
+        'r2 score',
+        'max error',
+        'mean absolute percentage error',
+        'top 5 in top 5',
+        'top 10 in top 10',
+        'top 50 in top 50',
+        'top 100 in top 100',
+        'top 500 in top 500',
     ]
-    hv.util.output(widget_location="right")
+    hv.util.output(widget_location='right')
     f = hv.HoloMap(
-        {column: hv.BoxWhisker(df, kdims="name", vdims=column) for column in cols}, kdims="metric"
+        {column: hv.BoxWhisker(df, kdims='name', vdims=column) for column in cols}, kdims='metric'
     ).opts(framewise=True, width=800)
-    hv.save(f, outname, fmt="html")
+    hv.save(f, outname, fmt='html')
 
 
 def update_rst(file, bench_result):
     mean_metrics = bench_result.metrics.average_metrics()
     id = Path(file).stem
     top_keys = [
-        "name",
-        "start_time",
-        "end_time",
-        "version",
-        "features",
-        "name",
-        "task",
-        "model_type",
-        "reference",
-        "mofdscribe_version",
-        "implementation",
+        'name',
+        'start_time',
+        'end_time',
+        'version',
+        'features',
+        'name',
+        'task',
+        'model_type',
+        'reference',
+        'mofdscribe_version',
+        'implementation',
     ]
     card_dict = {}
     for key in top_keys:
@@ -101,16 +103,16 @@ def update_rst(file, bench_result):
         except AttributeError:
             # integers
             card_dict[k] = v
-    card_dict["id"] = id
+    card_dict['id'] = id
 
-    with open(file, "r") as handle:
+    with open(file, 'r') as handle:
         content = handle.read()
 
-    content += "\n\n" + METRIC_CARD_TEMPLATE.format(**card_dict)
+    content += '\n\n' + METRIC_CARD_TEMPLATE.format(**card_dict)
 
     stem = Path(file).stem
-    file_new = file.replace(stem, "R-" + stem)
-    with open(file_new, "w") as handle:
+    file_new = file.replace(stem, 'R-' + stem)
+    with open(file_new, 'w') as handle:
         handle.write(content)
 
     return file_new
@@ -121,18 +123,18 @@ def compile_task(task):
     Compile the results of a task into a dataframe.
     """
     # glob for all json files
-    task_dir = os.path.join("..", "bench_results", str(task))
-    logger.info("Compiling task {} from {task_dir}".format(task, task_dir=task_dir))
-    json_files = glob(os.path.join(task_dir, "*.json"))
-    logger.info(f"Found {len(json_files)} json files")
+    task_dir = os.path.join('..', 'bench_results', str(task))
+    logger.info('Compiling task {} from {task_dir}'.format(task, task_dir=task_dir))
+    json_files = glob(os.path.join(task_dir, '*.json'))
+    logger.info(f'Found {len(json_files)} json files')
     stems = [Path(f).stem for f in json_files]
     # find all matching rst file
-    rst_files = [os.path.join(task_dir, f + ".rst") for f in stems]
+    rst_files = [os.path.join(task_dir, f + '.rst') for f in stems]
     # check if the .rst files exist, otherwise create
     for rst_file in rst_files:
         if not os.path.exists(rst_file):
-            with open(rst_file, "w") as f:
-                f.write("")
+            with open(rst_file, 'w') as f:
+                f.write('')
 
     # read all json files
     dfs = []
@@ -141,24 +143,24 @@ def compile_task(task):
         res = BenchResult.parse_file(json)
 
         df = pd.DataFrame(res.metrics.concatenated_metrics().dict())
-        df["name"] = res.name
+        df['name'] = res.name
 
         dfs.append(df)
 
     df_all = pd.concat(dfs)
 
-    df_all.columns = [c.replace("_", " ") for c in df_all.columns]
+    df_all.columns = [c.replace('_', ' ') for c in df_all.columns]
 
-    html_path = os.path.join(task_dir, f"{task}_plot.html")
+    html_path = os.path.join(task_dir, f'{task}_plot.html')
     make_plot(df_all, html_path)
 
     for rst_file, json in zip(rst_files, json_files):
         new_file = update_rst(rst_file, BenchResult.parse_file(json))
-        shutil.copy(new_file, os.path.join(DOC_DIR, "source", "leaderboards", f"{task}_models"))
+        shutil.copy(new_file, os.path.join(DOC_DIR, 'source', 'leaderboards', f'{task}_models'))
 
-    shutil.copy(html_path, os.path.join(DOC_DIR, "source", "_static"))
+    shutil.copy(html_path, os.path.join(DOC_DIR, 'source', '_static'))
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     for task in BenchTaskEnum._member_names_:
         compile_task(task)

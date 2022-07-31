@@ -52,7 +52,7 @@ class SBUFeaturizer(BaseFeaturizer):
     """
 
     def __init__(
-        self, featurizer: BaseFeaturizer, aggregations: Tuple[str] = ("mean", "std", "min", "max")
+        self, featurizer: BaseFeaturizer, aggregations: Tuple[str] = ('mean', 'std', 'min', 'max')
     ) -> None:
         """
         Construct a new SBUFeaturizer.
@@ -73,22 +73,22 @@ class SBUFeaturizer(BaseFeaturizer):
         try:
             _operates_on = featurizer.operates_on()
             if (Structure in _operates_on) and (Molecule in _operates_on):
-                self._operates_on = "both"
+                self._operates_on = 'both'
             elif Structure in _operates_on:
-                self._operates_on = "structure"
+                self._operates_on = 'structure'
             elif Molecule in _operates_on:
-                self._operates_on = "molecule"
+                self._operates_on = 'molecule'
 
         except AttributeError:
-            self._operates_on = "structure"
+            self._operates_on = 'structure'
 
     def feature_labels(self) -> List[str]:
         labels = []
         base_labels = self._featurizer.feature_labels()
-        for bb in ["node", "linker"]:
+        for bb in ['node', 'linker']:
             for aggregation in self._aggregations:
                 for label in base_labels:
-                    labels.append(f"{bb}_{aggregation}_{label}")
+                    labels.append(f'{bb}_{aggregation}_{label}')
         return labels
 
     def _extract_bbs(
@@ -97,7 +97,7 @@ class SBUFeaturizer(BaseFeaturizer):
         mofbbs: Optional[MOFBBs] = None,
     ):
         if structure is None and mofbbs is None:
-            raise ValueError("You must provide a structure or mofbbs.")
+            raise ValueError('You must provide a structure or mofbbs.')
 
         if structure is not None:
             from moffragmentor import MOF
@@ -105,7 +105,7 @@ class SBUFeaturizer(BaseFeaturizer):
             mof = MOF.from_structure(structure)
             fragments = mof.fragment()
 
-            if self._operates_on in ("both", "molecule"):
+            if self._operates_on in ('both', 'molecule'):
                 linkers = [linker.molecule for linker in fragments.linkers]
                 nodes = [node.molecule for node in fragments.nodes]
             else:
@@ -120,27 +120,27 @@ class SBUFeaturizer(BaseFeaturizer):
             types = [type(node) for node in nodes] + [type(linker) for linker in linkers]
 
             if not len(set(types)) == 1:
-                raise ValueError("All nodes and linkers must be of the same type.")
+                raise ValueError('All nodes and linkers must be of the same type.')
 
             this_type = types[0]
-            if this_type in (Structure, IStructure) and self._operates_on in ("both", "structure"):
+            if this_type in (Structure, IStructure) and self._operates_on in ('both', 'structure'):
                 # this is the simple case, we do not need to convert to molecules
                 pass
-            elif this_type in (Molecule, IMolecule) and self._operates_on in ("both", "molecule"):
+            elif this_type in (Molecule, IMolecule) and self._operates_on in ('both', 'molecule'):
                 # again simple case, we do not need to convert to structures
 
                 pass
-            elif this_type in (Molecule, IMolecule) and (self._operates_on == "structure"):
+            elif this_type in (Molecule, IMolecule) and (self._operates_on == 'structure'):
                 # we need to convert to structures
                 nodes = [boxed_molecule(node) for node in nodes]
                 linkers = [boxed_molecule(linker) for linker in linkers]
-            elif this_type in (Structure, IStructure) and (self._operates_on == "molecule"):
+            elif this_type in (Structure, IStructure) and (self._operates_on == 'molecule'):
                 raise ValueError(
-                    "You provided structures for a featurizer that operates on molecules. "
-                    / "Cannot automatically convert to molecules from structures."
+                    'You provided structures for a featurizer that operates on molecules. '
+                    / 'Cannot automatically convert to molecules from structures.'
                 )
             else:
-                raise RuntimeError("Unexpected type of nodes or linkers.")
+                raise RuntimeError('Unexpected type of nodes or linkers.')
 
         return nodes, linkers
 

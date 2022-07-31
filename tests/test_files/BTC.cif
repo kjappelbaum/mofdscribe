@@ -2,13 +2,13 @@
 #######################################################################
 #
 #                 Cambridge Crystallographic Data Centre
-#                                CCDC 
+#                                CCDC
 #
 #######################################################################
 #
-# If this CIF has been generated from an entry in the Cambridge 
-# Structural Database, then it will include bibliographic, chemical, 
-# crystal, experimental, refinement or atomic coordinate data resulting 
+# If this CIF has been generated from an entry in the Cambridge
+# Structural Database, then it will include bibliographic, chemical,
+# crystal, experimental, refinement or atomic coordinate data resulting
 # from the CCDC's data processing and validation procedures.
 #
 #######################################################################

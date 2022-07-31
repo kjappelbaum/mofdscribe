@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Make sure that the utils work."""
 import pytest
 from matminer.featurizers.base import BaseFeaturizer
@@ -19,7 +20,7 @@ class TestFeaturizer(BaseFeaturizer):
         return [0]
 
     def feature_labels(self):
-        return ["test"]
+        return ['test']
 
     def implementors(self):
         return []

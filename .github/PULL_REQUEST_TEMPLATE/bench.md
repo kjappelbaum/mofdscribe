@@ -1,9 +1,9 @@
 <!-- Thanks for submitting a new entry to the leaderbaord! -->
 
-I checked that my PR 
+I checked that my PR
 
 
-- [ ] adds a new `.json` file into the correct subfolder if the `bench` directory 
+- [ ] adds a new `.json` file into the correct subfolder if the `bench` directory
 <!-- Please ensure that this .json file has been generated using a .bench() method in mofdscribe -->
 
 - [ ] adds a new `.rst` file with description of my model based on the `bench_results/model_description_template.rst`

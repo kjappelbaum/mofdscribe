@@ -16,4 +16,3 @@ Distance-based description of SBU shape
     :encodes_chemistry: False
     :scope: sbu
     :scalar: False
-

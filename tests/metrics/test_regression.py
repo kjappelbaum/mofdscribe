@@ -30,13 +30,13 @@ def test_get_regression_metrics():
     res = get_regression_metrics(pred, true)
     assert isinstance(res, RegressionMetrics)
     for k, v in res.dict().items():
-        if "top" not in k:
+        if 'top' not in k:
             assert isinstance(v, float)
         else:
             assert isinstance(v, int)
-        if k == "r2_score":
+        if k == 'r2_score':
             assert v == 1.0
-        elif "top" in k:
+        elif 'top' in k:
             assert v >= 1
         else:
             assert v == 0

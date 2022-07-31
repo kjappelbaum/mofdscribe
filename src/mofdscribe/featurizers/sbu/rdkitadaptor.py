@@ -26,7 +26,7 @@ class RDKitAdaptor(BaseFeaturizer):
     """
 
     def __init__(
-        self, featurizer: Callable, feature_labels: Iterable[str], local_env_strategy: str = "vesta"
+        self, featurizer: Callable, feature_labels: Iterable[str], local_env_strategy: str = 'vesta'
     ) -> None:
         """Constuct a new RDKitAdaptor.
 
@@ -73,30 +73,30 @@ class RDKitAdaptor(BaseFeaturizer):
         elif isinstance(feats, (float, int)):
             return np.array([feats])
         else:
-            logger.warning("Featurizer returned an unsupported type: {}".format(type(feats)))
+            logger.warning('Featurizer returned an unsupported type: {}'.format(type(feats)))
             return feats
 
     def citations(self) -> List[str]:
         return [
-            "@misc{https://doi.org/10.5281/zenodo.591637,"
-            "doi = {10.5281/ZENODO.591637},"
-            "url = {https://zenodo.org/record/591637},"
-            "author = {Landrum,  Greg and Tosco,  Paolo and Kelley,"
-            " Brian and {Ric} and {Sriniker} and {Gedeck} and Vianello,  "
-            "Riccardo and {NadineSchneider} and Kawashima,"
-            " Eisuke and Dalke,  Andrew and N,  Dan and Cosgrove,"
-            " David and Jones,  Gareth and Cole,  Brian and Swain,"
-            "  Matt and Turk,  Samo and {AlexanderSavelyev} and Vaucher,  Alain"
-            " and Wójcikowski,  Maciej and {Ichiru Take} and Probst,  Daniel "
-            "and Ujihara,  Kazuya and Scalfani,  Vincent F. and Godin,  Guillaume"
-            " and Pahl,  Axel and {Francois Berenger} and {JLVarjo} "
-            "and {Strets123} and {JP} and {DoliathGavid}},"
-            "    title = {rdkit/rdkit: 2022_03_3 (Q1 2022) Release},"
-            "    publisher = {Zenodo},"
-            "    year = {2022},"
-            "    copyright = {Open Access}"
-            " }"
+            '@misc{https://doi.org/10.5281/zenodo.591637,'
+            'doi = {10.5281/ZENODO.591637},'
+            'url = {https://zenodo.org/record/591637},'
+            'author = {Landrum,  Greg and Tosco,  Paolo and Kelley,'
+            ' Brian and {Ric} and {Sriniker} and {Gedeck} and Vianello,  '
+            'Riccardo and {NadineSchneider} and Kawashima,'
+            ' Eisuke and Dalke,  Andrew and N,  Dan and Cosgrove,'
+            ' David and Jones,  Gareth and Cole,  Brian and Swain,'
+            '  Matt and Turk,  Samo and {AlexanderSavelyev} and Vaucher,  Alain'
+            ' and Wójcikowski,  Maciej and {Ichiru Take} and Probst,  Daniel '
+            'and Ujihara,  Kazuya and Scalfani,  Vincent F. and Godin,  Guillaume'
+            ' and Pahl,  Axel and {Francois Berenger} and {JLVarjo} '
+            'and {Strets123} and {JP} and {DoliathGavid}},'
+            '    title = {rdkit/rdkit: 2022_03_3 (Q1 2022) Release},'
+            '    publisher = {Zenodo},'
+            '    year = {2022},'
+            '    copyright = {Open Access}'
+            ' }'
         ]
 
     def implementors(self) -> List[str]:
-        return ["Kevin Maik Jablonka", "Greg Landrum and RDKit authors"]
+        return ['Kevin Maik Jablonka', 'Greg Landrum and RDKit authors']

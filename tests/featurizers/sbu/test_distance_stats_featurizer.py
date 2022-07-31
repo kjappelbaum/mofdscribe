@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Test the pairwise distance stats featurizer."""
 from mofdscribe.featurizers.sbu.distance_stats_featurizer import PairwiseDistanceStats
 

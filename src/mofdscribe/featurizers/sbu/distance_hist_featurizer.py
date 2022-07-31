@@ -60,7 +60,7 @@ class PairwiseDistanceHist(BaseFeaturizer):
         return np.arange(self.lower_bound, self.upper_bound, self.bin_size)
 
     def feature_labels(self) -> List[str]:
-        return [f"pairwise_distance_hist_{a}" for a in self._get_grid()]
+        return [f'pairwise_distance_hist_{a}' for a in self._get_grid()]
 
     def featurize(self, structure: Union[Molecule, IMolecule, Structure, IStructure]) -> np.ndarray:
         distances = []
@@ -80,7 +80,7 @@ class PairwiseDistanceHist(BaseFeaturizer):
         return features
 
     def implementors(self) -> List[str]:
-        return ["Kevin Maik Jablonka"]
+        return ['Kevin Maik Jablonka']
 
     def citations(self) -> List[str]:
         return []

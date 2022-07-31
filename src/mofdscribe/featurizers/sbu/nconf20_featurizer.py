@@ -100,34 +100,34 @@ class NConf20(RDKitAdaptor):
 
     def __init__(self):
         """Construct a new nConf20 featurizer."""
-        super().__init__(featurizer=_n_conf20, feature_labels=["n_conf20"])
+        super().__init__(featurizer=_n_conf20, feature_labels=['n_conf20'])
 
     def citations(self) -> List[str]:
         return super().citations() + [
-            "@article{Wicker2016,"
-            "doi = {10.1021/acs.jcim.6b00565},"
-            "url = {https://doi.org/10.1021/acs.jcim.6b00565},"
-            "year = {2016},"
-            "month = dec,"
-            "publisher = {American Chemical Society ({ACS})},"
-            "volume = {56},"
-            "number = {12},"
-            "pages = {2347--2352},"
-            "author = {Jerome G. P. Wicker and Richard I. Cooper},"
-            "title = {Beyond Rotatable Bond Counts: Capturing 3D Conformational Flexibility in a Single Descriptor},"
-            "journal = {Journal of Chemical Information and Modeling}"
-            "}",
-            "@article{tosco2014bringing,"
-            "title={Bringing the MMFF force field to the RDKit: implementation and validation},"
-            "author={Tosco, Paolo and Stiefl, Nikolaus and Landrum, Gregory},"
-            "journal={Journal of cheminformatics},"
-            "volume={6},"
-            "number={1},"
-            "pages={1--4},"
-            "year={2014},"
-            "publisher={Springer}"
-            "}",
+            '@article{Wicker2016,'
+            'doi = {10.1021/acs.jcim.6b00565},'
+            'url = {https://doi.org/10.1021/acs.jcim.6b00565},'
+            'year = {2016},'
+            'month = dec,'
+            'publisher = {American Chemical Society ({ACS})},'
+            'volume = {56},'
+            'number = {12},'
+            'pages = {2347--2352},'
+            'author = {Jerome G. P. Wicker and Richard I. Cooper},'
+            'title = {Beyond Rotatable Bond Counts: Capturing 3D Conformational Flexibility in a Single Descriptor},'
+            'journal = {Journal of Chemical Information and Modeling}'
+            '}',
+            '@article{tosco2014bringing,'
+            'title={Bringing the MMFF force field to the RDKit: implementation and validation},'
+            'author={Tosco, Paolo and Stiefl, Nikolaus and Landrum, Gregory},'
+            'journal={Journal of cheminformatics},'
+            'volume={6},'
+            'number={1},'
+            'pages={1--4},'
+            'year={2014},'
+            'publisher={Springer}'
+            '}',
         ]
 
     def implementors(self) -> List[str]:
-        return super().implementors() + ["Jerome G. P. Wicker and Richard I. Cooper"]
+        return super().implementors() + ['Jerome G. P. Wicker and Richard I. Cooper']

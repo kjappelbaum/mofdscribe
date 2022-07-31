@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Decorators and mixins for extending the functionality of featurizers."""
 from functools import partial
 from typing import Type
