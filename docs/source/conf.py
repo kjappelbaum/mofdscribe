@@ -67,7 +67,15 @@ extensions = [
     "sphinx.ext.viewcode",
     "sphinx.ext.autosectionlabel",
     "sphinxcontrib.needs",
+    "sphinx.ext.intersphinx",
 ]
+
+intersphinx_mapping = {
+    "pandas": ("https://pandas.pydata.org/docs/", None),
+    "sklearn": ("https://scikit-learn.org/stable/", None),
+    "numpy": ("https://numpy.org/doc/stable/", None),
+    "scipy": ("https://docs.scipy.org/doc/scipy/", None),
+}
 
 needs_extra_options = [
     "start_time",
@@ -261,7 +269,7 @@ texinfo_documents = [
         "mofdscribe Documentation",
         author,
         "Kevin M. Jablonka",
-        "Compute features for MOFs",
+        "Ecosystem for digital reticular chemistry",
         "Miscellaneous",
     ),
 ]

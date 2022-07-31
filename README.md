@@ -105,7 +105,7 @@ This package was created with [@audreyfeldroy](https://github.com/audreyfeldroy)
 ## 🛠️ For Developers
 
 <details>
-  <summary>See developer instrutions</summary>
+  <summary>See developer instructions</summary>
 
 
 The final section of the README is for if you want to get involved by making a code contribution.

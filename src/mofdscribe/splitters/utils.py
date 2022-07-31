@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
-"""Helper functions for the splitters."""
-from typing import Callable, List, Union
+"""Helper functions for the splitters.
+
+Some of these methods might also be useful for constructing nested cross-validation loops.
+"""
+from typing import Any, Callable, Dict, Iterable, List, Optional, Tuple, Union
 
 import numpy as np
 import pandas as pd
@@ -29,6 +32,16 @@ def kennard_stone_sampling(
     The algorithm selects samples with uniform converage.
     The initial samples are biased towards the boundaries of the dataset.
 
+    .. note::
+
+        You also might this algorithm useful for creating a "diverse"
+        sample of points, e.g., to initalize an active learnign loop.
+
+    .. warning::
+
+        This algorithm has a high computational complexity.
+        It is not recommended for large datasets.
+
     Args:
         X (ArrayLike): Input feature matrix.
         scale (bool): If True, apply z-score normalization
@@ -44,7 +57,9 @@ def kennard_stone_sampling(
             ‘cityblock’, ‘correlation’, ‘cosine’, ‘dice’, ‘euclidean’, ‘hamming’, ‘jaccard’,
             ‘jensenshannon’, ‘kulsinski’, ‘kulczynski1’, ‘mahalanobis’, ‘matching’, ‘minkowski’,
             ‘rogerstanimoto’, ‘russellrao’, ‘seuclidean’, ‘sokalmichener’, ‘sokalsneath’, ‘sqeuclidean’,
-             ‘yule’. Defaults to "euclidean".
+            ‘yule’. See :py:meth:`scipy.spatial.distance.cdist`.
+
+            Defaults to "euclidean".
 
     Raises:
         ValueError: If non-implemented centrality measure is used.
@@ -100,15 +115,32 @@ def kennard_stone_sampling(
 
 
 def pca_kmeans(
-    X,  # noqa: N803
-    scaled,
-    n_pca_components,
-    n_clusters,
-    random_state=None,
-    pca_kwargs=None,
-    kmeans_kwargs=None,
+    X: np.ndarray,  # noqa: N803
+    scaled: bool,
+    n_pca_components: Union[int, str],
+    n_clusters: int,
+    random_state: Optional[Union[int, np.random.RandomState]] = None,
+    pca_kwargs: Optional[Dict[str, Any]] = None,
+    kmeans_kwargs: Optional[Dict[str, Any]] = None,
 ) -> np.ndarray:
-    """Run PCA and KMeans on the data."""
+    """Run principal component analysis (PCA) followed by K-means clustering on the data.
+
+    Uses sklearn's implementation of PCA, and k-means.
+
+    Args:
+        X (np.ndarray): Input data
+        n_pca_components (Union[int, str]): number of principal components to keep
+        n_clusters (int): number of clusters
+        random_state (Optional[Union[int, np.random.RandomState]], optional): Random state for sklearn.
+            Defaults to None.
+        pca_kwargs (Optional[Dict[str, Any]], optional): Additional keyword arguments for
+            sklearn's :py:class:`sklearn.decomposition.PCA`. Defaults to None.
+        kmeans_kwargs (Optional[Dict[str, Any]], optional):  Additional keyword arguments for
+            sklearn's :py:class:`sklearn.clustering.KMeans`. Defaults to None.
+
+    Returns:
+        np.ndarray: Cluster indices.
+    """
     if scaled:
         X = StandardScaler().fit_transform(X)  # noqa: N806
 
@@ -121,27 +153,47 @@ def pca_kmeans(
     return kmeans.fit_predict(X_pca)
 
 
-def is_categorical(x):
+def is_categorical(x: Union[float, int, np.typing.ArrayLike]) -> bool:
+    """Return true if x is categorial or composed of integers."""
     return infer_dtype(x) == "category" or infer_dtype(x) == "integer"
 
 
-def handle_stratification_col(stratification_col):
-    if is_categorical(stratification_col):
-        return stratification_col
-    else:
-        return stratification_col
-
-
 def stratified_train_test_partition(
-    idxs,
-    stratification_col,
-    train_size,
-    valid_size,
-    test_size,
-    shuffle=True,
-    random_state=None,
-    q=[0, 0.25, 0.5, 0.75, 1],
-):
+    idxs: Iterable[int],
+    stratification_col: np.typing.ArrayLike,
+    train_size: float,
+    valid_size: float,
+    test_size: float,
+    shuffle: bool = True,
+    random_state: Optional[Union[int, np.random.RandomState]] = None,
+    q: Iterable[float] = [0, 0.25, 0.5, 0.75, 1],
+) -> Tuple[np.array, np.array, np.array]:
+    """Perform a stratified train/test split.
+
+    .. seealso::
+
+        * :py:meth:`mofdscribe.splitters.utils.grouped_stratified_train_test_partition`:
+          performs an grouped stratified train/test split
+        * :py:meth:`mofdscribe.splitters.utils.grouped_train_valid_test_partition`:
+          performs an grouped un-stratified train/test split
+
+    Args:
+        idxs (Iterable[int]): Indices of points to split
+        stratification_col (np.typing.ArrayLike): Data used for stratification.
+            If it is categorical (see :py:meth:`mofdscribe.splitters.utils.is_categorical`)
+            then we directly use it for stratification. Otherwise, we use quantile binning.
+        train_size (float): Size of the training set as fraction.
+        valid_size (float): Size of the validation set as fraction.
+        test_size (float): Size of the test set as fraction.
+        shuffle (bool, optional): If True, perform a shuffled split. Defaults to True.
+        random_state (Optional[Union[int, np.random.RandomState]], optional):
+            Random state for the suffler. Defaults to None.
+        q (Iterable[float], optional): List of quantiles used for quantile binning.
+            Defaults to [0, 0.25, 0.5, 0.75, 1].
+
+    Returns:
+        Tuple[np.array, np.array, np.array]: Train, validation, test indices.
+    """
     if stratification_col is not None:
         if is_categorical(stratification_col):
             stratification_col = stratification_col
@@ -175,25 +227,62 @@ def stratified_train_test_partition(
             stratify=train_strat,
         )
     else:
-        valid_idx = None
+        valid_idx = []
 
-    return train_idx, valid_idx, test_idx
+    return np.array(train_idx), np.array(valid_idx), np.array(test_idx)
 
 
 def grouped_stratified_train_test_partition(
-    stratification_col,
-    group_col,
-    train_size,
-    valid_size,
-    test_size,
-    center=np.median,
-    q=[0, 0.25, 0.5, 0.75, 1],
-    shuffle=True,
-    random_state=None,
-):
+    stratification_col: np.typing.ArrayLike,
+    group_col: np.typing.ArrayLike,
+    train_size: float,
+    valid_size: float,
+    test_size: float,
+    shuffle: bool = True,
+    random_state: Optional[Union[int, np.random.RandomState]] = None,
+    q: Iterable[float] = [0, 0.25, 0.5, 0.75, 1],
+    center: callable = np.median,
+) -> Tuple[np.array, np.array, np.array]:
     """Grouped stratified train-test partition.
 
-    Note that this won't work well if the number of groups is small.
+    First, we compute the most common stratification category / centrality measure
+    of the stratification column for every group.
+    Then, we perform a stratified train/test partition on the groups.
+    We then "expand" by concatenating the indices belonging to each group.
+
+    .. warning::
+
+        Note that this won't work well if the number of groups and datapoints is small.
+        It will also cause issues if the number of datapoints in the groups is very
+        imbalanced.
+
+    .. seealso::
+
+        * :py:meth:`mofdscribe.splitters.utils.stratified_train_test_partition`:
+          performs an un-grouped stratified train/test split
+        * :py:meth:`mofdscribe.splitters.utils.grouped_train_valid_test_partition`:
+          performs an grouped un-stratified train/test split
+
+    Args:
+        stratification_col (np.typing.ArrayLike):  Data used for stratification.
+            If it is categorical (see :py:meth:`mofdscribe.splitters.utils.is_categorical`)
+            then we directly use it for stratification. Otherwise, we use quantile binning.
+        group_col (np.typing.ArrayLike): Data used for grouping.
+        train_size (float): Size of the training set as fraction.
+        valid_size (float): Size of the validation set as fraction.
+        test_size (float): Size of the test set as fraction.
+        shuffle (bool, optional): If True, perform a shuffled split. Defaults to True.
+        random_state (Optional[Union[int, np.random.RandomState]], optional):
+            Random state for the suffler. Defaults to None.
+        q (Iterable[float], optional): List of quantiles used for quantile binning.
+            Defaults to [0, 0.25, 0.5, 0.75, 1].
+        center (callable): Aggregation function to compute a measure of centrality
+            of all the points in a group such that this can then be used for stratification.
+            This is only used for continuos inputs. For categorical inputs, we always use
+            the mode.
+
+    Returns:
+        Tuple[np.array, np.array, np.array]: Train, validation, test indices.
     """
     groups = np.unique(group_col)
     categorical = is_categorical(stratification_col)
@@ -240,13 +329,16 @@ def grouped_stratified_train_test_partition(
     if valid_size > 0:
         valid_indices = np.where(np.isin(group_col, valid_groups))[0]
     else:
-        valid_indices = None
+        valid_indices = []
     test_indices = np.where(np.isin(group_col, test_groups))[0]
 
     return train_indices, valid_indices, test_indices
 
 
-def get_train_valid_test_sizes(size, train_size, valid_size, test_size):
+def get_train_valid_test_sizes(
+    size: int, train_size: float, valid_size: float, test_size: float
+) -> Tuple[int, int, int]:
+    """Compute the number of points in every split."""
     train_size = int(np.floor(train_size * size))
     valid_size = int(np.floor(valid_size * size))
     test_size = int(size - train_size - valid_size)
@@ -254,8 +346,34 @@ def get_train_valid_test_sizes(size, train_size, valid_size, test_size):
 
 
 def grouped_train_valid_test_partition(
-    groups, train_size, valid_size, test_size, shuffle=True, random_state=None
-):
+    groups: np.typing.ArrayLike,
+    train_size: float,
+    valid_size: float,
+    test_size: float,
+    shuffle: bool = True,
+    random_state: Optional[Union[int, np.random.RandomState]] = None,
+) -> Tuple[np.array, np.array, np.array]:
+    """Perform a grouped train/test split without stratification.
+
+    .. seealso::
+
+        * :py:meth:`mofdscribe.splitters.utils.stratified_train_test_partition`:
+          performs an un-grouped stratified train/test split
+        * :py:meth:`mofdscribe.splitters.utils.grouped_stratified_train_test_partition`:
+          performs an grouped stratified train/test split
+
+    Args:
+        groups (np.typing.ArrayLike): Data used for grouping.
+        train_size (float): Size of the training set as fraction.
+        valid_size (float): Size of the validation set as fraction.
+        test_size (float): Size of the test set as fraction.
+        shuffle (bool, optional): If True, perform a shuffled split. Defaults to True.
+        random_state (Optional[Union[int, np.random.RandomState]], optional):
+            Random state for the suffler. Defaults to None.
+
+    Returns:
+        Tuple[np.array, np.array, np.array]: Train, validation, test indices.
+    """
     train_indices = []
     valid_indices = []
     test_indices = []
@@ -293,6 +411,23 @@ def grouped_train_valid_test_partition(
     return train_indices, valid_indices, test_indices
 
 
-def quantile_binning(values, q):
+def quantile_binning(values: np.typing.ArrayLike, q: Iterable[float]) -> np.array:
+    """Use :py:meth:`pandas.qcut` to bin the values based on quantiles."""
     values = pd.qcut(values, q, labels=np.arange(len(q) - 1)).astype(int)
     return values
+
+
+def check_fraction(train_fraction: float, valid_fraction: float, test_fraction: float) -> None:
+    """Check that the fractions are all between 0 and 1 and that they sum up to 1."""
+    for name, fraction in [
+        ("train fraction", train_fraction),
+        ("valid fraction", valid_fraction),
+        ("test fraction", test_fraction),
+    ]:
+        if not (fraction <= 1) & (fraction >= 0):
+            raise ValueError(
+                f"{name} is {fraction}. However, train/valid/test fractions must be between 0 and 1."
+            )
+
+    if not (train_fraction + valid_fraction + test_fraction) == 1:
+        raise ValueError("Train, valid, test fractions must sum to 1.")

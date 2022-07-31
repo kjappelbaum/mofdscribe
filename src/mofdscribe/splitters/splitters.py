@@ -1,13 +1,24 @@
 # -*- coding: utf-8 -*-
-"""Classes that help performing cross-validation."""
+"""Classes that help performing cross-validation.
+
+Our splitters attempt to reduce any potential for data leakage by using grouping by default--
+and prioritizing grouping over stratficiation or exactly matching the requested train test ratio. 
+
+.. warning:: 
+
+    Due to the grouping operations, the train/test ratios the methods produce will not exactly 
+    match the one you requested. 
+    For this reason, please get the length of the train/test/valid indices the methods produce. 
+"""
 from typing import Any, Callable, Dict, Iterable, List, Optional, Tuple, Union
 
 import numpy as np
 import pandas as pd
 from loguru import logger
-from sklearn.model_selection import KFold, StratifiedGroupKFold, GroupKFold, StratifiedKFold
+from sklearn.model_selection import GroupKFold, KFold, StratifiedGroupKFold, StratifiedKFold
 
 from .utils import (
+    check_fraction,
     grouped_stratified_train_test_partition,
     grouped_train_valid_test_partition,
     is_categorical,
@@ -62,6 +73,7 @@ class BaseSplitter:
         )
 
     def train_test_split(self, frac_train: float = 0.7) -> Tuple[Iterable[int], Iterable[int]]:
+        check_fraction(train_fraction=frac_train, valid_fraction=0, test_fraction=1 - frac_train)
         groups = self._get_groups()
         stratification_col = self._get_stratification_col()
         idx = self._get_idxs()
@@ -108,6 +120,12 @@ class BaseSplitter:
     def train_valid_test_split(
         self, frac_train: float = 0.7, frac_valid: float = 0.1
     ) -> Tuple[Iterable[int], Iterable[int], Iterable[int]]:
+
+        check_fraction(
+            train_fraction=frac_train,
+            valid_fraction=frac_valid,
+            test_fraction=1 - frac_train - frac_valid,
+        )
         groups = self._get_groups()
         stratification_col = self._get_stratification_col()
         idx = self._get_idxs()
@@ -332,7 +350,7 @@ class KennardStoneSplitter(BaseSplitter):
 
     This algorithm ensures a flat coverage of the dataset.
     It is also known as CADEX algorithm and has been later refined
-    in the DUPLEX algorithm.
+    in the DUPLEX algorithm [Snee]_.
 
     .. warning::
 
@@ -350,6 +368,14 @@ class KennardStoneSplitter(BaseSplitter):
 
         I couldn't find a good reference for the k-fold version of
         this algorihm.
+
+    References:
+        [KennardStone] R. W. Kennard & L. A. Stone (1969): Computer Aided Design of Experiments,
+            Technometrics, 11:1, 137-148.
+            https://www.tandfonline.com/doi/abs/10.1080/00401706.1969.10490666
+
+        [Snee] Snee, R.D., 1977. Validation of regression models: methods and examples.
+            Technometrics 19, 415-428.
     """
 
     def __init__(

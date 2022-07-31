@@ -4,6 +4,7 @@ import numpy as np
 import pytest
 
 from mofdscribe.splitters.utils import (
+    check_fraction,
     get_train_valid_test_sizes,
     grouped_stratified_train_test_partition,
     grouped_train_valid_test_partition,
@@ -174,3 +175,19 @@ def test_get_train_valid_test_sizes():
     train_size, valid_size, test_size = get_train_valid_test_sizes(100, 0.5, 0.25, 0.25)
     assert train_size + valid_size + test_size == 100
     assert train_size + valid_size == 75
+
+
+def test_check_fraction():
+    with pytest.raises(ValueError):
+        check_fraction(-1, 0, 0)
+
+    with pytest.raises(ValueError):
+        check_fraction(1.1, 1.0, 0)
+
+    with pytest.raises(ValueError):
+        check_fraction(0.9, 0.2, 0.1)
+
+    with pytest.raises(ValueError):
+        check_fraction(0.1, 0.2, 0.4)
+
+    _ = check_fraction(0.8, 0.1, 0.1)

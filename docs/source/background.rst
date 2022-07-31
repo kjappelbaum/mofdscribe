@@ -22,7 +22,7 @@ Many of the descriptors implemented in mofdscribe have been discussed in our
     
     If you do not want the solvent molecules to impact the featurization, you'll have to remove it from the structure. 
 
-    Bound solvent is _not_ suppressed by any of the featurizers.
+    Bound solvent is *not* suppressed by any of the featurizers.
 
     To identify bound and unbound solvents, you might find the `moffragmentor package <https://github.com/kjappelbaum/moffragmentor>`_ useful.
 
