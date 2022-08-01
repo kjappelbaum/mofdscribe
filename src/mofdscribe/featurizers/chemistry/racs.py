@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """Revised autocorrelation functions (RACs) for MOFs."""
-from collections import defaultdict, OrderedDict
+from collections import OrderedDict, defaultdict
 from typing import Iterable, List, Optional, Tuple, Union
 
 import numpy as np

@@ -263,7 +263,10 @@ class BaseSplitter:
 
         else:
             # this is not shuffled?
-            kfold = GroupKFold(n_splits=k)
+            if groups is not None:
+                kfold = GroupKFold(n_splits=k)
+            else:
+                kfold = KFold(n_splits=k)
 
         if groups is not None:
             for train_index, test_index in kfold.split(idx, y=stratification_col, groups=groups):

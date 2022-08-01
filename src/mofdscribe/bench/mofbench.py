@@ -10,6 +10,7 @@ from enum import Enum
 from typing import List, Optional, Union
 
 import numpy as np
+from loguru import logger
 from pydantic import BaseModel
 
 from mofdscribe.datasets.dataset import StructureDataset
@@ -180,10 +181,12 @@ class MOFBenchRegression(MOFBench):
         timings = []
         inference_times = []
 
-        for train_idx, test_idx in self._splitter.k_fold(
-            self._k,
+        for i, (train_idx, test_idx) in enumerate(
+            self._splitter.k_fold(
+                self._k,
+            )
         ):
-
+            logger.debug(f"K-fold round {i}")
             start_time = time.time()
             self._train(
                 train_idx,

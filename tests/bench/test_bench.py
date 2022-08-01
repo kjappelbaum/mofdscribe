@@ -13,6 +13,7 @@ from sklearn.preprocessing import StandardScaler
 from mofdscribe.bench.mofbench import BenchResult, MOFBench, MOFBenchRegression, id_for_bench_result
 from mofdscribe.datasets import CoREDataset
 from mofdscribe.splitters import ClusterStratifiedSplitter
+from mofdscribe.splitters.splitters import BaseSplitter, HashSplitter
 
 FEATURES = [
     "total_POV_gravimetric",
@@ -240,9 +241,10 @@ def test_mofbench(tmp_path_factory):
         ds=CoREDataset(),
         name="my model",
         task="logKH_CO2_int",
-        splitter=ClusterStratifiedSplitter(CoREDataset(), feature_names=FEATURES),
+        splitter=BaseSplitter(CoREDataset(), sample_frac=0.001),
         target=["logKH_CO2"],
         debug=True,
+        k=2,
     )
     assert isinstance(bench, MOFBench)
 

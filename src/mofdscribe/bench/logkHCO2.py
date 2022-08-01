@@ -3,10 +3,9 @@
 from typing import Optional
 
 from mofdscribe.datasets import CoREDataset
-from mofdscribe.splitters.splitters import HashSplitter, DensitySplitter
+from mofdscribe.splitters.splitters import DensitySplitter, HashSplitter
 
 from .mofbench import MOFBenchRegression
-
 
 __all__ = ("LogkHCO2InterpolationBench", "LogkHCO2ExtrapolationBench")
 
