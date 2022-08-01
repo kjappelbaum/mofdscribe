@@ -13,6 +13,7 @@ See also the `sklearn docs
     match the one you requested.
     For this reason, please get the length of the train/test/valid indices the methods produce.
 """
+from loguru import logger
 from typing import Any, Callable, Dict, Iterable, List, Optional, Tuple, Union
 
 import numpy as np
@@ -103,9 +104,15 @@ class BaseSplitter:
 
     def _get_idxs(self):
         """Return an array of indices. Length equals to the length of the dataset."""
-        return np.random.choice(
-            np.arange(self._len), int(self._len * self._sample_frac), replace=False
-        )
+        if self._sample_frac < 1:
+            return np.random.choice(
+                np.arange(self._len), int(self._len * self._sample_frac), replace=False
+            )
+        else:
+            idx = np.arange(self._len)
+            if self._shuffle:
+                np.random.shuffle(idx)
+            return idx
 
     def train_test_split(self, frac_train: float = 0.7) -> Tuple[Iterable[int], Iterable[int]]:
         """Perform a train/test partition.
@@ -121,10 +128,10 @@ class BaseSplitter:
         groups = self._get_groups()
         stratification_col = self._get_stratification_col()
         idx = self._get_idxs()
-
         no_group_warn(groups)
         if groups is not None:
             if stratification_col is not None:
+                logger.debug("Using grouped stratified partition")
                 train_idx, _, test_index = grouped_stratified_train_test_partition(
                     stratification_col[idx],
                     groups[idx],
@@ -137,6 +144,7 @@ class BaseSplitter:
                     q=self._q,
                 )
             else:
+                logger.debug("Using grouped partition")
                 train_idx, _, test_index = grouped_train_valid_test_partition(
                     groups[idx],
                     frac_train,
@@ -148,6 +156,7 @@ class BaseSplitter:
 
         else:
             stratification_col = stratification_col[idx] if stratification_col is not None else None
+            logger.debug("Using stratified partition")
             train_idx, _, test_index = stratified_train_test_partition(
                 self._get_idxs(),
                 stratification_col,
@@ -187,6 +196,7 @@ class BaseSplitter:
 
         if groups is not None:
             if stratification_col is not None:
+                logger.debug("Using grouped stratified partition")
                 train_idx, valid_idx, test_index = grouped_stratified_train_test_partition(
                     stratification_col[idx],
                     groups[idx],
@@ -199,6 +209,7 @@ class BaseSplitter:
                     q=self._q,
                 )
             else:
+                logger.debug("Using grouped  partition")
                 train_idx, valid_idx, test_index = grouped_train_valid_test_partition(
                     groups[idx],
                     frac_train,
@@ -208,6 +219,7 @@ class BaseSplitter:
                     random_state=self._random_state,
                 )
         else:
+            logger.debug("Using stratified partition")
             stratification_col = stratification_col[idx] if stratification_col is not None else None
             train_idx, valid_idx, test_index = stratified_train_test_partition(
                 self._get_idxs(),
@@ -373,7 +385,7 @@ class HashSplitter(BaseSplitter):
         else:
             raise ValueError(f"Unknown hash type: {self.hash_type}")
 
-        return hashes.values
+        return hashes
 
     def _get_groups(self) -> Iterable[int]:
         return self._get_hashes()
@@ -439,7 +451,7 @@ class DensitySplitter(BaseSplitter):
         super().__init__(ds, shuffle, random_state, sample_frac, stratification_col, center, q)
 
     def _get_groups(self) -> Iterable[int]:
-        return quantile_binning(self._ds.get_densities(self._get_idxs()), self._density_q)
+        return quantile_binning(self._ds.get_densities(range(len(self._ds))), self._density_q)
 
 
 class TimeSplitter(BaseSplitter):

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """Test the splitter helping functions."""
 
+from random import shuffle
 import numpy as np
 import pytest
 
@@ -30,7 +31,8 @@ def test_kennard_stone_sampling():
 
 
 @pytest.mark.parametrize("number_of_groups", [30, 50, 80, 500, 8_000])
-def test_grouped_stratified_train_test_partition(number_of_groups):
+@pytest.mark.parametrize("shuffle", [True])
+def test_grouped_stratified_train_test_partition(number_of_groups, shuffle):
     # perhaps use hypothesis for fuzzing the data
     datasize = 10_000
 
@@ -38,7 +40,7 @@ def test_grouped_stratified_train_test_partition(number_of_groups):
     groups = np.random.choice(np.arange(number_of_groups), size=datasize)
 
     train_indices, valid_indices, test_indices = grouped_stratified_train_test_partition(
-        y, groups, train_size=0.5, valid_size=0.25, test_size=0.25
+        y, groups, train_size=0.5, valid_size=0.25, test_size=0.25, shuffle=shuffle
     )
 
     assert len(train_indices) + len(test_indices) + len(valid_indices) == datasize
@@ -67,7 +69,7 @@ def test_grouped_stratified_train_test_partition(number_of_groups):
 
     # now, no validation set
     train_indices, _, test_indices = grouped_stratified_train_test_partition(
-        y, groups, train_size=0.8, valid_size=0.0, test_size=0.2, shuffle=True
+        y, groups, train_size=0.8, valid_size=0.0, test_size=0.2, shuffle=shuffle
     )
 
     assert len(train_indices) + len(test_indices) == datasize
@@ -85,7 +87,7 @@ def test_stratified_train_test_partition():
     y = np.random.normal(0, 1, size=datasize)
 
     train_indices, valid_indices, test_indices = stratified_train_test_partition(
-        np.arange(datasize), y, train_size=0.5, valid_size=0.25, test_size=0.25
+        np.arange(datasize), y, train_size=0.5, valid_size=0.25, test_size=0.25, shuffle=shuffle
     )
 
     assert len(train_indices) + len(test_indices) + len(valid_indices) == datasize
@@ -106,7 +108,7 @@ def test_stratified_train_test_partition():
 
     # now, no validation set
     train_indices, _, test_indices = stratified_train_test_partition(
-        np.arange(datasize), y, train_size=0.8, valid_size=0.0, test_size=0.2, shuffle=True
+        np.arange(datasize), y, train_size=0.8, valid_size=0.0, test_size=0.2, shuffle=shuffle
     )
 
     assert len(train_indices) + len(test_indices) == datasize
@@ -115,14 +117,15 @@ def test_stratified_train_test_partition():
 
 
 @pytest.mark.parametrize("number_of_groups", [30, 50, 80, 500, 8_000])
-def test_grouped_train_valid_test_partition(number_of_groups):
+@pytest.mark.parametrize("shuffle", [True, False])
+def test_grouped_train_valid_test_partition(number_of_groups, shuffle):
     # we might also want to use grouping without stratification to test
     # extrapolation
     datasize = 10_000
     groups = np.random.choice(np.arange(number_of_groups), size=datasize)
 
     train_indices, valid_indices, test_indices = grouped_train_valid_test_partition(
-        groups, train_size=0.5, valid_size=0.25, test_size=0.25
+        groups, train_size=0.5, valid_size=0.25, test_size=0.25, shuffle=shuffle
     )
 
     assert len(train_indices) + len(test_indices) + len(valid_indices) == datasize
@@ -134,7 +137,7 @@ def test_grouped_train_valid_test_partition(number_of_groups):
     assert set(train_groups).intersection(set(valid_groups)) == set()
 
     train_indices, valid_indices, test_indices = grouped_train_valid_test_partition(
-        groups, train_size=0.5, valid_size=0, test_size=0.5
+        groups, train_size=0.5, valid_size=0, test_size=0.5, shuffle=shuffle
     )
 
     assert len(train_indices) + len(test_indices) == datasize
@@ -144,11 +147,12 @@ def test_grouped_train_valid_test_partition(number_of_groups):
     assert set(test_groups).intersection(set(train_groups)) == set()
 
 
-def test_grouped_train_valid_test_partition_string_groups():
+@pytest.mark.parametrize("shuffle", [True])
+def test_grouped_train_valid_test_partition_string_groups(shuffle):
     datasize = 10_000
     groups = np.random.choice(["a", "b", "c", "d", "e", "f"], size=datasize)
     train_indices, valid_indices, test_indices = grouped_train_valid_test_partition(
-        groups, train_size=0.5, valid_size=0.25, test_size=0.25
+        groups, train_size=0.5, valid_size=0.25, test_size=0.25, shuffle=shuffle
     )
 
     assert len(train_indices) + len(test_indices) + len(valid_indices) == datasize
@@ -160,7 +164,7 @@ def test_grouped_train_valid_test_partition_string_groups():
     assert set(train_groups).intersection(set(valid_groups)) == set()
 
     train_indices, valid_indices, test_indices = grouped_train_valid_test_partition(
-        groups, train_size=0.5, valid_size=0, test_size=0.5
+        groups, train_size=0.5, valid_size=0, test_size=0.5, shuffle=shuffle
     )
 
     assert len(train_indices) + len(test_indices) == datasize

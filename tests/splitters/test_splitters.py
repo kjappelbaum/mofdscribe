@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """Test splitters."""
 from collections import Counter
+from random import shuffle
+import pytest
 
 import numpy as np
 
@@ -13,6 +15,7 @@ from mofdscribe.splitters.splitters import (
     HashSplitter,
     KennardStoneSplitter,
     TimeSplitter,
+    BaseSplitter,
 )
 
 FEATURES = [
@@ -196,6 +199,25 @@ FEATURES = [
 ]
 
 
+@pytest.mark.parametrize("sample_frac", (0.2, 0.5, 1.0))
+@pytest.mark.parametrize("shuffle", (True, False))
+def test_base_splitter(sample_frac, shuffle):
+    ds = CoREDataset()
+    group_pool = ["A", "B", "C"]
+    groups = np.random.choice(group_pool, size=len(ds))
+
+    class MySplitter(BaseSplitter):
+        def _get_groups(self):
+            return groups
+
+    splitter = MySplitter(ds, sample_frac=sample_frac, shuffle=shuffle)
+
+    train_idx, test_idx = splitter.train_test_split()
+    groups_train = set(groups[train_idx])
+    groups_test = set(groups[test_idx])
+    assert groups_train & groups_test == set()
+
+
 def test_hash_splitter():
     """Ensure that the splits add up to the total number of structures and are non-overlapping."""
     ds = CoREDataset()
@@ -239,6 +261,22 @@ def test_density_splitter():
     splits = dens_splitter.train_valid_test_split(frac_train=0.5, frac_valid=0.3)
     assert len(splits) == 3
     assert len(splits[0]) > len(splits[1]) > len(splits[2])
+
+    groups = dens_splitter._get_groups()
+
+    set0 = set(groups[splits[0]])
+    set1 = set(groups[splits[1]])
+    set2 = set(groups[splits[2]])
+
+    assert set0 & set1 == set()
+    assert set1 & set2 == set()
+    assert set0 & set2 == set()
+
+    splits = dens_splitter.train_test_split(frac_train=0.5, frac_valid=0.3)
+    groups = dens_splitter._get_groups()
+
+    set0 = set(groups[splits[0]])
+    set1 = set(groups[splits[1]])
 
 
 def test_kennard_stone_splitter():

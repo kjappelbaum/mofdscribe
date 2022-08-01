@@ -60,33 +60,33 @@ class StructureDataset:
             logger.info("Computing hashes, this can take a while.")
             hashes = [get_decorated_graph_hash_cached(self._structures[i]) for i in idx]
             return hashes
-        return self._decorated_graph_hashes.iloc[idx]
+        return self._decorated_graph_hashes.iloc[idx].values
 
     def get_undecorated_graph_hashes(self, idx: Iterable[int]) -> str:
         if self._undecorated_graph_hashes is None:
             logger.info("Computing hashes, this can take a while.")
             hashes = [get_undecorated_graph_hash_cached(self._structures[i]) for i in idx]
             return hashes
-        return self._undecorated_graph_hashes.iloc[idx]
+        return self._undecorated_graph_hashes.iloc[idx].values
 
     def get_decorated_scaffold_hashes(self, idx: Iterable[int]) -> str:
         if self._decorated_graph_hashes is None:
             logger.info("Computing hashes, this can take a while.")
             hashes = [get_decorated_scaffold_hash_cached(self._structures[i]) for i in idx]
             return hashes
-        return self._decorated_scaffold_hashes.iloc[idx]
+        return self._decorated_scaffold_hashes.iloc[idx].values
 
     def get_undecorated_scaffold_hashes(self, idx: Iterable[int]) -> str:
         if self._undecorated_scaffold_hashes is None:
             logger.info("Computing hashes, this can take a while.")
             hashes = [get_undecorated_graph_hash_cached(self._structures[i]) for i in idx]
             return hashes
-        return self._undecorated_scaffold_hashes.iloc[idx]
+        return self._undecorated_scaffold_hashes.iloc[idx].values
 
     def get_densities(self, idx: Iterable[int]) -> np.ndarray:
         if self._densities is None:
             return np.array([s.density for s in self.get_structures(idx)])
-        return self._densities.iloc[idx]
+        return self._densities.iloc[idx].values
 
     # ToDo: think how this should behave.
     def select(self, indices: Iterable[int], labels: Optional[Iterable[str]] = None):
