@@ -232,7 +232,7 @@ def test_mofbench(tmp_path_factory):
         bench = MOFBench(
             model=MyDummyModel(),
             ds=CoREDataset(),
-            splitter=ClusterStratifiedSplitter(feature_names=FEATURES),
+            splitter=ClusterStratifiedSplitter(CoREDataset(), feature_names=FEATURES),
             target=["logKH_CO2"],
         )
     bench = MOFBenchRegression(
@@ -240,7 +240,7 @@ def test_mofbench(tmp_path_factory):
         ds=CoREDataset(),
         name="my model",
         task="logKH_CO2_int",
-        splitter=ClusterStratifiedSplitter(feature_names=FEATURES),
+        splitter=ClusterStratifiedSplitter(CoREDataset(), feature_names=FEATURES),
         target=["logKH_CO2"],
         debug=True,
     )

@@ -179,9 +179,9 @@ class MOFBenchRegression(MOFBench):
         metric_collection = []
         timings = []
         inference_times = []
-        sample_frac = 0.01 if self._debug else 1.0
+
         for train_idx, test_idx in self._splitter.k_fold(
-            self._ds, self._k, sample_frac=sample_frac
+            self._k,
         ):
 
             start_time = time.time()

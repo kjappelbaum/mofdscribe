@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """Revised autocorrelation functions (RACs) for MOFs."""
-from collections import defaultdict
+from collections import defaultdict, OrderedDict
 from typing import Iterable, List, Optional, Tuple, Union
 
 import numpy as np
@@ -76,7 +76,7 @@ def _compute_racs(
         for aggregation_name, aggregation_values in property_values.items():
             for corr_agg in corr_aggregations:
                 agg_func = ARRAY_AGGREGATORS[corr_agg]
-                name = f"racs_{part_name}_{property_name}_{scope}_{aggregation_name}_{corr_agg}"
+                name = f"racs_bb-{part_name}_prop-{property_name}_scope-{scope}_propagg-{aggregation_name}_corragg-{corr_agg}"
                 aggregated_racs[name] = agg_func(aggregation_values)
 
     return aggregated_racs
@@ -115,7 +115,7 @@ def _get_racs_for_bbs(
     for racs_name, racs_values in bb_racs.items():
         for bb_agg in bb_aggregations:
             agg_func = ARRAY_AGGREGATORS[bb_agg]
-            name = f"{racs_name}_{bb_agg}"
+            name = f"{racs_name}_bbagg-{bb_agg}"
             aggregated_racs[name] = agg_func(racs_values)
 
     return aggregated_racs
@@ -144,7 +144,7 @@ class RACS(BaseFeaturizer):
     neighborhood of each start atom (i.e., including atoms that are not part of this "bb").
 
     Furthermore, here we allow to allow any of the
-    :py:class:`pymatgen.core.periodic_table.Specie` properties to be used as
+    `element-coder <https://github.com/kjappelbaum/element-coder>`_ properties to be used as
     `property` :math:`P_{i}`.
 
     To use to original implementation, see `molSimplify
@@ -153,11 +153,11 @@ class RACS(BaseFeaturizer):
 
     def __init__(
         self,
-        attributes: Tuple[Union[int, str]] = ("X", "electron_affinity", "I", "T"),
+        attributes: Tuple[Union[int, str]] = ("X", "mod_pettifor", "I", "T"),
         scopes: Tuple[int] = (1, 2, 3),
         prop_agg: Tuple[str] = ("product", "diff"),
-        corr_agg: Tuple[str] = ("sum",),
-        bb_agg: Tuple[str] = ("avg",),
+        corr_agg: Tuple[str] = ("sum", "avg"),
+        bb_agg: Tuple[str] = ("avg", "sum"),
         bond_heuristic: str = "vesta",
         bbs: Optional[Tuple[str]] = (
             "linker_all",
@@ -172,14 +172,14 @@ class RACS(BaseFeaturizer):
 
         Args:
             attributes (Tuple[Union[int, str]]): Properties that are correlated.
-                Defaults to ("X", "electron_affinity", "I", "T").
+                Defaults to ("X", "mod_pettifor", "I", "T").
             scopes (Tuple[int]): Number of edges to traverse. Defaults to (1, 2, 3).
             prop_agg (Tuple[str]): Function for aggregating the properties.
                 Defaults to ("product", "diff").
             corr_agg (Tuple[str]): Function to aggregate the properties across different start/scopes.
-                Defaults to ("sum").
+                Defaults to ("sum", "avg").
             bb_agg (Tuple[str]): Function used to aggregate the properties across different building blocks.
-                 Defaults to ("avg").
+                 Defaults to ("avg", "sum").
             bond_heuristic (str): Method used to guess bonds. Defaults to "vesta".
             bbs (Tuple[str]): Building blocks to use. Defaults to ("linker_all",
                 "linker_connecting", "linker_functional", "linker_scaffold", "nodes").
@@ -210,7 +210,6 @@ class RACS(BaseFeaturizer):
         # This finds all indices for a particular subset of atoms
         # e.g. "nodes", "linker_all", "linker_connecting", "linker_functional", "linker_scaffold"
         bb_indices = get_bb_indices(sg)
-
         for bb in self._bbs:
             racs.update(
                 _get_racs_for_bbs(
@@ -224,20 +223,22 @@ class RACS(BaseFeaturizer):
                     bb,
                 )
             )
-
-        return np.array(list(racs.values()))
+        racs_ordered = OrderedDict(sorted(racs.items()))
+        return np.array(list(racs_ordered.values()))
 
     def _get_feature_labels(self) -> List[str]:
         names = []
         for bb in self._bbs:
-            for bb_agg in self.bb_agg:
-                for scope in self.scopes:
-                    for cor_agg in self.corr_agg:
-                        for prop in self.attributes:
-                            for property_agg in self.prop_agg:
+            for scope in self.scopes:
+                for prop in self.attributes:
+                    for property_agg in self.prop_agg:
+                        for cor_agg in self.corr_agg:
+                            for bb_agg in self.bb_agg:
                                 names.append(
-                                    f"racs_{bb}_{prop}_{scope}_{property_agg}_{cor_agg}_{bb_agg}"
+                                    f"racs_bb-{bb}_prop-{prop}_scope-{scope}_propagg-{property_agg}_corragg-{cor_agg}_bbagg-{bb_agg}"
                                 )
+
+        names = sorted(names)
         return names
 
     def feature_labels(self) -> List[str]:

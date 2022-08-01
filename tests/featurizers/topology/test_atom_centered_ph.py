@@ -18,7 +18,7 @@ def test_atom_centered_ph_site(hkust_structure, irmof_structure, cof_structure):
         assert len(features_1) == len(feature_labels)
         if i < 2:
             # The metals should be equivalent
-            assert np.allclose(features == features_1)
+            assert np.allclose(features, features_1)
             features_not_metal = featurizer.featurize(structure, -1)
             assert np.abs(features - features_not_metal).sum() > 0
     assert is_jsonable(dict(zip(featurizer.feature_labels(), features)))

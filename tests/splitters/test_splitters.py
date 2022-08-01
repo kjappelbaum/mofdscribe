@@ -2,20 +2,20 @@
 """Test splitters."""
 from collections import Counter
 from random import shuffle
-import pytest
 
 import numpy as np
+import pytest
 
 from mofdscribe.datasets.core_dataset import CoREDataset
 from mofdscribe.splitters.splitters import (
     LOCOCV,
+    BaseSplitter,
     ClusterSplitter,
     ClusterStratifiedSplitter,
     DensitySplitter,
     HashSplitter,
     KennardStoneSplitter,
     TimeSplitter,
-    BaseSplitter,
 )
 
 FEATURES = [

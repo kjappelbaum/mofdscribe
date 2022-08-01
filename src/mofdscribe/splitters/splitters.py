@@ -13,20 +13,20 @@ See also the `sklearn docs
     match the one you requested.
     For this reason, please get the length of the train/test/valid indices the methods produce.
 """
-from loguru import logger
 from typing import Any, Callable, Dict, Iterable, List, Optional, Tuple, Union
 
 import numpy as np
+from loguru import logger
 from sklearn.model_selection import GroupKFold, KFold, StratifiedGroupKFold, StratifiedKFold
 
 from .utils import (
     check_fraction,
+    downsample_splits,
     grouped_stratified_train_test_partition,
     grouped_train_valid_test_partition,
     is_categorical,
     kennard_stone_sampling,
     no_group_warn,
-    downsample_splits,
     pca_kmeans,
     quantile_binning,
     stratified_train_test_partition,
