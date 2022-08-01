@@ -2,6 +2,7 @@
 """Test the splitter helping functions."""
 
 from random import shuffle
+
 import numpy as np
 import pytest
 

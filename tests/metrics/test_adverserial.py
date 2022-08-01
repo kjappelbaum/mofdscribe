@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """Test the adversial validation"""
 from tkinter import Spinbox
+
 import numpy as np
 
 from mofdscribe.datasets import CoREDataset
@@ -353,7 +354,10 @@ def test_adverserial_validator_with_different_dist():
     x_a = dataset._df[feature_names].iloc[train_idx]
     x_b = dataset._df[feature_names].iloc[test_idx]
 
-    assert np.abs(densities[train_idx].mean() - densities[test_idx].mean()) > densities[train_idx].std()
+    assert (
+        np.abs(densities[train_idx].mean() - densities[test_idx].mean())
+        > densities[train_idx].std()
+    )
     adv = AdverserialValidator(x_a, x_b)
     score = adv.score()
     assert len(score) == 5
