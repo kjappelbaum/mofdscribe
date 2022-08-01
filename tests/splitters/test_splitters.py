@@ -272,7 +272,9 @@ def test_density_splitter():
     assert set1 & set2 == set()
     assert set0 & set2 == set()
 
-    splits = dens_splitter.train_test_split(frac_train=0.5, frac_valid=0.3)
+    splits = dens_splitter.train_test_split(
+        frac_train=0.5,
+    )
     groups = dens_splitter._get_groups()
 
     set0 = set(groups[splits[0]])

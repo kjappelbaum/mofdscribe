@@ -437,3 +437,11 @@ def no_group_warn(groups: Optional[np.typing.ArrayLike]) -> None:
             "You are not using a grouped split."
             " However, for retricular materials, grouping is typically a good idea to avoid data leakage."
         )
+
+
+def downsample_splits(splits, sample_frac):
+    downsampled = []
+    for split in splits:
+        downsampled.append(np.random.choice(split, int(len(split) * sample_frac)))
+
+    return tuple(downsampled)

@@ -26,6 +26,7 @@ from .utils import (
     is_categorical,
     kennard_stone_sampling,
     no_group_warn,
+    downsample_splits,
     pca_kmeans,
     quantile_binning,
     stratified_train_test_partition,
@@ -104,15 +105,8 @@ class BaseSplitter:
 
     def _get_idxs(self):
         """Return an array of indices. Length equals to the length of the dataset."""
-        if self._sample_frac < 1:
-            return np.random.choice(
-                np.arange(self._len), int(self._len * self._sample_frac), replace=False
-            )
-        else:
-            idx = np.arange(self._len)
-            if self._shuffle:
-                np.random.shuffle(idx)
-            return idx
+        idx = np.arange(self._len)
+        return idx
 
     def train_test_split(self, frac_train: float = 0.7) -> Tuple[Iterable[int], Iterable[int]]:
         """Perform a train/test partition.
@@ -168,6 +162,8 @@ class BaseSplitter:
                 q=self._q,
             )
 
+        if self._sample_frac < 1:
+            return downsample_splits([train_idx, test_index], self._sample_frac)
         return train_idx, test_index
 
     def train_valid_test_split(
@@ -231,6 +227,8 @@ class BaseSplitter:
                 random_state=self._random_state,
                 q=self._q,
             )
+        if self._sample_frac < 1:
+            return downsample_splits([train_idx, valid_idx, test_index], self._sample_frac)
         return train_idx, valid_idx, test_index
 
     def k_fold(self, k: int = 5) -> Tuple[Iterable[int], Iterable[int]]:
@@ -278,6 +276,8 @@ class BaseSplitter:
                 if self._shuffle:
                     np.random.shuffle(train_index)
                     np.random.shuffle(test_index)
+                if self._sample_frac < 1:
+                    yield downsample_splits([train_index, test_index], self._sample_frac)
                 yield train_index, test_index
 
     def _get_groups(self) -> Iterable[Union[int, str]]:
