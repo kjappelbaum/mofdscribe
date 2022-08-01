@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 """Test the RACs featurizer."""
+from collections import OrderedDict
+
 import numpy as np
 from pymatgen.core import IStructure
-from collections import OrderedDict
 
 from mofdscribe.featurizers.chemistry._fragment import get_bb_indices
 from mofdscribe.featurizers.chemistry.racs import RACS, _get_racs_for_bbs

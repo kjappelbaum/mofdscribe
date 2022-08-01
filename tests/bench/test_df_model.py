@@ -6,7 +6,6 @@ from mofdscribe.bench.logkHCO2 import LogkHCO2ExtrapolationBench
 from mofdscribe.bench.mofbench import BenchResult
 from mofdscribe.datasets import CoREDataset
 
-
 _FEATURES = [
     "total_POV_gravimetric",
     "mc_CRY-chi-0-all",
