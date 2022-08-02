@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """In-dataset predictions for the logarithmitic CO2 Henry coefficients"""
 from typing import Optional
-
+import numpy as np
 from mofdscribe.datasets import CoREDataset
 from mofdscribe.splitters.splitters import DensitySplitter, HashSplitter
 
@@ -67,7 +67,12 @@ class LogkHCO2InterpolationBench(MOFBenchRegression):
 
 
 class LogkHCO2ExtrapolationBench(MOFBenchRegression):
-    """Benchmarking models for the logarithmic CO2 Henry coefficient under out-of-distribution conditions."""
+    """Benchmarking models for the logarithmic CO2 Henry coefficient under "out-of-distribution" conditions.
+
+    "Out-of-distribution" conditions means that every of the 5 training fold will only see 4 out of the 5
+    quantile bins.
+    This implies that 2 runs are extrapolative and the other 3 need to "fill holes in the distribution".
+    """
 
     def __init__(
         self,
@@ -99,7 +104,11 @@ class LogkHCO2ExtrapolationBench(MOFBenchRegression):
         super().__init__(
             model,
             ds=CoREDataset(version),
-            splitter=DensitySplitter(CoREDataset(version), sample_frac=0.01 if debug else 1.0),
+            splitter=DensitySplitter(
+                CoREDataset(version),
+                sample_frac=0.01 if debug else 1.0,
+                density_q=np.linspace(0, 1, 5),
+            ),
             target=["logKH_CO2"],
             task="logKH_CO2_ext",
             k=5,

@@ -27,6 +27,7 @@ class BenchTaskEnum(Enum):
 
     logKH_CO2_int = "logKH_CO2_int"  # noqa: N815
     logKH_CO2_ext = "logKH_CO2_ext"  # noqa: N815
+    pbe_bandgap = "pbe_bandgap"  # noqa: N815
 
 
 class BenchResult(BaseModel):
