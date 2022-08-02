@@ -213,20 +213,27 @@ def test_base_splitter(sample_frac, shuffle):
     splitter = MySplitter(ds, sample_frac=sample_frac, shuffle=shuffle)
 
     train_idx, test_idx = splitter.train_test_split()
+    if sample_frac < 1:
+        assert len(train_idx) + len(test_idx) < len(ds)
     groups_train = set(groups[train_idx])
     groups_test = set(groups[test_idx])
     assert groups_train & groups_test == set()
 
 
-def test_hash_splitter():
+@pytest.mark.parametrize("sample_frac", (0.2, 0.5, 1.0))
+def test_hash_splitter(sample_frac):
     """Ensure that the splits add up to the total number of structures and are non-overlapping."""
     ds = CoREDataset()
-    hs = HashSplitter(ds, hash_type="undecorated_scaffold_hash")
+    hs = HashSplitter(ds, hash_type="undecorated_scaffold_hash", sample_frac=sample_frac)
 
     for train, test in hs.k_fold(k=5):
 
         assert set(train) & set(test) == set()
-        assert len(set(list(train) + list(test))) == len(ds)
+
+        if sample_frac < 1:
+            assert len(train) + len(test) < len(ds)
+        else:
+            assert len(set(list(train) + list(test))) == len(ds)
 
     splits = hs.train_valid_test_split(frac_train=0.5, frac_valid=0.3)
     assert len(splits) == 3
