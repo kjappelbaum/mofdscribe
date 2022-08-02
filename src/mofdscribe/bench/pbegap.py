@@ -53,7 +53,7 @@ class PBEBandGapBench(MOFBenchRegression):
                 stratification_col="outputs.pbe.bandgap",
                 sample_frac=0.01 if debug else 1.0,
             ),
-            target=["logKH_CO2"],
+            target=["outputs.pbe.bandgap"],
             task="pbe_bandgap",
             k=5,
             version=version,
