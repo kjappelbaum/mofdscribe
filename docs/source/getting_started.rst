@@ -151,7 +151,8 @@ Running a benchmark
 
 The benchmarks will run k=5-fold cross validation on the dataset. We chose this over a single split, because this is more robust to randomness (and gives at least some indication of the variance of the estimate).
 
-.. note:: OOD vs ID
+.. admonition:: OOD vs ID
+    :class: note
 
     Most benchmarks come in OOD and ID versions. 
     OOD indicates out-of-distribution, and typically involves grouping on a key feature (e.g. density). 
