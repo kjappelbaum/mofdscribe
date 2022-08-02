@@ -11,7 +11,7 @@ from typing import List, Optional, Union
 
 import numpy as np
 from loguru import logger
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from mofdscribe.datasets.dataset import StructureDataset
 from mofdscribe.metrics.metric_collection import RegressionMetricCollection
@@ -33,18 +33,27 @@ class BenchTaskEnum(Enum):
 class BenchResult(BaseModel):
     """Model for benchmark results."""
 
-    start_time: datetime
-    end_time: datetime
+    start_time: datetime = Field(title="Start time", description="Start time of the benchmark")
+    end_time: datetime = Field(title="End time", description="End time of the benchmark")
     # ToDo: Add ClassificationMetricCollection
-    metrics: RegressionMetricCollection
-    version: Optional[str]
-    features: Optional[str]
-    name: str
-    task: BenchTaskEnum
-    model_type: Optional[str]
-    reference: Optional[str]
-    implementation: Optional[str]
-    mofdscribe_version: str
+    metrics: RegressionMetricCollection = Field(
+        title="Metrics", description="Metrics of the benchmark"
+    )
+    version: Optional[str] = Field(title="Version", description="Version of the benchmark")
+    features: Optional[str] = Field(
+        title="Features",
+        description="Features used in the model. If you use a graph net, report the edge and vertex features.",
+    )
+    name: str = Field(title="Name", description="Name of the model. This will be used as filename.")
+    task: BenchTaskEnum = Field(title="Task", description="Task of the benchmark")
+    model_type: Optional[str] = Field(
+        title="Model type", description="Model type, e.g. 'CGCNN', 'BERT', 'XGBoost'"
+    )
+    reference: Optional[str] = Field(title="Reference", description="Reference with more details")
+    implementation: Optional[str] = Field(
+        title="Implementation", description="Link to implementation"
+    )
+    mofdscribe_version: str = Field(title="mofdscribe version", description="mofdscribe version")
 
     def save_json(self, folder: Union[str, os.PathLike]) -> None:
         """Save benchmark results to json file."""

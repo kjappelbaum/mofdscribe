@@ -24,7 +24,7 @@ def featurize_mof_ignore_failure(infile, outdir):
         structure = Structure.from_file(infile)
         feats = featurizer.featurize(structure)
         features = featurizer.feature_labels()
-        df = pd.DataFrame(zip(dict(features, feats)))
+        df = pd.DataFrame([dict(zip(features, feats))])
         inname = Path(infile).stem
         df.to_csv(os.path.join(outdir, inname + ".csv"))
 
