@@ -26,6 +26,12 @@ Many of the descriptors implemented in mofdscribe have been discussed in our
 
     To identify bound and unbound solvents, you might find the `moffragmentor package <https://github.com/kjappelbaum/moffragmentor>`_ useful.
 
+.. note:: 
+
+    You might be surprised to see new folders appear and disappear in your working directory when you run certain featurizers.
+    This is expected. For some featurizers we need to create temporary files, for which we will create the temporary folders. 
+    You can ignore this, they will be cleaned up automatically.
+
 Atom-centered featurizers
 ------------------------------
 
