@@ -13,6 +13,7 @@ from mofdscribe.splitters.utils import (
     grouped_train_valid_test_partition,
     kennard_stone_sampling,
     stratified_train_test_partition,
+    downsample_splits,
 )
 
 
@@ -195,3 +196,10 @@ def test_check_fraction():
         check_fraction(0.1, 0.2, 0.4)
 
     _ = check_fraction(0.8, 0.1, 0.1)
+
+
+def test_downsample_splits():
+    res = downsample_splits([np.arange(100), np.arange(100)], sample_frac=0.8)
+
+    assert len(res[0]) == 80
+    assert len(res[1]) == 80

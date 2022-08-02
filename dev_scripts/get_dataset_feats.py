@@ -1,6 +1,5 @@
 from glob import glob
 import os
-import pickle
 
 import pandas as pd
 import click

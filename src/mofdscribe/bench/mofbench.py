@@ -186,7 +186,9 @@ class MOFBenchRegression(MOFBench):
                 self._k,
             )
         ):
-            logger.debug(f"K-fold round {i}")
+            logger.debug(
+                f"K-fold round {i}, {len(train_idx)} train points, {len(test_idx)} test points"
+            )
             start_time = time.time()
             self._train(
                 train_idx,

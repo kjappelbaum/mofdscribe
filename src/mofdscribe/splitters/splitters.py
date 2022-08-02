@@ -103,6 +103,10 @@ class BaseSplitter:
         self._center = center
         self._q = q
 
+        logger.debug(
+            f"Splitter settings | shuffle {self._shuffle}, random state {self._random_state}, sample frac {self._sample_frac}, q {self._q}"
+        )
+
     def _get_idxs(self):
         """Return an array of indices. Length equals to the length of the dataset."""
         idx = np.arange(self._len)
@@ -273,7 +277,10 @@ class BaseSplitter:
                 if self._shuffle:
                     np.random.shuffle(train_index)
                     np.random.shuffle(test_index)
-                yield train_index, test_index
+                if self._sample_frac < 1:
+                    yield downsample_splits([train_index, test_index], self._sample_frac)
+                else:
+                    yield train_index, test_index
         else:
             for train_index, test_index in kfold.split(idx, y=stratification_col):
                 if self._shuffle:
@@ -281,7 +288,8 @@ class BaseSplitter:
                     np.random.shuffle(test_index)
                 if self._sample_frac < 1:
                     yield downsample_splits([train_index, test_index], self._sample_frac)
-                yield train_index, test_index
+                else:
+                    yield train_index, test_index
 
     def _get_groups(self) -> Iterable[Union[int, str]]:
         return None
@@ -361,7 +369,15 @@ class HashSplitter(BaseSplitter):
                 Defaults to (0, 0.25, 0.5, 0.75, 1).
         """
         self.hash_type = hash_type
-        super().__init__(ds, shuffle, random_state, sample_frac, stratification_col, center, q)
+        super().__init__(
+            ds,
+            shuffle=shuffle,
+            random_state=random_state,
+            sample_frac=sample_frac,
+            stratification_col=stratification_col,
+            center=center,
+            q=q,
+        )
 
     def _get_hashes(self) -> Iterable[str]:
         """Retrieve the list of hashes from the dataset
@@ -451,7 +467,15 @@ class DensitySplitter(BaseSplitter):
                 Defaults to (0, 0.25, 0.5, 0.75, 1]. Defaults to [0, 0.25, 0.5, 0.75, 1).
         """
         self._density_q = density_q
-        super().__init__(ds, shuffle, random_state, sample_frac, stratification_col, center, q)
+        super().__init__(
+            ds=ds,
+            shuffle=shuffle,
+            random_state=random_state,
+            sample_frac=sample_frac,
+            stratification_col=stratification_col,
+            center=center,
+            q=q,
+        )
 
     def _get_groups(self) -> Iterable[int]:
         return quantile_binning(self._ds.get_densities(range(len(self._ds))), self._density_q)
@@ -513,7 +537,15 @@ class TimeSplitter(BaseSplitter):
                 Defaults to (0, 0.25, 0.5, 0.75, 1).
         """
         self._year_q = year_q
-        super().__init__(ds, shuffle, random_state, sample_frac, stratification_col, center, q)
+        super().__init__(
+            ds=ds,
+            shuffle=shuffle,
+            random_state=random_state,
+            sample_frac=sample_frac,
+            stratification_col=stratification_col,
+            center=center,
+            q=q,
+        )
 
     def _get_groups(self) -> Iterable[int]:
         return quantile_binning(self._ds.get_years(range(len(self._ds))), self._year_q)
@@ -600,7 +632,15 @@ class KennardStoneSplitter(BaseSplitter):
         self.metric = metric
         self.ascending = ascending
         self._sorted_indices = None
-        super().__init__(ds, shuffle, random_state, sample_frac, None, None, None)
+        super().__init__(
+            ds=ds,
+            shuffle=shuffle,
+            random_state=random_state,
+            sample_frac=sample_frac,
+            center=None,
+            stratification_col=None,
+            q=None,
+        )
 
     def get_sorted_indices(self, ds: StructureDataset) -> Iterable[int]:
         """Return a list of indices, sorted by similarity using the Kennard-Stone algorithm.
@@ -756,7 +796,15 @@ class ClusterSplitter(BaseSplitter):
         self.ascending = False
         self._pca_kwargs = pca_kwargs
         self._kmeans_kwargs = kmeans_kwargs
-        super().__init__(ds, shuffle, random_state, sample_frac, stratification_col, center, q)
+        super().__init__(
+            ds=ds,
+            shuffle=shuffle,
+            random_state=random_state,
+            sample_frac=sample_frac,
+            stratification_col=stratification_col,
+            center=center,
+            q=q,
+        )
 
     def _get_sorted_indices(self, ds: StructureDataset, shuffle: bool = True) -> Iterable[int]:
         if self._sorted_indices is None:
@@ -850,7 +898,15 @@ class ClusterStratifiedSplitter(BaseSplitter):
         self.ascending = False
         self._pca_kwargs = pca_kwargs
         self._kmeans_kwargs = kmeans_kwargs
-        super().__init__(ds, shuffle, random_state, sample_frac, None, None, None)
+        super().__init__(
+            ds=ds,
+            shuffle=shuffle,
+            random_state=random_state,
+            sample_frac=sample_frac,
+            stratification_col=None,
+            center=None,
+            q=None,
+        )
 
     def _get_stratification_col(self) -> Iterable[int]:
         if self._stratification_groups is None:
@@ -935,7 +991,15 @@ class LOCOCV(BaseSplitter):
         self._stratification_groups = None
         self.ascending = False
         self.feature_names = feature_names
-        super().__init__(ds, shuffle, random_state, sample_frac, None, None, None)
+        super().__init__(
+            ds=ds,
+            shuffle=shuffle,
+            random_state=random_state,
+            sample_frac=sample_frac,
+            center=None,
+            stratification_col=None,
+            q=None,
+        )
 
     def train_test_split(
         self,
