@@ -1,17 +1,19 @@
 # -*- coding: utf-8 -*-
 """In-dataset predictions for the logarithmitic CO2 Henry coefficients"""
 from typing import Optional
+
 import numpy as np
+
 from mofdscribe.datasets import CoREDataset
 from mofdscribe.splitters.splitters import DensitySplitter, HashSplitter
 
 from .mofbench import MOFBenchRegression
 
-__all__ = ("LogkHCO2InterpolationBench", "LogkHCO2ExtrapolationBench")
+__all__ = ("LogkHCO2IDBench", "LogkHCO2OODBench")
 
 
-class LogkHCO2InterpolationBench(MOFBenchRegression):
-    """Benchmarking models for the logarithmic CO2 Henry coefficient under in-distribution conditions.
+class LogkHCO2IDBench(MOFBenchRegression):
+    """Benchmarking models for the logarithmic CO2 Henry coefficient under in-domain conditions.
 
     In-distribution implies that we use a cluster stratified splitter
     that ensures that the ratios of different clusters in the training
@@ -44,6 +46,8 @@ class LogkHCO2InterpolationBench(MOFBenchRegression):
             reference (str, optional): Reference with more details about modeling approach.
                 Defaults to None.
             implementation (str, optional): Link to implementation. Defaults to None.
+            debug (bool): If True, use a small dataset (1% of full dataset) for debugging.
+                Defaults to False.
         """
         super().__init__(
             model,
@@ -54,7 +58,7 @@ class LogkHCO2InterpolationBench(MOFBenchRegression):
                 sample_frac=0.01 if debug else 1.0,
             ),
             target=["logKH_CO2"],
-            task="logKH_CO2_int",
+            task="logKH_CO2_id",
             k=5,
             version=version,
             features=features,
@@ -66,10 +70,10 @@ class LogkHCO2InterpolationBench(MOFBenchRegression):
         )
 
 
-class LogkHCO2ExtrapolationBench(MOFBenchRegression):
-    """Benchmarking models for the logarithmic CO2 Henry coefficient under "out-of-distribution" conditions.
+class LogkHCO2OODBench(MOFBenchRegression):
+    """Benchmarking models for the logarithmic CO2 Henry coefficient under "out-of-domain" conditions.
 
-    "Out-of-distribution" conditions means that every of the 5 training fold will only see 4 out of the 5
+    "Out-of-domain" conditions means that every of the 5 training fold will only see 4 out of the 5
     quantile bins.
     This implies that 2 runs are extrapolative and the other 3 need to "fill holes in the distribution".
     """
@@ -100,6 +104,8 @@ class LogkHCO2ExtrapolationBench(MOFBenchRegression):
             reference (str, optional): Reference with more details about modeling approach.
                 Defaults to None.
             implementation (str, optional): Link to implementation. Defaults to None.
+            debug (bool): If True, use a small dataset (1% of full dataset) for debugging.
+                Defaults to False.
         """
         super().__init__(
             model,
@@ -107,10 +113,10 @@ class LogkHCO2ExtrapolationBench(MOFBenchRegression):
             splitter=DensitySplitter(
                 CoREDataset(version),
                 sample_frac=0.01 if debug else 1.0,
-                density_q=np.linspace(0, 1, 5),
+                density_q=np.linspace(0, 1, 6),
             ),
             target=["logKH_CO2"],
-            task="logKH_CO2_ext",
+            task="logKH_CO2_ood",
             k=5,
             version=version,
             features=features,

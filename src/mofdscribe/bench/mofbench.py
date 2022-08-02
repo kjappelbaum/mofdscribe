@@ -25,9 +25,9 @@ __all__ = ["MOFBenchRegression", "BenchResult"]
 class BenchTaskEnum(Enum):
     """Enum for benchmark tasks."""
 
-    logKH_CO2_int = "logKH_CO2_int"  # noqa: N815
-    logKH_CO2_ext = "logKH_CO2_ext"  # noqa: N815
-    pbe_bandgap = "pbe_bandgap"  # noqa: N815
+    logKH_CO2_id = "logKH_CO2_id"  # noqa: N815
+    logKH_CO2_ext = "logKH_CO2_ood"  # noqa: N815
+    pbe_bandgap_id = "pbe_bandgap_id"  # noqa: N815
 
 
 class BenchResult(BaseModel):
@@ -158,7 +158,7 @@ class MOFBench(ABC):
                 report the edge and vertex features. Defaults to None.
             reference (str, optional): Reference with more details. Defaults to None.
             implementation (str, optional): Link to implementation. Defaults to None.
-            debug (bool, optional): If True, the benchmark will be run in debug mode
+            debug (bool): If True, the benchmark will be run in debug mode
                 (1% of the data).
         """
         self._model = model
@@ -190,6 +190,7 @@ class MOFBench(ABC):
         raise NotImplementedError
 
     def bench(self) -> BenchResult:
+        """Run the benchmarking."""
         start_time = time.time()
         metrics = self._score()
         end_time = time.time()
@@ -209,6 +210,8 @@ class MOFBench(ABC):
 
 
 class MOFBenchRegression(MOFBench):
+    """Regression benchmarking class."""
+
     def _score(self):
         metric_collection = []
         timings = []

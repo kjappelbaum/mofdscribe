@@ -37,7 +37,6 @@ def test_racs(hkust_structure, irmof_structure):
             if ("functional" not in bb) and ("linker" in bb):
                 assert np.isnan(np.array(list(v.values()))).sum() == 0
             elif "functional" in bb:
-                print(v)
                 assert np.isnan(np.array(list(v.values()))).sum() == len(v)
         racs_ordered = OrderedDict(sorted(racs.items()))
 

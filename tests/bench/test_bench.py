@@ -13,7 +13,7 @@ from sklearn.preprocessing import StandardScaler
 from mofdscribe.bench.mofbench import BenchResult, MOFBench, MOFBenchRegression, id_for_bench_result
 from mofdscribe.datasets import CoREDataset
 from mofdscribe.splitters import ClusterStratifiedSplitter
-from mofdscribe.splitters.splitters import BaseSplitter, HashSplitter
+from mofdscribe.splitters.splitters import BaseSplitter
 
 FEATURES = [
     "total_POV_gravimetric",
@@ -240,7 +240,7 @@ def test_mofbench(tmp_path_factory):
         model=MyDummyModel(),
         ds=CoREDataset(),
         name="my model",
-        task="logKH_CO2_int",
+        task="logKH_CO2_id",
         splitter=BaseSplitter(CoREDataset(), sample_frac=0.001),
         target=["logKH_CO2"],
         debug=True,

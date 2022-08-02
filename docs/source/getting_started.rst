@@ -151,6 +151,13 @@ Running a benchmark
 
 The benchmarks will run k=5-fold cross validation on the dataset. We chose this over a single split, because this is more robust to randomness (and gives at least some indication of the variance of the estimate).
 
+.. note:: OOD vs ID
+
+    Most benchmarks come in OOD and ID versions. 
+    OOD indicates out-of-distribution, and typically involves grouping on a key feature (e.g. density). 
+    ID indicates in-distribution, and typically is stratified on the target variable. 
+    
+       
 For running a benchmark with your model, your model must be in the form of a class with `fit(idx, structures, y)` and `predict(idx, structures)` methods, for example
 
 .. code-block:: python
@@ -189,9 +196,9 @@ If you have a model in this form, you can use a bench class
 
 .. code-block:: python
 
-    from mofdscribe.bench.logKHCO2 import LogkHCO2InterpolationBench
+    from mofdscribe.bench.logKHCO2 import LogkHCO2IDBench
 
-    bench = LogkHCO2InterpolationBench(MyDummyModel(), name='My great model')
+    bench = LogkHCO2IDBench(MyDummyModel(), name='My great model')
     report = bench.bench()
     report.save_json(<directory>)
 
@@ -201,7 +208,7 @@ You can test this using some dummy models implemented in mofdscribe
 
     from mofdscribe.bench.dummy_models import DensityRegressor
 
-    logkHCO2_interpolation_density = LogkHCO2InterpolationBench(
+    logkHCO2_interpolation_density = LogkHCO2IDBench(
         DensityRegressor(),
         version="v0.0.1",
         name="linear density",

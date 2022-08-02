@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 """Test the adversial validation"""
-from tkinter import Spinbox
 
 import numpy as np
 

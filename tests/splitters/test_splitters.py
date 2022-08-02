@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """Test splitters."""
 from collections import Counter
-from random import shuffle
 
 import numpy as np
 import pytest

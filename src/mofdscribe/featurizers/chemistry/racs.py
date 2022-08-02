@@ -76,7 +76,7 @@ def _compute_racs(
         for aggregation_name, aggregation_values in property_values.items():
             for corr_agg in corr_aggregations:
                 agg_func = ARRAY_AGGREGATORS[corr_agg]
-                name = f"racs_bb-{part_name}_prop-{property_name}_scope-{scope}_propagg-{aggregation_name}_corragg-{corr_agg}"
+                name = f"racs_bb-{part_name}_prop-{property_name}_scope-{scope}_propagg-{aggregation_name}_corragg-{corr_agg}"  # noqa: E501
                 aggregated_racs[name] = agg_func(aggregation_values)
 
     return aggregated_racs
@@ -179,7 +179,7 @@ class RACS(BaseFeaturizer):
             corr_agg (Tuple[str]): Function to aggregate the properties across different start/scopes.
                 Defaults to ("sum", "avg").
             bb_agg (Tuple[str]): Function used to aggregate the properties across different building blocks.
-                 Defaults to ("avg", "sum").
+                Defaults to ("avg", "sum").
             bond_heuristic (str): Method used to guess bonds. Defaults to "vesta".
             bbs (Tuple[str]): Building blocks to use. Defaults to ("linker_all",
                 "linker_connecting", "linker_functional", "linker_scaffold", "nodes").
@@ -235,7 +235,7 @@ class RACS(BaseFeaturizer):
                         for cor_agg in self.corr_agg:
                             for bb_agg in self.bb_agg:
                                 names.append(
-                                    f"racs_bb-{bb}_prop-{prop}_scope-{scope}_propagg-{property_agg}_corragg-{cor_agg}_bbagg-{bb_agg}"
+                                    f"racs_bb-{bb}_prop-{prop}_scope-{scope}_propagg-{property_agg}_corragg-{cor_agg}_bbagg-{bb_agg}"  # noqa: E501
                                 )
 
         names = sorted(names)

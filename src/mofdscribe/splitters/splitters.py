@@ -104,7 +104,8 @@ class BaseSplitter:
         self._q = q
 
         logger.debug(
-            f"Splitter settings | shuffle {self._shuffle}, random state {self._random_state}, sample frac {self._sample_frac}, q {self._q}"
+            f"Splitter settings | shuffle {self._shuffle}, "
+            "random state {self._random_state}, sample frac {self._sample_frac}, q {self._q}"
         )
 
     def _get_idxs(self):

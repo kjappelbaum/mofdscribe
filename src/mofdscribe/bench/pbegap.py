@@ -7,10 +7,10 @@ from mofdscribe.splitters.splitters import HashSplitter
 
 from .mofbench import MOFBenchRegression
 
-__all__ = ("PBEBandGapBench",)
+__all__ = ("PBEBandGapIDBench",)
 
 
-class PBEBandGapBench(MOFBenchRegression):
+class PBEBandGapIDBench(MOFBenchRegression):
     """Benchmarking models for the PBE bandgap under in-distribution conditions.
 
     In-distribution implies that we use a cluster stratified splitter
@@ -44,6 +44,8 @@ class PBEBandGapBench(MOFBenchRegression):
             reference (str, optional): Reference with more details about modeling approach.
                 Defaults to None.
             implementation (str, optional): Link to implementation. Defaults to None.
+            debug (bool): If True, use a small dataset (1% of full dataset) for debugging.
+                Defaults to False.
         """
         super().__init__(
             model,
@@ -54,7 +56,7 @@ class PBEBandGapBench(MOFBenchRegression):
                 sample_frac=0.01 if debug else 1.0,
             ),
             target=["outputs.pbe.bandgap"],
-            task="pbe_bandgap",
+            task="pbe_bandgap_id",
             k=5,
             version=version,
             features=features,
