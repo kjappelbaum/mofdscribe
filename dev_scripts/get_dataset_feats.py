@@ -1,17 +1,17 @@
-from glob import glob
-import os
-
-import pandas as pd
-import click
-from pathlib import Path
-from mofdscribe.featurizers.chemistry.racs import RACS
-from mofdscribe.featurizers.chemistry.aprdf import APRDF
-from mofdscribe.featurizers.chemistry.amd import AMD
-from mofdscribe.featurizers.topology.ph_stats import PHStats
-from mofdscribe.featurizers.pore import PoreDiameters, SurfaceArea
-from matminer.featurizers.base import MultipleFeaturizer
 import concurrent.futures
+import os
+from glob import glob
+from pathlib import Path
 
+import click
+import pandas as pd
+from matminer.featurizers.base import MultipleFeaturizer
+
+from mofdscribe.featurizers.chemistry.amd import AMD
+from mofdscribe.featurizers.chemistry.aprdf import APRDF
+from mofdscribe.featurizers.chemistry.racs import RACS
+from mofdscribe.featurizers.pore import PoreDiameters, SurfaceArea
+from mofdscribe.featurizers.topology.ph_stats import PHStats
 
 featurizer = MultipleFeaturizer(
     [RACS(), PHStats(), PoreDiameters("CO2"), APRDF(), SurfaceArea(), AMD()]
