@@ -48,6 +48,8 @@ class BenchResult(BaseModel):
 
     def save_json(self, folder: Union[str, os.PathLike]) -> None:
         """Save benchmark results to json file."""
+        if not os.path.exists(folder):
+            os.makedirs(folder)
         with open(
             os.path.join(
                 folder,
@@ -68,7 +70,7 @@ def id_for_bench_result(bench_result: BenchResult) -> str:
     m = bench_result.model_type[:2] if bench_result.model_type else hash[4:6]
     r = bench_result.reference[:2] if bench_result.reference else hash[6:8]
     datetime_part = bench_result.start_time.strftime("%Y%m%d%H%M%S")
-    return f"R{n}{f}{m}{r}{datetime_part}"
+    return f"R{n}{f}{m}{r}{datetime_part}".replace("/", "-").replace(" ", "_")
 
 
 class MOFBench(ABC):
@@ -194,7 +196,7 @@ class MOFBenchRegression(MOFBench):
             self._train(
                 train_idx,
                 self._ds.get_structures(train_idx),
-                self._ds._df[self._targets].iloc[train_idx],
+                self._ds._df[self._targets].iloc[train_idx].values,
             )
             end_time = time.time()
             timings.append(end_time - start_time)
@@ -202,7 +204,7 @@ class MOFBenchRegression(MOFBench):
             y_pred = self._predict(test_idx, self._ds.get_structures(test_idx))
             end_time = time.time()
             inference_times.append(end_time - start_time)
-            y_true = self._ds._df[self._targets].iloc[test_idx]
+            y_true = self._ds._df[self._targets].iloc[test_idx].values
             metrics = get_regression_metrics(y_pred, y_true)
             metric_collection.append(metrics)
         return RegressionMetricCollection(

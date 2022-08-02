@@ -296,7 +296,7 @@ class BaseSplitter:
 
     def _get_stratification_col(self) -> Iterable[Union[int, float]]:
         if isinstance(self._stratification_col, str):
-            return self._ds[self._stratification_col].values
+            return self._ds._df[self._stratification_col].values
         else:
             return self._stratification_col
 
