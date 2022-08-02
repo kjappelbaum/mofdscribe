@@ -10,7 +10,7 @@ Many of the descriptors implemented in mofdscribe have been discussed in our
 .. needtable::
    :types: featurizer
    :style: datatable
-   :class: table-striped
+   :class: table-striped 
    :columns: id, considers_geometry, considers_structure_graph, encodes_chemistry, scalar, scope
 
 .. warning::

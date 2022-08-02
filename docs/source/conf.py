@@ -68,6 +68,7 @@ extensions = [
     "sphinxcontrib.needs",
     "sphinx.ext.intersphinx",
     "sphinx-pydantic",
+    "sphinx_immaterial",
 ]
 
 intersphinx_mapping = {
@@ -167,7 +168,7 @@ pygments_style = "sphinx"
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = "sphinx_book_theme"
+html_theme = "sphinx_immaterial"
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -176,12 +177,37 @@ html_theme = "sphinx_book_theme"
 html_theme_options = {
     "path_to_docs": "docs",
     "repository_url": "https://github.com/kjappelbaum/mofdscribe",
+    "repo_url": "https://github.com/kjappelbaum/mofdscribe",
+    "repo_name": "mofdscribe",
+    "repo_type": "github",
     "use_repository_button": True,
     "use_edit_page_button": True,
     "use_issues_button": True,
     "launch_buttons": {
         "binderhub_url": "https://mybinder.org/v2/gh/kjappelbaum/pyepal/HEAD?filepath=examples",
     },
+    # "source_repository": "https://github.com/pradyunsg/furo/",
+    "source_branch": "main",
+    "source_directory": "docs/",
+    "edit_uri": "https://github.com/kjappelbaum/mofdscribe/docs/source",
+    "palette": [
+        {
+            "media": "(prefers-color-scheme: light)",
+            "scheme": "default",
+            "toggle": {
+                "icon": "material/toggle-switch-off-outline",
+                "name": "Switch to dark mode",
+            },
+        },
+        {
+            "media": "(prefers-color-scheme: dark)",
+            "scheme": "slate",
+            "toggle": {
+                "icon": "material/toggle-switch",
+                "name": "Switch to light mode",
+            },
+        },
+    ],
 }
 
 # Add any paths that contain custom static files (such as style sheets) here,

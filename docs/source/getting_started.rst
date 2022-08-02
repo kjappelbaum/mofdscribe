@@ -105,9 +105,9 @@ input.
 All splitters are implemented based on :py:meth:`~mofdscribe.splitters.splitters.BaseSplitter`.
 If you want to implement a custom grouping or stratification strategy, you'll need to implement the
 
-    * :code: `_get_stratification_col`: Should return an ArrayLike object of floats, categories, or ints.
-                If it is categorical data, the :code:`BaseSplitter` will handle the discretization.
-    * :code: `_get_groups`: Should return an ArrayLike object of categories (integers or strings)
+* :code: `_get_stratification_col`: Should return an ArrayLike object of floats, categories, or ints.
+            If it is categorical data, the :code:`BaseSplitter` will handle the discretization.
+* :code: `_get_groups`: Should return an ArrayLike object of categories (integers or strings)
 
 methods.
 
@@ -156,8 +156,8 @@ The benchmarks will run k=5-fold cross validation on the dataset. We chose this 
     Most benchmarks come in OOD and ID versions. 
     OOD indicates out-of-distribution, and typically involves grouping on a key feature (e.g. density). 
     ID indicates in-distribution, and typically is stratified on the target variable. 
-    
-       
+
+
 For running a benchmark with your model, your model must be in the form of a class with `fit(idx, structures, y)` and `predict(idx, structures)` methods, for example
 
 .. code-block:: python
