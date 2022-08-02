@@ -140,6 +140,27 @@ class MOFBench(ABC):
         implementation: Optional[str] = None,
         debug: bool = False,
     ):
+        """Initialize the benchmarking class.
+
+        Args:
+            model: Model to be benchmarked.
+            ds (StructureDataset): Dataset to be used for benchmarking.
+            splitter (BaseSplitter): Splitter to be used for benchmarking.
+            target (List[str]): Target labels to be used for benchmarking.
+                Must be included in the dataset.
+            name (str): Name of the model. This will be used as filename.
+            task (BenchTaskEnum): Task of the benchmark.
+            k (int): Number of folds for k-fold cross-validation.
+            model_type (str, optional): Model type, e.g. 'CGCNN', 'BERT', 'XGBoost'.
+                Defaults to None.
+            version (str, optional): Version of the model. Defaults to None.
+            features (str, optional): Features used in the model. If you use a graph net,
+                report the edge and vertex features. Defaults to None.
+            reference (str, optional): Reference with more details. Defaults to None.
+            implementation (str, optional): Link to implementation. Defaults to None.
+            debug (bool, optional): If True, the benchmark will be run in debug mode
+                (1% of the data).
+        """
         self._model = model
         self._start_time = None
         self._end_time = None
