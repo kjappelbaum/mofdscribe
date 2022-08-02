@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 """In-dataset predictions for the logarithmitic CO2 Henry coefficients"""
 from typing import Optional
+
 import numpy as np
+
 from mofdscribe.datasets import CoREDataset
 from mofdscribe.splitters.splitters import DensitySplitter, HashSplitter
 
