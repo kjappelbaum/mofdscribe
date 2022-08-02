@@ -224,6 +224,16 @@ For this:
 5. Push your branch to the repository.
 6. Make a pull request.
 
+.. warning:: Do not look at the dataset! 
+
+    Do not perform hyper-parameter optimization (or model selection) on the dataset used for the benchmark 
+    *outside* the bench loop. This is data leakage. 
+
+    If you need to perform hyper-parameter optimization, use an approach such as nested-cross validation 
+    in the bench loop. 
+    Only this allows for fair comparison and only this allows others to reproduce the 
+    hyperparameter selection (and, hence, use "fair" hyperparameters when they compare their model with your model as a baseline).
+
 Referencing datasets and featurizers
 --------------------------------------
 
