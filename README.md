@@ -42,19 +42,19 @@ racs_features = featurizer.featurize(structure)
 ## 🚀 Installation
 
 
-The most recent release can be installed from
+<!-- The most recent release can be installed from
 [PyPI](https://pypi.org/project/mofdscribe/) with:
 
 ```bash
 $ pip install mofdscribe
-```
-
+``` -->
+<!-- 
 
 The most recent code and data can be installed directly from GitHub with:
 
 ```bash
 $ pip install git+https://github.com/kjappelbaum/mofdscribe.git
-```
+``` -->
 
 To install in development mode, use the following:
 
@@ -63,6 +63,14 @@ $ git clone git+https://github.com/kjappelbaum/mofdscribe.git
 $ cd mofdscribe
 $ pip install -e .
 ```
+
+if you want to use all utilities, you can use the `all` extra: `pip install -e ".[all]"`
+
+We depend on many other external tools. Currently, you need to manually install (due to pending merges for conda-recipies): 
+
+- `conda install -c conda-forge raspa2 zeopp-lsmo`
+- `moltda` from my refactor branch https://github.com/kjappelbaum/molecule-tda/tree/refactor
+- `moffragmentor` from my private repository  https://github.com/kjappelbaum/moffragmentor (which additionally requires `conda install -c conda-forge openbabel`)
 
 ## 👐 Contributing
 
