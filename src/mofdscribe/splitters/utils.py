@@ -337,7 +337,7 @@ def get_train_valid_test_sizes(
 ) -> Tuple[int, int, int]:
     """Compute the number of points in every split."""
     train_size = int(np.floor(train_size * size))
-    valid_size = int(np.floor(valid_size * size))
+    valid_size = int(np.ceil(valid_size * size))
     test_size = int(size - train_size - valid_size)
     return train_size, valid_size, test_size
 
@@ -426,6 +426,9 @@ def check_fraction(train_fraction: float, valid_fraction: float, test_fraction: 
                 f"{name} is {fraction}. However, train/valid/test fractions must be between 0 and 1."
             )
 
+    logger.debug(
+        f"Using fractions: train: {train_fraction}, valid: {valid_fraction}, test: {test_fraction}"
+    )
     if not (train_fraction + valid_fraction + test_fraction) == 1:
         raise ValueError("Train, valid, test fractions must sum to 1.")
 
@@ -445,3 +448,12 @@ def downsample_splits(splits, sample_frac):
         downsampled.append(np.random.choice(split, int(len(split) * sample_frac)))
 
     return tuple(downsampled)
+
+
+def sort_arrays_by_len(arrays, sort=True):
+    if sort:
+        arrays = [np.array(array) for array in arrays]
+        arrays.sort(key=len, reverse=True)
+        return arrays
+    else:
+        return arrays

@@ -29,6 +29,7 @@ from .utils import (
     no_group_warn,
     pca_kmeans,
     quantile_binning,
+    sort_arrays_by_len,
     stratified_train_test_partition,
 )
 from ..datasets.dataset import StructureDataset
@@ -58,6 +59,11 @@ class BaseSplitter:
     Internally, the :code:`BaseSplitter` uses those to group and/or stratify the splits.
     """
 
+    # Those variables are needed to automatically set the number of groups
+    # if the users does not set them (default behavior).
+    _grouping_q = None
+    _set_grouping = False
+
     def __init__(
         self,
         ds: StructureDataset,
@@ -67,6 +73,7 @@ class BaseSplitter:
         stratification_col: Optional[Union[str, np.typing.ArrayLike]] = None,
         center: callable = np.median,
         q: Iterable[float] = (0, 0.25, 0.5, 0.75, 1),
+        sort_by_len: bool = True,
     ):
         """Initialize a BaseSplitter.
 
@@ -93,6 +100,8 @@ class BaseSplitter:
                 the mode. Defaults to np.median.
             q (Iterable[float], optional): List of quantiles used for quantile binning.
                 Defaults to (0, 0.25, 0.5, 0.75, 1).
+            sort_by_len (bool, optional): If True, sort the splits by length.
+                (Applies to the train/test/valid and train/test splits). Defaults to True.
         """
         self._ds = ds
         self._shuffle = shuffle
@@ -102,10 +111,11 @@ class BaseSplitter:
         self._stratification_col = stratification_col
         self._center = center
         self._q = q
+        self._sort_by_len = sort_by_len
 
         logger.debug(
             f"Splitter settings | shuffle {self._shuffle}, "
-            "random state {self._random_state}, sample frac {self._sample_frac}, q {self._q}"
+            f"random state {self._random_state}, sample frac {self._sample_frac}, q {self._q}"
         )
 
     def _get_idxs(self):
@@ -123,6 +133,9 @@ class BaseSplitter:
         Returns:
             Tuple[Iterable[int], Iterable[int]]: Train indices, test indices
         """
+        if self._grouping_q is None or self._set_grouping:
+            self._set_grouping = True
+            self._grouping_q = np.linspace(0, 1, 3)
         check_fraction(train_fraction=frac_train, valid_fraction=0, test_fraction=1 - frac_train)
         groups = self._get_groups()
         stratification_col = self._get_stratification_col()
@@ -168,8 +181,10 @@ class BaseSplitter:
             )
 
         if self._sample_frac < 1:
-            return downsample_splits([train_idx, test_index], self._sample_frac)
-        return train_idx, test_index
+            return sort_arrays_by_len(
+                downsample_splits([train_idx, test_index], self._sample_frac), self._sort_by_len
+            )
+        return sort_arrays_by_len([train_idx, test_index], self._sort_by_len)
 
     def train_valid_test_split(
         self, frac_train: float = 0.7, frac_valid: float = 0.1
@@ -185,6 +200,9 @@ class BaseSplitter:
         Returns:
             Tuple[Iterable[int], Iterable[int], Iterable[int]]: Training, validation, test set.
         """
+        if self._grouping_q is None or self._set_grouping:
+            self._set_grouping = True
+            self._grouping_q = np.linspace(0, 1, 4)
         check_fraction(
             train_fraction=frac_train,
             valid_fraction=frac_valid,
@@ -233,8 +251,12 @@ class BaseSplitter:
                 q=self._q,
             )
         if self._sample_frac < 1:
-            return downsample_splits([train_idx, valid_idx, test_index], self._sample_frac)
-        return train_idx, valid_idx, test_index
+            return sort_arrays_by_len(
+                downsample_splits([train_idx, valid_idx, test_index], self._sample_frac),
+                self._sort_by_len,
+            )
+
+        return sort_arrays_by_len([train_idx, valid_idx, test_index], self._sort_by_len)
 
     def k_fold(self, k: int = 5) -> Tuple[Iterable[int], Iterable[int]]:
         """Peform k-fold crossvalidation.
@@ -245,6 +267,9 @@ class BaseSplitter:
         Yields:
             Tuple[Iterable[int], Iterable[int]]: Train indices, test indices.
         """
+        if self._grouping_q is None or self._set_grouping:
+            self._set_grouping = True
+            self._grouping_q = np.linspace(0, 1, k + 1)
         groups = self._get_groups()
         stratification_col = self._get_stratification_col()
         no_group_warn(groups)
@@ -335,6 +360,7 @@ class HashSplitter(BaseSplitter):
         stratification_col: Optional[Union[str, np.typing.ArrayLike]] = None,
         center=np.median,
         q: Iterable[float] = (0, 0.25, 0.5, 0.75, 1),
+        sort_by_len: bool = True,
     ) -> None:
         """Initialize a HashSplitter.
 
@@ -368,6 +394,8 @@ class HashSplitter(BaseSplitter):
                 the mode. Defaults to np.median.
             q (Iterable[float], optional): List of quantiles used for quantile binning.
                 Defaults to (0, 0.25, 0.5, 0.75, 1).
+            sort_by_len (bool, optional): If True, sort the splits by length.
+                (Applies to the train/test/valid and train/test splits). Defaults to True.
         """
         self.hash_type = hash_type
         super().__init__(
@@ -378,6 +406,7 @@ class HashSplitter(BaseSplitter):
             stratification_col=stratification_col,
             center=center,
             q=q,
+            sort_by_len=sort_by_len,
         )
 
     def _get_hashes(self) -> Iterable[str]:
@@ -431,13 +460,14 @@ class DensitySplitter(BaseSplitter):
     def __init__(
         self,
         ds: StructureDataset,
-        density_q: Iterable[float] = (0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0),
+        density_q: Optional[Iterable[float]] = None,
         shuffle: bool = True,
         random_state: Optional[Union[int, np.random.RandomState]] = None,
         sample_frac: Optional[float] = 1.0,
         stratification_col: Optional[Union[str, np.typing.ArrayLike]] = None,
         center: callable = np.median,
         q: Iterable[float] = (0, 0.25, 0.5, 0.75, 1),
+        sort_by_len: bool = True,
     ) -> None:
         """Initialize the DensitySplitter class.
 
@@ -445,8 +475,9 @@ class DensitySplitter(BaseSplitter):
             ds (StructureDataset): A structure dataset.
                 The :code:`BaseSplitter` only requires the length magic method to be implemented.
                 However, other splitters might require additional methods.
-            density_q (Iterable[float]): List of quantiles used for quantile binning for the density.
-                Defaults to (0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0)
+            density_q (Iterable[float], optional): List of quantiles used for quantile binning for the density.
+                Defaults to None. If None, then we use two bins for test/train split, three for
+                validation/train/test split and k for k-fold.
             shuffle (bool): If True, perform a shuffled split.
                 Defaults to True.
             random_state (Union[int, np.random.RandomState], optional):
@@ -466,8 +497,10 @@ class DensitySplitter(BaseSplitter):
                 the mode. Defaults to np.median.
             q (Iterable[float], optional): List of quantiles used for quantile binning.
                 Defaults to (0, 0.25, 0.5, 0.75, 1]. Defaults to [0, 0.25, 0.5, 0.75, 1).
+            sort_by_len (bool, optional): If True, sort the splits by length.
+                (Applies to the train/test/valid and train/test splits). Defaults to True.
         """
-        self._density_q = density_q
+        self._grouping_q = density_q
         super().__init__(
             ds=ds,
             shuffle=shuffle,
@@ -476,10 +509,11 @@ class DensitySplitter(BaseSplitter):
             stratification_col=stratification_col,
             center=center,
             q=q,
+            sort_by_len=sort_by_len,
         )
 
     def _get_groups(self) -> Iterable[int]:
-        return quantile_binning(self._ds.get_densities(range(len(self._ds))), self._density_q)
+        return quantile_binning(self._ds.get_densities(range(len(self._ds))), self._grouping_q)
 
 
 class TimeSplitter(BaseSplitter):
@@ -501,13 +535,14 @@ class TimeSplitter(BaseSplitter):
     def __init__(
         self,
         ds: StructureDataset,
-        year_q: Iterable[float] = (0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1),
+        year_q: Optional[Iterable[float]] = None,
         shuffle: bool = True,
         random_state: Optional[Union[int, np.random.RandomState]] = None,
         sample_frac: Optional[float] = 1.0,
         stratification_col: Optional[Union[str, np.typing.ArrayLike]] = None,
         center: callable = np.median,
         q: Iterable[float] = (0, 0.25, 0.5, 0.75, 1),
+        sort_by_len: bool = True,
     ) -> None:
         """Initialize the TimeSplitter class.
 
@@ -516,7 +551,8 @@ class TimeSplitter(BaseSplitter):
                 The :code:`BaseSplitter` only requires the length magic method to be implemented.
                 However, other splitters might require additional methods.
             year_q (Iterable[float]): List of quantiles used for quantile binning on the years.
-                Defaults to (0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1).
+                Defaults to None. If None, then we use two bins for test/train split, three for
+                validation/train/test split and k for k-fold.
             shuffle (bool): If True, perform a shuffled split.
                 Defaults to True.
             random_state (Union[int, np.random.RandomState], optional):
@@ -536,8 +572,10 @@ class TimeSplitter(BaseSplitter):
                 the mode. Defaults to np.median.
             q (Iterable[float], optional): List of quantiles used for quantile binning.
                 Defaults to (0, 0.25, 0.5, 0.75, 1).
+            sort_by_len (bool, optional): If True, sort the splits by length.
+                (Applies to the train/test/valid and train/test splits). Defaults to True.
         """
-        self._year_q = year_q
+        self._grouping_q = year_q
         super().__init__(
             ds=ds,
             shuffle=shuffle,
@@ -546,10 +584,11 @@ class TimeSplitter(BaseSplitter):
             stratification_col=stratification_col,
             center=center,
             q=q,
+            sort_by_len=sort_by_len,
         )
 
     def _get_groups(self) -> Iterable[int]:
-        return quantile_binning(self._ds.get_years(range(len(self._ds))), self._year_q)
+        return quantile_binning(self._ds.get_years(range(len(self._ds))), self._grouping_q)
 
 
 class KennardStoneSplitter(BaseSplitter):
@@ -740,6 +779,7 @@ class ClusterSplitter(BaseSplitter):
         stratification_col: Optional[Union[str, np.typing.ArrayLike]] = None,
         center: callable = np.median,
         q: Iterable[float] = (0, 0.25, 0.5, 0.75, 1),
+        sort_by_len: bool = False,
         scaled: bool = True,
         n_pca_components: Optional[Union[int, str]] = "mle",
         n_clusters: int = 4,
@@ -774,6 +814,8 @@ class ClusterSplitter(BaseSplitter):
                 the mode. Defaults to np.median.
             q (Iterable[float], optional): List of quantiles used for quantile binning.
                 Defaults to (0, 0.25, 0.5, 0.75, 1]. Defaults to [0, 0.25, 0.5, 0.75, 1).
+            sort_by_len (bool, optional): If True, sort the splits by length.
+                (Applies to the train/test/valid and train/test splits). Defaults to True.
             scaled (bool): If True, scale the data before clustering.
                 Defaults to True.
             n_pca_components (Union[int, str]): Number of components to use for PCA.
@@ -805,6 +847,7 @@ class ClusterSplitter(BaseSplitter):
             stratification_col=stratification_col,
             center=center,
             q=q,
+            sort_by_len=sort_by_len,
         )
 
     def _get_sorted_indices(self, ds: StructureDataset, shuffle: bool = True) -> Iterable[int]:

@@ -260,11 +260,12 @@ def test_density_splitter():
 
     dens_splitter = DensitySplitter(ds)
     for train, test in dens_splitter.k_fold(k=5):
-
+        assert all(dens_splitter._grouping_q == np.linspace(0, 1, 6))
         assert set(train) & set(test) == set()
         assert len(set(list(train) + list(test))) == len(ds)
 
     splits = dens_splitter.train_valid_test_split(frac_train=0.5, frac_valid=0.3)
+    assert all(dens_splitter._grouping_q == np.linspace(0, 1, 4))
     assert len(splits) == 3
     assert len(splits[0]) > len(splits[1]) > len(splits[2])
 
@@ -281,6 +282,7 @@ def test_density_splitter():
     splits = dens_splitter.train_test_split(
         frac_train=0.5,
     )
+    assert all(dens_splitter._grouping_q == np.linspace(0, 1, 3))
     groups = dens_splitter._get_groups()
 
     set0 = set(groups[splits[0]])
