@@ -6,7 +6,6 @@ from typing import List, Tuple
 
 import numpy as np
 import pandas as pd
-from loguru import logger
 from matminer.featurizers.base import BaseFeaturizer
 
 _THIS_DIR = os.path.dirname(os.path.abspath(__file__))
