@@ -105,9 +105,9 @@ input.
 All splitters are implemented based on :py:meth:`~mofdscribe.splitters.splitters.BaseSplitter`.
 If you want to implement a custom grouping or stratification strategy, you'll need to implement the
 
-* :code: `_get_stratification_col`: Should return an ArrayLike object of floats, categories, or ints.
+* :code:`_get_stratification_col`: Should return an ArrayLike object of floats, categories, or ints.
             If it is categorical data, the :code:`BaseSplitter` will handle the discretization.
-* :code: `_get_groups`: Should return an ArrayLike object of categories (integers or strings)
+* :code:`_get_groups`: Should return an ArrayLike object of categories (integers or strings)
 
 methods.
 
@@ -232,7 +232,8 @@ For this:
 5. Push your branch to the repository.
 6. Make a pull request.
 
-.. warning:: Do not look at the dataset! 
+.. admonition:: Do not look at the dataset! 
+    :class: warning
 
     Do not perform hyper-parameter optimization (or model selection) on the dataset used for the benchmark 
     *outside* the bench loop. This is data leakage. 

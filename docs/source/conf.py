@@ -57,10 +57,8 @@ modindex_common_prefix = ["mofdscribe."]
 # ones.
 extensions = [
     "sphinx.ext.autodoc",
-    "sphinx.ext.coverage",
     "sphinx.ext.napoleon",
     "sphinx_autodoc_typehints",
-    "sphinx.ext.githubpages",
     "sphinxcontrib.katex",
     "sphinx_copybutton",
     "sphinx.ext.viewcode",
@@ -68,7 +66,6 @@ extensions = [
     "sphinxcontrib.needs",
     "sphinx.ext.intersphinx",
     "sphinx-pydantic",
-    "sphinx_immaterial",
 ]
 
 intersphinx_mapping = {
@@ -163,12 +160,14 @@ exclude_patterns = []
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = "sphinx"
 
+
+needs_table_style = "datatables"
 # -- Options for HTML output -------------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = "sphinx_immaterial"
+html_theme = "furo"
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -183,31 +182,54 @@ html_theme_options = {
     "use_repository_button": True,
     "use_edit_page_button": True,
     "use_issues_button": True,
+    "globaltoc_collapse": False,
     "launch_buttons": {
         "binderhub_url": "https://mybinder.org/v2/gh/kjappelbaum/pyepal/HEAD?filepath=examples",
     },
-    # "source_repository": "https://github.com/pradyunsg/furo/",
+    "source_repository": "https://github.com/kjappelbaum/mofdscribe/",
     "source_branch": "main",
     "source_directory": "docs/",
-    "edit_uri": "https://github.com/kjappelbaum/mofdscribe/docs/source",
-    "palette": [
-        {
-            "media": "(prefers-color-scheme: light)",
-            "scheme": "default",
-            "toggle": {
-                "icon": "material/toggle-switch-off-outline",
-                "name": "Switch to dark mode",
-            },
-        },
-        {
-            "media": "(prefers-color-scheme: dark)",
-            "scheme": "slate",
-            "toggle": {
-                "icon": "material/toggle-switch",
-                "name": "Switch to light mode",
-            },
-        },
-    ],
+    # Since Furo doesn't allow us to disable dark mode, we make dark mode
+    # equivalent to light mode by overriding all colors back to their light value.
+    # See: https://github.com/pradyunsg/furo/issues/28
+    "dark_css_variables": {
+        # Taken from: https://github.com/pradyunsg/furo/blob/c682d5d3502f3fa713c909eebbf9f3afa0f469d9/src/furo/assets/styles/variables/_colors.scss
+        "color-problematic": "#b30000",
+        # Base Colors
+        "color-foreground-primary": "black",  # for main text and headings
+        "color-foreground-secondary": "#5a5c63",  # for secondary text
+        "color-foreground-muted": "#646776",  # for muted text
+        "color-foreground-border": "#878787",  # for content borders
+        "color-background-primary": "white",  # for content
+        "color-background-secondary": "#f8f9fb",  # for navigation + ToC
+        "color-background-hover": "#efeff4ff",  # for navigation-item hover
+        "color-background-hover--transparent": "#efeff400",
+        "color-background-border": "#eeebee",  # for UI borders
+        "color-background-item": "#ccc",  # for "background" items (eg: copybutton)
+        # Announcements
+        "color-announcement-background": "#000000dd",
+        "color-announcement-text": "#eeebee",
+        # Brand colors
+        "color-brand-primary": "#2962ff",
+        "color-brand-content": "#2a5adf",
+        # Highlighted text (search)
+        "color-highlighted-background": "#ddeeff",
+        # GUI Labels
+        "color-guilabel-background": "#ddeeff80",
+        "color-guilabel-border": "#bedaf580",
+        # API documentation
+        "color-api-keyword": "var(--color-foreground-secondary)",
+        "color-highlight-on-target": "#ffffcc",
+        # Admonitions
+        "color-admonition-background": "transparent",
+        # Cards
+        "color-card-border": "var(--color-background-secondary)",
+        "color-card-background": "transparent",
+        "color-card-marginals-background": "var(--color-background-hover)",
+        # Code blocks
+        "color-code-foreground": "black",
+        "color-code-background": "#f8f9fb",
+    },
 }
 
 # Add any paths that contain custom static files (such as style sheets) here,
@@ -319,12 +341,6 @@ texinfo_documents = [
 
 # -- Extension configuration -------------------------------------------------
 
-# -- Options for intersphinx extension ---------------------------------------
-
-# Example configuration for intersphinx: refer to the Python standard library.
-intersphinx_mapping = {
-    "https://docs.python.org/3/": None,
-}
 
 autoclass_content = "both"
 

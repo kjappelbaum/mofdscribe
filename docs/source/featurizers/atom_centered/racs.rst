@@ -34,5 +34,6 @@ In mofdscribe, you can customize the encodings :math:`P` (using all properties t
     :encodes_chemistry: optionally
     :scope: local
     :scalar: False
+    :style: only-light
 
     Initially described in [Janet2017]_ for metal complexes, extended to MOFs in [Moosavi2021]_.
