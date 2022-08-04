@@ -140,6 +140,7 @@ class Henry(BaseFeaturizer):
         self.separate_interactions = separate_interactions
         self.temperature = temperature
         self.run_eqeq = run_eqeq
+        self.return_std = return_std
 
     def featurize(self, s: Union[Structure, IStructure]) -> np.array:
         ff_molecules = {self.mol_name: self.mol_ff}
@@ -173,8 +174,7 @@ class Henry(BaseFeaturizer):
         )
 
         if self.return_std:
-            res.append(deviations)
-
+            res.extend(deviations)
         return np.array(res)
 
     def feature_labels(self) -> List[str]:
@@ -189,9 +189,10 @@ class Henry(BaseFeaturizer):
                     f"heat_of_adsorption_std_{self.mol_name}_{self.temperature}_kJ/mol",
                 ]
             )
+        return feat
 
     def implementors(self) -> List[str]:
-        return ["Kevin Maik Jablonka", "David Dubbeldam and RASPA authors"]
+        return ["Kevin Maik Jablonka", "Fergus Mcilwaine", "David Dubbeldam and RASPA authors"]
 
     def citations(self) -> List[str]:
         return [

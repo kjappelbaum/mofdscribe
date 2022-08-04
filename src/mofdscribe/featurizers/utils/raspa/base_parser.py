@@ -1,14 +1,34 @@
-# code from https://github.com/lsmo-epfl/aiida-raspa/blob/develop/aiida_raspa/utils/base_parser.py
-
 # -*- coding: utf-8 -*-
-"""Basic raspa output parser."""
+"""Basic raspa output parser.
+
+code from https://github.com/lsmo-epfl/aiida-raspa/blob/develop/aiida_raspa/utils/base_parser.py
+
+MIT License
+Copyright 2018-2022, LABORATORY OF MOLECULAR SIMULATION (LSMO),
+ECOLE POLYTECHNIQUE FEDERALE DE LAUSANNE
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+"""
 import re
 from math import isinf, isnan
 
-float_base = float  # pylint: disable=invalid-name
+float_base = float
 
 
-def float(number):  # pylint: disable=redefined-builtin
+def float(number):
     number = float_base(number)
     return number if not any((isnan(number), isinf(number))) else None
 
