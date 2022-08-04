@@ -5,8 +5,8 @@ from typing import List, Tuple, Union
 
 import numpy as np
 from matminer.featurizers.base import BaseFeaturizer
-from moltda.construct_pd import construct_pds
-from moltda.vectorize_pds import diagrams_to_arrays
+from moleculetda.construct_pd import construct_pds
+from moleculetda.vectorize_pds import diagrams_to_arrays
 from pymatgen.core import IStructure, Structure
 
 from mofdscribe.featurizers.utils import flatten
