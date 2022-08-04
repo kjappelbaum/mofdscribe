@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """Featurizer that runs RASPA to calculate the Henry coefficient."""
 import os
+import socket
 from glob import glob
 from typing import List, Union
 
@@ -9,7 +10,7 @@ from matminer.featurizers.base import BaseFeaturizer
 from pymatgen.core import IStructure, Structure
 
 from mofdscribe.featurizers.utils.extend import operates_on_istructure, operates_on_structure
-from mofdscribe.featurizers.utils.raspa.parser import parse
+from mofdscribe.featurizers.utils.raspa.base_parser import parse_base_output
 from mofdscribe.featurizers.utils.raspa.resize_uc import resize_unit_cell
 from mofdscribe.featurizers.utils.raspa.run_raspa import run_raspa
 
@@ -44,9 +45,20 @@ def parse_widom(directory: Union[str, os.PathLike]) -> dict:
     outputs = glob(os.path.join(directory, "Output", "System_0", "*.data"))
     if len(outputs) != 1:
         raise ValueError("Expected one output file, got {}".format(len(outputs)))
-    with open(outputs[0], "r") as handle:
-        res = parse(handle.read())
-    return [res["Average Henry coefficient"]["Henry"][0], res["HoA_K"]]
+
+    parsed_output, _ = parse_base_output(
+        outputs[0], system_name=socket.gethostname(), ncomponents=1
+    )
+
+    component_results = list(parsed_output["components"].values())[0]
+
+    return [
+        component_results["henry_coefficient_average"],
+        component_results["adsorption_energy_widom_average"],
+    ], [
+        component_results["henry_coefficient_dev"],
+        component_results["adsorption_energy_widom_dev"],
+    ]
 
 
 @operates_on_structure
@@ -73,6 +85,7 @@ class Henry(BaseFeaturizer):
         shifted: bool = False,
         separate_interactions: bool = True,
         run_eqeq: bool = True,
+        return_std: bool = False,
     ):
         """Initialize the featurizer.
 
@@ -105,6 +118,8 @@ class Henry(BaseFeaturizer):
                 Defaults to True.
             run_eqeq (bool): If true, runs EqEq to compute charges.
                 Defaults to True.
+            return_std (bool): If true, return the standard deviations.
+                Defaults to False.
 
         Raises:
             ValueError: If the `RASPA_DIR` environment variable is not set.
@@ -125,6 +140,7 @@ class Henry(BaseFeaturizer):
         self.separate_interactions = separate_interactions
         self.temperature = temperature
         self.run_eqeq = run_eqeq
+        self.return_std = return_std
 
     def featurize(self, s: Union[Structure, IStructure]) -> np.array:
         ff_molecules = {self.mol_name: self.mol_ff}
@@ -147,7 +163,8 @@ class Henry(BaseFeaturizer):
             molname=self.mol_name,
             temp=self.temperature,
         )
-        res = run_raspa(
+
+        res, deviations = run_raspa(
             s,
             self.raspa_dir,
             simulation_script,
@@ -155,16 +172,27 @@ class Henry(BaseFeaturizer):
             parse_widom,
             self.run_eqeq,
         )
+
+        if self.return_std:
+            res.extend(deviations)
         return np.array(res)
 
     def feature_labels(self) -> List[str]:
-        return [
+        feat = [
             f"henry_coefficient_{self.mol_name}_{self.temperature}_mol/kg/Pa",
-            f"heat_of_adsorption_{self.mol_name}_{self.temperature}_K",
+            f"heat_of_adsorption_{self.mol_name}_{self.temperature}_kJ/mol",
         ]
+        if self.return_std:
+            feat.extend(
+                [
+                    f"henry_coefficient_std_{self.mol_name}_{self.temperature}_mol/kg/Pa",
+                    f"heat_of_adsorption_std_{self.mol_name}_{self.temperature}_kJ/mol",
+                ]
+            )
+        return feat
 
     def implementors(self) -> List[str]:
-        return ["Kevin Maik Jablonka", "David Dubbeldam and RASPA authors"]
+        return ["Kevin Maik Jablonka", "Fergus Mcilwaine", "David Dubbeldam and RASPA authors"]
 
     def citations(self) -> List[str]:
         return [
