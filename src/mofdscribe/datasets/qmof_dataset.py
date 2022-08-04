@@ -134,7 +134,6 @@ class QMOFDataset(StructureDataset):
             )
         self._df = self._df.reset_index(drop=True)
 
-        # we need to do it here to have indices that are consistent with the "original" dataset
         if subset is not None:
             self._df = self._df.iloc[subset]
             self._df = self._df.reset_index(drop=True)
