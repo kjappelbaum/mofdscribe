@@ -1,7 +1,7 @@
 Contributing
 ============
 Contributions, whether big or small, are appreciated! You can get involved by submitting an issue, making a suggestion,
-or adding code to the project.
+or adding code to the project. Any idea, suggestion, or contribution is welcome. We love to know what you miss or what doesn't work or is too slow or impractical. 
 
 Having a Problem? Submit an Issue.
 ----------------------------------
