@@ -61,7 +61,7 @@ jobs:
           conda install raspa2 zeopp-lsmo openbabel -c conda-forge -y
           pip install pytest &  pip install git+https://github.com/kjappelbaum/molecule-tda.git@refactor & pip install git+https://${{secrets.reporead}}@github.com/kjappelbaum/moffragmentor.git\
       - name: Install package
-          pip install -e ".[all]"
+        run: pip install -e ".[all]"
       - name: Test with pytest
         run: |
           export RASPA_DIR=/usr/share/miniconda/envs/__setup_conda
