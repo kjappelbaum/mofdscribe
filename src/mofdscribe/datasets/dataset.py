@@ -29,6 +29,9 @@ class StructureDataset:
         self._undecorated_scaffold_hashes = None
         self._densities = None
 
+    def get_subset(self, indices: Iterable[int]) -> "StructureDataset":
+        raise NotImplementedError()
+
     @property
     def available_labels(self) -> Tuple[str]:
         raise NotImplementedError()
