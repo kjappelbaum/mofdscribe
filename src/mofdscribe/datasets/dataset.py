@@ -95,6 +95,12 @@ class StructureDataset:
     def select(self, indices: Iterable[int], labels: Optional[Iterable[str]] = None):
         return indices
 
+    def show_structure(self, index):
+        import nglview as nv
+
+        structure = list(self.get_structures(index))[0]
+        return nv.show_pymatgen(structure)
+
     @property
     def citations(self) -> Tuple[str]:
         raise NotImplementedError()

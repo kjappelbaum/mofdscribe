@@ -109,4 +109,4 @@ References
 
 .. [UFF] `Rappe, A. K.; Casewit, C. J.; Colwell, K. S.; Goddard, W. A.; Skiff, W. M. UFF, a Full Periodic Table Force Field for Molecular Mechanics and Molecular Dynamics Simulations. Journal of the American Chemical Society 1992, 114 (25), 10024–10035. <https://doi.org/10.1021/ja00051a040>`_
 
-.. [Trappe] `Potoff, J. J.; Siepmann, J. I. Vapor–Liquid Equilibria of Mixtures Containing Alkanes, Carbon Dioxide, and Nitrogen. AIChE Journal 2001, 47 (7), 1676–1682. <https://doi.org/10.1002/aic.690470719>`_`
+.. [Trappe] `Potoff, J. J.; Siepmann, J. I. Vapor–Liquid Equilibria of Mixtures Containing Alkanes, Carbon Dioxide, and Nitrogen. AIChE Journal 2001, 47 (7), 1676–1682. <https://doi.org/10.1002/aic.690470719>`_
