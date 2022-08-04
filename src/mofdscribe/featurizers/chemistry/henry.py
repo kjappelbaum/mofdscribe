@@ -11,7 +11,6 @@ from pymatgen.core import IStructure, Structure
 
 from mofdscribe.featurizers.utils.extend import operates_on_istructure, operates_on_structure
 from mofdscribe.featurizers.utils.raspa.base_parser import parse_base_output
-from mofdscribe.featurizers.utils.raspa.parser import parse  # No longer used
 from mofdscribe.featurizers.utils.raspa.resize_uc import resize_unit_cell
 from mofdscribe.featurizers.utils.raspa.run_raspa import run_raspa
 
@@ -86,6 +85,7 @@ class Henry(BaseFeaturizer):
         shifted: bool = False,
         separate_interactions: bool = True,
         run_eqeq: bool = True,
+        return_std: bool = False,
     ):
         """Initialize the featurizer.
 
@@ -118,6 +118,8 @@ class Henry(BaseFeaturizer):
                 Defaults to True.
             run_eqeq (bool): If true, runs EqEq to compute charges.
                 Defaults to True.
+            return_std (bool): If true, return the standard deviations.
+                Defaults to False.
 
         Raises:
             ValueError: If the `RASPA_DIR` environment variable is not set.
@@ -170,16 +172,23 @@ class Henry(BaseFeaturizer):
             self.run_eqeq,
         )
 
-        # self.save_deviations(deviations_)
-        self.deviations = deviations
+        if self.return_std:
+            res.append(deviations)
 
         return np.array(res)
 
     def feature_labels(self) -> List[str]:
-        return [
+        feat = [
             f"henry_coefficient_{self.mol_name}_{self.temperature}_mol/kg/Pa",
             f"heat_of_adsorption_{self.mol_name}_{self.temperature}_kJ/mol",
         ]
+        if self.return_std:
+            feat.extend(
+                [
+                    f"henry_coefficient_std_{self.mol_name}_{self.temperature}_mol/kg/Pa",
+                    f"heat_of_adsorption_std_{self.mol_name}_{self.temperature}_kJ/mol",
+                ]
+            )
 
     def implementors(self) -> List[str]:
         return ["Kevin Maik Jablonka", "David Dubbeldam and RASPA authors"]
