@@ -32,8 +32,9 @@ dependencies, the featurizers are currently not integrated in matminer itself.
 
    installation
    getting_started
-   leaderboard
+   dataleakage
    background
+   leaderboard
    api
    references
 

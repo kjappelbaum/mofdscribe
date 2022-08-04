@@ -78,6 +78,9 @@ You get also get a specific entry with
 
     qmof.get_structure(1)
 
+mofdscribe tries to reduce the potential for data leakage by dropping duplicates. 
+However, it is not trivial to define what is a duplicate. See :ref:`dataleakage` 
+for more information.
 
 Using splitters
 -----------------

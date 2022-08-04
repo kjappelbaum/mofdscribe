@@ -98,3 +98,7 @@ References
     Examining Extrapolation Performance for Materials Discovery.
     Molecular Systems Design &amp; Engineering, 2018, 3, 819–825.
     <https://doi.org/10.1039/c8me00012c>`_
+
+.. [Kapoor] `Kapoor, S.; Narayanan, A. Leakage and the Reproducibility Crisis in ML-Based Science. arXiv July 14, 2022. <http://arxiv.org/abs/2207.07048>`_
+
+.. [Malik] `Malik, M. M. A Hierarchy of Limitations in Machine Learning. arXiv February 29, 2020. <http://arxiv.org/abs/2002.05193>`_
