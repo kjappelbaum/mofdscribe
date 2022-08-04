@@ -18,7 +18,7 @@ The following discussion is based on [Malik]_.
 
 Let us introduce some notation: 
 
-* A data generating process :math:`Y ~ f`  with expectation value :math:`\mathbb{E}(Y) = \mu` and covariance :math:`\mathrm{Cov}_f(Y,Y)=\mathrm{Var}_f(Y)=\Sigma`
+* A data generating process :math:`Y \sim f`  with expectation value :math:`\mathbb{E}(Y) = \mu` and covariance :math:`\mathrm{Cov}_f(Y,Y)=\mathrm{Var}_f(Y)=\Sigma`
 * We build, using some process, an estimator :math:`\mathbf{\hat{\mu}_y}` and denote the predicted values for :math:`\mathbf{y*}` as :math:`\hat{\mathbf{y}*}`
 * We measure the performance using the mean-squared error :math:`\|\mathbf{y} - \hat{\mathbf{y}}\|_2^2`
 
