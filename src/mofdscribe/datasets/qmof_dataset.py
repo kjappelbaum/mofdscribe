@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 """Subset of the QMOF dataset."""
 import os
-from typing import Iterable, Tuple
+from re import sub
+from typing import Iterable, Optional, Tuple
 
 import numpy as np
 import pandas as pd
@@ -79,6 +80,7 @@ class QMOFDataset(StructureDataset):
         version: str = "v0.0.1",
         drop_basename_duplicates: bool = True,
         drop_graph_duplicates: bool = True,
+        subset: Optional[Iterable[int]] = None,
     ):
         """Construct an instance of the QMOF dataset.
 
@@ -89,10 +91,14 @@ class QMOFDataset(StructureDataset):
                 per CSD basename. Defaults to True.
             drop_graph_duplicates (bool): If True, keep only one structure
                 per decorated graph hash. Defaults to True.
+            subset (Optional[Iterable[int]]): indices of the structures to include.
+                This is useful for subsampling the dataset. Defaults to None.
 
         Raises:
             ValueError: If the provided version number is not available.
         """
+        self._drop_basename_duplicates = drop_basename_duplicates
+        self._drop_graph_duplicates = drop_graph_duplicates
         if version not in self._files:
             raise ValueError(
                 f"Version {version} not available. Available versions: {list(self._files.keys())}"
@@ -127,6 +133,11 @@ class QMOFDataset(StructureDataset):
                 f"Dropped {old_len - len(self._df)} duplicate graphs. New length {len(self._df)}"
             )
         self._df = self._df.reset_index(drop=True)
+
+        # we need to do it here to have indices that are consistent with the "original" dataset
+        if subset is not None:
+            self._df = self._df.iloc[subset]
+
         self._structures = [
             os.path.join(self._structure_dir, f + ".cif") for f in self._df["qmof_id"]
         ]
@@ -144,6 +155,23 @@ class QMOFDataset(StructureDataset):
             "outputs.pbe.cbm",
             "outputs.pbe.vbm",
             "outputs.pbe.directgap",
+        )
+
+    def get_subset(self, indices: Iterable[int]) -> "StructureDataset":
+        """Get a subset of the dataset.
+
+        Args:
+            indices (Iterable[int]): indices of the structures to include.
+
+        Returns:
+            StructureDataset: a new dataset containing only the structures
+                specified by the indices.
+        """
+        return StructureDataset(
+            version=self.version,
+            drop_basename_duplicates=self._drop_basename_duplicates,
+            drop_graph_duplicates=self._drop_graph_duplicates,
+            subset=indices,
         )
 
     @property
