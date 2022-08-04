@@ -69,7 +69,7 @@ if you want to use all utilities, you can use the `all` extra: `pip install -e "
 We depend on many other external tools. Currently, you need to manually install (due to pending merges for conda-recipies): 
 
 - `conda install -c conda-forge raspa2 zeopp-lsmo`
-- `moltda` from my refactor branch https://github.com/kjappelbaum/molecule-tda/tree/refactor
+- `moltda` from my refactor branch https://github.com/kjappelbaum/molecule-tda/tree/refactor. Note that `moltda` depends on [`cgal`](https://anaconda.org/conda-forge/cgal)
 - `moffragmentor` from my private repository  https://github.com/kjappelbaum/moffragmentor (which additionally requires `conda install -c conda-forge openbabel`)
 
 ## 👐 Contributing
