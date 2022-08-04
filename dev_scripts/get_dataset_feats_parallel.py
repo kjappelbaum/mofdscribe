@@ -2,17 +2,18 @@ import concurrent.futures
 import os
 from glob import glob
 from pathlib import Path
-from pymatgen.core import Structure
+
 import click
 import pandas as pd
 from matminer.featurizers.base import MultipleFeaturizer
+from pymatgen.core import Structure
 
 from mofdscribe.featurizers.chemistry.amd import AMD
 from mofdscribe.featurizers.chemistry.aprdf import APRDF
 from mofdscribe.featurizers.chemistry.racs import RACS
 from mofdscribe.featurizers.pore import PoreDiameters, SurfaceArea
-from mofdscribe.featurizers.topology.ph_stats import PHStats
 from mofdscribe.featurizers.topology.ph_hist import PHHist
+from mofdscribe.featurizers.topology.ph_stats import PHStats
 
 featurizer = MultipleFeaturizer(
     [RACS(), PHStats(), PHHist(), PoreDiameters(), APRDF(), SurfaceArea("CO2"), AMD()]
