@@ -20,8 +20,10 @@ class QMOFDataset(StructureDataset):
     structure for a "base refcode" (i.e. the first five letters of a refcode).
     For instance, the base refcode for IGAHED001 is IGAHED. Structures with same
     base refcode but different refcodes are often different refinements, or measurements
-    at different temperatures and hence chemically quite similar. For instance,
-    the base refcode `TOWPEC` would appear 60 times, `NARVUA` 22 times and so on.
+    at different temperatures and hence chemically quite similar.
+    For instance, in the QMOF dataset `the basecode BOJKAM appears
+    four times
+    <https://next-gen.materialsproject.org/mofs?_sort=data.lcd.value&data__csdRefcode__contains=BOJKAM>`_.
     Additionally, we  (by default) only keep one structure per "structure hash" which
     is an approximate graph-isomoprhism check, assuming the VESTA bond thresholds
     for the derivation of the structure graph.
@@ -66,17 +68,24 @@ class QMOFDataset(StructureDataset):
 
     """
 
+    # we expect this len for the full dataset
     _files = {
         "v0.0.1": {
             "df": "https://www.dropbox.com/s/3hls6g6it2agy7u/data.json?dl=1",
             "structures": "https://www.dropbox.com/s/5k48t12qhlf1hwy/structures.tar.gz?dl=1",
             "expected_length": 15844,
+            "flavors": {
+                "csd": 100,
+                "gcmc": 1000,
+                "csd-gcmc": 1000,
+            },
         }
     }
 
     def __init__(
         self,
         version: str = "v0.0.1",
+        flavor: str = "csd",
         drop_basename_duplicates: bool = True,
         drop_graph_duplicates: bool = True,
         subset: Optional[Iterable[int]] = None,
@@ -86,6 +95,9 @@ class QMOFDataset(StructureDataset):
         Args:
             version (str): version number to use.
                 Defaults to "v0.0.1".
+            flavor (str): flavor of the dataset to use.
+                Accepted values are "csd",  "gcmc", "all", and "csd-gcmc".
+                Defaults to "csd".
             drop_basename_duplicates (bool): If True, keep only one structure
                 per CSD basename. Defaults to True.
             drop_graph_duplicates (bool): If True, keep only one structure
@@ -98,6 +110,7 @@ class QMOFDataset(StructureDataset):
         """
         self._drop_basename_duplicates = drop_basename_duplicates
         self._drop_graph_duplicates = drop_graph_duplicates
+        self._flavor = flavor
         if version not in self._files:
             raise ValueError(
                 f"Version {version} not available. Available versions: {list(self._files.keys())}"

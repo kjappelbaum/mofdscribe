@@ -37,3 +37,14 @@ However, :py:class:`~mofdscribe.datasets.dataset.StructureDataset`s also provide
     :class: hint
     
     For some applications (e.g., nested cross-validation) you want to construct a subset of the dataset. You can do so easily using the :py:func:`~mofdscribe.datasets.dataset.StructureDataset.get_subset` function.
+
+
+.. admonition:: Dataframe conventions
+    :class: note 
+
+    When we also provide a :py:class:`pandas.DataFrame` for the dataset, we follow these conventions:
+
+    * dataframe is accessible via the :py:attr:`~mofdscribe.datasets.dataset.StructureDataset._df` attribute
+    * outputs of simulations are prefixed with :code:`output`
+    * features are prefixed with :code:`features`
+    * additional infos such as hashes are prefixed with :code:`info`
