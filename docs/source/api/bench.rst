@@ -15,7 +15,7 @@ The results are reported in :code:`pydantic` model with the following fields:
 logarithmic CO2 Henry coefficient
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. automodule:: mofdscribe.bench.logKHCO2
+.. automodule:: mofdscribe.bench.logkHCO2
     :members:
 
 
