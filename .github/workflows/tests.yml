@@ -25,7 +25,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.8", "3.9", "3.10"]
+        python-version: ["3.8"]
     steps:
       - uses: actions/checkout@v2
       - name: Set up Python ${{ matrix.python-version }}
@@ -46,21 +46,29 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        python-version: ["3.8", "3.9", "3.10"]
+        python-version: ["3.8"]
     steps:
       - uses: actions/checkout@v2
-      - name: Setup conda
-        uses: s-weigand/setup-conda@v1
+      - name: Cache conda
+        uses: actions/cache@v2
+        env:
+          # Increase this value to reset cache if etc/example-environment.yml has not changed
+          CACHE_NUMBER: 0
         with:
-          update-conda: true
-          python-version: ${{ matrix.python-version }}
-          conda-channels: anaconda, conda-forge
+          path: ~/conda_pkgs_dir
+          key: ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-${{
+            hashFiles('etc/example-environment.yml') }}
+      - uses: conda-incubator/setup-miniconda@v2
+        with:
+          activate-environment: anaconda-client-env
+          channel-priority: strict
+          environment-file: etc/example-environment-caching.yml
+          use-only-tar-bz2: true # IMPORTANT: This needs to be set for caching to work properly!
       - name: Install dependencies
         run: |
-          sudo apt-get install libcgal-dev -y & conda install raspa2 zeopp-lsmo cgal boost -c conda-forge -y
-          pip install pytest &  pip install git+https://github.com/kjappelbaum/molecule-tda.git@refactor
-          pip install average-minimum-distance
-          pip install -e .
+          conda install raspa2 zeopp-lsmo cgal openbabel -c conda-forge -y
+          pip install pytest &  pip install git+https://github.com/kjappelbaum/molecule-tda.git@refactor & pip install git+https://github.com/kjappelbaum/moffragmentor.git
+          pip install -e ".[all]"
       - name: Test with pytest
         run: |
           export RASPA_DIR=/usr/share/miniconda/envs/__setup_conda
