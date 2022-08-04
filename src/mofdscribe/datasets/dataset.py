@@ -40,6 +40,10 @@ class StructureDataset:
         """Return the number of structures."""
         return len(self._structures)
 
+    def __iter__(self):
+        """Iterate over the structures."""
+        return self.get_structures(range(len(self)))
+
     def get_labels(
         self, idx: Iterable[int], labelnames: Optional[Iterable[str]] = None
     ) -> np.ndarray:

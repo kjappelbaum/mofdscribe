@@ -10,13 +10,13 @@ They bascially act as a wrapper around a collection of :py:class:`pymatgen.core.
 Why use StructureDatasets?
 ...........................
 
-The main reason for using :py:class:`~mofdscribe.datasets.dataset.StructureDataset`s is to provide a unified interface to different datasets. That unified interface allows to use the splitters implemented in mofdscribe.
+The main reason for using :py:class:`~mofdscribe.datasets.dataset.StructureDataset`s is to provide a unified interface to different datasets (making it easy to reuse code for different datasets). That unified interface allows to use the splitters implemented in mofdscribe.
 
 However, :py:class:`~mofdscribe.datasets.dataset.StructureDataset`s also provide some other conveniences 
 
 - hashes for de-duplication are automatically computed if not available 
 - additional metadata (e.g. publication years) is provided (if available)
-- you do not need to worry about maintaining folders of different versions yourself --- mofdscribe will handle the version management for you. 
+- you do not need to worry about maintaining folders of different versions yourself --- mofdscribe will handle the version management for you, and you can be sure that other users of mofdscribe will use the same dataset
 - makes it pretty easy to visualize a structure for a given entry
 
 .. admonition::  Visualizing structures 
