@@ -120,7 +120,7 @@ class PriceLowerBound(BaseFeaturizer):
         return labels
 
     def featurize(self, structure) -> np.ndarray:
-        element_masses = dict()
+        element_masses = {}
 
         for site in structure.sites:
             element_masses[site.specie.symbol] = site.specie.atomic_mass
