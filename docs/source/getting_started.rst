@@ -53,6 +53,13 @@ directory used by the featurizers by exporting :code:`MOFDSCRIBE_TEMPDIR`. If yo
 not specify the temporary directory, the default is the current working
 directory.
 
+.. admonition::
+    :class: info 
+
+    You can find more examples of how to featurize MOFs in the `featurize.ipynb`
+    and notebook in the ``examples` folder <https://github.com/kjappelbaum/mofdscribe/tree/main/examples>`_.
+
+
 Using a reference dataset
 --------------------------
 
@@ -78,8 +85,8 @@ You get also get a specific entry with
 
     qmof.get_structure(1)
 
-mofdscribe tries to reduce the potential for data leakage by dropping duplicates. 
-However, it is not trivial to define what is a duplicate. See :ref:`dataleakage` 
+mofdscribe tries to reduce the potential for data leakage by dropping duplicates.
+However, it is not trivial to define what is a duplicate. See :ref:`dataleakage`
 for more information.
 
 Using splitters
@@ -155,12 +162,22 @@ Running a benchmark
 The benchmarks will run k=5-fold cross validation on the dataset. We chose this over a single split, because this is more robust to randomness (and gives at least some indication of the variance of the estimate).
 
 .. admonition:: OOD vs ID
-    :class: note
+    :class: info
 
-    Most benchmarks come in OOD and ID versions. 
-    OOD indicates out-of-distribution, and typically involves grouping on a key feature (e.g. density). 
-    ID indicates in-distribution, and typically is stratified on the target variable. 
+    Most benchmarks come in OOD and ID versions.
+    OOD indicates out-of-distribution, and typically involves grouping on a key feature (e.g. density).
+    ID indicates in-distribution, and typically is stratified on the target variable.
 
+.. admonition:: Why k-fold CV?
+    :class: info
+
+    For the benchmarks we decided to use k-fold cross validation.
+    While this is clearly more expensive than a simple holdout split, splits need to be performed multiple
+    times as ML models are unstable [Lones]_.  This is in particular the case for the relatively small
+    datasets we work with in digital reticular chemistry (for larger datasets repeated holdout splits are less of a problem).
+    One could add more rigor using repeated k-fold cross validation. However, this would result in a large
+    computational overhead.
+    Note that the choice of the k is not trivial, and k=5 is a pragmatic choice, for more details see [Raschka]_.
 
 For running a benchmark with your model, your model must be in the form of a class with `fit(idx, structures, y)` and `predict(idx, structures)` methods, for example
 
@@ -235,15 +252,21 @@ For this:
 5. Push your branch to the repository.
 6. Make a pull request.
 
-.. admonition:: Do not look at the dataset! 
+.. admonition:: 
+    :class: info
+
+    You can find more examples of how to build benchmarks in the `hyperparameter_optimization_in_bench.ipynb`
+    and `add_model_to_leaderboard.ipynb` notebooks in the ``examples` folder <https://github.com/kjappelbaum/mofdscribe/tree/main/examples>`_.
+
+.. admonition:: Do not look at the dataset!
     :class: warning
 
-    Do not perform hyper-parameter optimization (or model selection) on the dataset used for the benchmark 
-    *outside* the bench loop. This is data leakage. 
+    Do not perform hyper-parameter optimization (or model selection) on the dataset used for the benchmark
+    *outside* the bench loop. This is data leakage.
 
-    If you need to perform hyper-parameter optimization, use an approach such as nested-cross validation 
-    in the bench loop. 
-    Only this allows for fair comparison and only this allows others to reproduce the 
+    If you need to perform hyper-parameter optimization, use an approach such as nested-cross validation
+    in the bench loop.
+    Only this allows for fair comparison and only this allows others to reproduce the
     hyperparameter selection (and, hence, use "fair" hyperparameters when they compare their model with your model as a baseline).
 
 Referencing datasets and featurizers

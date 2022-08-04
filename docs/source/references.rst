@@ -102,3 +102,11 @@ References
 .. [Kapoor] `Kapoor, S.; Narayanan, A. Leakage and the Reproducibility Crisis in ML-Based Science. arXiv July 14, 2022. <http://arxiv.org/abs/2207.07048>`_
 
 .. [Malik] `Malik, M. M. A Hierarchy of Limitations in Machine Learning. arXiv February 29, 2020. <http://arxiv.org/abs/2002.05193>`_
+
+.. [Lones] `Lones, M. A. How to Avoid Machine Learning Pitfalls: A Guide for Academic Researchers. arXiv August 5, 2021.<http://arxiv.org/abs/2108.02497>`
+
+.. [Raschka] `Raschka, S. Model Evaluation, Model Selection, and Algorithm Selection in Machine Learning. arXiv:1811.12808 [cs, stat] 2018. <https://arxiv.org/abs/1811.12808>`_
+
+.. [UFF] `Rappe, A. K.; Casewit, C. J.; Colwell, K. S.; Goddard, W. A.; Skiff, W. M. UFF, a Full Periodic Table Force Field for Molecular Mechanics and Molecular Dynamics Simulations. Journal of the American Chemical Society 1992, 114 (25), 10024–10035. <https://doi.org/10.1021/ja00051a040>`_
+
+.. [Trappe] `Potoff, J. J.; Siepmann, J. I. Vapor–Liquid Equilibria of Mixtures Containing Alkanes, Carbon Dioxide, and Nitrogen. AIChE Journal 2001, 47 (7), 1676–1682. <https://doi.org/10.1002/aic.690470719>`_`

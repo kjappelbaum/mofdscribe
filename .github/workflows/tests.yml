@@ -3,23 +3,6 @@ name: Tests
 on: [push, pull_request]
 
 jobs:
-  pre-commit:
-    strategy:
-      matrix:
-        python-version: ["3.8"]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Set up Python  ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
-        with:
-          python-version: ${{ matrix.python-version }}
-      - name: Install dependencies
-        run: |
-          pip install pre-commit
-          pip freeze
-      - name: Run pre-commit
-        run: pre-commit run --all-files || ( git status --short ; git diff ; exit 1 )
   # docs:
   #   name: Documentation
   #   runs-on: ubuntu-latest
@@ -57,10 +40,14 @@ jobs:
           conda-channels: anaconda, conda-forge
       - name: Install dependencies
         run: |
-          sudo apt-get install libcgal-dev 
+          sudo apt-get install libcgal-dev
           conda install raspa2 zeopp-lsmo openbabel -c conda-forge -y
-          pip install pytest git+https://github.com/kjappelbaum/molecule-tda.git@refactor#egg=moltda git+https://${{secrets.reporead}}@github.com/kjappelbaum/moffragmentor.git
+          pip install pytest tox git+https://github.com/kjappelbaum/molecule-tda.git@refactor#egg=moltda git+https://${{secrets.reporead}}@github.com/kjappelbaum/moffragmentor.git dscribe # we need dscribe for the SBU test
           pip install -e ".[all]"
+      - name: Check for lint
+        run: |
+          tox -e lint
+          tox -e flake8
       - name: Test with pytest
         run: |
           export RASPA_DIR=/usr/share/miniconda/envs/__setup_conda

@@ -30,6 +30,7 @@ class LogkHCO2IDBench(MOFBenchRegression):
         reference: Optional[str] = None,
         implementation: Optional[str] = None,
         debug: bool = False,
+        patch_in_ds: bool = False,
     ):
         """Initialize the  log KH CO2 interpolation benchmark.
 
@@ -48,6 +49,8 @@ class LogkHCO2IDBench(MOFBenchRegression):
             implementation (str, optional): Link to implementation. Defaults to None.
             debug (bool): If True, use a small dataset (1% of full dataset) for debugging.
                 Defaults to False.
+            patch_in_ds (bool): If True, the dataset will be patched into the model class
+                under the `ds` attribute.
         """
         super().__init__(
             model,
@@ -67,6 +70,7 @@ class LogkHCO2IDBench(MOFBenchRegression):
             reference=reference,
             implementation=implementation,
             debug=debug,
+            patch_in_ds=patch_in_ds,
         )
 
 
@@ -88,6 +92,7 @@ class LogkHCO2OODBench(MOFBenchRegression):
         reference: Optional[str] = None,
         implementation: Optional[str] = None,
         debug: bool = False,
+        patch_in_ds: bool = False,
     ):
         """Initialize the  log KH CO2 extrapolation benchmark.
 
@@ -106,6 +111,8 @@ class LogkHCO2OODBench(MOFBenchRegression):
             implementation (str, optional): Link to implementation. Defaults to None.
             debug (bool): If True, use a small dataset (1% of full dataset) for debugging.
                 Defaults to False.
+            patch_in_ds (bool): If True, the dataset will be patched into the model class
+                under the `ds` attribute.
         """
         super().__init__(
             model,
@@ -125,4 +132,5 @@ class LogkHCO2OODBench(MOFBenchRegression):
             reference=reference,
             implementation=implementation,
             debug=debug,
+            patch_in_ds=patch_in_ds,
         )

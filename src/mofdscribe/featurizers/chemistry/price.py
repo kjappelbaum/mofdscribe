@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Feature MOFs using economic descriptors."""
 import operator
 import os

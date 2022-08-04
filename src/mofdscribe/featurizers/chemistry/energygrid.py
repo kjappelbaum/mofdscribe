@@ -79,13 +79,12 @@ class EnergyGridHistogram(BaseFeaturizer):
     This approach has also been used, for example, `Li et al. (2021)
     <https://aip.scitation.org/doi/10.1063/5.0050823>`_ and [Bucior2021]_.
 
-    References
-    ----------
-    .. [Bucior2021]  Li, Z.; Bucior, B. J.; Chen, H.; Haranczyk, M.; Siepmann, J. I.;
-        Snurr, R. Q. Machine Learning Using Host/Guest Energy Histograms to
-        Predict Adsorption in Metal–Organic Frameworks: Application to Short
-        Alkanes and Xe/Kr Mixtures. J. Chem. Phys. 2021, 155 (1), 014701.
-        https://doi.org/10.1063/5.0050823.
+    References:
+        .. [Bucior2021]  Li, Z.; Bucior, B. J.; Chen, H.; Haranczyk, M.; Siepmann, J. I.;
+            Snurr, R. Q. Machine Learning Using Host/Guest Energy Histograms to
+            Predict Adsorption in Metal–Organic Frameworks: Application to Short
+            Alkanes and Xe/Kr Mixtures. J. Chem. Phys. 2021, 155 (1), 014701.
+            https://doi.org/10.1063/5.0050823.
     """
 
     def __init__(

@@ -188,7 +188,7 @@ html_theme_options = {
     },
     "source_repository": "https://github.com/kjappelbaum/mofdscribe/",
     "source_branch": "main",
-    "source_directory": "docs/",
+    "source_directory": "docs/source",
     # Since Furo doesn't allow us to disable dark mode, we make dark mode
     # equivalent to light mode by overriding all colors back to their light value.
     # See: https://github.com/pradyunsg/furo/issues/28

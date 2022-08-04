@@ -100,7 +100,7 @@ class BaseSplitter:
                 the mode. Defaults to np.median.
             q (Iterable[float], optional): List of quantiles used for quantile binning.
                 Defaults to (0, 0.25, 0.5, 0.75, 1).
-            sort_by_len (bool, optional): If True, sort the splits by length.
+            sort_by_len (bool): If True, sort the splits by length.
                 (Applies to the train/test/valid and train/test splits). Defaults to True.
         """
         self._ds = ds
@@ -394,7 +394,7 @@ class HashSplitter(BaseSplitter):
                 the mode. Defaults to np.median.
             q (Iterable[float], optional): List of quantiles used for quantile binning.
                 Defaults to (0, 0.25, 0.5, 0.75, 1).
-            sort_by_len (bool, optional): If True, sort the splits by length.
+            sort_by_len (bool): If True, sort the splits by length.
                 (Applies to the train/test/valid and train/test splits). Defaults to True.
         """
         self.hash_type = hash_type
@@ -497,7 +497,7 @@ class DensitySplitter(BaseSplitter):
                 the mode. Defaults to np.median.
             q (Iterable[float], optional): List of quantiles used for quantile binning.
                 Defaults to (0, 0.25, 0.5, 0.75, 1]. Defaults to [0, 0.25, 0.5, 0.75, 1).
-            sort_by_len (bool, optional): If True, sort the splits by length.
+            sort_by_len (bool): If True, sort the splits by length.
                 (Applies to the train/test/valid and train/test splits). Defaults to True.
         """
         self._grouping_q = density_q
@@ -572,7 +572,7 @@ class TimeSplitter(BaseSplitter):
                 the mode. Defaults to np.median.
             q (Iterable[float], optional): List of quantiles used for quantile binning.
                 Defaults to (0, 0.25, 0.5, 0.75, 1).
-            sort_by_len (bool, optional): If True, sort the splits by length.
+            sort_by_len (bool): If True, sort the splits by length.
                 (Applies to the train/test/valid and train/test splits). Defaults to True.
         """
         self._grouping_q = year_q
@@ -814,7 +814,7 @@ class ClusterSplitter(BaseSplitter):
                 the mode. Defaults to np.median.
             q (Iterable[float], optional): List of quantiles used for quantile binning.
                 Defaults to (0, 0.25, 0.5, 0.75, 1]. Defaults to [0, 0.25, 0.5, 0.75, 1).
-            sort_by_len (bool, optional): If True, sort the splits by length.
+            sort_by_len (bool): If True, sort the splits by length.
                 (Applies to the train/test/valid and train/test splits). Defaults to True.
             scaled (bool): If True, scale the data before clustering.
                 Defaults to True.

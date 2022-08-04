@@ -139,6 +139,7 @@ class MOFBench(ABC):
         reference: Optional[str] = None,
         implementation: Optional[str] = None,
         debug: bool = False,
+        patch_in_ds: bool = False,
     ):
         """Initialize the benchmarking class.
 
@@ -160,6 +161,8 @@ class MOFBench(ABC):
             implementation (str, optional): Link to implementation. Defaults to None.
             debug (bool): If True, the benchmark will be run in debug mode
                 (1% of the data).
+            patch_in_ds (bool): If True, the dataset will be patched into the model class
+                under the `ds` attribute.
         """
         self._model = model
         self._start_time = None
@@ -177,6 +180,8 @@ class MOFBench(ABC):
         self._debug = debug
         self._targets = target
         self._k = k
+        if patch_in_ds:
+            self._model.ds = self._ds
 
     def _train(self, idx: np.ndarray, structures: np.ndarray, y: np.ndarray):
         self._model.fit(idx, structures, y)

@@ -54,7 +54,6 @@ BOX_PROP_LIST = [
 ]
 
 
-# pylint: disable=too-many-arguments
 def parse_block1(flines, result_dict, prop, value=1, unit=2, dev=4):
     """Parse block.
 
@@ -70,6 +69,13 @@ def parse_block1(flines, result_dict, prop, value=1, unit=2, dev=4):
             ------------------------------------------------------------------------------
             Average          12025.61229 [A^3] +/-            0.00000 [A^3]
 
+    Args:
+        flines (list): list of lines to parse
+        result_dict (dict): dictionary to store results
+        prop (str): property to store
+        value (int): index of value in line
+        unit (int): index of unit in line
+        dev (int): index of deviation in line
     """
     for line in flines:
         if "Average" in line:
@@ -111,6 +117,11 @@ def parse_block_energy(flines, res_dict, prop):
             ------------------------------------------------------------------------------
             Average   -516.80566         Van der Waals: -516.805659        Coulomb: 0.00000            [K]
                   +/- 98.86943                      +/- 98.869430               +/- 0.00000            [K]
+
+    Args:
+        flines (list): list of lines to parse
+        res_dict (dict): dictionary to store results
+        prop (str): property to store
     """
     for line in flines:
         if "Average" in line:
@@ -137,7 +148,6 @@ def parse_block_energy(flines, res_dict, prop):
 
 
 # manage lines with components
-# --------------------------------------------------------------------------------------------
 LINES_WITH_COMPONENT_LIST = [
     (" Average Widom Rosenbluth-weight:", "widom_rosenbluth_factor"),
     (" Average chemical potential: ", "chemical_potential"),
@@ -157,13 +167,11 @@ def parse_lines_with_component(res_components, components, line, prop):
             res_components[i][prop + "_average"] = float(words[-4])
 
 
-# pylint: disable=too-many-locals, too-many-arguments, too-many-statements, too-many-branches
-def parse_base_output(output_abs_path, system_name, ncomponents):
+def parse_base_output(output_abs_path, system_name, ncomponents):  # noqa: C901
     """Parse RASPA output file: it is divided in different parts, whose start/end is carefully documented."""
-
     warnings = []
     res_per_component = []
-    for i in range(ncomponents):
+    for _ in range(ncomponents):
         res_per_component.append({})
     result_dict = {"exceeded_walltime": False}
 
@@ -331,7 +339,7 @@ def parse_base_output(output_abs_path, system_name, ncomponents):
                     res_comp["{}_dev".format(prop)] = None
 
             # The section "Adsorption energy from Widom-insertion" is not showing in the output if no widom is performed
-            if not "adsorption_energy_widom_average" in res_comp:
+            if "adsorption_energy_widom_average" not in res_comp:
                 res_comp["adsorption_energy_widom_unit"] = "kJ/mol"
                 res_comp["adsorption_energy_widom_dev"] = None
                 res_comp["adsorption_energy_widom_average"] = None

@@ -28,6 +28,7 @@ class PBEBandGapIDBench(MOFBenchRegression):
         reference: Optional[str] = None,
         implementation: Optional[str] = None,
         debug: bool = False,
+        patch_in_ds: bool = False,
     ):
         """Initialize the PBE bandgap benchmark.
 
@@ -46,6 +47,8 @@ class PBEBandGapIDBench(MOFBenchRegression):
             implementation (str, optional): Link to implementation. Defaults to None.
             debug (bool): If True, use a small dataset (1% of full dataset) for debugging.
                 Defaults to False.
+            patch_in_ds (bool): If True, the dataset will be patched into the model class
+                under the `ds` attribute.
         """
         super().__init__(
             model,
@@ -65,4 +68,5 @@ class PBEBandGapIDBench(MOFBenchRegression):
             reference=reference,
             implementation=implementation,
             debug=debug,
+            patch_in_ds=patch_in_ds,
         )

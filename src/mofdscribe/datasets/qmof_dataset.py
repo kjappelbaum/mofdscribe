@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """Subset of the QMOF dataset."""
 import os
-from re import sub
 from typing import Iterable, Optional, Tuple
 
 import numpy as np

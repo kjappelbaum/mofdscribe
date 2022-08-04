@@ -15,3 +15,12 @@ def test_core():
     assert len(core.get_years([1])) == 1
     assert len(core.get_years([1, 2, 4])) == 3
     assert isinstance(core.get_labels([1], ["pure_methane_kH"]), np.ndarray)
+
+    # make sure we can get a subset of the dataset
+    core_subset = core.get_subset([1, 2, 3, 8])
+    assert isinstance(core_subset, CoREDataset)
+    assert len(core_subset._df) == 4
+    assert (
+        core._df.iloc[[1, 2, 3, 8]]["basename"].values == core_subset._df["basename"].values
+    ).all()
+    assert list(core.get_structures([1]))[0] == list(core_subset.get_structures([0]))[0]

@@ -48,7 +48,7 @@ racs_features = featurizer.featurize(structure)
 ```bash
 $ pip install mofdscribe
 ``` -->
-<!-- 
+<!--
 
 The most recent code and data can be installed directly from GitHub with:
 
@@ -66,7 +66,7 @@ $ pip install -e .
 
 if you want to use all utilities, you can use the `all` extra: `pip install -e ".[all]"`
 
-We depend on many other external tools. Currently, you need to manually install (due to pending merges for conda-recipies): 
+We depend on many other external tools. Currently, you need to manually install (due to pending merges for conda-recipies):
 
 - `conda install -c conda-forge raspa2 zeopp-lsmo`
 - `moltda` from my refactor branch https://github.com/kjappelbaum/molecule-tda/tree/refactor. Note that `moltda` depends on [`cgal`](https://anaconda.org/conda-forge/cgal)

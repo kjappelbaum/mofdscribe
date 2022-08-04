@@ -91,7 +91,6 @@ def run_raspa(
             )
         except subprocess.CalledProcessError as e:
             raise ValueError(f"Error running RASPA. Output: {e.output}  stderr: {e.stderr}")
-
         results = parser(os.path.join(tempdir))
 
     return results

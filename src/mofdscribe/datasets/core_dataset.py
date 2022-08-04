@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """CoRE Dataset."""
 import os
-from typing import Iterable, Tuple
+from typing import Iterable, Optional, Tuple
 
 import numpy as np
 import pandas as pd
@@ -77,6 +77,7 @@ class CoREDataset(StructureDataset):
         version: str = "v0.0.1",
         drop_basename_duplicates: bool = True,
         drop_graph_duplicates: bool = True,
+        subset: Optional[Iterable[int]] = None,
     ):
         """Construct an instance of the CoRE dataset.
 
@@ -87,10 +88,14 @@ class CoREDataset(StructureDataset):
                 per CSD basename. Defaults to True.
             drop_graph_duplicates (bool): If True, keep only one structure
                 per decorated graph hash. Defaults to True.
+            subset (Iterable[int], optional): indices of the structures to include.
+                Defaults to None.
 
         Raises:
             ValueError: If the provided version number is not available.
         """
+        self._drop_basename_duplicates = drop_basename_duplicates
+        self._drop_graph_duplicates = drop_graph_duplicates
         if version not in self._files:
             raise ValueError(
                 f"Version {version} not available. Available versions: {list(self._files.keys())}"
@@ -125,6 +130,10 @@ class CoREDataset(StructureDataset):
                 f"Dropped {old_len - len(self._df)} duplicate graphs. New length {len(self._df)}"
             )
         self._df = self._df.reset_index(drop=True)
+        if subset is not None:
+            self._df = self._df.iloc[subset]
+            self._df = self._df.reset_index(drop=True)
+
         self._structures = [
             os.path.join(self._structure_dir, f + ".cif") for f in self._df["name_y"]
         ]
@@ -151,6 +160,23 @@ class CoREDataset(StructureDataset):
             "CH4DC",
             "CH4HPSTP",
             "CH4LPSTP",
+        )
+
+    def get_subset(self, indices: Iterable[int]) -> "StructureDataset":
+        """Get a subset of the dataset.
+
+        Args:
+            indices (Iterable[int]): indices of the structures to include.
+
+        Returns:
+            StructureDataset: a new dataset containing only the structures
+                specified by the indices.
+        """
+        return CoREDataset(
+            version=self.version,
+            drop_basename_duplicates=self._drop_basename_duplicates,
+            drop_graph_duplicates=self._drop_graph_duplicates,
+            subset=indices,
         )
 
     @property

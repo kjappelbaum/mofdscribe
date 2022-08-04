@@ -84,7 +84,7 @@ def test_pore_diameters(hkust_structure):
 def test_surface_area(hkust_structure):
     """Ensure that the featurizer works as expected."""
     sa = SurfaceArea()
-    assert sa.feature_labels() == [
+    expected_labels = [
         "uc_volume",
         "density",
         "asa_a2",
@@ -94,6 +94,10 @@ def test_surface_area(hkust_structure):
         "nasa_m2cm3",
         "nasa_m2g",
     ]
+
+    for el, fl in zip(expected_labels, sa.feature_labels()):
+        assert el in fl
+
     result = sa.featurize(hkust_structure)
     assert len(result) == 8
 
@@ -112,7 +116,7 @@ def test_surface_area(hkust_structure):
 def test_accessible_volume(hkust_structure):
     """Ensure that the featurizer works as expected."""
     av = AccessibleVolume()
-    assert av.feature_labels() == [
+    expected_labels = [
         "uc_volume",
         "density",
         "av_a2",
@@ -122,6 +126,9 @@ def test_accessible_volume(hkust_structure):
         "nav_volume_fraction",
         "nav_cm3g",
     ]
+
+    for el, fl in zip(expected_labels, av.feature_labels()):
+        assert el in fl
 
     result = av.featurize(hkust_structure)
     assert len(result) == 8
