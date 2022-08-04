@@ -137,6 +137,7 @@ class QMOFDataset(StructureDataset):
         # we need to do it here to have indices that are consistent with the "original" dataset
         if subset is not None:
             self._df = self._df.iloc[subset]
+            self._df = self._df.reset_index(drop=True)
 
         self._structures = [
             os.path.join(self._structure_dir, f + ".cif") for f in self._df["qmof_id"]
@@ -167,7 +168,7 @@ class QMOFDataset(StructureDataset):
             StructureDataset: a new dataset containing only the structures
                 specified by the indices.
         """
-        return StructureDataset(
+        return QMOFDataset(
             version=self.version,
             drop_basename_duplicates=self._drop_basename_duplicates,
             drop_graph_duplicates=self._drop_graph_duplicates,
