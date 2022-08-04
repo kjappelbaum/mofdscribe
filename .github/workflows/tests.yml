@@ -58,7 +58,7 @@ jobs:
       - name: Install dependencies
         run: |
           conda install raspa2 zeopp-lsmo cgal openbabel -c conda-forge -y
-          pip install pytest &  pip install git+https://github.com/kjappelbaum/molecule-tda.git@refactor & pip install git+https://kjappelbaum:${{secrets.GITHUB_TOKEN}}@github.com/moffragmentor
+          pip install pytest &  pip install git+https://github.com/kjappelbaum/molecule-tda.git@refactor & pip install git+https://kjappelbaum:${{secrets.GITHUB_TOKEN}}@github.com/kjappelbaum/moffragmentor
           pip install -e ".[all]"
       - name: Test with pytest
         run: |
