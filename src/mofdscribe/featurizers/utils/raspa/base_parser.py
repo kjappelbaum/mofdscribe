@@ -38,8 +38,6 @@ KELVIN_TO_KJ_PER_MOL = float(8.314464919 / 1000.0)  # exactly the same as Raspa
 # manage block of the first type
 # --------------------------------------------------------------------------------------------
 BLOCK_1_LIST = [
-    # ("Average temperature:", "temperature", (1, 2, 4), 0), # misleading property!
-    # ("Average Pressure:", "pressure", (1, 2, 4), 0), # misleading property!
     ("Average Volume:", "cell_volume", (1, 2, 4), 0),
     ("Average Density:", "adsorbate_density", (1, 2, 4), 0),
     # ("Average Heat Capacity", "framework_heat_capacity", (1, 2, 4), 0), # misleading property!
@@ -158,7 +156,6 @@ LINES_WITH_COMPONENT_LIST = [
 
 def parse_lines_with_component(res_components, components, line, prop):
     """Parse lines that contain components"""
-    # self.logger.info("analysing line: {}".format(line))
     for i, component in enumerate(components):
         if "[" + component + "]" in line:
             words = line.split()

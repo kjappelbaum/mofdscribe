@@ -17,7 +17,6 @@ def test_racs(hkust_structure, irmof_structure):
     for structure in [hkust_structure, irmof_structure]:
         featurizer = RACS()
         feats = featurizer.featurize(structure)
-        # assert len(feats) == 4 * 3 * 8 * 5  # 4 properties, 3 scopes, 8 aggregations, 5 bb types
         sg = get_structure_graph(IStructure.from_sites(structure), featurizer.bond_heuristic)
         racs = {}
         bb_indices = get_bb_indices(sg)
