@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """Featurizer that runs RASPA to calculate the Henry coefficient."""
 import os
+import socket
 from glob import glob
 from typing import List, Union
 
@@ -9,7 +10,8 @@ from matminer.featurizers.base import BaseFeaturizer
 from pymatgen.core import IStructure, Structure
 
 from mofdscribe.featurizers.utils.extend import operates_on_istructure, operates_on_structure
-from mofdscribe.featurizers.utils.raspa.parser import parse
+from mofdscribe.featurizers.utils.raspa.base_parser import parse_base_output
+from mofdscribe.featurizers.utils.raspa.parser import parse  # No longer used
 from mofdscribe.featurizers.utils.raspa.resize_uc import resize_unit_cell
 from mofdscribe.featurizers.utils.raspa.run_raspa import run_raspa
 
@@ -44,9 +46,20 @@ def parse_widom(directory: Union[str, os.PathLike]) -> dict:
     outputs = glob(os.path.join(directory, "Output", "System_0", "*.data"))
     if len(outputs) != 1:
         raise ValueError("Expected one output file, got {}".format(len(outputs)))
-    with open(outputs[0], "r") as handle:
-        res = parse(handle.read())
-    return [res["Average Henry coefficient"]["Henry"][0], res["HoA_K"]]
+
+    parsed_output, _ = parse_base_output(
+        outputs[0], system_name=socket.gethostname(), ncomponents=1
+    )
+
+    component_results = list(parsed_output["components"].values())[0]
+
+    return [
+        component_results["henry_coefficient_average"],
+        component_results["adsorption_energy_widom_average"],
+    ], [
+        component_results["henry_coefficient_dev"],
+        component_results["adsorption_energy_widom_dev"],
+    ]
 
 
 @operates_on_structure
@@ -147,7 +160,8 @@ class Henry(BaseFeaturizer):
             molname=self.mol_name,
             temp=self.temperature,
         )
-        res = run_raspa(
+
+        res, deviations = run_raspa(
             s,
             self.raspa_dir,
             simulation_script,
@@ -155,12 +169,16 @@ class Henry(BaseFeaturizer):
             parse_widom,
             self.run_eqeq,
         )
+
+        # self.save_deviations(deviations_)
+        self.deviations = deviations
+
         return np.array(res)
 
     def feature_labels(self) -> List[str]:
         return [
             f"henry_coefficient_{self.mol_name}_{self.temperature}_mol/kg/Pa",
-            f"heat_of_adsorption_{self.mol_name}_{self.temperature}_K",
+            f"heat_of_adsorption_{self.mol_name}_{self.temperature}_kJ/mol",
         ]
 
     def implementors(self) -> List[str]:
