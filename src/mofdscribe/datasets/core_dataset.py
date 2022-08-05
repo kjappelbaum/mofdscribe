@@ -22,10 +22,12 @@ class CoREDataset(StructureDataset):
     For instance, the base refcode for IGAHED001 is IGAHED. Structures with same
     base refcode but different refcodes are often different refinements, or measurements
     at different temperatures and hence chemically quite similar. For instance,
-    the base refcode `TOWPEC` would appear 60 times, `NARVUA` 22 times and so on.
+    the base refcode `UMODEH` would appear 21 times, `KEDJAG` 17 times, and `UMOYOM` 17 times
+    in the CoRE dataset used by Moosavi et al.
     Additionally, we (by default) only keep one structure per "structure hash"
     which is an approximate graph-isomoprhism check, assuming the VESTA bond thresholds
-    for the derivation of the structure graph.
+    for the derivation of the structure graph (e.g. the structure
+    graph of ULOMAL occurs 59 in the CoRE database used by Moosavi et al.).
 
     .. warning::
         Even though we performed some basic sanity checks, there are currently still
@@ -68,7 +70,7 @@ class CoREDataset(StructureDataset):
         "v0.0.1": {
             "df": "https://www.dropbox.com/s/i2khfte4s6mcg30/data.json?dl=1",
             "structures": "https://www.dropbox.com/s/1v7zknesttixw68/structures.tar.gz?dl=1",
-            "expected_length": 8821,
+            "expected_length": 5393,
         }
     }
 
@@ -119,13 +121,13 @@ class CoREDataset(StructureDataset):
 
         if drop_basename_duplicates:
             old_len = len(self._df)
-            self._df = self._df.drop_duplicates(subset=["basename"])
+            self._df = self._df.drop_duplicates(subset=["info.basename"])
             logger.debug(
                 f"Dropped {old_len - len(self._df)} duplicate basenames. New length {len(self._df)}"
             )
         if drop_graph_duplicates:
             old_len = len(self._df)
-            self._df = self._df.drop_duplicates(subset=["hash"])
+            self._df = self._df.drop_duplicates(subset=["info.decorated_graph_hash"])
             logger.debug(
                 f"Dropped {old_len - len(self._df)} duplicate graphs. New length {len(self._df)}"
             )
@@ -135,32 +137,20 @@ class CoREDataset(StructureDataset):
             self._df = self._df.reset_index(drop=True)
 
         self._structures = [
-            os.path.join(self._structure_dir, f + ".cif") for f in self._df["name_y"]
+            os.path.join(self._structure_dir, f + ".cif") for f in self._df["info.name"]
         ]
 
         check_all_file_exists(self._structures)
 
-        self._years = self._df["year"]
-        self._decorated_graph_hashes = self._df["hash"]
-        self._undecorated_graph_hashes = self._df["undecorated_hash"]
-        self._decorated_scaffold_hashes = self._df["scaffold_hash"]
-        self._undecorated_scaffold_hashes = self._df["undecorated_scaffold_hash"]
-        self._densities = self._df["density_x"]
-        self._labelnames = (
-            "pure_CO2_kH",
-            "pure_CO2_widomHOA",
-            "pure_methane_kH",
-            "pure_methane_widomHOA",
-            "pure_uptake_CO2_298.00_15000",
-            "pure_uptake_CO2_298.00_1600000",
-            "pure_uptake_methane_298.00_580000",
-            "pure_uptake_methane_298.00_6500000",
-            "logKH_CO2",
-            "logKH_CH4",
-            "CH4DC",
-            "CH4HPSTP",
-            "CH4LPSTP",
-        )
+        self._years = self._df["info.year"]
+        self._decorated_graph_hashes = self._df["info.decorated_graph_hash"]
+        self._undecorated_graph_hashes = self._df["info.undecorated_graph_hash"]
+        self._decorated_scaffold_hashes = self._df["info.decorated_scaffold_hash"]
+        self._undecorated_scaffold_hashes = self._df["info.undecorated_scaffold_hash"]
+        self._densities = self._df["info.density"]
+        self._labelnames = (c for c in self._df.columns if c.startswith("outputs."))
+        self._featurenames = (c for c in self._df.columns if c.startswith("features."))
+        self._infonames = (c for c in self._df.columns if c.startswith("info."))
 
     def get_subset(self, indices: Iterable[int]) -> "StructureDataset":
         """Get a subset of the dataset.
@@ -178,6 +168,14 @@ class CoREDataset(StructureDataset):
             drop_graph_duplicates=self._drop_graph_duplicates,
             subset=indices,
         )
+
+    @property
+    def available_info(self) -> Tuple[str]:
+        return self._infonames
+
+    @property
+    def available_features(self) -> Tuple[str]:
+        return self._featurenames
 
     @property
     def available_labels(self) -> Tuple[str]:
