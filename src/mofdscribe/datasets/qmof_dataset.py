@@ -173,6 +173,7 @@ class QMOFDataset(StructureDataset):
             "structures": "https://www.dropbox.com/s/w66p9d78lv1m64m/structures.tar.gz?dl=1",
             "expected_length": 15042,
             "flavors": {
+                "all": 15042,
                 "csd": 6311,
                 "gcmc": 5158,
                 "csd-gcmc": 2229,
@@ -268,7 +269,7 @@ class QMOFDataset(StructureDataset):
         self._undecorated_graph_hashes = self._df["info.undecorated_graph_hash"]
         self._decorated_scaffold_hashes = self._df["info.decorated_scaffold_hash"]
         self._undecorated_scaffold_hashes = self._df["info.undecorated_scaffold_hash"]
-        self._densities = self._df["density_x"]
+        self._densities = self._df["info.density"]
         self._labelnames = (c for c in self._df.columns if c.startswith("outputs."))
         self._featurenames = (c for c in self._df.columns if c.startswith("features."))
         self._infonames = (c for c in self._df.columns if c.startswith("info."))

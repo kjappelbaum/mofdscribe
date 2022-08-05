@@ -54,7 +54,7 @@ class PBEBandGapIDBench(MOFBenchRegression):
             model,
             ds=QMOFDataset(version),
             splitter=HashSplitter(
-                QMOFDataset(version),
+                QMOFDataset(version, flavor="all"),
                 stratification_col="outputs.pbe.bandgap",
                 sample_frac=0.01 if debug else 1.0,
             ),
