@@ -169,8 +169,8 @@ class QMOFDataset(StructureDataset):
     # we expect this len for the full dataset
     _files = {
         "v0.0.1": {
-            "df": "https://www.dropbox.com/s/3hls6g6it2agy7u/data.json?dl=1",
-            "structures": "https://www.dropbox.com/s/5k48t12qhlf1hwy/structures.tar.gz?dl=1",
+            "df": "https://www.dropbox.com/s/6upmz235fy6a5rv/data.json?dl=1",
+            "structures": "https://www.dropbox.com/s/w66p9d78lv1m64m/structures.tar.gz?dl=1",
             "expected_length": 15042,
             "flavors": {
                 "csd": 6311,
@@ -237,13 +237,13 @@ class QMOFDataset(StructureDataset):
 
         if drop_basename_duplicates:
             old_len = len(self._df)
-            self._df = self._df.drop_duplicates(subset=["basename"])
+            self._df = self._df.drop_duplicates(subset=["info.basename"])
             logger.debug(
                 f"Dropped {old_len - len(self._df)} duplicate basenames. New length {len(self._df)}"
             )
         if drop_graph_duplicates:
             old_len = len(self._df)
-            self._df = self._df.drop_duplicates(subset=["hash"])
+            self._df = self._df.drop_duplicates(subset=["info.decorated_graph_hash"])
             logger.debug(
                 f"Dropped {old_len - len(self._df)} duplicate graphs. New length {len(self._df)}"
             )
@@ -257,7 +257,7 @@ class QMOFDataset(StructureDataset):
             self._df = self._df.reset_index(drop=True)
 
         self._structures = [
-            os.path.join(self._structure_dir, f + ".cif") for f in self._df["qmof_id"]
+            os.path.join(self._structure_dir, f + ".cif") for f in self._df["info.qmof_id"]
         ]
 
         check_all_file_exists(self._structures)
