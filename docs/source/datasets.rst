@@ -48,3 +48,4 @@ However, :py:class:`~mofdscribe.datasets.dataset.StructureDataset`s also provide
     * outputs of simulations are prefixed with :code:`output`
     * features are prefixed with :code:`features`
     * additional infos such as hashes are prefixed with :code:`info`
+    * if there are multiple flavors of dataset, we provide boolean masks under columns prefixed with :code:`flavor`

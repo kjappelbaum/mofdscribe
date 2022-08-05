@@ -31,17 +31,23 @@ class QMOFDataset(StructureDataset):
     Note that Rosen et al. already performed some deduplication using the pymatgen `StructureMatcher`.
     Our de-duplication is a bit more aggressive, and might be too aggressive in some cases.
 
-    The dataset is further reduced by lack of publication years for some structures.
-
     .. warning::
-        Even though we performed some basic sanity checks, there are currently still
-        some structures that might chemically not be reasonable.
+        Even though we performed some basic sanity checks and Rosen et al. included checks to ensure high-fidelity structures, there might
+        still be some structures that are not chemically reasonable.
         Also, even though we only keep one structure per base refcode, there is still
         potential for data leakge. We urge users to still drop duplicates (or close neighbors)
         after featurization.
 
-    Even though Rosen et al. included checks to ensure high-fidelity structures, there might
-    still be some structures that are not chemically reasonable.
+    This dataset is available in different flavors:
+
+    * ``"all"``: the full dataset, all original QMOF structures for which we
+        could compute features and hashes
+    * ``"csd"``:  the subset which comes from the CSD and for which
+        we could retrieve publication years.
+    * ``"gcmc"``: the subset for which we performed grand canonical Monte Carlo
+        simulations
+    * ``"gcmc-csd"``: the subset for which we performed grand canonical Monte Carlo
+        simulations and for which we could retrieve publication years.
 
     Currently, we expose the following labels:
 
@@ -53,6 +59,94 @@ class QMOFDataset(StructureDataset):
         * outputs.pbe.cbm
         * outputs.pbe.vbm
         * outputs.pbe.directgap
+        * outputs.pbe.bandgap_spins
+        * outputs.pbe.cbm_spins
+        * outputs.pbe.vbm_spins
+        * outputs.pbe.directgap_spins
+        * outputs.hle17.energy_total
+        * outputs.hle17.energy_vdw
+        * outputs.hle17.energy_elec
+        * outputs.hle17.net_magmom
+        * outputs.hle17.bandgap
+        * outputs.hle17.cbm
+        * outputs.hle17.vbm
+        * outputs.hle17.directgap
+        * outputs.hle17.bandgap_spins
+        * outputs.hle17.cbm_spins
+        * outputs.hle17.vbm_spins
+        * outputs.hle17.directgap_spins
+        * outputs.hse06_10hf.energy_total
+        * outputs.hse06_10hf.energy_vdw
+        * outputs.hse06_10hf.energy_elec
+        * outputs.hse06_10hf.net_magmom
+        * outputs.hse06_10hf.bandgap
+        * outputs.hse06_10hf.cbm
+        * outputs.hse06_10hf.vbm
+        * outputs.hse06_10hf.directgap
+        * outputs.hse06_10hf.bandgap_spins
+        * outputs.hse06_10hf.cbm_spins
+        * outputs.hse06_10hf.vbm_spins
+        * outputs.hse06_10hf.directgap_spins
+        * outputs.hse06.energy_total
+        * outputs.hse06.energy_vdw
+        * outputs.hse06.energy_elec
+        * outputs.hse06.net_magmom
+        * outputs.hse06.bandgap
+        * outputs.hse06.cbm
+        * outputs.hse06.vbm
+        * outputs.hse06.directgap
+        * outputs.hse06.bandgap_spins
+        * outputs.hse06.cbm_spins
+        * outputs.hse06.vbm_spins
+        * outputs.hse06.directgap_spins
+        * outputs.CO2_Henry_coefficient
+        * outputs.CO2_adsorption_energy
+        * outputs.N2_Henry_coefficient
+        * outputs.N2_adsorption_energy
+        * outputs.CO2_parasitic_energy_(coal)
+        * outputs.Gravimetric_working_capacity_(coal)
+        * outputs.Volumetric_working_capacity_(coal)
+        * outputs.CO2_parasitic_energy_(nat_gas)
+        * outputs.Gravimetric_working_capacity_(nat_gas)
+        * outputs.Volumetric_working_capacity_(nat_gas)
+        * outputs.Final_CO2_purity_(nat_gas)
+        * outputs.CH4_Henry_coefficient
+        * outputs.CH4_adsorption_energy
+        * outputs.Enthalphy_of_Adsorption__at__58_bar,_298K
+        * outputs.Enthalphy_of_Adsorption__at__65bar--298K
+        * outputs.Working_capacity_vol_(58-65bar--298K)
+        * outputs.Working_capacity_mol_(58-65bar--298K)
+        * outputs.Working_capacity_fract_(58-65bar--298K)
+        * outputs.Working_capacity_wt%_(58-65bar--298K)
+        * outputs.O2_Henry_coefficient
+        * outputs.O2_adsorption_energy
+        * outputs.Enthalphy_of_Adsorption__at__5_bar,_298K
+        * outputs.Enthalphy_of_Adsorption__at__140bar--298K
+        * outputs.Working_capacity_vol_(5-140bar--298K)
+        * outputs.Working_capacity_mol_(5-140bar--298K)
+        * outputs.Working_capacity_fract_(5-140bar--298K)
+        * outputs.Working_capacity_wt%_(5-140bar--298K)
+        * outputs.Xe_Henry_coefficient
+        * outputs.Xe_adsorption_energy
+        * outputs.Kr_Henry_coefficient
+        * outputs.Kr_adsorption_energy
+        * outputs.Xe--Kr_selectivity__at__298K
+        * outputs.Working_capacity_g--L_(5-100bar--298-198K)
+        * outputs.Working_capacity_g--L_(5-100bar--77K)
+        * outputs.Working_capacity_g--L_(1-100bar--77K)
+        * outputs.Working_capacity_wt%_(5-100bar--298-198K)
+        * outputs.Working_capacity_wt%_(5-100bar--77K)
+        * outputs.Working_capacity_wt%_(1-100bar--77K)
+        * outputs.H2S_Henry_coefficient
+        * outputs.H2S_adsorption_energy
+        * outputs.H2O_Henry_coefficient
+        * outputs.H2O_adsorption_energy
+        * outputs.H2S--H2O_selectivity__at__298K
+        * outputs.CH4--N2_selectivity__at__298K
+
+    Note that many of the gas adsorption data are :py:obj:`numpy.nan` because the pores
+    are not accessible to the guest molecules. Depending on your application you might want
+    to fill them with zeros or drop them.
 
     References:
         .. [Rosen2021a] Rosen, A. S.; Iyer, S. M.; Ray, D.; Yao, Z.; Aspuru-Guzik, A.; Gagliardi, L.;
@@ -115,8 +209,13 @@ class QMOFDataset(StructureDataset):
             raise ValueError(
                 f"Version {version} not available. Available versions: {list(self._files.keys())}"
             )
+        if flavor not in self._files[version]["flavors"]:
+            raise ValueError(
+                f"Flavor {flavor} not available. Available flavors: {list(self._files[version]['flavors'].keys())}"
+            )
         self.version = version
 
+        # download the data for the largest set ("all")
         self._structure_dir = MOFDSCRIBE_PYSTOW_MODULE.ensure_untar(
             "QMOF",
             self.version,
@@ -144,8 +243,11 @@ class QMOFDataset(StructureDataset):
             logger.debug(
                 f"Dropped {old_len - len(self._df)} duplicate graphs. New length {len(self._df)}"
             )
-        self._df = self._df.reset_index(drop=True)
 
+        # select by flavor
+        self._df = self._df[self._df[f"flavor.{self._flavor}"]]
+
+        self._df = self._df.reset_index(drop=True)
         if subset is not None:
             self._df = self._df.iloc[subset]
             self._df = self._df.reset_index(drop=True)
@@ -156,18 +258,16 @@ class QMOFDataset(StructureDataset):
 
         check_all_file_exists(self._structures)
 
-        self._years = self._df["year"]
-        self._decorated_graph_hashes = self._df["hash"]
-        self._undecorated_graph_hashes = self._df["undecorated_hash"]
-        self._decorated_scaffold_hashes = self._df["scaffold_hash"]
-        self._undecorated_scaffold_hashes = self._df["undecorated_scaffold_hash"]
+        self._years = self._df["info.year"]
+
+        self._decorated_graph_hashes = self._df["info.decorated_graph_hash"]
+        self._undecorated_graph_hashes = self._df["info.undecorated_graph_hash"]
+        self._decorated_scaffold_hashes = self._df["info.decorated_scaffold_hash"]
+        self._undecorated_scaffold_hashes = self._df["info.undecorated_scaffold_hash"]
         self._densities = self._df["density_x"]
-        self._labelnames = (
-            "outputs.pbe.bandgap",
-            "outputs.pbe.cbm",
-            "outputs.pbe.vbm",
-            "outputs.pbe.directgap",
-        )
+        self._labelnames = (c for c in self._df.columns if c.startswith("outputs."))
+        self._featurenames = (c for c in self._df.columns if c.startswith("features."))
+        self._infonames = (c for c in self._df.columns if c.startswith("info."))
 
     def get_subset(self, indices: Iterable[int]) -> "StructureDataset":
         """Get a subset of the dataset.
@@ -184,7 +284,16 @@ class QMOFDataset(StructureDataset):
             drop_basename_duplicates=self._drop_basename_duplicates,
             drop_graph_duplicates=self._drop_graph_duplicates,
             subset=indices,
+            flavor=self._flavor,
         )
+
+    @property
+    def available_info(self) -> Tuple[str]:
+        return self._infonames
+
+    @property
+    def available_features(self) -> Tuple[str]:
+        return self._featurenames
 
     @property
     def available_labels(self) -> Tuple[str]:
