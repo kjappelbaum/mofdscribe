@@ -148,6 +148,10 @@ class QMOFDataset(StructureDataset):
     are not accessible to the guest molecules. Depending on your application you might want
     to fill them with zeros or drop them.
 
+    .. warning::
+
+        The class will load almost 1GB of data into memory.
+
     References:
         .. [Rosen2021a] Rosen, A. S.; Iyer, S. M.; Ray, D.; Yao, Z.; Aspuru-Guzik, A.; Gagliardi, L.;
             Notestein, J. M.; Snurr, R. Q. Machine Learning the Quantum-Chemical Properties
@@ -167,11 +171,11 @@ class QMOFDataset(StructureDataset):
         "v0.0.1": {
             "df": "https://www.dropbox.com/s/3hls6g6it2agy7u/data.json?dl=1",
             "structures": "https://www.dropbox.com/s/5k48t12qhlf1hwy/structures.tar.gz?dl=1",
-            "expected_length": 15844,
+            "expected_length": 15042,
             "flavors": {
-                "csd": 100,
-                "gcmc": 1000,
-                "csd-gcmc": 1000,
+                "csd": 6311,
+                "gcmc": 5158,
+                "csd-gcmc": 2229,
             },
         }
     }

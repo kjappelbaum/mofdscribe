@@ -18,6 +18,12 @@ However, :py:class:`~mofdscribe.datasets.dataset.StructureDataset`s also provide
 - additional metadata (e.g. publication years) is provided (if available)
 - you do not need to worry about maintaining folders of different versions yourself --- mofdscribe will handle the version management for you, and you can be sure that other users of mofdscribe will use the same dataset
 - makes it pretty easy to visualize a structure for a given entry
+- you only need to download the data once 
+
+.. admonition:: Where is the data? 
+    :class: hint 
+
+    The data will be downloaded into a `~/.data/mofdscribe` folder. If you run into issues, you can consider deleting the folder corresponding to a specific dataset to trigger a re-download.
 
 .. admonition::  Visualizing structures 
     :class: hint
