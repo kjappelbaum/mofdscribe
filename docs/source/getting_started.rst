@@ -53,11 +53,11 @@ directory used by the featurizers by exporting :code:`MOFDSCRIBE_TEMPDIR`. If yo
 not specify the temporary directory, the default is the current working
 directory.
 
-.. admonition::
+.. admonition:: More examples
     :class: info 
 
     You can find more examples of how to featurize MOFs in the `featurize.ipynb`
-    and notebook in the ``examples` folder <https://github.com/kjappelbaum/mofdscribe/tree/main/examples>`_.
+    and notebook in the `examples folder <https://github.com/kjappelbaum/mofdscribe/tree/main/examples>`_.
 
 
 Using a reference dataset
@@ -135,9 +135,10 @@ One interesting metric is the adversarial validation score, which can be a surro
     from mofdscribe.datasets import CoRE
     from mofdscribe.splitters import RandomSplitter
 
-    FEATURES = ["Di", "Df", "Dif", "density [g/cm^3]",]
-
     ds = CoRE()
+
+    FEATURES = list(ds.available_features)
+
     train_idx, test_idx = RandomSplitter().train_test_split(ds)
 
     adversarial_validation_scorer = AdverserialValidator(ds._df.iloc[train_idx][FEATURES],
@@ -252,11 +253,11 @@ For this:
 5. Push your branch to the repository.
 6. Make a pull request.
 
-.. admonition:: 
+.. admonition:: More examples
     :class: info
 
     You can find more examples of how to build benchmarks in the `hyperparameter_optimization_in_bench.ipynb`
-    and `add_model_to_leaderboard.ipynb` notebooks in the ``examples` folder <https://github.com/kjappelbaum/mofdscribe/tree/main/examples>`_.
+    and `add_model_to_leaderboard.ipynb` notebooks in the `examples folder <https://github.com/kjappelbaum/mofdscribe/tree/main/examples>`_.
 
 .. admonition:: Do not look at the dataset!
     :class: warning

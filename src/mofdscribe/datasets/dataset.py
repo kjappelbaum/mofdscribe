@@ -33,6 +33,14 @@ class StructureDataset:
         raise NotImplementedError()
 
     @property
+    def available_info(self) -> Tuple[str]:
+        raise NotImplementedError()
+
+    @property
+    def available_features(self) -> Tuple[str]:
+        raise NotImplementedError()
+
+    @property
     def available_labels(self) -> Tuple[str]:
         raise NotImplementedError()
 
