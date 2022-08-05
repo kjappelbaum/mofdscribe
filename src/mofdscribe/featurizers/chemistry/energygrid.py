@@ -11,7 +11,7 @@ from pymatgen.core import IStructure, Structure
 
 from mofdscribe.featurizers.utils.histogram import get_rdf
 from mofdscribe.featurizers.utils.raspa.resize_uc import resize_unit_cell
-from mofdscribe.featurizers.utils.raspa.run_raspa import run_raspa
+from mofdscribe.featurizers.utils.raspa.run_raspa import detect_raspa_dir, run_raspa
 
 from ..utils.extend import operates_on_istructure, operates_on_structure
 
@@ -152,9 +152,12 @@ class EnergyGridHistogram(BaseFeaturizer):
         """
         self.raspa_dir = raspa_dir if raspa_dir else os.environ.get("RASPA_DIR")
         if self.raspa_dir is None:
-            raise ValueError(
-                "Please set the RASPA_DIR environment variable or provide the path for the class initialization."
-            )
+            try:
+                self.raspa_dir = detect_raspa_dir()
+            except ValueError:
+                raise ValueError(
+                    "Please set the RASPA_DIR environment variable or provide the path for the class initialization."
+                )
         self.grid_spacing = grid_spacing
         self.bin_size_vdw = bin_size_vdw
         self.min_energy_vdw = min_energy_vdw

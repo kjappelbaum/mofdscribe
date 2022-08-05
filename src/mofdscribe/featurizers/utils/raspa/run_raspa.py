@@ -3,9 +3,12 @@
 
 import os
 import subprocess
+from pathlib import Path
+from shutil import which
 from tempfile import TemporaryDirectory
 from typing import Callable, Union
 
+from loguru import logger
 from pymatgen.core import IStructure, Structure
 
 from mofdscribe.featurizers.utils.eqeq import get_eqeq_charges
@@ -18,6 +21,19 @@ export DYLD_LIBRARY_PATH=RASPA_DIR/lib
 export LD_LIBRARY_PATH=RASPA_DIR/lib
 RASPA_DIR/bin/simulate
 """
+
+
+def detect_raspa_dir():
+    """Detect the RASPA directory."""
+    raspa_dir = which("simulate")
+    if raspa_dir is None:
+        raise ValueError("RASPA not found.")
+    else:
+        logger.info(
+            "RASPA_DIR not set in environment and input." " Attempting automatic detection."
+        )
+        p = Path(which("simulate"))
+        return os.path.join(*p.parts[:-2])
 
 
 def call_eqeq(structure: Union[Structure, IStructure], filename: Union[str, os.PathLike]) -> None:

@@ -12,7 +12,7 @@ from pymatgen.core import IStructure, Structure
 from mofdscribe.featurizers.utils.extend import operates_on_istructure, operates_on_structure
 from mofdscribe.featurizers.utils.raspa.base_parser import parse_base_output
 from mofdscribe.featurizers.utils.raspa.resize_uc import resize_unit_cell
-from mofdscribe.featurizers.utils.raspa.run_raspa import run_raspa
+from mofdscribe.featurizers.utils.raspa.run_raspa import detect_raspa_dir, run_raspa
 
 __all__ = ["Henry"]
 
@@ -126,9 +126,12 @@ class Henry(BaseFeaturizer):
         """
         self.raspa_dir = raspa_dir if raspa_dir else os.environ.get("RASPA_DIR")
         if self.raspa_dir is None:
-            raise ValueError(
-                "Please set the RASPA_DIR environment variable or provide the path for the class initialization."
-            )
+            try:
+                self.raspa_dir = detect_raspa_dir()
+            except ValueError:
+                raise ValueError(
+                    "Please set the RASPA_DIR environment variable or provide the path for the class initialization."
+                )
         self.cycles = cycles
         self.cutoff = cutoff
         self.mof_ff = mof_ff
