@@ -4,15 +4,15 @@ Datasets in mofdscribe
 StructureDatasets
 ------------------
 
-The main class of datasets that mofdscribe currently provides are :py:class:`~mofdscribe.datasets.dataset.StructureDataset`s.
-They bascially act as a wrapper around a collection of :py:class:`pymatgen.core.Structure` objects, but also provide some additional data such as pre-computed features and some labels.
+The main class of datasets that mofdscribe currently provides is :py:class:`~mofdscribe.datasets.dataset.StructureDataset`.
+They basically act as a wrapper around a collection of :py:class:`pymatgen.core.Structure` objects, but also provide some additional data such as pre-computed features and some labels.
 
 Why use StructureDatasets?
 ...........................
 
-The main reason for using :py:class:`~mofdscribe.datasets.dataset.StructureDataset`s is to provide a unified interface to different datasets (making it easy to reuse code for different datasets). That unified interface allows to use the splitters implemented in mofdscribe.
+The main reason for using :py:class:`~mofdscribe.datasets.dataset.StructureDataset` is to provide a unified interface to different datasets (making it easy to reuse code for different datasets). That unified interface allows to use the splitters implemented in mofdscribe.
 
-However, :py:class:`~mofdscribe.datasets.dataset.StructureDataset`s also provide some other conveniences 
+However, :py:class:`~mofdscribe.datasets.dataset.StructureDataset` also provides some other conveniences 
 
 - hashes for de-duplication are automatically computed if not available 
 - additional metadata (e.g. publication years) is provided (if available)
@@ -23,7 +23,7 @@ However, :py:class:`~mofdscribe.datasets.dataset.StructureDataset`s also provide
 .. admonition:: Where is the data? 
     :class: hint 
 
-    The data will be downloaded into a `~/.data/mofdscribe` folder. If you run into issues, you can consider deleting the folder corresponding to a specific dataset to trigger a re-download.
+    The data will be downloaded into a :code:`~/.data/mofdscribe` folder. If you run into issues, you can consider deleting the folder corresponding to a specific dataset to trigger a re-download.
 
 .. admonition::  Visualizing structures 
     :class: hint

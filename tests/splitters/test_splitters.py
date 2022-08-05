@@ -17,185 +17,7 @@ from mofdscribe.splitters.splitters import (
     TimeSplitter,
 )
 
-FEATURES = [
-    "total_POV_gravimetric",
-    "mc_CRY-chi-0-all",
-    "mc_CRY-chi-1-all",
-    "mc_CRY-chi-2-all",
-    "mc_CRY-chi-3-all",
-    "mc_CRY-Z-0-all",
-    "mc_CRY-Z-1-all",
-    "mc_CRY-Z-2-all",
-    "mc_CRY-Z-3-all",
-    "mc_CRY-I-0-all",
-    "mc_CRY-I-1-all",
-    "mc_CRY-I-2-all",
-    "mc_CRY-I-3-all",
-    "mc_CRY-T-0-all",
-    "mc_CRY-T-1-all",
-    "mc_CRY-T-2-all",
-    "mc_CRY-T-3-all",
-    "mc_CRY-S-0-all",
-    "mc_CRY-S-1-all",
-    "mc_CRY-S-2-all",
-    "mc_CRY-S-3-all",
-    "D_mc_CRY-chi-0-all",
-    "D_mc_CRY-chi-1-all",
-    "D_mc_CRY-chi-2-all",
-    "D_mc_CRY-chi-3-all",
-    "D_mc_CRY-Z-0-all",
-    "D_mc_CRY-Z-1-all",
-    "D_mc_CRY-Z-2-all",
-    "D_mc_CRY-Z-3-all",
-    "D_mc_CRY-I-0-all",
-    "D_mc_CRY-I-1-all",
-    "D_mc_CRY-I-2-all",
-    "D_mc_CRY-I-3-all",
-    "D_mc_CRY-T-0-all",
-    "D_mc_CRY-T-1-all",
-    "D_mc_CRY-T-2-all",
-    "D_mc_CRY-T-3-all",
-    "D_mc_CRY-S-0-all",
-    "D_mc_CRY-S-1-all",
-    "D_mc_CRY-S-2-all",
-    "D_mc_CRY-S-3-all",
-    "sum-mc_CRY-chi-0-all",
-    "sum-mc_CRY-chi-1-all",
-    "sum-mc_CRY-chi-2-all",
-    "sum-mc_CRY-chi-3-all",
-    "sum-mc_CRY-Z-0-all",
-    "sum-mc_CRY-Z-1-all",
-    "sum-mc_CRY-Z-2-all",
-    "sum-mc_CRY-Z-3-all",
-    "sum-mc_CRY-I-0-all",
-    "sum-mc_CRY-I-1-all",
-    "sum-mc_CRY-I-2-all",
-    "sum-mc_CRY-I-3-all",
-    "sum-mc_CRY-T-0-all",
-    "sum-mc_CRY-T-1-all",
-    "sum-mc_CRY-T-2-all",
-    "sum-mc_CRY-T-3-all",
-    "sum-mc_CRY-S-0-all",
-    "sum-mc_CRY-S-1-all",
-    "sum-mc_CRY-S-2-all",
-    "sum-mc_CRY-S-3-all",
-    "sum-D_mc_CRY-chi-0-all",
-    "sum-D_mc_CRY-chi-1-all",
-    "sum-D_mc_CRY-chi-2-all",
-    "sum-D_mc_CRY-chi-3-all",
-    "sum-D_mc_CRY-Z-0-all",
-    "sum-D_mc_CRY-Z-1-all",
-    "sum-D_mc_CRY-Z-2-all",
-    "sum-D_mc_CRY-Z-3-all",
-    "sum-D_mc_CRY-I-0-all",
-    "sum-D_mc_CRY-I-1-all",
-    "sum-D_mc_CRY-I-2-all",
-    "sum-D_mc_CRY-I-3-all",
-    "sum-D_mc_CRY-T-0-all",
-    "sum-D_mc_CRY-T-1-all",
-    "sum-D_mc_CRY-T-2-all",
-    "sum-D_mc_CRY-T-3-all",
-    "sum-D_mc_CRY-S-0-all",
-    "sum-D_mc_CRY-S-1-all",
-    "sum-D_mc_CRY-S-2-all",
-    "sum-D_mc_CRY-S-3-all",
-    "D_lc-chi-0-all",
-    "D_lc-chi-1-all",
-    "D_lc-chi-2-all",
-    "D_lc-chi-3-all",
-    "D_lc-Z-0-all",
-    "D_lc-Z-1-all",
-    "D_lc-Z-2-all",
-    "D_lc-Z-3-all",
-    "D_lc-I-0-all",
-    "D_lc-I-1-all",
-    "D_lc-I-2-all",
-    "D_lc-I-3-all",
-    "D_lc-T-0-all",
-    "D_lc-T-1-all",
-    "D_lc-T-2-all",
-    "D_lc-T-3-all",
-    "D_lc-S-0-all",
-    "D_lc-S-1-all",
-    "D_lc-S-2-all",
-    "D_lc-S-3-all",
-    "D_lc-alpha-0-all",
-    "D_lc-alpha-1-all",
-    "D_lc-alpha-2-all",
-    "D_lc-alpha-3-all",
-    "D_func-chi-0-all",
-    "D_func-chi-1-all",
-    "D_func-chi-2-all",
-    "D_func-chi-3-all",
-    "D_func-Z-0-all",
-    "D_func-Z-1-all",
-    "D_func-Z-2-all",
-    "D_func-Z-3-all",
-    "D_func-I-0-all",
-    "D_func-I-1-all",
-    "D_func-I-2-all",
-    "D_func-I-3-all",
-    "D_func-T-0-all",
-    "D_func-T-1-all",
-    "D_func-T-2-all",
-    "D_func-T-3-all",
-    "D_func-S-0-all",
-    "D_func-S-1-all",
-    "D_func-S-2-all",
-    "D_func-S-3-all",
-    "D_func-alpha-0-all",
-    "D_func-alpha-1-all",
-    "D_func-alpha-2-all",
-    "D_func-alpha-3-all",
-    "sum-D_lc-chi-0-all",
-    "sum-D_lc-chi-1-all",
-    "sum-D_lc-chi-2-all",
-    "sum-D_lc-chi-3-all",
-    "sum-D_lc-Z-0-all",
-    "sum-D_lc-Z-1-all",
-    "sum-D_lc-Z-2-all",
-    "sum-D_lc-Z-3-all",
-    "sum-D_lc-I-0-all",
-    "sum-D_lc-I-1-all",
-    "sum-D_lc-I-2-all",
-    "sum-D_lc-I-3-all",
-    "sum-D_lc-T-0-all",
-    "sum-D_lc-T-1-all",
-    "sum-D_lc-T-2-all",
-    "sum-D_lc-T-3-all",
-    "sum-D_lc-S-0-all",
-    "sum-D_lc-S-1-all",
-    "sum-D_lc-S-2-all",
-    "sum-D_lc-S-3-all",
-    "sum-D_lc-alpha-0-all",
-    "sum-D_lc-alpha-1-all",
-    "sum-D_lc-alpha-2-all",
-    "sum-D_lc-alpha-3-all",
-    "sum-D_func-chi-0-all",
-    "sum-D_func-chi-1-all",
-    "sum-D_func-chi-2-all",
-    "sum-D_func-chi-3-all",
-    "sum-D_func-Z-0-all",
-    "sum-D_func-Z-1-all",
-    "sum-D_func-Z-2-all",
-    "sum-D_func-Z-3-all",
-    "sum-D_func-I-0-all",
-    "sum-D_func-I-1-all",
-    "sum-D_func-I-2-all",
-    "sum-D_func-I-3-all",
-    "sum-D_func-T-0-all",
-    "sum-D_func-T-1-all",
-    "sum-D_func-T-2-all",
-    "sum-D_func-T-3-all",
-    "sum-D_func-S-0-all",
-    "sum-D_func-S-1-all",
-    "sum-D_func-S-2-all",
-    "sum-D_func-S-3-all",
-    "sum-D_func-alpha-0-all",
-    "sum-D_func-alpha-1-all",
-    "sum-D_func-alpha-2-all",
-    "sum-D_func-alpha-3-all",
-]
+FEATURES = list(CoREDataset().available_features)
 
 
 @pytest.mark.parametrize("sample_frac", (0.2, 0.5, 1.0))
@@ -267,7 +89,7 @@ def test_density_splitter():
     splits = dens_splitter.train_valid_test_split(frac_train=0.5, frac_valid=0.3)
     assert all(dens_splitter._grouping_q == np.linspace(0, 1, 4))
     assert len(splits) == 3
-    assert len(splits[0]) > len(splits[1]) > len(splits[2])
+    assert len(splits[0]) > len(splits[1]) >= len(splits[2])
 
     groups = dens_splitter._get_groups()
 
@@ -316,10 +138,7 @@ def test_cluster_splitter():
     ds._df = ds._df.iloc[:500]
     ds._structures = ds._structures[:500]
 
-    fps = ClusterSplitter(
-        ds,
-        feature_names=FEATURES,
-    )
+    fps = ClusterSplitter(ds, feature_names=FEATURES, n_pca_components=50)
     for train, test in fps.k_fold(k=5):
 
         assert len(set(list(train) + list(test))) == len(ds)
@@ -337,7 +156,7 @@ def test_cluster_stratified_splitter():
     """
     ds = CoREDataset()
 
-    fps = ClusterStratifiedSplitter(ds, feature_names=FEATURES, n_clusters=2)
+    fps = ClusterStratifiedSplitter(ds, feature_names=FEATURES, n_clusters=2, n_pca_components=50)
     for train, test in fps.k_fold(k=5):
 
         assert len(set(list(train) + list(test))) == len(ds)
@@ -367,7 +186,7 @@ def test_locov():
     ds._df = ds._df.iloc[:1000]
     ds._structures = ds._structures[:1000]
 
-    fps = LOCOCV(ds, feature_names=FEATURES)
+    fps = LOCOCV(ds, feature_names=FEATURES, n_pca_components=100)
     for train, test in fps.k_fold(k=5):
 
         assert len(set(list(train) + list(test))) == len(ds)

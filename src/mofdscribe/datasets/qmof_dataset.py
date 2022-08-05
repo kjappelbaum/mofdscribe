@@ -32,7 +32,8 @@ class QMOFDataset(StructureDataset):
     Our de-duplication is a bit more aggressive, and might be too aggressive in some cases.
 
     .. warning::
-        Even though we performed some basic sanity checks and Rosen et al. included checks to ensure high-fidelity structures, there might
+        Even though we performed some basic sanity checks and Rosen et al.
+        included checks to ensure high-fidelity structures, there might
         still be some structures that are not chemically reasonable.
         Also, even though we only keep one structure per base refcode, there is still
         potential for data leakge. We urge users to still drop duplicates (or close neighbors)

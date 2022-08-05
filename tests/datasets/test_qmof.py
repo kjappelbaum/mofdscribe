@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 """Test QMOF dataset."""
 import numpy as np
-from pymatgen.core import IStructure
 import pytest
+from pymatgen.core import IStructure
+
 from mofdscribe.datasets.qmof_dataset import QMOFDataset
 
 
