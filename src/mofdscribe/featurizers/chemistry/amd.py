@@ -3,9 +3,9 @@
 from typing import List, Tuple, Union
 
 import numpy as np
-from matminer.featurizers.base import BaseFeaturizer
 from pymatgen.core import IStructure, Structure
 
+from mofdscribe.featurizers.base import MOFBaseFeaturizer
 from mofdscribe.featurizers.utils.extend import operates_on_istructure, operates_on_structure
 from mofdscribe.featurizers.utils.substructures import filter_element
 
@@ -14,7 +14,7 @@ __all__ = ["AMD"]
 
 @operates_on_istructure
 @operates_on_structure
-class AMD(BaseFeaturizer):
+class AMD(MOFBaseFeaturizer):
     """Implements the generalized average minimum distance (AMD) isometry invariant [Widdowson2022]_.
 
     Note that it currently does not implement averages according to
@@ -43,6 +43,7 @@ class AMD(BaseFeaturizer):
         ),
         compute_for_all_elements: bool = True,
         aggregations: Tuple[str] = ("mean",),
+        primitive: bool = True,
     ) -> None:
         """Initialize the AMD descriptor.
 
@@ -59,6 +60,8 @@ class AMD(BaseFeaturizer):
                 the original structure with all elements. Defaults to True.
             aggregations (tuple): Aggregations of the AMD descriptor.
                 The 'mean' is equivalent to the original AMD. Defaults to ('mean',).
+            primitive (bool): If True, the structure is reduced to its primitive
+                form before the descriptor is computed. Defaults to True.
         """
         self.k = k
         atom_types = [] if atom_types is None else atom_types
@@ -68,6 +71,7 @@ class AMD(BaseFeaturizer):
         )
         self.compute_for_all_elements = compute_for_all_elements
         self.aggregations = aggregations
+        super().__init__(primitive=primitive)
 
     def _get_feature_labels(self) -> List[str]:
         labels = []
@@ -81,7 +85,7 @@ class AMD(BaseFeaturizer):
     def feature_labels(self) -> List[str]:
         return self._get_feature_labels()
 
-    def featurize(self, structure: Union[Structure, IStructure]) -> np.ndarray:
+    def _featurize(self, structure: Union[Structure, IStructure]) -> np.ndarray:
         """Compute the AMD descriptor for a given structure.
 
         Args:

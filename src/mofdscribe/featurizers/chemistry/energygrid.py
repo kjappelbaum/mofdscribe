@@ -104,6 +104,7 @@ class EnergyGridHistogram(BaseFeaturizer):
         shifted: bool = False,
         separate_interactions: bool = True,
         run_eqeq: bool = True,
+        primitive: bool = True,
     ):
         """Construct the EnergyGridHistogram class.
 
@@ -146,6 +147,8 @@ class EnergyGridHistogram(BaseFeaturizer):
                 Defaults to True.
             run_eqeq (bool): If true, runs EqEq to compute charges.
                 Defaults to True.
+            primitive (bool): If True, the structure is reduced to its primitive
+                form before the descriptor is computed. Defaults to True.
 
         Raises:
             ValueError: If the `raspa_dir` is not a valid directory.
@@ -172,6 +175,7 @@ class EnergyGridHistogram(BaseFeaturizer):
         self.shifted = shifted
         self.separate_interactions = separate_interactions
         self.run_eqeq = run_eqeq
+        super().__init__(primitive=primitive)
 
     def fit_transform(self, structures: List[Union[Structure, IStructure]]):
         ...

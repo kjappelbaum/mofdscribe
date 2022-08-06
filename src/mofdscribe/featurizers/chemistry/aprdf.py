@@ -11,8 +11,9 @@ from typing import List, Tuple, Union
 
 import numpy as np
 from element_coder import encode
-from matminer.featurizers.base import BaseFeaturizer
 from pymatgen.core import IStructure, Structure
+
+from mofdscribe.featurizers.base import MOFBaseFeaturizer
 
 from ..utils.aggregators import AGGREGATORS
 from ..utils.extend import operates_on_istructure, operates_on_structure
@@ -23,7 +24,7 @@ __all__ = ["APRDF"]
 
 @operates_on_structure
 @operates_on_istructure
-class APRDF(BaseFeaturizer):
+class APRDF(MOFBaseFeaturizer):
     r"""Generalization of descriptor described by `Fernandez et al. <https://pubs.acs.org/doi/10.1021/jp404287t>`_.
 
     In the article they describe the product of atomic properties as weighting
@@ -51,6 +52,7 @@ class APRDF(BaseFeaturizer):
         bw: Union[float, None] = 0.1,
         properties: Tuple[str, int] = ("X", "electron_affinity"),
         aggregations: Tuple[str] = ("avg", "product", "diff"),
+        primitive: bool = True,
     ):
         """Set up an atomic property (AP) weighted radial distribution function.
 
@@ -71,6 +73,8 @@ class APRDF(BaseFeaturizer):
                 properties.
                 See `mofdscribe.featurizers.utils.aggregators.AGGREGATORS` for available
                 options. Defaults to ("avg", "product", "diff").
+            primitive (bool): If True, the structure is reduced to its primitive
+                form before the descriptor is computed. Defaults to True.
         """
         self.lower_lim = lower_lim
         self.cutoff = cutoff
@@ -79,6 +83,7 @@ class APRDF(BaseFeaturizer):
 
         self.bw = bw
         self.aggregations = aggregations
+        super().__init__(primitive=primitive)
 
     def precheck(self):
         pass
@@ -96,7 +101,7 @@ class APRDF(BaseFeaturizer):
 
         return labels
 
-    def featurize(self, s: Union[Structure, IStructure]) -> np.array:
+    def _featurize(self, s: Union[Structure, IStructure]) -> np.array:
         neighbors_lst = s.get_all_neighbors(self.cutoff)
 
         results = defaultdict(lambda: defaultdict(list))
