@@ -14,7 +14,9 @@ from ..constants import MOFDSCRIBE_PYSTOW_MODULE
 
 class QMOFDataset(StructureDataset):
     """
-    Exposes the QMOF dataset by Rosen et al. [Rosen2021a]_ [Rosen2021b]_ .
+    Exposes the QMOF dataset by Rosen et al. [Rosen2021]_ [Rosen2022]_ .
+
+    Currently based on v14 of the QMOF dataset.
 
     To reduce the risk of data leakage, we (by default) also only keep one representative
     structure for a "base refcode" (i.e. the first five letters of a refcode).
@@ -23,8 +25,8 @@ class QMOFDataset(StructureDataset):
     at different temperatures and hence chemically quite similar.
     For instance, in the QMOF dataset `the basecode BOJKAM appears
     four times
-    <https://next-gen.materialsproject.org/mofs?_sort=data.lcd.value&data__csdRefcode__contains=BOJKAM>`_.
-    Additionally, we  (by default) only keep one structure per "structure hash" which
+    <https://materialsproject.org/mofs?_sort=data.lcd.value&data__csdRefcode__contains=BOJKAM>`_.
+    Additionally, we (by default) only keep one structure per "structure hash" which
     is an approximate graph-isomoprhism check, assuming the VESTA bond thresholds
     for the derivation of the structure graph.
 
@@ -154,16 +156,17 @@ class QMOFDataset(StructureDataset):
         The class will load almost 1GB of data into memory.
 
     References:
-        .. [Rosen2021a] Rosen, A. S.; Iyer, S. M.; Ray, D.; Yao, Z.; Aspuru-Guzik, A.; Gagliardi, L.;
+        .. [Rosen2021] `Rosen, A. S.; Iyer, S. M.; Ray, D.; Yao, Z.; Aspuru-Guzik, A.; Gagliardi, L.;
             Notestein, J. M.; Snurr, R. Q. Machine Learning the Quantum-Chemical Properties
             of Metal–Organic Frameworks for Accelerated Materials Discovery.
-            Matter 2021, 4 (5), 1578–1597. https://doi.org/10.1016/j.matt.2021.02.015.
+            Matter 2021, 4 (5), 1578–1597. <https://doi.org/10.1016/j.matt.2021.02.015>`_
 
-        .. [Rosen2021b] Rosen, A. S.; Fung, V.; Huck, P.; O'Donnell, C. T.; Horton, M. K.; Truhlar, D. G.;
+        .. [Rosen2022] `Rosen, A. S.; Fung, V.; Huck, P.; O'Donnell, C. T.; Horton, M. K.; Truhlar, D. G.;
             Persson, K. A.; Notestein, J. M.; Snurr, R. Q.
             High-Throughput Predictions of Metal–Organic Framework Electronic Properties:
-            Theoretical Challenges, Graph Neural Networks, and Data Exploration. ChemRxiv 2021.
-            https://chemrxiv.org/engage/chemrxiv/article-details/61b03430535d63bcdf93968b
+            Theoretical Challenges, Graph Neural Networks, and Data Exploration.
+            npj Computational Materials, 8, 112.
+            <https://doi.org/10.1038/s41524-022-00796-6>`_
 
     """
 
@@ -196,7 +199,7 @@ class QMOFDataset(StructureDataset):
             version (str): version number to use.
                 Defaults to "v0.0.1".
             flavor (str): flavor of the dataset to use.
-                Accepted values are "csd",  "gcmc", "all", and "csd-gcmc".
+                Accepted values are "csd", "gcmc", "all", and "csd-gcmc".
                 Defaults to "csd".
             drop_basename_duplicates (bool): If True, keep only one structure
                 per CSD basename. Defaults to True.
@@ -312,7 +315,7 @@ class QMOFDataset(StructureDataset):
     @property
     def citations(self) -> Tuple[str]:
         return [
-            "@article{Rosen2021_a,"
+            "@article{Rosen2021,"
             "doi = {10.1016/j.matt.2021.02.015},"
             "url = {https://doi.org/10.1016/j.matt.2021.02.015},"
             "year = {2021},"
@@ -328,18 +331,16 @@ class QMOFDataset(StructureDataset):
             "metal{\textendash}organic frameworks for accelerated materials discovery},"
             "journal = {Matter}"
             "}",
-            "@article{Rosen2021_b,"
-            "doi = {10.26434/chemrxiv-2021-6cs91},"
-            "url = {https://doi.org/10.26434/chemrxiv-2021-6cs91},"
-            "year = {2021},"
-            "month = dec,"
-            "publisher = {American Chemical Society ({ACS})},"
-            "author = {Andrew S. Rosen and Victor Fung and Patrick Huck and "
-            "Cody T. O{\textquotesingle}Donnell and Matthew K. Horton "
-            "and Donald G. Truhlar and Kristin A. Persson and "
-            "Justin M. Notestein and Randall Q. Snurr},"
-            "title = {High-Throughput Predictions of "
-            "Metal{\textendash}Organic Framework Electronic Properties: "
-            "Theoretical Challenges,  Graph Neural Networks,  and Data Exploration}"
+            "@article{Rosen2022",
+            "title={High-throughput predictions of metal--organic framework electronic properties:"
+            " theoretical challenges, graph neural networks, and data exploration},"
+            "author={Rosen, Andrew S and Fung, Victor and Huck, Patrick and O’Donnell, "
+            "Cody T and Horton, Matthew K and Truhlar, Donald G and Persson, Kristin A "
+            "and Notestein, Justin M and Snurr, Randall Q},"
+            "journal={npj Computational Materials},"
+            "volume={8},"
+            "pages={112},"
+            "year={2022},"
+            "publisher={Nature Publishing Group}"
             "}",
         ]

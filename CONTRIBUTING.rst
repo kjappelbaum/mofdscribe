@@ -50,6 +50,10 @@ Want to Contribute?
 
     $ tox
 
+    In particular, check the :code:`tox -e lint` and :code:`tox -e flake8` environments.
+    The first one runs our formatter and sorts the import, the second one performs some static
+    code analysis. If those tools raise any errors, you should fix them before committing.
+
 Pull Requests
 ~~~~~~~~~~~~~
 Once you've got your feature or bugfix finished (or if its in a partially complete state but you want to publish it
