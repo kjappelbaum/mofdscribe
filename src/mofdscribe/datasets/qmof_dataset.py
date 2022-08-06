@@ -14,8 +14,9 @@ from ..constants import MOFDSCRIBE_PYSTOW_MODULE
 
 class QMOFDataset(StructureDataset):
     """
-    Exposes the QMOF dataset by Rosen et al. [Rosen2021]_ [Rosen2022]_ . Currently
-    based on v14 of the QMOF dataset.
+    Exposes the QMOF dataset by Rosen et al. [Rosen2021]_ [Rosen2022]_ .
+
+    Currently based on v14 of the QMOF dataset.
 
     To reduce the risk of data leakage, we (by default) also only keep one representative
     structure for a "base refcode" (i.e. the first five letters of a refcode).
@@ -330,8 +331,11 @@ class QMOFDataset(StructureDataset):
             "journal = {Matter}"
             "}",
             "@article{Rosen2022",
-            "title={High-throughput predictions of metal--organic framework electronic properties: theoretical challenges, graph neural networks, and data exploration},"
-            "author={Rosen, Andrew S and Fung, Victor and Huck, Patrick and O’Donnell, Cody T and Horton, Matthew K and Truhlar, Donald G and Persson, Kristin A and Notestein, Justin M and Snurr, Randall Q},"
+            "title={High-throughput predictions of metal--organic framework electronic properties:"
+            " theoretical challenges, graph neural networks, and data exploration},"
+            "author={Rosen, Andrew S and Fung, Victor and Huck, Patrick and O’Donnell, "
+            "Cody T and Horton, Matthew K and Truhlar, Donald G and Persson, Kristin A "
+            "and Notestein, Justin M and Snurr, Randall Q},"
             "journal={npj Computational Materials},"
             "volume={8},"
             "pages={112},"
