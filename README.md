@@ -41,6 +41,10 @@ racs_features = featurizer.featurize(structure)
 
 ## 🚀 Installation
 
+While we are in the process of trying to make mofdscribe work on all operating system (we're waiting for conda recipies getting merged), 
+it is currently not easy on Windows (and there might be potential issues on ARM-based Macs). 
+For this reason, we recommend installing mofdscribe on a UNIX machine.
+
 
 <!-- The most recent release can be installed from
 [PyPI](https://pypi.org/project/mofdscribe/) with:
