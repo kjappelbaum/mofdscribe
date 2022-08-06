@@ -30,7 +30,7 @@ mofdscribe additionally includes routines that help with model validation.
 
 ```python
 
-from mofdscribe.chemistry import RACS
+from mofdscribe.featurizers.chemistry.racs import RACS
 from pymatgen.core import IStructure
 
 structure = IStructure.from_file(<my_cif.cif>)
