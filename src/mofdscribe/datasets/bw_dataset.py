@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""CoRE Dataset."""
+"""Structures from the Boyd-Woo database and labels from Moosavi et al."""
 import os
 from typing import Iterable, Optional, Tuple
 
@@ -12,41 +12,20 @@ from .dataset import StructureDataset
 from ..constants import MOFDSCRIBE_PYSTOW_MODULE
 
 
-class CoREDataset(StructureDataset):
-    """Dataset of gas uptake related features for a subset of CoRE MOFs.
+class BWDataset(StructureDataset):
+    """
+    Exposes the BW20K dataset used in [Moosavi2020]_.
 
-    The labels were computed by Moosavi et al. (2020) [Moosavi2020]_.
     The raw labels and structures can accessed also on
     `MaterialsCloud <https://archive.materialscloud.org/record/2020.67>`_.
 
-    To reduce the risk of data leakage, we  (by default) also only keep one representative
-    structure for a "base refcode" (i.e. the first five letters of a refcode).
-    For instance, the base refcode for IGAHED001 is IGAHED. Structures with same
-    base refcode but different refcodes are often different refinements, or measurements
-    at different temperatures and hence chemically quite similar. For instance,
-    the base refcode `UMODEH` would appear 21 times, `KEDJAG` 17 times, and `UMOYOM` 17 times
-    in the CoRE dataset used by Moosavi et al.
-    Additionally, we (by default) only keep one structure per "structure hash"
-    which is an approximate graph-isomoprhism check, assuming the VESTA bond thresholds
-    for the derivation of the structure graph (e.g. the structure
-    graph of ULOMAL occurs 59 in the CoRE database used by Moosavi et al.).
-
-    .. warning::
-        Even though we performed some basic sanity checks, there are currently still
-        some structures that might chemically not be reasonable.
-        Also, even though we only keep one structure per base refcode, there is still
-        potential for data leakge. We urge users to still drop duplicates (or close neighbors)
-        after featurization.
-
-        If this set is used as test set, make sure to drop all overlapping entries in your training set.
-
-    The years refer to the publication dates of the paper crossreferenced
-    in the CSD entry of the structure. We excluded structures that are not
-    deposited in the CSD.
+    It is a subset of the BW database [Boyd2019]_ [Boyd2016]_ with labels
+    computed by Moosavi et al.
+    Those labels deviate in value and computational
+    approach from the original labels in [Boyd2019]_ but are consistent
+    with the labels for the other databases in [Moosavi2020]_.
 
     The available labels are:
-
-
         * 'pure_CO2_kH': Henry coefficient of CO2 obtained by Widom method in mol kg-1 Pa-1
         * 'pure_CO2_widomHOA': Heat of adsorption of CO2 obtained by Widom method in
         * 'pure_methane_kH': Henry coefficient of methane obtained by Widom method in mol kg-1 Pa-1
@@ -61,25 +40,48 @@ class CoREDataset(StructureDataset):
         * 'CH4HPSTP': CH4 high pressure uptake in standard temperature and pressure in vSTP/v
         * 'CH4LPSTP': CH4 low pressure uptake in standard temperature and pressure in vSTP/v
 
-    References:
-        .. [Moosavi2020] Moosavi, S. M.; Nandy, A.; Jablonka, K. M.; Ongari, D.; Janet, J. P.; Boyd, P. G.; Lee,
-            Y.; Smit, B.; Kulik, H. J. Understanding the Diversity of the Metal-Organic Framework Ecosystem.
-            Nature Communications 2020, 11 (1), 4068. https://doi.org/10.1038/s41467-020-17755-8.
+    .. note::
 
+        The BW structures are hypothetical MOFs, therefore the following caveats apply:
+
+        * It is well known that the data distribution can be quite different from experimental
+          structures
+        * The structures were only optimized using the UFF force field [UFF]_
+        * A time-based split cannot be used for hypothetical structures
+
+
+    .. admonition::
+        :class: hint
+
+        This dataset exposed information about the building blocks of the MOFs.
+        You might find this useful for grouped-cross-validation (as MOFs with same building-blocks
+        and/or net are not really independent).
+
+        You find this info under also in the `info.rcsr_code`, `info.metal_bb`, and
+        `info.organic_bb`, `info.functional_group` columns.
+
+    References:
+        .. [Moosavi2020] `Moosavi, S. M.; Nandy, A.; Jablonka, K. M.; Ongari, D.; Janet, J. P.; Boyd, P. G.; Lee,
+            Y.; Smit, B.; Kulik, H. J. Understanding the Diversity of the Metal-Organic Framework Ecosystem.
+            Nature Communications 2020, 11 (1), 4068. <https://doi.org/10.1038/s41467-020-17755-8>`_
+
+        .. [Boyd2019] `Boyd, P. G.; Chidambaram, A.; García-Díez, E.; Ireland, C. P.; Daff, T. D.;
+            Bounds, R.; Gładysiak, A.; Schouwink, P.; Moosavi, S. M.; Maroto-Valer, M. M.;
+            Reimer, J. A.; Navarro, J. A. R.; Woo, T. K.; Garcia, S.; Stylianou, K. C.;
+            Smit, B. Data-Driven Design of Metal–Organic Frameworks for Wet Flue Gas CO2 Capture.
+            Nature 2019, 576 (7786), 253–256. <https://doi.org/10.1038/s41586-019-1798-7>`_
+
+        .. [Boyd2016] `Boyd, P. G.; Woo, T. K.
+            A Generalized Method for Constructing Hypothetical Nanoporous Materials
+            of Any Net Topology from Graph Theory.
+            CrystEngComm 2016, 18 (21), 3777–3792. <https://doi.org/10.1039/c6ce00407e>`_
     """
 
-    _files = {
-        "v0.0.1": {
-            "df": "https://www.dropbox.com/s/i2khfte4s6mcg30/data.json?dl=1",
-            "structures": "https://www.dropbox.com/s/1v7zknesttixw68/structures.tar.gz?dl=1",
-            "expected_length": 5393,
-        }
-    }
+    _files = {"v0.0.1": {"df": "", "structures": "", "expected_length": ""}}
 
     def __init__(
         self,
         version: str = "v0.0.1",
-        drop_basename_duplicates: bool = True,
         drop_graph_duplicates: bool = True,
         subset: Optional[Iterable[int]] = None,
     ):
@@ -98,7 +100,6 @@ class CoREDataset(StructureDataset):
         Raises:
             ValueError: If the provided version number is not available.
         """
-        self._drop_basename_duplicates = drop_basename_duplicates
         self._drop_graph_duplicates = drop_graph_duplicates
         if version not in self._files:
             raise ValueError(
@@ -115,18 +116,12 @@ class CoREDataset(StructureDataset):
 
         self._df = pd.DataFrame(
             MOFDSCRIBE_PYSTOW_MODULE.ensure_json(
-                "CoRE", self.version, name="data.json", url=self._files[version]["df"]
+                "BW20K", self.version, name="data.json", url=self._files[version]["df"]
             )
         ).reset_index(drop=True)
 
         length_check(self._df, self._files[version]["expected_length"])
 
-        if drop_basename_duplicates:
-            old_len = len(self._df)
-            self._df = self._df.drop_duplicates(subset=["info.basename"])
-            logger.debug(
-                f"Dropped {old_len - len(self._df)} duplicate basenames. New length {len(self._df)}"
-            )
         if drop_graph_duplicates:
             old_len = len(self._df)
             self._df = self._df.drop_duplicates(subset=["info.decorated_graph_hash"])
@@ -164,9 +159,8 @@ class CoREDataset(StructureDataset):
             StructureDataset: a new dataset containing only the structures
                 specified by the indices.
         """
-        return CoREDataset(
+        return BWDataset(
             version=self.version,
-            drop_basename_duplicates=self._drop_basename_duplicates,
             drop_graph_duplicates=self._drop_graph_duplicates,
             subset=indices,
         )
@@ -204,39 +198,39 @@ class CoREDataset(StructureDataset):
             "title = {Understanding the diversity of the metal-organic framework ecosystem},"
             "journal = {Nature Communications}"
             "}",
-            "@article{Chung2019,"
-            "doi = {10.1021/acs.jced.9b00835},"
-            "url = {https://doi.org/10.1021/acs.jced.9b00835},"
-            "year = {2019},"
-            "month = nov,"
-            "publisher = {American Chemical Society ({ACS})},"
-            "volume = {64},"
-            "number = {12},"
-            "pages = {5985--5998},"
-            "author = {Yongchul G. Chung and Emmanuel Haldoupis and Benjamin J. Bucior "
-            "and Maciej Haranczyk and Seulchan Lee and Hongda Zhang and "
-            "Konstantinos D. Vogiatzis and Marija Milisavljevic and Sanliang Ling "
-            "and Jeffrey S. Camp and Ben Slater and J. Ilja Siepmann and "
-            "David S. Sholl and Randall Q. Snurr},"
-            "title = {Advances,  Updates,  and Analytics for the Computation-Ready, "
-            "Experimental Metal{\textendash}Organic Framework Database: {CoRE} {MOF} 2019},"
-            r"journal = {Journal of Chemical {\&}amp$\mathsemicolon$ Engineering Data}"
+            "@article{Boyd_2019,"
+            "doi = {10.1038/s41586-019-1798-7},"
+            "url = {https://doi.org/10.1038%2Fs41586-019-1798-7},"
+            "year = 2019,"
+            "month = {dec},"
+            "publisher = {Springer Science and Business Media {LLC}},"
+            "volume = {576},"
+            "number = {7786},"
+            "pages = {253--256},"
+            "author = {Peter G. Boyd and Arunraj Chidambaram "
+            "and Enrique Garc{'{\i}}a-D{'{\i}}ez and "
+            "Christopher P. Ireland and Thomas D. Daff and Richard Bounds "
+            "and Andrzej G{\l}adysiak and Pascal Schouwink "
+            "and Seyed Mohamad Moosavi and M. Mercedes Maroto-Valer "
+            "and Jeffrey A. Reimer and Jorge A. R. Navarro "
+            "and Tom K. Woo and Susana Garcia "
+            "and Kyriakos C. Stylianou and Berend Smit},"
+            "title = {Data-driven design of "
+            "metal{\textendash}organic frameworks for wet flue gas "
+            "{CO}2 capture},"
+            "journal = {Nature}"
             "}",
-            "@article{Chung2014,"
-            "doi = {10.1021/cm502594j},"
-            "url = {https://doi.org/10.1021/cm502594j},"
-            "year = {2014},"
-            "month = oct,"
-            "publisher = {American Chemical Society ({ACS})},"
-            "volume = {26},"
+            "@article{Boyd_2016,"
+            "doi = {10.1039/c6ce00407e},"
+            "url = {https://doi.org/10.1039%2Fc6ce00407e},"
+            "year = 2016,"
+            "publisher = {Royal Society of Chemistry ({RSC})},"
+            "volume = {18},"
             "number = {21},"
-            "pages = {6185--6192},"
-            "author = {Yongchul G. Chung and Jeffrey Camp and "
-            "Maciej Haranczyk and Benjamin J. Sikora and Wojciech Bury "
-            "and Vaiva Krungleviciute and Taner Yildirim and Omar K. Farha "
-            "and David S. Sholl and Randall Q. Snurr},"
-            "title = {Computation-Ready,  Experimental Metal{\textendash}Organic Frameworks: "
-            "A Tool To Enable High-Throughput Screening of Nanoporous Crystals},"
-            "journal = {Chemistry of Materials}"
+            "pages = {3777--3792},"
+            "author = {Peter G. Boyd and Tom K. Woo},"
+            "title = {A generalized method for constructing hypothetical "
+            "nanoporous materials of any net topology from graph theory},"
+            "journal = {CrystEngComm}}"
             "}",
         ]
