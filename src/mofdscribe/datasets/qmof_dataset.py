@@ -155,16 +155,17 @@ class QMOFDataset(StructureDataset):
         The class will load almost 1GB of data into memory.
 
     References:
-        .. [Rosen2021a] Rosen, A. S.; Iyer, S. M.; Ray, D.; Yao, Z.; Aspuru-Guzik, A.; Gagliardi, L.;
+        .. [Rosen2021] Rosen, A. S.; Iyer, S. M.; Ray, D.; Yao, Z.; Aspuru-Guzik, A.; Gagliardi, L.;
             Notestein, J. M.; Snurr, R. Q. Machine Learning the Quantum-Chemical Properties
             of Metal–Organic Frameworks for Accelerated Materials Discovery.
             Matter 2021, 4 (5), 1578–1597. https://doi.org/10.1016/j.matt.2021.02.015.
 
-        .. [Rosen2021b] Rosen, A. S.; Fung, V.; Huck, P.; O'Donnell, C. T.; Horton, M. K.; Truhlar, D. G.;
+        .. [Rosen2022] Rosen, A. S.; Fung, V.; Huck, P.; O'Donnell, C. T.; Horton, M. K.; Truhlar, D. G.;
             Persson, K. A.; Notestein, J. M.; Snurr, R. Q.
             High-Throughput Predictions of Metal–Organic Framework Electronic Properties:
-            Theoretical Challenges, Graph Neural Networks, and Data Exploration. ChemRxiv 2021.
-            https://chemrxiv.org/engage/chemrxiv/article-details/61b03430535d63bcdf93968b
+            Theoretical Challenges, Graph Neural Networks, and Data Exploration.
+            npj Computational Materials, 8, 112.
+            https://doi.org/10.1038/s41524-022-00796-6
 
     """
 
@@ -197,7 +198,7 @@ class QMOFDataset(StructureDataset):
             version (str): version number to use.
                 Defaults to "v0.0.1".
             flavor (str): flavor of the dataset to use.
-                Accepted values are "csd",  "gcmc", "all", and "csd-gcmc".
+                Accepted values are "csd", "gcmc", "all", and "csd-gcmc".
                 Defaults to "csd".
             drop_basename_duplicates (bool): If True, keep only one structure
                 per CSD basename. Defaults to True.
