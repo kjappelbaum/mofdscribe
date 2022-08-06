@@ -49,7 +49,7 @@ def get_structure_graph(structure: IStructure, strategy: Optional[str] = None) -
     Args:
         structure (IStructure): Pymatgen structure object.
         strategy (str): Heuristic for assigning bonds.
-            Must be one of 'jmolnn', 'crystalnn', 'isayevnn'. Defaults to None.
+            Must be one of 'jmolnn', 'crystalnn', 'isayevnn', 'vesta'. Defaults to None.
 
     Returns:
         StructureGraph: pymatgen StructureGraph object
