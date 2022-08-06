@@ -52,11 +52,11 @@ def read_ascii_grid(filename: Union[str, os.PathLike]) -> pd.DataFrame:
     """
     df = pd.read_csv(
         filename,
-        sep=r"\s+",
+        delim_whitespace=True,
         header=None,
         names=["x", "y", "z", "energy", "deriv_x", "deriv_y", "deriv_z"],
+        na_values='?'
     )
-    df = df.replace("?", np.nan)
     df = df.astype(np.float)
     return df
 
