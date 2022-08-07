@@ -4,7 +4,7 @@ import pytest
 from matminer.featurizers.structure import DensityFeatures
 
 from mofdscribe.featurizers.base import MOFMultipleFeaturizer
-from mofdscribe.featurizers.chemistry import APRDF, RACS
+from mofdscribe.featurizers.chemistry import RACS
 
 
 def test_mofmultiplefeaturizer(hkust_structure, irmof_structure):
