@@ -60,6 +60,12 @@ class BWDataset(StructureDataset):
         You find this info under also in the `info.rcsr_code`, `info.metal_bb`, and
         `info.organic_bb`, `info.functional_group` columns.
 
+    .. warning::
+
+        Cross validation for MOFs with same building-blocks and/or net is notoriously
+        difficult. Since all combinations of building-blocks and/or net are considered,
+        it is not trivial to find completely independent groups.
+
     References:
         .. [Moosavi2020] `Moosavi, S. M.; Nandy, A.; Jablonka, K. M.; Ongari, D.; Janet, J. P.; Boyd, P. G.; Lee,
             Y.; Smit, B.; Kulik, H. J. Understanding the Diversity of the Metal-Organic Framework Ecosystem.
@@ -77,7 +83,13 @@ class BWDataset(StructureDataset):
             CrystEngComm 2016, 18 (21), 3777–3792. <https://doi.org/10.1039/c6ce00407e>`_
     """
 
-    _files = {"v0.0.1": {"df": "", "structures": "", "expected_length": ""}}
+    _files = {
+        "v0.0.1": {
+            "df": "https://www.dropbox.com/s/w6je3s9ldl1bz2u/data.json?dl=1",
+            "structures": "https://www.dropbox.com/s/pj8vakxvq95o196/structures.tar.gz?dl=1",
+            "expected_length": 17970,
+        }
+    }
 
     def __init__(
         self,
@@ -90,8 +102,6 @@ class BWDataset(StructureDataset):
         Args:
             version (str): version number to use.
                 Defaults to "v0.0.1".
-            drop_basename_duplicates (bool): If True, keep only one structure
-                per CSD basename. Defaults to True.
             drop_graph_duplicates (bool): If True, keep only one structure
                 per decorated graph hash. Defaults to True.
             subset (Iterable[int], optional): indices of the structures to include.
@@ -108,7 +118,7 @@ class BWDataset(StructureDataset):
         self.version = version
 
         self._structure_dir = MOFDSCRIBE_PYSTOW_MODULE.ensure_untar(
-            "CoRE",
+            "BW20K",
             self.version,
             name="structures.tar.gz",
             url=self._files[version]["structures"],
@@ -139,7 +149,6 @@ class BWDataset(StructureDataset):
 
         check_all_file_exists(self._structures)
 
-        self._years = self._df["info.year"]
         self._decorated_graph_hashes = self._df["info.decorated_graph_hash"]
         self._undecorated_graph_hashes = self._df["info.undecorated_graph_hash"]
         self._decorated_scaffold_hashes = self._df["info.decorated_scaffold_hash"]

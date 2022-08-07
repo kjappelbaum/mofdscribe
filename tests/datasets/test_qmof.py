@@ -8,7 +8,7 @@ from mofdscribe.datasets.qmof_dataset import QMOFDataset
 
 
 @pytest.mark.parametrize("flavor", ["all", "csd", "gcmc", "csd-gcmc"])
-def test_core(flavor):
+def test_qmof(flavor):
     """Ensure we can instantiate the QMOF dataset and access a few key methods."""
     qmof = QMOFDataset(flavor=flavor)
     assert isinstance(list(qmof.get_structures([1]))[0], IStructure)

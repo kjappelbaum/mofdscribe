@@ -60,6 +60,12 @@ class ARABGDataset(StructureDataset):
         You find this info under also in the `info.rcsr_code`, `info.metal_bb`, and
         `info.organic_bb`, `info.functional_group` columns.
 
+    .. warning::
+
+        Cross validation for MOFs with same building-blocks and/or net is notoriously
+        difficult. Since all combinations of building-blocks and/or net are considered,
+        it is not trivial to find completely independent groups.
+
     References:
         .. [Moosavi2020] `Moosavi, S. M.; Nandy, A.; Jablonka, K. M.; Ongari, D.; Janet, J. P.; Boyd, P. G.; Lee,
             Y.; Smit, B.; Kulik, H. J. Understanding the Diversity of the Metal-Organic Framework Ecosystem.
@@ -71,7 +77,13 @@ class ARABGDataset(StructureDataset):
             <https://doi.org/10.1021/acs.chemmater.8b02257>_
     """
 
-    _files = {"v0.0.1": {"df": "", "structures": "", "expected_length": ""}}
+    _files = {
+        "v0.0.1": {
+            "df": "https://www.dropbox.com/s/gc07ktvrnz68xag/data.json?dl=1",
+            "structures": "https://www.dropbox.com/s/hvsp5vewjdr80s4/structures.tar.gz?dl=1",
+            "expected_length": 370,
+        }
+    }
 
     def __init__(
         self,
@@ -84,8 +96,6 @@ class ARABGDataset(StructureDataset):
         Args:
             version (str): version number to use.
                 Defaults to "v0.0.1".
-            drop_basename_duplicates (bool): If True, keep only one structure
-                per CSD basename. Defaults to True.
             drop_graph_duplicates (bool): If True, keep only one structure
                 per decorated graph hash. Defaults to True.
             subset (Iterable[int], optional): indices of the structures to include.
@@ -110,7 +120,7 @@ class ARABGDataset(StructureDataset):
 
         self._df = pd.DataFrame(
             MOFDSCRIBE_PYSTOW_MODULE.ensure_json(
-                "CoRE", self.version, name="data.json", url=self._files[version]["df"]
+                "ARABG", self.version, name="data.json", url=self._files[version]["df"]
             )
         ).reset_index(drop=True)
 
@@ -133,7 +143,6 @@ class ARABGDataset(StructureDataset):
 
         check_all_file_exists(self._structures)
 
-        self._years = self._df["info.year"]
         self._decorated_graph_hashes = self._df["info.decorated_graph_hash"]
         self._undecorated_graph_hashes = self._df["info.undecorated_graph_hash"]
         self._decorated_scaffold_hashes = self._df["info.decorated_scaffold_hash"]
@@ -153,7 +162,7 @@ class ARABGDataset(StructureDataset):
             StructureDataset: a new dataset containing only the structures
                 specified by the indices.
         """
-        return BWDataset(
+        return ARABGDataset(
             version=self.version,
             drop_graph_duplicates=self._drop_graph_duplicates,
             subset=indices,
