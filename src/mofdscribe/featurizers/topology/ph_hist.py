@@ -3,6 +3,7 @@
 from typing import List, Tuple, Union
 
 import numpy as np
+from loguru import logger
 from matminer.featurizers.base import BaseFeaturizer
 from pymatgen.core import IMolecule, IStructure, Molecule, Structure
 
@@ -127,18 +128,25 @@ class PHHist(BaseFeaturizer):
 
                 diagram = res[atom_type][dimname]
 
-                try:
-                    d = np.array(
-                        [[x["birth"], x["death"], x["death"] - x["birth"]] for x in diagram]
-                    )
-                except IndexError:
-                    d = np.array([[x[0], x[1], x[1] - x[0]] for x in diagram])
-                d = np.ma.masked_invalid(d)
+                if len(diagram) != 0:
+                    try:
+                        d = np.array(
+                            [[x["birth"], x["death"], x["death"] - x["birth"]] for x in diagram]
+                        )
+                    except IndexError:
+                        logger.debug("No diagrams for atom type {}".format(atom_type))
+                        d = np.array([[x[0], x[1], x[1] - x[0]] for x in diagram])
 
-                x = d[:, 0]
-                y = d[:, 1] if self.y_axis_label == "death" else d[:, 2]
+                    d = np.ma.masked_invalid(d)
 
-                hist = np.histogram2d(x, y, bins=(self.nx, self.ny), density=self.normed)[0]
+                    x = d[:, 0]
+
+                    y = d[:, 1] if self.y_axis_label == "death" else d[:, 2]
+
+                    hist = np.histogram2d(x, y, bins=(self.nx, self.ny), density=self.normed)[0]
+                else:
+                    hist = np.zeros((self.nx, self.ny))
+                    hist[:] = np.nan
                 flat_results.append(hist.reshape(1, -1))
         return np.hstack(flat_results).flatten()
 
