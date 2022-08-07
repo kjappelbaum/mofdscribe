@@ -188,7 +188,7 @@ class QMOFDataset(StructureDataset):
     def __init__(
         self,
         version: str = "v0.0.1",
-        flavor: str = "csd",
+        flavor: str = "all",
         drop_basename_duplicates: bool = True,
         drop_graph_duplicates: bool = True,
         subset: Optional[Iterable[int]] = None,
@@ -199,8 +199,8 @@ class QMOFDataset(StructureDataset):
             version (str): version number to use.
                 Defaults to "v0.0.1".
             flavor (str): flavor of the dataset to use.
-                Accepted values are "csd", "gcmc", "all", and "csd-gcmc".
-                Defaults to "csd".
+                Accepted values are "all", "csd", "gcmc", and "csd-gcmc".
+                Defaults to "all".
             drop_basename_duplicates (bool): If True, keep only one structure
                 per CSD basename. Defaults to True.
             drop_graph_duplicates (bool): If True, keep only one structure
