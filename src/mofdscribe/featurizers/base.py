@@ -130,14 +130,14 @@ class MOFMultipleFeaturizer(MultipleFeaturizer):
 
         self.featurizers = featurizers
         self.iterate_over_entries = iterate_over_entries
-        self.primitive = primitive
+        self.primitive_multiple = primitive
 
     def _get_primitive(self, structure: Union[Structure, IStructure]) -> Structure:
         return structure.get_primitive_structure()
 
     def featurize(self, structure: Union[Structure, IStructure]) -> np.ndarray:
-        logger.debug(f"Featurizing structure in MOFMultipleFeaturizer, {self.primitive}")
-        if self.primitive:
+        logger.debug(f"Featurizing structure in MOFMultipleFeaturizer, {self.primitive_multiple}")
+        if self.primitive_multiple:
             logger.debug("Getting primitive cell")
             structure = self._get_primitive(structure)
         return np.array([feature for f in self.featurizers for feature in f.featurize(structure)])
@@ -151,6 +151,9 @@ class MOFMultipleFeaturizer(MultipleFeaturizer):
                 return res
 
     def featurize_many(self, entries, ignore_errors=False, return_errors=False, pbar=True):
+        logger.debug("Precomputing primitive cells")
+        if self.primitive_multiple:
+            entries = self._get_primitive_many(entries)
         if self.iterate_over_entries:
             return np.array(
                 super().featurize_many(
@@ -161,9 +164,6 @@ class MOFMultipleFeaturizer(MultipleFeaturizer):
                 )
             )
         else:
-            logger.debug("Precomputing primitive cells")
-            entries = self._get_primitive_many(entries)
-            logger.debug("Featurizing the primitive cells")
             features = [
                 f.featurize_many(
                     entries,
