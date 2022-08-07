@@ -155,6 +155,10 @@ class QMOFDataset(StructureDataset):
 
         The class will load almost 1GB of data into memory.
 
+    .. warning::
+
+        By default, the values will be sorted by the PBE total energy
+
     References:
         .. [Rosen2021] `Rosen, A. S.; Iyer, S. M.; Ray, D.; Yao, Z.; Aspuru-Guzik, A.; Gagliardi, L.;
             Notestein, J. M.; Snurr, R. Q. Machine Learning the Quantum-Chemical Properties
@@ -240,15 +244,17 @@ class QMOFDataset(StructureDataset):
 
         length_check(self._df, self._files[version]["expected_length"])
 
+        # we sort by the PBE energy to make sure we keep always the lowest in energy
+        self._df = self._df.sort_values(by="outputs.pbe.energy_total")
         if drop_basename_duplicates:
             old_len = len(self._df)
-            self._df = self._df.drop_duplicates(subset=["info.basename"])
+            self._df = self._df.drop_duplicates(subset=["info.basename"], keep="first")
             logger.debug(
                 f"Dropped {old_len - len(self._df)} duplicate basenames. New length {len(self._df)}"
             )
         if drop_graph_duplicates:
             old_len = len(self._df)
-            self._df = self._df.drop_duplicates(subset=["info.decorated_graph_hash"])
+            self._df = self._df.drop_duplicates(subset=["info.decorated_graph_hash"], keep="first")
             logger.debug(
                 f"Dropped {old_len - len(self._df)} duplicate graphs. New length {len(self._df)}"
             )
