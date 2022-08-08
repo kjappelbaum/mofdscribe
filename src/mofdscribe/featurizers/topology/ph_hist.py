@@ -4,9 +4,9 @@ from typing import List, Tuple, Union
 
 import numpy as np
 from loguru import logger
-from matminer.featurizers.base import BaseFeaturizer
 from pymatgen.core import IMolecule, IStructure, Molecule, Structure
 
+from mofdscribe.featurizers.base import MOFBaseFeaturizer
 from mofdscribe.featurizers.utils.extend import (
     operates_on_imolecule,
     operates_on_istructure,
@@ -21,7 +21,7 @@ from ._tda_helpers import get_diagrams_for_structure
 @operates_on_molecule
 @operates_on_istructure
 @operates_on_structure
-class PHHist(BaseFeaturizer):
+class PHHist(MOFBaseFeaturizer):
     """Featurizer that computes 2D histogram of persistent images.
 
     Compute a fixed-length vector of topological descriptors for a structure by
@@ -51,6 +51,7 @@ class PHHist(BaseFeaturizer):
         y_axis_label: str = "persistence",
         normed: bool = True,
         no_supercell: bool = False,
+        primitive: bool = False,
     ) -> None:
         """Initialize the PHStats object.
 
@@ -79,6 +80,8 @@ class PHHist(BaseFeaturizer):
                 Defaults to True.
             no_supercell (bool): If true, then the supercell is not created.
                 Defaults to False.
+            primitive (bool): If True, the structure is reduced to its primitive
+                form before the descriptor is computed. Defaults to False.
         """
         atom_types = [] if atom_types is None else atom_types
         self.elements = atom_types
@@ -94,6 +97,7 @@ class PHHist(BaseFeaturizer):
         self.y_axis_label = y_axis_label
         self.normed = normed
         self.no_supercell = no_supercell
+        super().__init__(primitive=primitive)
 
     def _get_feature_labels(self) -> List[str]:
         labels = []
@@ -110,7 +114,9 @@ class PHHist(BaseFeaturizer):
     def feature_labels(self) -> List[str]:
         return self._get_feature_labels()
 
-    def featurize(self, structure: Union[Structure, IStructure, Molecule, IMolecule]) -> np.ndarray:
+    def _featurize(
+        self, structure: Union[Structure, IStructure, Molecule, IMolecule]
+    ) -> np.ndarray:
         res = get_diagrams_for_structure(
             structure,
             self.elements,

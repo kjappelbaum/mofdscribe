@@ -3,9 +3,9 @@
 from typing import List, Union
 
 import numpy as np
-from matminer.featurizers.base import BaseFeaturizer
 from pymatgen.core import IStructure, Structure
 
+from mofdscribe.featurizers.base import MOFBaseFeaturizer
 from mofdscribe.featurizers.utils.eqeq import get_eqeq_charges
 from mofdscribe.featurizers.utils.extend import operates_on_istructure, operates_on_structure
 from mofdscribe.featurizers.utils.histogram import get_rdf
@@ -15,7 +15,7 @@ __all__ = ["PartialChargeHistogram"]
 
 @operates_on_istructure
 @operates_on_structure
-class PartialChargeHistogram(BaseFeaturizer):
+class PartialChargeHistogram(MOFBaseFeaturizer):
     """Compute partial charges using the EqEq charge equilibration method [Ongari2019]_.
 
     Then derive a fix-length feature vector from the partial charges by binning
@@ -27,6 +27,7 @@ class PartialChargeHistogram(BaseFeaturizer):
         min_charge: float = -4,
         max_charge: float = 4,
         bin_size: float = 0.5,
+        primitive: bool = False,
     ) -> None:
         """Construct a new PartialChargeHistogram featurizer.
 
@@ -37,10 +38,13 @@ class PartialChargeHistogram(BaseFeaturizer):
                 Defaults to 4.
             bin_size (float): Bin size.
                 Defaults to 0.5.
+            primitive (bool): If True, the structure is reduced to its primitive
+                form before the descriptor is computed. Defaults to True.
         """
         self.min_charge = min_charge
         self.max_charge = max_charge
         self.bin_size = bin_size
+        super().__init__(primitive=primitive)
 
     def _get_grid(self):
         return np.arange(self.min_charge, self.max_charge, self.bin_size)
@@ -48,7 +52,7 @@ class PartialChargeHistogram(BaseFeaturizer):
     def feature_labels(self) -> List[str]:
         return [f"chargehist_{val}" for val in self._get_grid()]
 
-    def featurize(self, s: Union[Structure, IStructure]) -> np.ndarray:
+    def _featurize(self, s: Union[Structure, IStructure]) -> np.ndarray:
         if isinstance(s, Structure):
             s = IStructure.from_sites(s.sites)
         _, results = get_eqeq_charges(s)

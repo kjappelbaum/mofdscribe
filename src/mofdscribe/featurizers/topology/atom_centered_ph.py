@@ -9,6 +9,7 @@ from moleculetda.construct_pd import construct_pds
 from moleculetda.vectorize_pds import diagrams_to_arrays
 from pymatgen.core import IStructure, Structure
 
+from mofdscribe.featurizers.base import MOFBaseFeaturizer
 from mofdscribe.featurizers.utils import flatten
 from mofdscribe.featurizers.utils.aggregators import ARRAY_AGGREGATORS
 from mofdscribe.featurizers.utils.extend import operates_on_istructure, operates_on_structure
@@ -122,7 +123,7 @@ class AtomCenteredPHSite(BaseFeaturizer):
 
 
 # ToDo: Leverage symmetry to do not recompute for symmetry-equivalent sites
-class AtomCenteredPH(BaseFeaturizer):
+class AtomCenteredPH(MOFBaseFeaturizer):
     """Atom-centered featurizer for persistence diagrams.
 
     It runs :class:`~mofdscribe.topology.atom_centered_ph.AtomCenteredPH` for every site.
@@ -145,6 +146,7 @@ class AtomCenteredPH(BaseFeaturizer):
         species_aggregation_functions: Tuple[str] = ("min", "max", "mean", "std"),
         cutoff: float = 12,
         dimensions: Tuple[int] = (1, 2),
+        primitive: bool = False,
     ) -> None:
         """
         Construct a new AtomCenteredPH featurizer.
@@ -168,6 +170,8 @@ class AtomCenteredPH(BaseFeaturizer):
                 Defaults to 12.
             dimensions (Tuple[int]): Betti numbers of consider. 0 describes isolated components,
                 1 cycles and 2 cavities. Defaults to (1, 2).
+            primitive (bool): If True, the structure is reduced to its primitive
+                form before the descriptor is computed. Defaults to False.
         """
         self.aggregation_functions = aggregation_functions
         self.species_aggregation_functions = species_aggregation_functions
@@ -177,13 +181,14 @@ class AtomCenteredPH(BaseFeaturizer):
             aggregation_functions=aggregation_functions, cutoff=cutoff, dimensions=dimensions
         )
         self.atom_types = atom_types
+        super().__init__(primitive=primitive)
 
     def _get_relevant_atom_type(self, element: str) -> str:
         for atom_type in self.atom_types:
             if element in atom_type:
                 return atom_type
 
-    def featurize(self, s: Union[Structure, IStructure]) -> np.ndarray:
+    def _featurize(self, s: Union[Structure, IStructure]) -> np.ndarray:
         results = defaultdict(list)
         for idx, site in enumerate(s):
             atom_type = self._get_relevant_atom_type(site.specie.symbol)

@@ -10,13 +10,15 @@ from typing import Callable, List, Optional, Tuple, Union
 import numpy as np
 import pandas as pd
 from loguru import logger
-from matminer.featurizers.base import BaseFeaturizer
 from pymatgen.core import IStructure, Structure
+
+from mofdscribe.featurizers.base import MOFBaseFeaturizer
 
 from ..utils import is_tool
 from ..utils.tempdir import TEMPDIR
 
-ZEOPP_BASE_COMMAND = ["network", "-ha"]
+ZEOPP_BASE_COMMAND = ["network"]
+HA_COMMAND = ["-ha"]
 NO_ZEOPP_WARNING = "Did not find the zeo++ network binary in the path. \
             Can not run pore analysis."
 
@@ -43,13 +45,14 @@ __all__ = [
 ]
 
 
-def run_zeopp(structure: Structure, command: str, parser: Callable) -> dict:
+def run_zeopp(structure: Structure, command: str, parser: Callable, ha: bool = True) -> dict:
     """Run zeopp with network -ha to find the pore diameters.
 
     Args:
         structure (Structure): pymatgen Structure object
         command (str): command for zeopp
         parser (Callable): function to parse the output of zeopp
+        ha (bool): whether to use the 'high accuracy' :code:`-ha` flag
 
     Returns:
         dict: pore analysis results
@@ -60,7 +63,12 @@ def run_zeopp(structure: Structure, command: str, parser: Callable) -> dict:
         structure_path = os.path.join(tempdir, "structure.cif")
         result_path = os.path.join(tempdir, "result.res")
         structure.to("cif", structure_path)
-        cmd = ZEOPP_BASE_COMMAND + command + [str(result_path), str(structure_path)]
+        if ha:
+            cmd = (
+                ZEOPP_BASE_COMMAND + HA_COMMAND + command + [str(result_path), str(structure_path)]
+            )
+        else:
+            cmd = ZEOPP_BASE_COMMAND + command + [str(result_path), str(structure_path)]
         _ = subprocess.run(  # nosec
             cmd,
             universal_newlines=True,
@@ -161,15 +169,31 @@ def _parse_psd_zeopp(filecontent):
     )
 
 
-class PoreDiameters(BaseFeaturizer):
+class PoreDiameters(MOFBaseFeaturizer):
     """Calculate the pore diameters of a framework."""
 
-    def __init__(self):
-        """Initialize the featurizer."""
-        self.labels = ["lis", "lifs", "lifsp"]
+    def __init__(
+        self,
+        ha: bool = True,
+        primitive: bool = True,
+    ):
+        """Initialize the featurizer.
 
-    def featurize(self, s):
-        result = run_zeopp(s, ["-res"], _parse_res_zeopp)
+        Args:
+            ha (bool): if True, run zeo++ with the "high accuracy"
+                :code:`-ha` flag.
+                It has been reported that this can lead to issues
+                for some structures.
+                Default is True.
+            primitive (bool): If True, the structure is reduced to its primitive
+                form before the descriptor is computed. Defaults to True.
+        """
+        self.labels = ["lis", "lifs", "lifsp"]
+        self.ha = ha
+        super().__init__(primitive=primitive)
+
+    def _featurize(self, s):
+        result = run_zeopp(s, ["-res"], _parse_res_zeopp, self.ha)
         return np.array(list(result.values()))
 
     def feature_labels(self):
@@ -198,12 +222,14 @@ class PoreDiameters(BaseFeaturizer):
         return ["Kevin Maik Jablonka", "Maciej Haranczyk and Zeo++ authors"]
 
 
-class SurfaceArea(BaseFeaturizer):
+class SurfaceArea(MOFBaseFeaturizer):
     def __init__(
         self,
         probe_radius: Union[str, float] = 0.1,
         num_samples: int = 100,
         channel_radius: Union[str, float, None] = None,
+        ha: bool = True,
+        primitive: bool = True,
     ):
         """Initialize the SurfaceArea featurizer.
 
@@ -214,6 +240,13 @@ class SurfaceArea(BaseFeaturizer):
                 Defaults to 100.
             channel_radius (Union[str, float, None]): Channel radius.
                 Should equal to `probe_radius`. Defaults to None.
+            ha (bool): if True, run zeo++ with the "high accuracy"
+                :code:`-ha` flag.
+                It has been reported that this can lead to issues
+                for some structures.
+                Default is True.
+            primitive (bool): If True, the structure is reduced to its primitive
+                form before the descriptor is computed. Defaults to True.
         """
         if channel_radius is not None and probe_radius != channel_radius:
             logger.warning(
@@ -228,6 +261,7 @@ class SurfaceArea(BaseFeaturizer):
         if channel_radius is None:
             channel_radius = probe_radius
 
+        self.ha = ha
         self.probe_radius = probe_radius
         self.num_samples = num_samples
         self.channel_radius = channel_radius
@@ -244,15 +278,16 @@ class SurfaceArea(BaseFeaturizer):
         ]
 
         self.labels = [f"{label}_{self.probe_radius}" for label in labels]
+        super().__init__(primitive=primitive)
 
-    def featurize(self, s: Union[Structure, IStructure]) -> np.ndarray:
+    def _featurize(self, s: Union[Structure, IStructure]) -> np.ndarray:
         command = [
             "-sa",
             f"{self.channel_radius}",
             f"{self.probe_radius}",
             f"{self.num_samples}",
         ]
-        results = run_zeopp(s, command, _parse_sa_zeopp)
+        results = run_zeopp(s, command, _parse_sa_zeopp, self.ha)
         return np.array(list(results.values()))
 
     def feature_labels(self) -> List[str]:
@@ -281,12 +316,14 @@ class SurfaceArea(BaseFeaturizer):
         return ["Kevin Maik Jablonka", "Maciej Haranczyk and Zeo++ authors"]
 
 
-class AccessibleVolume(BaseFeaturizer):
+class AccessibleVolume(MOFBaseFeaturizer):
     def __init__(
         self,
         probe_radius: Union[str, float] = 0.1,
         num_samples: int = 100,
         channel_radius: Union[str, float, None] = None,
+        ha: bool = True,
+        primitive: bool = True,
     ):
         """Initialize the AccessibleVolume featurizer.
 
@@ -297,6 +334,13 @@ class AccessibleVolume(BaseFeaturizer):
                 Defaults to 100.
             channel_radius (Union[str, float, None]): Channel radius.
                 Should equal to `probe_radius`. Defaults to None.
+            ha (bool): if True, run zeo++ with the "high accuracy"
+                :code:`-ha` flag.
+                It has been reported that this can lead to issues
+                for some structures.
+                Default is True.
+            primitive (bool): If True, the structure is reduced to its primitive
+                form before the descriptor is computed. Defaults to True.
         """
         if channel_radius is not None and probe_radius != channel_radius:
             logger.warning(
@@ -311,6 +355,7 @@ class AccessibleVolume(BaseFeaturizer):
         if channel_radius is None:
             channel_radius = probe_radius
 
+        self.ha = ha
         self.probe_radius = probe_radius
         self.num_samples = num_samples
         self.channel_radius = channel_radius
@@ -325,10 +370,11 @@ class AccessibleVolume(BaseFeaturizer):
             "nav_cm3g",
         ]
         self.labels = [f"{label}_{self.probe_radius}" for label in labels]
+        super().__init__(primitive=primitive)
 
-    def featurize(self, s: Union[Structure, IStructure]) -> np.ndarray:
+    def _featurize(self, s: Union[Structure, IStructure]) -> np.ndarray:
         command = ["-vol", f"{self.channel_radius}", f"{self.probe_radius}", f"{self.num_samples}"]
-        results = run_zeopp(s, command, _parse_volpo_zeopp)
+        results = run_zeopp(s, command, _parse_volpo_zeopp, self.ha)
         return np.array(list(results.values()))
 
     def feature_labels(self) -> List[str]:
@@ -372,7 +418,7 @@ class AccessibleVolume(BaseFeaturizer):
         return ["Kevin Maik Jablonka", "Maciej Haranczyk and Zeo++ authors"]
 
 
-class RayTracingHistogram(BaseFeaturizer):
+class RayTracingHistogram(MOFBaseFeaturizer):
     """Describe pore structures using histograms of ray lengths.
 
     The algorithm (implemented in `zeo++ <http://www.zeoplusplus.org/>`_)
@@ -392,6 +438,8 @@ class RayTracingHistogram(BaseFeaturizer):
         probe_radius: Union[str, float] = 0.0,
         num_samples: int = 50000,
         channel_radius: Optional[Union[str, float]] = None,
+        ha: bool = True,
+        primitive: bool = True,
     ) -> None:
         """Initialize the RayTracingHistogram featurizer.
 
@@ -407,6 +455,13 @@ class RayTracingHistogram(BaseFeaturizer):
                 used to determine accessibility of the void space.
                 Should typically equal the radius of the `probe_radius`.
                 If set to `None`, we will use the `probe_radius`. Defaults to None.
+            ha (bool): if True, run zeo++ with the "high accuracy"
+                :code:`-ha` flag.
+                It has been reported that this can lead to issues
+                for some structures.
+                Default is True.
+            primitive (bool): If True, the structure is reduced to its primitive
+                form before the descriptor is computed. Defaults to True.
         """
         if channel_radius is not None and probe_radius != channel_radius:
             logger.warning(
@@ -424,18 +479,20 @@ class RayTracingHistogram(BaseFeaturizer):
         self.probe_radius = probe_radius
         self.num_samples = num_samples
         self.channel_radius = channel_radius
+        self.ha = ha
+        super().__init__(primitive=primitive)
 
     def feature_labels(self) -> List[str]:
         return [f"ray_hist_{self.probe_radius}_{i}" for i in range(1000)]
 
-    def featurize(self, s: Union[Structure, IStructure]) -> np.ndarray:
+    def _featurize(self, s: Union[Structure, IStructure]) -> np.ndarray:
         command = [
             "-ray_atom",
             f"{self.channel_radius}",
             f"{self.probe_radius}",
             f"{self.num_samples}",
         ]
-        results = run_zeopp(s, command, _parse_ray_hist_zeopp)
+        results = run_zeopp(s, command, _parse_ray_hist_zeopp, self.ha)
         return np.array(results)
 
     def citations(self) -> List[str]:
@@ -475,7 +532,7 @@ class RayTracingHistogram(BaseFeaturizer):
         return ["Kevin Maik Jablonka", "Maciej Haranczyk and Zeo++ authors"]
 
 
-class PoreSizeDistribution(BaseFeaturizer):
+class PoreSizeDistribution(MOFBaseFeaturizer):
     """Describe structures using histograms of pore sizes.
 
     The pore size distribution describes how much of the void space
@@ -504,6 +561,8 @@ class PoreSizeDistribution(BaseFeaturizer):
         num_samples: int = 5000,
         channel_radius: Optional[Union[str, float]] = None,
         hist_type: str = "derivative",
+        ha: bool = False,
+        primitive: bool = True,
     ) -> None:
         """Initialize the PoreSizeDistribution featurizer.
 
@@ -521,6 +580,13 @@ class PoreSizeDistribution(BaseFeaturizer):
                 Available options `count`, `cumulative`, `derivative`.
                 (The derivative distribution describes the change in the cumulative distribution
                 with respect to pore size). Defaults to "derivative".
+            ha (bool): if True, run zeo++ with the "high accuracy"
+                :code:`-ha` flag.
+                It has been reported that this can lead to issues
+                for some structures.
+                Default is True.
+            primitive (bool): If True, the structure is reduced to its primitive
+                form before the descriptor is computed. Defaults to True.
 
         Raises:
             ValueError: If type not one of 'count', 'cumulative', 'derivative'.
@@ -551,18 +617,20 @@ class PoreSizeDistribution(BaseFeaturizer):
         self.probe_radius = probe_radius
         self.num_samples = num_samples
         self.channel_radius = channel_radius
+        self.ha = ha
+        super().__init__(primitive=primitive)
 
     def feature_labels(self) -> List[str]:
         return [f"psd_hist_{self.probe_radius}_{i}" for i in range(1000)]
 
-    def featurize(self, s: Union[Structure, IStructure]) -> np.ndarray:
+    def _featurize(self, s: Union[Structure, IStructure]) -> np.ndarray:
         command = [
             "-psd",
             f"{self.channel_radius}",
             f"{self.probe_radius}",
             f"{self.num_samples}",
         ]
-        results = run_zeopp(s, command, _parse_psd_zeopp)
+        results = run_zeopp(s, command, _parse_psd_zeopp, self.ha)
         return results[self.type].values
 
     def citations(self) -> List[str]:

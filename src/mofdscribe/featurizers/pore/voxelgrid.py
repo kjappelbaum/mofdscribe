@@ -4,8 +4,9 @@ from typing import List, Tuple, Union
 
 import numpy as np
 from element_coder import encode
-from matminer.featurizers.base import BaseFeaturizer
 from pymatgen.core import Element, IStructure, Structure
+
+from mofdscribe.featurizers.base import MOFBaseFeaturizer
 
 from ._voxelgrid import VoxelGrid as VGBase
 
@@ -86,7 +87,7 @@ def compute_properties(numbers: np.array, properties: Tuple[str]) -> np.array:
 
 # ToDo: Potentially, we could also do the substruture-based approach for chemistry.
 # Not sure though how useful it would be as it would lead to quite large feature vectors.
-class VoxelGrid(BaseFeaturizer):
+class VoxelGrid(MOFBaseFeaturizer):
     """
     Describe the structure using a voxel grid.
 
@@ -113,6 +114,7 @@ class VoxelGrid(BaseFeaturizer):
         properties: Tuple[str, int] = ("X", "electron_affinity"),
         flatten: bool = True,
         regular_bounding_box: bool = True,
+        primitive: bool = False,
     ):
         """Initialize a VoxelGrid featurizer.
 
@@ -139,6 +141,8 @@ class VoxelGrid(BaseFeaturizer):
             regular_bounding_box (bool): If True, the bounding box of the point cloud will be adjusted
                 in order to have all the dimensions of equal length.
                 Defaults to True.
+            primitive (bool): If True, the structure is reduced to its primitive
+                form before the descriptor is computed. Defaults to True.
         """
         self.min_size = min_size
         self.n_x = n_x
@@ -149,8 +153,9 @@ class VoxelGrid(BaseFeaturizer):
         self.geometry_aggregations = geometry_aggregations
         self.flatten = flatten
         self.regular_bounding_box = regular_bounding_box
+        super().__init__(primitive=primitive)
 
-    def featurize(self, structure: Union[IStructure, Structure]) -> np.ndarray:
+    def _featurize(self, structure: Union[IStructure, Structure]) -> np.ndarray:
         coords, numbers = make_supercell(
             structure.cart_coords, structure.atomic_numbers, structure.lattice.matrix, self.min_size
         )

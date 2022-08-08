@@ -6,9 +6,9 @@ from typing import List, Tuple, Union
 
 import numpy as np
 import pandas as pd
-from matminer.featurizers.base import BaseFeaturizer
 from pymatgen.core import IStructure, Structure
 
+from mofdscribe.featurizers.base import MOFBaseFeaturizer
 from mofdscribe.featurizers.utils.histogram import get_rdf
 from mofdscribe.featurizers.utils.raspa.resize_uc import resize_unit_cell
 from mofdscribe.featurizers.utils.raspa.run_raspa import detect_raspa_dir, run_raspa
@@ -63,7 +63,7 @@ def read_ascii_grid(filename: Union[str, os.PathLike]) -> pd.DataFrame:
 
 @operates_on_istructure
 @operates_on_structure
-class EnergyGridHistogram(BaseFeaturizer):
+class EnergyGridHistogram(MOFBaseFeaturizer):
     """Computes the energy grid histograms as originally proposed by Bucior et al. [Bucior2019]_.
 
     Conventionally, energy grids can be used to speed up molecular simulations.
@@ -104,6 +104,7 @@ class EnergyGridHistogram(BaseFeaturizer):
         shifted: bool = False,
         separate_interactions: bool = True,
         run_eqeq: bool = True,
+        primitive: bool = False,
     ):
         """Construct the EnergyGridHistogram class.
 
@@ -146,6 +147,8 @@ class EnergyGridHistogram(BaseFeaturizer):
                 Defaults to True.
             run_eqeq (bool): If true, runs EqEq to compute charges.
                 Defaults to True.
+            primitive (bool): If True, the structure is reduced to its primitive
+                form before the descriptor is computed. Defaults to True.
 
         Raises:
             ValueError: If the `raspa_dir` is not a valid directory.
@@ -172,6 +175,7 @@ class EnergyGridHistogram(BaseFeaturizer):
         self.shifted = shifted
         self.separate_interactions = separate_interactions
         self.run_eqeq = run_eqeq
+        super().__init__(primitive=primitive)
 
     def fit_transform(self, structures: List[Union[Structure, IStructure]]):
         ...
@@ -190,7 +194,7 @@ class EnergyGridHistogram(BaseFeaturizer):
                 labels.append(f"energygridhist_{self.mol_name}_{site}_{grid_point}")
         return labels
 
-    def featurize(self, s: Union[Structure, IStructure]) -> np.array:
+    def _featurize(self, s: Union[Structure, IStructure]) -> np.array:
         ff_molecules = {self.mol_name: self.mol_ff}
 
         parameters = {

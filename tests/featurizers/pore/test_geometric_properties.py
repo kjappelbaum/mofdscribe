@@ -101,7 +101,7 @@ def test_surface_area(hkust_structure):
     result = sa.featurize(hkust_structure)
     assert len(result) == 8
 
-    assert result[0] == approx(1.82808e04, 0.1)
+    assert result[0] == approx(4570.21, 0.1)
     assert result[1] == approx(8.79097e-01, 0.1)
     assert result[2] == approx(5.13510e03, 0.1)
     assert result[3] == approx(2.80901e03, 0.1)
@@ -132,7 +132,7 @@ def test_accessible_volume(hkust_structure):
 
     result = av.featurize(hkust_structure)
     assert len(result) == 8
-    assert result[0] == approx(1.82808e04, 0.1)
+    assert result[0] == approx(4570.21, 0.1)
     assert result[1] == approx(8.79097e-01, 0.1)
     assert result[2] == approx(1.35278e04, 0.2)
     assert result[3] == approx(7.40000e-01, 0.2)

@@ -14,6 +14,18 @@ Featurizing a MOF
     featurizer = RACS()
     features = featurizer.featurize(s)
 
+.. admonition::
+    :class: hint
+
+    Most featurizers in mofdscribe inherit from :py:class:`~mofdscribe.featurizers.base.MOFBaseFeaturizer`.
+    This class can also handle the conversion to primitive cells if you pass :code:`primitive=True` to the
+    constructor. This can be useful to save computational time but also make it possible to, e.g., 
+    use the :code:`sum` aggregation.
+
+    To avoid re-computation of the primitive cell, you should use the :py:class:`~mofdscribe.featurizers.base.MOFMultipleFeaturizer`
+    for combining multiple featurizers. This will accept a keyword argument :code:`primitive=True` in the constructor 
+    and then compute the primitive cell once and use it for all the featurizers.
+
 It is also easy to combine multiple featurizers into a single pipeline:
 
 .. code-block:: python
@@ -21,10 +33,10 @@ It is also easy to combine multiple featurizers into a single pipeline:
     from mofdscribe.chemistry.racs import RACS
     from mofdscribe.pore.geometric_properties import PoreDiameters
     from pymatgen.core import IStructure
-    from matminer.featurizers.base import MultipleFeaturizer
+    from mofdscribe.featurizers.base import MOFMultipleFeaturizer
 
     s = IStructure.from_file(<my_cif>)
-    featurizer = MultipleFeaturizer([RACS(), PoreDiameters()])
+    featurizer = MOFMultipleFeaturizer([RACS(), PoreDiameters()])
     features = featurizer.featurize(s)
 
 You can, of course, also pass multiple structures to the featurizer (and the
@@ -44,7 +56,7 @@ And, clearly, you can also use the `mofdscribe` featurizers alongside ones from 
     from matminer.featurizers.structure import LocalStructuralOrderParams
     from mofdscribe.chemistry.racs import RACS
 
-    featurizer = MultipleFeaturizer([RACS(), LocalStructuralOrderParams()])
+    featurizer = MOFMultipleFeaturizer([RACS(), LocalStructuralOrderParams()])
     features = featurizer.featurize_many([s, s2])
 
 
@@ -139,7 +151,7 @@ One interesting metric is the adversarial validation score, which can be a surro
 
     FEATURES = list(ds.available_features)
 
-    train_idx, test_idx = RandomSplitter().train_test_split(ds)
+    train_idx, test_idx = RandomSplitter(ds).train_test_split(fract_train=0.8)
 
     adversarial_validation_scorer = AdverserialValidator(ds._df.iloc[train_idx][FEATURES],
         ds._df.iloc[test_idx][FEATURES])
@@ -180,6 +192,12 @@ The benchmarks will run k=5-fold cross validation on the dataset. We chose this 
     computational overhead.
     Note that the choice of the k is not trivial, and k=5 is a pragmatic choice, for more details see [Raschka]_.
 
+    Also note that the errorbars one estimates via the standard error of k-fold crossvalidation 
+    are often too small. [Varoquaux]_ However, as [Varoquaux]_ writes
+
+        Cross-validation is not a silver bullet. However, it is the best tool available, because
+        it is the only non-parametric method to test for model generalization.
+
 For running a benchmark with your model, your model must be in the form of a class with `fit(idx, structures, y)` and `predict(idx, structures)` methods, for example
 
 .. code-block:: python
@@ -214,7 +232,15 @@ For running a benchmark with your model, your model must be in the form of a cla
             x = np.array([self.featurize(s) for s in structures]).reshape(-1, 1)
             return self.model.predict(x)
 
-If you have a model in this form, you can use a bench class
+.. admonition:: 
+    :class: hint
+
+    If you want to use the dataset in your model class, you might find the :code:`patch_in_ds` 
+    keyword argument of the :code:py:`~mofdscribe.bench.mofbench.MOFBench` class useful. 
+    This will make the dataset available to your model under the :code:`ds` attribute.
+
+
+If you have a model in this form, you can use a bench class.
 
 .. code-block:: python
 
@@ -239,6 +265,7 @@ You can test this using some dummy models implemented in mofdscribe
         implementation="mofdscribe",
         reference="mofdscribe",
     )
+
 
 For testing purposes, you can set :code:`debug=True` in the constructors of the benchmark classes.
 
