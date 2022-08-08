@@ -1,4 +1,4 @@
-name: main
+name: update-bench
 on:
   pull_request:
     paths: -"bench_results/**"
