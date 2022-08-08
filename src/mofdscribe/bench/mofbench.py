@@ -65,7 +65,7 @@ class BenchTaskEnum(Enum):
     """Enum for benchmark tasks."""
 
     logKH_CO2_id = "logKH_CO2_id"  # noqa: N815
-    logKH_CO2_ext = "logKH_CO2_ood"  # noqa: N815
+    logKH_CO2_ood = "logKH_CO2_ood"  # noqa: N815
     pbe_bandgap_id = "pbe_bandgap_id"  # noqa: N815
 
 
