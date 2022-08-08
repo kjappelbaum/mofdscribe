@@ -27,6 +27,10 @@ from mofdscribe.bench.mofbench import BenchResult, BenchTaskEnum
 hv.extension("bokeh")
 
 
+class NoTaskException(Exception):
+    pass
+
+
 METRIC_CARD_TEMPLATE = """Metric card
 ~~~~~~~~~~~~~~~~~~~
 
@@ -73,7 +77,7 @@ def make_plot(df, outname):
     hv.util.output(widget_location="right")
     f = hv.HoloMap(
         {column: hv.BoxWhisker(df, kdims="name", vdims=column) for column in cols}, kdims="metric"
-    ).opts(framewise=True, width=400)
+    ).opts(framewise=True, width=500, invert_axes=True)
     hv.save(f, outname, fmt="html")
 
 
@@ -126,6 +130,8 @@ def compile_task(task):
     task_dir = os.path.join("..", "bench_results", str(task))
     logger.info("Compiling task {} from {task_dir}".format(task, task_dir=task_dir))
     json_files = glob(os.path.join(task_dir, "*.json"))
+    if len(json_files) == 0:
+        raise NoTaskException()
     logger.info(f"Found {len(json_files)} json files")
     stems = [Path(f).stem for f in json_files]
     # find all matching rst file
@@ -158,9 +164,12 @@ def compile_task(task):
         new_file = update_rst(rst_file, BenchResult.parse_file(json))
         shutil.copy(new_file, os.path.join(DOC_DIR, "source", "leaderboards", f"{task}_models"))
 
-    shutil.copy(html_path, os.path.join(DOC_DIR, "source", "_static"))
+    shutil.copy(html_path, os.path.join(DOC_DIR, "source", "leaderboards"))
 
 
 if __name__ == "__main__":
     for task in BenchTaskEnum._member_names_:
-        compile_task(task)
+        try:
+            compile_task(task)
+        except NoTaskException:
+            pass

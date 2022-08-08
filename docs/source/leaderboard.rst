@@ -9,7 +9,7 @@ Use the table of contents to navigate to the leaderboards for the various tasks.
    :caption: Leaderboards per task
 
 
-   leaderboards/logkH_CO2_int
+   leaderboards/logkH_CO2_id
 
 Contributing
 ------------------

@@ -174,14 +174,6 @@ html_theme = "furo"
 # documentation.
 #
 html_theme_options = {
-    "path_to_docs": "docs",
-    "repository_url": "https://github.com/kjappelbaum/mofdscribe",
-    "repo_url": "https://github.com/kjappelbaum/mofdscribe",
-    "repo_name": "mofdscribe",
-    "repo_type": "github",
-    "use_repository_button": True,
-    "use_edit_page_button": True,
-    "use_issues_button": True,
     "globaltoc_collapse": False,
     "launch_buttons": {
         "binderhub_url": "https://mybinder.org/v2/gh/kjappelbaum/pyepal/HEAD?filepath=examples",

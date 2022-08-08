@@ -1,0 +1,80 @@
+Dummy mean model
+------------------------------------
+
+
+Model card
+..............
+
+Feature set description
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+What features are used?
+#######################
+
+No features are used. The model only predicts the mean of the data.
+
+
+Why are the features informative?
+###################################
+
+n/a
+
+
+Why do the features not leak information?
+##############################################
+
+No potential for leakage from features. Since we only use the mean
+of the training data, also no information about the labels is leaked.
+
+
+Will the features be accessible in real-world test applications?
+###################################################################
+
+The training set labels will be available in real-world test applications.
+
+
+Data split
+~~~~~~~~~~
+
+Describe preprocessing steps and how data leakage is avoided
+##############################################################
+
+No preprocessing has been performed.
+
+
+Describe the feature selection steps and how data leakage is avoided
+#####################################################################
+
+No feature selection has been performed.
+
+
+Describe the model selection steps and how data leakage is avoided
+#####################################################################
+
+No model selection has been performed.
+
+Metric card
+~~~~~~~~~~~~~~~~~~~
+
+.. regressionmetrics:: dummy-mean-model
+   :id: RduNodufF20220808164802
+   :start_time: 2022-08-08 16:48:02.323723+00:00
+   :end_time: 2022-08-08 16:48:02.596302+00:00
+   :version: v0.0.1
+   :features: None
+   :name: dummy-mean-model
+   :task: BenchTaskEnum.logKH_CO2_id
+   :model_type: dummy
+   :reference: None
+   :implementation: mofdscribe
+   :mofdscribe_version: 0.0.1-dev
+   :mean_squared_error: 1.1
+   :mean_absolute_error: 0.82
+   :r2_score: -0.0
+   :max_error: 3.32
+   :mean_absolute_percentage_error: 0.47
+   :top_5_in_top_5: 0
+   :top_10_in_top_10: 0
+   :top_50_in_top_50: 0
+   :top_100_in_top_100: 0
+   :top_500_in_top_500: 1

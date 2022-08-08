@@ -14,7 +14,7 @@ Featurizing a MOF
     featurizer = RACS()
     features = featurizer.featurize(s)
 
-.. admonition::
+.. admonition:: mofdscribe base classes
     :class: hint
 
     Most featurizers in mofdscribe inherit from :py:class:`~mofdscribe.featurizers.base.MOFBaseFeaturizer`.
@@ -232,7 +232,7 @@ For running a benchmark with your model, your model must be in the form of a cla
             x = np.array([self.featurize(s) for s in structures]).reshape(-1, 1)
             return self.model.predict(x)
 
-.. admonition:: 
+.. admonition::  Use dataset in model
     :class: hint
 
     If you want to use the dataset in your model class, you might find the :code:`patch_in_ds` 

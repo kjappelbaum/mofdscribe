@@ -50,7 +50,7 @@ class BWDataset(StructureDataset):
         * A time-based split cannot be used for hypothetical structures
 
 
-    .. admonition::
+    .. admonition:: Information about building blocks
         :class: hint
 
         This dataset exposed information about the building blocks of the MOFs.
@@ -60,7 +60,7 @@ class BWDataset(StructureDataset):
         You find this info under also in the `info.rcsr_code`, `info.metal_bb`, and
         `info.organic_bb`, `info.functional_group` columns.
 
-    .. warning::
+    .. warning:: Danger of data leakage
 
         Cross validation for MOFs with same building-blocks and/or net is notoriously
         difficult. Since all combinations of building-blocks and/or net are considered,

@@ -2,6 +2,7 @@
 """Helper to build bench model for models that operate on pre-computed feature frames."""
 
 from typing import Iterable, Optional
+
 from loguru import logger
 
 
