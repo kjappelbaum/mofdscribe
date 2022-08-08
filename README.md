@@ -21,6 +21,9 @@
     <a href='https://github.com/psf/black'>
         <img src='https://img.shields.io/badge/code%20style-black-000000.svg' alt='Code style: black' />
     </a>
+    <a href='http://commitizen.github.io/cz-cli/'>
+        <img src='https://img.shields.io/badge/commitizen-friendly-brightgreen.svg' alt='Commitizen friendly' />
+    </a>
 </p>
 
 Featurizing metal-organic frameworks (MOFs) made simple! This package builds on the power of [matminer](https://hackingmaterials.lbl.gov/matminer/) to make featurization of MOFs as easy as possible. Now, you can use features that are mostly used for porous materials in the same way as all other matminer featurizers.
