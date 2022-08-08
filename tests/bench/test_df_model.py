@@ -9,9 +9,8 @@ from mofdscribe.datasets import CoREDataset
 
 def test_df_model():
     ds = CoREDataset()
-    X = ds._df[list(ds.available_features)].fillna(0)  # noqa: N806
     model = RandomForestRegressor(n_estimators=100)
-    df_model = DFModel(model, X)
-    bench = LogkHCO2OODBench(df_model, name="bla", debug=True)
+    df_model = DFModel(model, features=list(ds.available_features))
+    bench = LogkHCO2OODBench(df_model, name="bla", debug=True, patch_in_ds=True)
     res = bench.bench()
     assert isinstance(res, BenchResult)
