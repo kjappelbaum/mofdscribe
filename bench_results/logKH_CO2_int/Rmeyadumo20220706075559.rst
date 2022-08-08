@@ -1,6 +1,0 @@
-Median dummy model
-----------------------------------------------------
-
-This model always predicts the median of the training set.
-
-The model is available in :py:obj:`~mofdscribe.bench.dummy_models.DummyRegressor`

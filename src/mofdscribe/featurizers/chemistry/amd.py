@@ -94,15 +94,15 @@ class AMD(MOFBaseFeaturizer):
         Returns:
             A numpy array containing the AMD descriptor.
         """
-        from amd import PeriodicSet
-        from amd._nearest_neighbours import nearest_neighbours
-        from amd.calculate import _extract_motif_and_cell
+        from amd._nns import nearest_neighbours
+        from amd.calculate import _extract_motif_cell
+        from amd.periodicset import PeriodicSet
 
         def get_pdd(structure, k):
-            motif, cell, asymmetric_unit, multiplicities = _extract_motif_and_cell(
+            motif, cell, asymmetric_unit, multiplicities = _extract_motif_cell(
                 PeriodicSet(structure.cart_coords, structure.lattice.matrix)
             )
-            pdd, _, _ = nearest_neighbours(motif, cell, k, asymmetric_unit=asymmetric_unit)
+            pdd, _, _ = nearest_neighbours(motif, cell, asymmetric_unit, k)
             return pdd
 
         # ToDo: we can potentially parallelize this
