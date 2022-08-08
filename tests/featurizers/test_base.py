@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-import pytest
+from matminer.featurizers.base import MultipleFeaturizer
 from matminer.featurizers.structure import DensityFeatures
 
 from mofdscribe.featurizers.base import MOFMultipleFeaturizer
@@ -29,6 +29,11 @@ def test_mofmultiplefeaturizer(hkust_structure, irmof_structure):
     features_no_prim = featurizer_no_primitive.featurize(primitive_structures[-1])
 
     assert np.allclose(features, features_no_prim, rtol=1e-2, atol=1e-2, equal_nan=True)
+
+    # now compare with using the "original" matminer MultipleFeaturizer
+    featurizer_orig = MultipleFeaturizer([RACS(), DensityFeatures()])
+    features_orig = featurizer_orig.featurize(primitive_structures[-1])
+    assert np.allclose(features, features_orig, rtol=1e-2, atol=1e-2, equal_nan=True)
 
     # make sure the multiple calls work
     features_many_1 = featurizer.featurize_many(structures)

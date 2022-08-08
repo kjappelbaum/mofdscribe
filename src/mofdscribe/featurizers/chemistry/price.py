@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 """Feature MOFs using economic descriptors."""
-import operator
 import os
 from collections import OrderedDict
 from typing import List, Tuple
-
+import operator
 import numpy as np
 import pandas as pd
-from matminer.featurizers.base import BaseFeaturizer
+
+from mofdscribe.featurizers.base import MOFBaseFeaturizer
 
 _THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -74,7 +74,7 @@ def _price_per_atom(element_price_fractions_kg, structure):
     )
 
 
-class PriceLowerBound(BaseFeaturizer):
+class PriceLowerBound(MOFBaseFeaturizer):
     """Compute a lower bound for the price based on the element prices.
 
     Obviously, this featurization does well in highlighting rare (and expensive)
@@ -100,18 +100,23 @@ class PriceLowerBound(BaseFeaturizer):
         "per_atom": _price_per_atom,
     }
 
-    def __init__(self, projections: Tuple[str] = ("gravimetric", "volumetric")):
+    def __init__(
+        self, projections: Tuple[str] = ("gravimetric", "volumetric"), primitive: bool = False
+    ):
         """Initialize the PriceLowerBound featurizer.
 
         Args:
             projections (Tuple[str]): List of projections to use.
                 Possible values are "gravimetric" and "volumetric".
                 Default is ("gravimetric", "volumetric").
+            primitive (bool): If True, the structure is reduced to its primitive
+                form before the descriptor is computed. Defaults to False.
         """
         self.projections = projections
         self.element_masses = _get_element_abundance()
 
         self.projections = projections
+        super().__init__(primitive=primitive)
 
     def feature_labels(self) -> List[str]:
         labels = []
@@ -119,7 +124,7 @@ class PriceLowerBound(BaseFeaturizer):
             labels.append(f"price_lower_bound_{projection}")
         return labels
 
-    def featurize(self, structure) -> np.ndarray:
+    def _featurize(self, structure) -> np.ndarray:
         element_masses = {}
 
         for site in structure.sites:

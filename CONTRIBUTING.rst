@@ -91,3 +91,15 @@ Then merge in the new changes:
 
 More information about this whole fork-pull-merge process can be found
 `here on Github's website <https://help.github.com/articles/fork-a-repo/>`_.
+
+
+Implementing a new featurizer
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+If you want to implement a new featurizer, it is recommended that you
+first open an issue on GitHub such that we can discuss your idea.
+
+For the implementation, keep in mind that the `MOFBaseFeaturizer` 
+requires you to implement `_featurize` and not `featurize`.
+Also, if you need to implement the `fit` method, make sure that you implement 
+the conversion to primitive cells there as appropriate.

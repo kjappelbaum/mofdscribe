@@ -1,7 +1,19 @@
-"""Base featurizer for MOF structure based featurizers."""
+"""Base featurizer for MOF structure based featurizers.
+
+The main purpose of these classes is currently that they handle 
+conversion of the structures to primtive cells.
+This can have computational benefits and also make the use of some 
+aggregations such as "sum" more meaningful.
+
+However, since they support this functionality, they are less flexible
+than the "original" matminer :code:`BaseFeaturizer` and :code:`MultipleFeaturizer`.
+In practice, this means that they only accept one pymatgen structure object 
+or and iterable of pymatgen structure objects.
+"""
 from functools import partial
 from multiprocessing import Pool
 from typing import Union
+from abc import abstractmethod
 
 import numpy as np
 import pandas as pd
@@ -12,7 +24,21 @@ from tqdm.auto import tqdm
 
 
 class MOFBaseFeaturizer(BaseFeaturizer):
-    """Base featurizer for MOF structure based featurizers."""
+    """Base featurizer for MOF structure based featurizers.
+
+    .. note::
+
+        If you implement a new :code:`MOFBaseFeaturizer`,
+        you need to implement a :code:`_featurize` method.
+        If you implement :code:`featurize` directly,
+        you would override the conversion to primitive cell.
+
+    .. warning::
+
+        If you implement a new :code:`MOFBaseFeaturizer`,
+        and your featurizer needs to be fitted, keep in mind
+        to also call the :code:`_get_primitive` method.
+    """
 
     def __init__(self, primitive: bool = False) -> None:
         """
@@ -22,9 +48,21 @@ class MOFBaseFeaturizer(BaseFeaturizer):
         """
         self.primitive = primitive
 
+    def _get_primitive_many(self, structures):
+        if self.n_jobs == 1:
+            return [self._get_primitive(s) for s in structures]
+        else:
+            with Pool(self.n_jobs, maxtasksperchild=1) as p:
+                res = p.map(self._get_primitive, structures, chunksize=self.chunksize)
+                return res
+
     def _get_primitive(self, structure: Union[Structure, IStructure]) -> Structure:
         logger.debug("Getting primitive cell for structure in MOFBaseFeaturizer")
         return structure.get_primitive_structure()
+
+    @abstractmethod
+    def _featurize(self, structure: Union[Structure, IStructure]) -> np.ndarray:
+        raise NotImplementedError("_featurize must be implemented in a subclass")
 
     def featurize(self, structure: Union[Structure, IStructure]) -> np.ndarray:
         """Compute the descriptor for a given structure.

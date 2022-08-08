@@ -3,9 +3,9 @@
 from typing import List, Tuple, Union
 
 import numpy as np
-from matminer.featurizers.base import BaseFeaturizer
 from pymatgen.core import IStructure, Structure
 
+from mofdscribe.featurizers.base import MOFBaseFeaturizer
 from mofdscribe.featurizers.utils.aggregators import ARRAY_AGGREGATORS
 from mofdscribe.featurizers.utils.eqeq import get_eqeq_charges
 from mofdscribe.featurizers.utils.extend import operates_on_istructure, operates_on_structure
@@ -15,7 +15,7 @@ __all__ = ["PartialChargeStats"]
 
 @operates_on_istructure
 @operates_on_structure
-class PartialChargeStats(BaseFeaturizer):
+class PartialChargeStats(MOFBaseFeaturizer):
     """Compute partial charges using the EqEq charge equilibration method [Ongari2019]_.
 
     Then derive a fix-length feature vector from the partial charges using
@@ -26,7 +26,9 @@ class PartialChargeStats(BaseFeaturizer):
     <https://www.nature.com/articles/s41467-020-17755-8>`_
     """
 
-    def __init__(self, aggregtations: Tuple[str] = ("max", "min", "std")) -> None:
+    def __init__(
+        self, aggregtations: Tuple[str] = ("max", "min", "std"), primitive: bool = True
+    ) -> None:
         """
         Initialize the PartialChargeStats featurizer.
 
@@ -34,13 +36,16 @@ class PartialChargeStats(BaseFeaturizer):
             aggregtations (Tuple[str]): Aggregations to compute.
                 For available methods, see :py:obj:`mofdscribe.featurizers.utils.aggregators.ARRAY_AGGREGATORS`.
                 Defaults to ("max", "min", "std").
+            primitive (bool): If True, the structure is reduced to its primitive
+                form before the descriptor is computed. Defaults to True.
         """
         self.aggregations = aggregtations
+        super().__init__(primitive=primitive)
 
     def feature_labels(self) -> List[str]:
         return [f"chargestat_{agg}" for agg in self.aggregations]
 
-    def featurize(self, s: Union[Structure, IStructure]) -> np.ndarray:
+    def _featurize(self, s: Union[Structure, IStructure]) -> np.ndarray:
         if isinstance(s, Structure):
             s = IStructure.from_sites(s.sites)
         _, results = get_eqeq_charges(s)

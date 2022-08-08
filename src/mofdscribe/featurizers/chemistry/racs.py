@@ -6,10 +6,10 @@ from typing import Iterable, List, Optional, Tuple, Union
 import numpy as np
 from element_coder import encode
 from loguru import logger
-from matminer.featurizers.base import BaseFeaturizer
 from pymatgen.analysis.graphs import StructureGraph
 from pymatgen.core import IStructure, Structure
 
+from mofdscribe.featurizers.base import MOFBaseFeaturizer
 from mofdscribe.featurizers.utils.aggregators import AGGREGATORS, ARRAY_AGGREGATORS
 from mofdscribe.featurizers.utils.extend import operates_on_istructure, operates_on_structure
 from mofdscribe.featurizers.utils.structure_graph import (
@@ -123,7 +123,7 @@ def _get_racs_for_bbs(
 
 @operates_on_istructure
 @operates_on_structure
-class RACS(BaseFeaturizer):
+class RACS(MOFBaseFeaturizer):
     r"""Modified version of the revised autocorrelation functions (RACs) for MOFs.
 
     Originally proposed by Moosavi et al. (10.1038/s41467-020-17755-8).
@@ -166,6 +166,7 @@ class RACS(BaseFeaturizer):
             "linker_scaffold",
             "nodes",
         ),
+        primitive: bool = True,
     ) -> None:
         """
         Initialize the RACS featurizer.
@@ -183,6 +184,8 @@ class RACS(BaseFeaturizer):
             bond_heuristic (str): Method used to guess bonds. Defaults to "vesta".
             bbs (Tuple[str]): Building blocks to use. Defaults to ("linker_all",
                 "linker_connecting", "linker_functional", "linker_scaffold", "nodes").
+            primitive (bool): If True, the structure is reduced to its primitive
+                form before the descriptor is computed. Defaults to True.
         """
         self.attributes = attributes
         self.scopes = scopes
@@ -200,8 +203,9 @@ class RACS(BaseFeaturizer):
                 "linker_scaffold",
                 "nodes",
             ]
+        super().__init__(primitive=primitive)
 
-    def featurize(self, structure: Union[Structure, IStructure]) -> np.ndarray:
+    def _featurize(self, structure: Union[Structure, IStructure]) -> np.ndarray:
         if isinstance(structure, Structure):
             structure = IStructure.from_sites(structure)
         sg = get_structure_graph(structure, self.bond_heuristic)
