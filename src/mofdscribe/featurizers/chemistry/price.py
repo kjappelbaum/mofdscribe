@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 """Feature MOFs using economic descriptors."""
+import operator
 import os
 from collections import OrderedDict
 from typing import List, Tuple
-import operator
+
 import numpy as np
 import pandas as pd
 

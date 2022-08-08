@@ -260,6 +260,8 @@ class PHVect(MOFBaseFeaturizer):
         return compiled_results
 
     def fit(self, structures: Union[Structure, IStructure, Molecule, IMolecule]) -> "PHVect":
+        if self.primitive:
+            structures = self._get_primitive_many(structures)
         self.transformers, _ = _fit_transform_structures(
             self.transformers,
             structures,
@@ -284,6 +286,8 @@ class PHVect(MOFBaseFeaturizer):
     def fit_transform(
         self, structures: Union[Structure, IStructure, Molecule, IMolecule]
     ) -> np.ndarray:
+        if self.primitive:
+            structures = self._get_primitive_many(structures)
         self.transformers, results = _fit_transform_structures(
             self.transformers,
             structures,

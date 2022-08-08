@@ -101,5 +101,12 @@ first open an issue on GitHub such that we can discuss your idea.
 
 For the implementation, keep in mind that the `MOFBaseFeaturizer` 
 requires you to implement `_featurize` and not `featurize`.
-Also, if you need to implement the `fit` method, make sure that you implement 
-the conversion to primitive cells there as appropriate.
+Also, if you need to implement the `_fit` method, make sure that
+the conversion to primitive is called upon a call to `fit`. 
+
+Please also make sure to 
+
+1. Add your fearturizer with an appropriate card to the docs
+2. To expose the featurizers in the `mofdscribe.featurizers` module, and the 
+   corresponding subpackage.
+3. Add some tests for your featurizer.

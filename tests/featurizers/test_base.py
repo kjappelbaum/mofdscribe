@@ -47,8 +47,6 @@ def test_mofmultiplefeaturizer(hkust_structure, irmof_structure):
     features_many_2_labels = featurizer.feature_labels()
     assert features_many_2.ndim == 2
 
-    print(features_many_2.shape, features_many_1.shape)
-
     features_many_1_df = pd.DataFrame(features_many_1, columns=features_many_1_labels)
     features_many_2_df = pd.DataFrame(features_many_2, columns=features_many_2_labels)
 

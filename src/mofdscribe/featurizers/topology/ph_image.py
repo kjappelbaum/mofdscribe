@@ -200,7 +200,7 @@ class PHImage(MOFBaseFeaturizer):
                 features.append(np.array(results["image"][element][dim]).flatten())
         return np.concatenate(features)
 
-    def fit(self, structures: List[Union[Structure, IStructure, Molecule, IMolecule]]) -> None:
+    def _fit(self, structures: List[Union[Structure, IStructure, Molecule, IMolecule]]) -> None:
         """Use structures to estimate the settings for the featurizer.
 
         Find the limits (maximum/minimum birth/death and persistence)
@@ -210,9 +210,6 @@ class PHImage(MOFBaseFeaturizer):
             structures (List[Union[Structure, IStructure, Molecule, IMolecule]]): List of structures
                 to find the limits for.
         """
-        if not isinstance(structures, (list, tuple)):
-            structures = [structures]
-
         limits = defaultdict(list)
 
         for structure in structures:

@@ -1,26 +1,44 @@
 """Base featurizer for MOF structure based featurizers.
 
-The main purpose of these classes is currently that they handle 
+The main purpose of these classes is currently that they handle
 conversion of the structures to primtive cells.
-This can have computational benefits and also make the use of some 
+This can have computational benefits and also make the use of some
 aggregations such as "sum" more meaningful.
 
 However, since they support this functionality, they are less flexible
 than the "original" matminer :code:`BaseFeaturizer` and :code:`MultipleFeaturizer`.
-In practice, this means that they only accept one pymatgen structure object 
+In practice, this means that they only accept one pymatgen structure object
 or and iterable of pymatgen structure objects.
 """
+from abc import abstractmethod
 from functools import partial
 from multiprocessing import Pool
 from typing import Union
-from abc import abstractmethod
 
 import numpy as np
 import pandas as pd
 from loguru import logger
 from matminer.featurizers.base import BaseFeaturizer, MultipleFeaturizer
-from pymatgen.core import IStructure, Structure
+from pymatgen.core import IMolecule, IStructure, Molecule, Structure
 from tqdm.auto import tqdm
+
+
+def get_primitive(structure: Union[IStructure, Structure, Molecule, IMolecule]) -> Structure:
+    """Get the primitive cell of a structure.
+
+    We use this wrapper because we want to have a passtrough
+    for molecules, which some of our featurizers also accept.
+
+    Args:
+        structure: Structure object.
+
+    Returns:
+        Structure object.
+    """
+    if isinstance(structure, (Structure, IStructure)):
+        return structure.get_primitive_structure()
+    else:
+        return structure
 
 
 class MOFBaseFeaturizer(BaseFeaturizer):
@@ -42,6 +60,8 @@ class MOFBaseFeaturizer(BaseFeaturizer):
 
     def __init__(self, primitive: bool = False) -> None:
         """
+        Construct a MOFBaseFeaturizer.
+
         Args:
             primitive (bool): If True, use the primitive cell of the structure.
                 Defaults to False.
@@ -58,11 +78,18 @@ class MOFBaseFeaturizer(BaseFeaturizer):
 
     def _get_primitive(self, structure: Union[Structure, IStructure]) -> Structure:
         logger.debug("Getting primitive cell for structure in MOFBaseFeaturizer")
-        return structure.get_primitive_structure()
+        return get_primitive(structure)
 
     @abstractmethod
     def _featurize(self, structure: Union[Structure, IStructure]) -> np.ndarray:
         raise NotImplementedError("_featurize must be implemented in a subclass")
+
+    def fit(self, structures):
+        if not isinstance(structures, (list, tuple)):
+            structures = [structures]
+        if self.primitive:
+            structures = self._get_primitive_many(structures)
+        self._fit(structures)
 
     def featurize(self, structure: Union[Structure, IStructure]) -> np.ndarray:
         """Compute the descriptor for a given structure.
@@ -76,7 +103,7 @@ class MOFBaseFeaturizer(BaseFeaturizer):
         logger.debug("Featurizing structure in MOFBaseFeaturizer")
         if self.primitive:
             logger.debug("Getting primitive cell for structure in MOFBaseFeaturizer")
-            structure = self._get_primitive(structure)
+            structure = get_primitive(structure)
         return self._featurize(structure)
 
     def featurize_many(self, entries, ignore_errors=False, return_errors=False, pbar=True):
@@ -99,8 +126,11 @@ class MOFBaseFeaturizer(BaseFeaturizer):
 
         Returns:
             (list) features for each entry.
-        """
 
+        Raises:
+            Exception: If entries is not a list-like object.
+            ValueError: If return_errors is set and ignore_errors is True.
+        """
         if return_errors and not ignore_errors:
             raise ValueError("Please set ignore_errors to True to use" " return_errors.")
 
@@ -162,6 +192,16 @@ class MOFMultipleFeaturizer(MultipleFeaturizer):
     """
 
     def __init__(self, featurizers, iterate_over_entries=True, primitive=True):
+        """
+        Construct a MOFMultipleFeaturizer.
+
+        Args:
+            featurizers (list): List of featurizers to use.
+            iterate_over_entries (bool): If True, featurize each entry in the list.
+                If False, featurize each structure in the list. Defaults to True.
+            primitive (bool): If True, use the primitive cell of the structure.
+                Defaults to True.
+        """
         # unset the primitive on the individual featurizers
         for featurizer in featurizers:
             featurizer.primitive = False
@@ -171,7 +211,7 @@ class MOFMultipleFeaturizer(MultipleFeaturizer):
         self.primitive_multiple = primitive
 
     def _get_primitive(self, structure: Union[Structure, IStructure]) -> Structure:
-        return structure.get_primitive_structure()
+        return get_primitive(structure)
 
     def featurize(self, structure: Union[Structure, IStructure]) -> np.ndarray:
         logger.debug(f"Featurizing structure in MOFMultipleFeaturizer, {self.primitive_multiple}")
