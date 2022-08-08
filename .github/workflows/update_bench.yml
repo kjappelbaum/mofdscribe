@@ -19,4 +19,4 @@ jobs:
           cd dev_scripts && python update_bench.py
       - uses: stefanzweifel/git-auto-commit-action@v4
         with:
-          commit_message: docs: update bench results
+          commit_message: "docs: update bench results"
