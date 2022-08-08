@@ -82,6 +82,7 @@ class CoREDataset(StructureDataset):
         drop_basename_duplicates: bool = True,
         drop_graph_duplicates: bool = True,
         subset: Optional[Iterable[int]] = None,
+        drop_nan: bool = True,
     ):
         """Construct an instance of the CoRE dataset.
 
@@ -94,11 +95,14 @@ class CoREDataset(StructureDataset):
                 per decorated graph hash. Defaults to True.
             subset (Iterable[int], optional): indices of the structures to include.
                 Defaults to None.
+            drop_nan (bool): If True, drop rows with NaN values in features or hashes.
+                Defaults to True.
 
         Raises:
             ValueError: If the provided version number is not available.
         """
         self._drop_basename_duplicates = drop_basename_duplicates
+        self._drop_nan = drop_nan
         self._drop_graph_duplicates = drop_graph_duplicates
         if version not in self._files:
             raise ValueError(
@@ -134,6 +138,14 @@ class CoREDataset(StructureDataset):
                 f"Dropped {old_len - len(self._df)} duplicate graphs. New length {len(self._df)}"
             )
         self._df = self._df.reset_index(drop=True)
+        if drop_nan:
+            self._df.dropna(
+                subset=[c for c in self._df.columns if c.startswith("features.")]
+                + [c for c in self._df.columns if c.startswith("info.")],
+                inplace=True,
+            )
+            self._df.reset_index(drop=True, inplace=True)
+
         if subset is not None:
             self._df = self._df.iloc[subset]
             self._df = self._df.reset_index(drop=True)
@@ -169,6 +181,7 @@ class CoREDataset(StructureDataset):
             drop_basename_duplicates=self._drop_basename_duplicates,
             drop_graph_duplicates=self._drop_graph_duplicates,
             subset=indices,
+            drop_nan=self._drop_nan,
         )
 
     @property
