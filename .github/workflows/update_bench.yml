@@ -1,7 +1,9 @@
 name: update-bench
 on:
+  workflow_dispatch:
   pull_request:
-    paths: -"bench_results/**"
+    paths:
+      - "bench_results/**"
 
 jobs:
   rebuild:
