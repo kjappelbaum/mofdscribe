@@ -155,17 +155,22 @@ class QMOFDataset(StructureDataset):
 
         The class will load almost 1GB of data into memory.
 
+    .. warning::
+
+        By default, the values will be sorted by the PBE total energy
+
     References:
-        .. [Rosen2021a] Rosen, A. S.; Iyer, S. M.; Ray, D.; Yao, Z.; Aspuru-Guzik, A.; Gagliardi, L.;
+        .. [Rosen2021] `Rosen, A. S.; Iyer, S. M.; Ray, D.; Yao, Z.; Aspuru-Guzik, A.; Gagliardi, L.;
             Notestein, J. M.; Snurr, R. Q. Machine Learning the Quantum-Chemical Properties
             of Metal–Organic Frameworks for Accelerated Materials Discovery.
-            Matter 2021, 4 (5), 1578–1597. https://doi.org/10.1016/j.matt.2021.02.015.
+            Matter 2021, 4 (5), 1578–1597. <https://doi.org/10.1016/j.matt.2021.02.015>`_
 
-        .. [Rosen2021b] Rosen, A. S.; Fung, V.; Huck, P.; O'Donnell, C. T.; Horton, M. K.; Truhlar, D. G.;
+        .. [Rosen2022] `Rosen, A. S.; Fung, V.; Huck, P.; O'Donnell, C. T.; Horton, M. K.; Truhlar, D. G.;
             Persson, K. A.; Notestein, J. M.; Snurr, R. Q.
             High-Throughput Predictions of Metal–Organic Framework Electronic Properties:
-            Theoretical Challenges, Graph Neural Networks, and Data Exploration. ChemRxiv 2021.
-            https://chemrxiv.org/engage/chemrxiv/article-details/61b03430535d63bcdf93968b
+            Theoretical Challenges, Graph Neural Networks, and Data Exploration.
+            npj Computational Materials, 8, 112.
+            <https://doi.org/10.1038/s41524-022-00796-6>`_
 
     """
 
@@ -187,7 +192,7 @@ class QMOFDataset(StructureDataset):
     def __init__(
         self,
         version: str = "v0.0.1",
-        flavor: str = "csd",
+        flavor: str = "all",
         drop_basename_duplicates: bool = True,
         drop_graph_duplicates: bool = True,
         subset: Optional[Iterable[int]] = None,
@@ -198,8 +203,8 @@ class QMOFDataset(StructureDataset):
             version (str): version number to use.
                 Defaults to "v0.0.1".
             flavor (str): flavor of the dataset to use.
-                Accepted values are "csd",  "gcmc", "all", and "csd-gcmc".
-                Defaults to "csd".
+                Accepted values are "all", "csd", "gcmc", and "csd-gcmc".
+                Defaults to "all".
             drop_basename_duplicates (bool): If True, keep only one structure
                 per CSD basename. Defaults to True.
             drop_graph_duplicates (bool): If True, keep only one structure
@@ -239,15 +244,17 @@ class QMOFDataset(StructureDataset):
 
         length_check(self._df, self._files[version]["expected_length"])
 
+        # we sort by the PBE energy to make sure we keep always the lowest in energy
+        self._df = self._df.sort_values(by="outputs.pbe.energy_total")
         if drop_basename_duplicates:
             old_len = len(self._df)
-            self._df = self._df.drop_duplicates(subset=["info.basename"])
+            self._df = self._df.drop_duplicates(subset=["info.basename"], keep="first")
             logger.debug(
                 f"Dropped {old_len - len(self._df)} duplicate basenames. New length {len(self._df)}"
             )
         if drop_graph_duplicates:
             old_len = len(self._df)
-            self._df = self._df.drop_duplicates(subset=["info.decorated_graph_hash"])
+            self._df = self._df.drop_duplicates(subset=["info.decorated_graph_hash"], keep="first")
             logger.debug(
                 f"Dropped {old_len - len(self._df)} duplicate graphs. New length {len(self._df)}"
             )

@@ -51,16 +51,19 @@ def cli(indir, outdir, daint):
                         indir=indir, outdir=outdir, start=start, end=end, job_name=job_name
                     )
                 )
-                subprocess.run(["sbatch", "-A", "pr128", "-C", "gpu", f"{job_name}.slurm"])
-                time.sleep(0.5)
             else:
                 f.write(
                     SLURM_SUBMISSION_TEMPLATE.format(
                         indir=indir, outdir=outdir, start=start, end=end, job_name=job_name
                     )
                 )
-                subprocess.run(["sbatch", f"{job_name}.slurm"])
-                time.sleep(0.5)
+
+        if daint:
+            subprocess.run(["sbatch", "-A", "pr128", "-C", "gpu", f"{job_name}.slurm"])
+            time.sleep(0.5)
+        else:
+            subprocess.run(["sbatch", f"{job_name}.slurm"])
+            time.sleep(0.5)
 
 
 if __name__ == "__main__":
