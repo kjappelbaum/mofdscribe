@@ -180,6 +180,12 @@ The benchmarks will run k=5-fold cross validation on the dataset. We chose this 
     computational overhead.
     Note that the choice of the k is not trivial, and k=5 is a pragmatic choice, for more details see [Raschka]_.
 
+    Also not that the errorbars one estimates via the standard error of k-fold crossvalidation 
+    are often too small. [Varoquaux]_ However, as [Varoquaux]_ writes
+
+        Cross-validation is not a silver bullet. However, it is the best tool available, because
+        it is the only non-parametric method to test for model generalization.
+
 For running a benchmark with your model, your model must be in the form of a class with `fit(idx, structures, y)` and `predict(idx, structures)` methods, for example
 
 .. code-block:: python
