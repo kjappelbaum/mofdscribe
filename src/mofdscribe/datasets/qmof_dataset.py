@@ -196,6 +196,7 @@ class QMOFDataset(StructureDataset):
         drop_basename_duplicates: bool = True,
         drop_graph_duplicates: bool = True,
         subset: Optional[Iterable[int]] = None,
+        drop_nan: bool = True,
     ):
         """Construct an instance of the QMOF dataset.
 
@@ -211,11 +212,14 @@ class QMOFDataset(StructureDataset):
                 per decorated graph hash. Defaults to True.
             subset (Optional[Iterable[int]]): indices of the structures to include.
                 This is useful for subsampling the dataset. Defaults to None.
+            drop_nan (bool): If True, drop rows with NaN values in features or hashes.
+                Defaults to True.
 
         Raises:
             ValueError: If the provided version number is not available.
         """
         self._drop_basename_duplicates = drop_basename_duplicates
+        self._drop_nan = drop_nan
         self._drop_graph_duplicates = drop_graph_duplicates
         self._flavor = flavor
         if version not in self._files:
@@ -263,6 +267,15 @@ class QMOFDataset(StructureDataset):
         self._df = self._df[self._df[f"flavor.{self._flavor}"]]
 
         self._df = self._df.reset_index(drop=True)
+
+        if drop_nan:
+            self._df.dropna(
+                subset=[c for c in self._df.columns if c.startswith("features.")]
+                + [c for c in self._df.columns if c.startswith("info.")],
+                inplace=True,
+            )
+            self._df.reset_index(drop=True, inplace=True)
+
         if subset is not None:
             self._df = self._df.iloc[subset]
             self._df = self._df.reset_index(drop=True)
@@ -300,6 +313,7 @@ class QMOFDataset(StructureDataset):
             drop_graph_duplicates=self._drop_graph_duplicates,
             subset=indices,
             flavor=self._flavor,
+            drop_nan=self._drop_nan,
         )
 
     @property
