@@ -77,7 +77,7 @@ def make_plot(df, outname):
     hv.util.output(widget_location="right")
     f = hv.HoloMap(
         {column: hv.BoxWhisker(df, kdims="name", vdims=column) for column in cols}, kdims="metric"
-    ).opts(framewise=True, width=500, invert_axes=True)
+    ).opts(framewise=True, width=450, invert_axes=True)
     hv.save(f, outname, fmt="html")
 
 

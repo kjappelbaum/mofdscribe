@@ -10,6 +10,8 @@ Use the table of contents to navigate to the leaderboards for the various tasks.
 
 
    leaderboards/logkH_CO2_id
+   leaderboards/logkH_CO2_ood
+   leaderboards/pbe_bandgap_id
 
 Contributing
 ------------------
