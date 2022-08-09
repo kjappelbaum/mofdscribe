@@ -56,6 +56,7 @@ METRIC_CARD_TEMPLATE = """Metric card
    :top_50_in_top_50: {top_50_in_top_50}
    :top_100_in_top_100: {top_100_in_top_100}
    :top_500_in_top_500: {top_500_in_top_500}
+   :session_info: {session_info}
 """
 
 DOC_DIR = "../docs"
@@ -162,7 +163,7 @@ def compile_task(task):
         df_all = pd.concat(dfs)
 
         df_all.columns = [c.replace("_", " ") for c in df_all.columns]
-
+        df_all.to_csv(os.path.join(task_dir, version, "metrics.csv"))
         html_path = os.path.join(task_dir, version, f"{task}_plot_{versionname}.html")
         make_plot(df_all, html_path)
 

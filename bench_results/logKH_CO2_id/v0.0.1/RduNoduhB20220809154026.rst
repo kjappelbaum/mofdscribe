@@ -1,5 +1,6 @@
-dummy-median-model
+Dummy median model
 ------------------------------------
+
 
 Model card
 ..............
@@ -10,16 +11,27 @@ Feature set description
 What features are used?
 #######################
 
+No features are used. The model only predicts the median of the data.
+
+
 Why are the features informative?
 ###################################
+
+n/a
 
 
 Why do the features not leak information?
 ##############################################
 
+No potential for leakage from features. Since we only use the median
+of the training data, also no information about the labels is leaked.
+
 
 Will the features be accessible in real-world test applications?
 ###################################################################
+
+The training set labels will be available in real-world test applications.
+
 
 Data split
 ~~~~~~~~~~
@@ -27,10 +39,16 @@ Data split
 Describe preprocessing steps and how data leakage is avoided
 ##############################################################
 
+No preprocessing has been performed.
+
+
 Describe the feature selection steps and how data leakage is avoided
 #####################################################################
+
+No feature selection has been performed.
 
 
 Describe the model selection steps and how data leakage is avoided
 #####################################################################
 
+No model selection has been performed.
