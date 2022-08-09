@@ -9,7 +9,7 @@ Overview
 ------------
 
 .. raw:: html
-   :file: pbe_bandgap_id_plot.html
+   :file: pbe_bandgap_id_plot_latest.html
 
 
 Leaderboard
@@ -18,8 +18,8 @@ Leaderboard
 .. needtable::
    :types: regressionmetrics
    :style: datatables
-   :filter: task == "BenchTaskEnum.pbe_bandgap_id"
-   :columns: id, name, mean_squared_error, mean_absolute_error, r2_score,  max_error, top_50_in_top_50, top_100_in_top_100
+   :filter: task == "BenchTaskEnum.pbe_bandgap_id" AND version == "v0.0.1"
+   :columns: id, name, mean_squared_error, mean_absolute_error, r2_score, max_error, top_50_in_top_50, top_100_in_top_100
 
 
 Models
@@ -29,4 +29,4 @@ Models
    :glob:
    :maxdepth: 1
 
-   pbe_bandgap_id_models/*
+   pbe_bandgap_id_models/latest/*

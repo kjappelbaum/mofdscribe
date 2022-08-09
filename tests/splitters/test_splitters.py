@@ -34,6 +34,7 @@ def test_base_splitter(sample_frac, shuffle):
     splitter = MySplitter(ds, sample_frac=sample_frac, shuffle=shuffle)
 
     train_idx, test_idx = splitter.train_test_split()
+
     if sample_frac < 1:
         assert len(train_idx) + len(test_idx) < len(ds)
     groups_train = set(groups[train_idx])
@@ -87,6 +88,7 @@ def test_density_splitter():
         assert len(set(list(train) + list(test))) == len(ds)
 
     splits = dens_splitter.train_valid_test_split(frac_train=0.5, frac_valid=0.3)
+    assert isinstance(splits, tuple)
     assert all(dens_splitter._grouping_q == np.linspace(0, 1, 4))
     assert len(splits) == 3
     assert len(splits[0]) > len(splits[1]) >= len(splits[2])
@@ -104,6 +106,7 @@ def test_density_splitter():
     splits = dens_splitter.train_test_split(
         frac_train=0.5,
     )
+    assert isinstance(splits, tuple)
     assert all(dens_splitter._grouping_q == np.linspace(0, 1, 3))
     groups = dens_splitter._get_groups()
 

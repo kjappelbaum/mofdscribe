@@ -96,6 +96,7 @@ def update_rst(file, bench_result):
         "reference",
         "mofdscribe_version",
         "implementation",
+        "session_info",
     ]
     card_dict = {}
     for key in top_keys:
@@ -128,43 +129,51 @@ def compile_task(task):
     """
     # glob for all json files
     task_dir = os.path.join("..", "bench_results", str(task))
-    logger.info("Compiling task {} from {task_dir}".format(task, task_dir=task_dir))
-    json_files = glob(os.path.join(task_dir, "*.json"))
-    if len(json_files) == 0:
-        raise NoTaskException()
-    logger.info(f"Found {len(json_files)} json files")
-    stems = [Path(f).stem for f in json_files]
-    # find all matching rst file
-    rst_files = [os.path.join(task_dir, f + ".rst") for f in stems]
-    # check if the .rst files exist, otherwise create
-    for rst_file in rst_files:
-        if not os.path.exists(rst_file):
-            with open(rst_file, "w") as f:
-                f.write("")
+    logger.info("Compiling task {}".format(task))
 
-    # read all json files
-    dfs = []
+    versions = os.listdir(task_dir)
+    latest_version = max(versions)
+    for version in versions:
+        versionname = "latest" if version == latest_version else version
+        json_files = glob(os.path.join(task_dir, version, "*.json"))
+        if len(json_files) == 0:
+            raise NoTaskException()
+        logger.info(f"Found {len(json_files)} json files")
+        stems = [Path(f).stem for f in json_files]
+        # find all matching rst file
+        rst_files = [os.path.join(task_dir, version, f + ".rst") for f in stems]
+        # check if the .rst files exist, otherwise create
+        for rst_file in rst_files:
+            if not os.path.exists(rst_file):
+                with open(rst_file, "w") as f:
+                    f.write("")
 
-    for json in json_files:
-        res = BenchResult.parse_file(json)
+        # read all json files
+        dfs = []
 
-        df = pd.DataFrame(res.metrics.concatenated_metrics().dict())
-        df["name"] = res.name
+        for json in json_files:
+            res = BenchResult.parse_file(json)
 
-        dfs.append(df)
+            df = pd.DataFrame(res.metrics.concatenated_metrics().dict())
+            df["name"] = res.name
 
-    df_all = pd.concat(dfs)
+            dfs.append(df)
 
-    df_all.columns = [c.replace("_", " ") for c in df_all.columns]
+        df_all = pd.concat(dfs)
 
-    html_path = os.path.join(task_dir, f"{task}_plot.html")
-    make_plot(df_all, html_path)
+        df_all.columns = [c.replace("_", " ") for c in df_all.columns]
 
-    for rst_file, json in zip(rst_files, json_files):
-        new_file = update_rst(rst_file, BenchResult.parse_file(json))
-        shutil.copy(new_file, os.path.join(DOC_DIR, "source", "leaderboards", f"{task}_models"))
+        html_path = os.path.join(task_dir, version, f"{task}_plot_{versionname}.html")
+        make_plot(df_all, html_path)
 
-    shutil.copy(html_path, os.path.join(DOC_DIR, "source", "leaderboards"))
+        for rst_file, json in zip(rst_files, json_files):
+            new_file = update_rst(rst_file, BenchResult.parse_file(json))
+            shutil.copy(
+                new_file,
+                os.path.join(DOC_DIR, "source", "leaderboards", f"{task}_models", versionname),
+            )
+
+        shutil.copy(html_path, os.path.join(DOC_DIR, "source", "leaderboards"))
 
 
 if __name__ == "__main__":

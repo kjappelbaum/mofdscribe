@@ -39,6 +39,7 @@ jobs:
           update-conda: true
           python-version: ${{ matrix.python-version }}
           conda-channels: anaconda, conda-forge
+
       - name: Install dependencies
         run: |
           sudo apt-get install libcgal-dev

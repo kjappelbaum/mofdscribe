@@ -236,7 +236,7 @@ For running a benchmark with your model, your model must be in the form of a cla
     :class: hint
 
     If you want to use the dataset in your model class, you might find the :code:`patch_in_ds` 
-    keyword argument of the :code:py:`~mofdscribe.bench.mofbench.MOFBench` class useful. 
+    keyword argument of the :py:class:`~mofdscribe.bench.mofbench.MOFBench` class useful. 
     This will make the dataset available to your model under the :code:`ds` attribute.
 
 

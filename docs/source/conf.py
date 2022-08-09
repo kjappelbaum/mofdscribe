@@ -102,6 +102,7 @@ needs_extra_options = [
     "encodes_chemistry",
     "scalar",
     "scope",
+    "session_info",
 ]
 
 needs_types = [
@@ -175,9 +176,6 @@ html_theme = "furo"
 #
 html_theme_options = {
     "globaltoc_collapse": False,
-    "launch_buttons": {
-        "binderhub_url": "https://mybinder.org/v2/gh/kjappelbaum/pyepal/HEAD?filepath=examples",
-    },
     "source_repository": "https://github.com/kjappelbaum/mofdscribe/",
     "source_branch": "main",
     "source_directory": "docs/source",

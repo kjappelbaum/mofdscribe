@@ -454,6 +454,6 @@ def sort_arrays_by_len(arrays, sort=True):
     if sort:
         arrays = [np.array(array) for array in arrays]
         arrays.sort(key=len, reverse=True)
-        return arrays
+        return tuple(arrays)
     else:
-        return arrays
+        return tuple(arrays)

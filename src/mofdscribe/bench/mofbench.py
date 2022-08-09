@@ -7,7 +7,7 @@ import time
 from abc import ABC, abstractmethod
 from datetime import datetime
 from enum import Enum
-from typing import List, Optional, Union
+from typing import Any, Dict, List, Optional, Union
 
 import numpy as np
 from loguru import logger
@@ -19,11 +19,12 @@ from mofdscribe.metrics.regression import get_regression_metrics
 from mofdscribe.splitters.splitters import BaseSplitter
 from mofdscribe.version import get_version
 
+from .watermark import get_watermark
+
 __all__ = ["MOFBenchRegression", "BenchResult"]
 
 _RST_TEMPLATE = """{modelname}
 ------------------------------------
-
 
 Model card
 ..............
@@ -60,6 +61,15 @@ Describe the model selection steps and how data leakage is avoided
 
 """
 
+_CITATION_TEMPLATE = """"
+Reference
+..............
+
+.. code::
+
+    {bibtex}
+"""
+
 
 class BenchTaskEnum(Enum):
     """Enum for benchmark tasks."""
@@ -93,6 +103,14 @@ class BenchResult(BaseModel):
         title="Implementation", description="Link to implementation"
     )
     mofdscribe_version: str = Field(title="mofdscribe version", description="mofdscribe version")
+    session_info: Dict[str, Any] = Field(
+        title="Session info",
+        description="Automatically captured string describing the computational environment.",
+    )
+    logs: Optional[List[Dict]] = Field(
+        title="Logs",
+        description="Additional data logged using the log method during the benchmark.",
+    )
 
     def save_json(self, folder: Union[str, os.PathLike]) -> None:
         """Save benchmark results to json file."""
@@ -118,7 +136,10 @@ class BenchResult(BaseModel):
             ),
             "w",
         ) as handle:
-            handle.write(_RST_TEMPLATE.format(modelname=self.name))
+            text = _RST_TEMPLATE.format(modelname=self.name)
+            if self.reference is not None:
+                text += _CITATION_TEMPLATE.format(bibtex=self.reference)
+            handle.write(text)
 
 
 def id_for_bench_result(bench_result: BenchResult) -> str:
@@ -209,7 +230,8 @@ class MOFBench(ABC):
             version (str, optional): Version of the model. Defaults to None.
             features (str, optional): Features used in the model. If you use a graph net,
                 report the edge and vertex features. Defaults to None.
-            reference (str, optional): Reference with more details. Defaults to None.
+            reference (str, optional): Reference with more details
+                Please provide it in BibTeX form. Defaults to None.
             implementation (str, optional): Link to implementation. Defaults to None.
             debug (bool): If True, the benchmark will be run in debug mode
                 (1% of the data).
@@ -234,6 +256,9 @@ class MOFBench(ABC):
         self._k = k
         if patch_in_ds:
             self._model.ds = self._ds
+        # mokey patch for logging method
+        self._model.log = self.log
+        self.logs = []
 
     def _train(self, idx: np.ndarray, structures: np.ndarray, y: np.ndarray):
         self._model.fit(idx, structures, y)
@@ -241,6 +266,14 @@ class MOFBench(ABC):
 
     def _predict(self, idx: np.ndarray, structures: np.ndarray):
         return self._model.predict(idx, structures)
+
+    def log(self, data: dict):
+        """Log data to the logs list.
+
+        Args:
+            data (dict): Data to be logged.
+        """
+        self.logs.append(data)
 
     @abstractmethod
     def _score(self):
@@ -263,6 +296,8 @@ class MOFBench(ABC):
             reference=self._reference,
             implementation=self._implementation,
             mofdscribe_version=get_version(),
+            session_info=get_watermark(),
+            logs=self.logs,
         )
 
 
