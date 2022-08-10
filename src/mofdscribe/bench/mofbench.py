@@ -77,6 +77,7 @@ class BenchTaskEnum(Enum):
     logKH_CO2_id = "logKH_CO2_id"  # noqa: N815
     logKH_CO2_ood = "logKH_CO2_ood"  # noqa: N815
     pbe_bandgap_id = "pbe_bandgap_id"  # noqa: N815
+    ch4dc_id = "ch4dc_id"  # noqa: N815
 
 
 class BenchResult(BaseModel):

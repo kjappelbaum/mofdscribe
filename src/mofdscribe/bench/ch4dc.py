@@ -2,17 +2,15 @@
 """In-dataset predictions for the methane deliverable capacity"""
 from typing import Optional
 
-import numpy as np
-
 from mofdscribe.datasets import CoREDataset
 from mofdscribe.splitters.splitters import HashSplitter
 
 from .mofbench import MOFBenchRegression
 
-__all__ = ["CH4DCBench"]
+__all__ = ["CH4DCIDBench"]
 
 
-class CH4DCBench(MOFBenchRegression):
+class CH4DCIDBench(MOFBenchRegression):
     """Benchmarking models for the methane deliverable capacity under in-domain conditions.
 
     In-distribution implies that we use a cluster stratified splitter
@@ -61,7 +59,7 @@ class CH4DCBench(MOFBenchRegression):
                 sample_frac=0.01 if debug else 1.0,
             ),
             target=["outputs.CH4DC"],
-            task="CH4DC",
+            task="ch4dc_id",
             k=5,
             version=version,
             features=features,

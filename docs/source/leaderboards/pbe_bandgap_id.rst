@@ -4,6 +4,8 @@ Prediction of the PBE bangap (in-dataset)
 Task description
 -----------------
 
+The electronic band gaps are a relevant indicator for applications such as electro- or photocatalysis, sensing, energy storage. 
+Rosen et al. [Rosen2021]_ [Rosen2022]_  performed a large-scale screening in which they computed the band gaps of metal organic frameworks using DFT, including with the PBE functional. 
 
 Overview
 ------------
