@@ -195,6 +195,10 @@ class MOFBench(ABC):
 
     Of course, instead of re-featurizing every structure you might also
     choose to use the indices to look up pre-computed features.
+
+    ..warning::
+
+        This class will monkey path a :code:`log` method into the model object.
     """
 
     def __init__(

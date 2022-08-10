@@ -239,6 +239,14 @@ For running a benchmark with your model, your model must be in the form of a cla
     keyword argument of the :py:class:`~mofdscribe.bench.mofbench.MOFBench` class useful. 
     This will make the dataset available to your model under the :code:`ds` attribute.
 
+.. admonition:: Logging metadata 
+    :class: hint
+
+    If you want to log any additional information during the fitting process, for instance hyperparameters, you can do so using the :py:meth:`~mofdscribe.bench.mofbench.MOFBench.log` method, that we also patch into your model. 
+
+    That is, your model will have a :code:`log` method to which you can pass a dictionary that will be appended to a list that will appear in the report.
+    In this way, for instance, you can record hyperparameters or other information in each fold.
+
 
 If you have a model in this form, you can use a bench class.
 
@@ -249,6 +257,7 @@ If you have a model in this form, you can use a bench class.
     bench = LogkHCO2IDBench(MyDummyModel(), name='My great model')
     report = bench.bench()
     report.save_json(<directory>)
+    report.save_rst(<directory>)
 
 You can test this using some dummy models implemented in mofdscribe
 
@@ -266,6 +275,10 @@ You can test this using some dummy models implemented in mofdscribe
         reference="mofdscribe",
     )
 
+.. admonition:: Reference in BibTeX format
+    :class: hint
+
+    If you provide your reference in BibTeX format, it will appear in a copyable text box in the documentation. That is, it is super easy for others to cite you!
 
 For testing purposes, you can set :code:`debug=True` in the constructors of the benchmark classes.
 
@@ -275,10 +288,11 @@ For this:
 
 1. Fork the repository.
 2. Make a new branch (e.g. named :code:`add_{modelname}`).
-3. Add your :code:`.json` file to the corresponding :code:`bench_results` sub folder. Do not change the name of the file, it will be used as unique identifier.
-4. We encourage you to also add a :code:`.rst` file with a description of your model into the same directory
-5. Push your branch to the repository.
-6. Make a pull request.
+3. Add your :code:`.json` and :code:`.rst` files to the corresponding :code:`bench_results` sub folder. Do not change the name of the file, it will be used as unique identifier.
+4. Push your branch to the repository.
+5. Make a pull request.
+
+Upon your PR, a pull request will ask one of the maintainers for approval for a rebuild of the leaderboard. Once we checked that you include all the important parts and some additional context (e.g. link to an implementation), your model will appear on the leaderboard.
 
 .. admonition:: More examples
     :class: info
