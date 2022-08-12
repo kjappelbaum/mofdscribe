@@ -6,5 +6,5 @@ Local structure order parameters
     :considers_geometry: True
     :considers_structure_graph: False
     :encodes_chemistry: False
-    :scope: sbu
+    :scope: bu
     :scalar: False

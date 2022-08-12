@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from mofdscribe.featurizers.sbu.compositionstats_featurizer import CompositionStats
+from mofdscribe.featurizers.bu.compositionstats_featurizer import CompositionStats
 
 
 def test_composition_stats_featurizer(molecule, linker_molecule, triangle_structure):

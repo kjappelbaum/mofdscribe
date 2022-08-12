@@ -1,7 +1,7 @@
 RDKit-derived features
 ========================
 
-Via the :py:obj:`~mofdscribe.sbu.rdkitadaptor.RDKitAdaptor` class you can wrap any featurizer that works on RDKit molecules into a featurizer that operates on SBUS.
+Via the :py:obj:`~mofdscribe.bu.rdkitadaptor.RDKitAdaptor` class you can wrap any featurizer that works on RDKit molecules into a featurizer that operates on BUS.
 As an example, see how some of the featurizers below are implemented.
 
 .. code-block:: python
@@ -34,7 +34,7 @@ Instead of subclassing, you can also simply use the following syntax
 
 .. code-block:: python
 
-    from mofdscribe.sbu.rdkitadaptor import RDKitAdaptor
+    from mofdscribe.bu.rdkitadaptor import RDKitAdaptor
     from rdkit.Chem.Descriptors3D import InertialShapeFactor
 
     my_featurizer = RDKitAdaptor(InertialShapeFactor, ["inertial_shape_factor"])
@@ -51,7 +51,7 @@ Ligand shape
     :considers_geometry: True
     :considers_structure_graph: True
     :encodes_chemistry: False
-    :scope: sbu
+    :scope: bu
     :scalar: True
 
     This descriptor is computed as NPR1+NPR2-1, and has been proposed by [Wirth]_.
@@ -61,7 +61,7 @@ Ligand shape
     :considers_geometry: True
     :considers_structure_graph: True
     :encodes_chemistry: False
-    :scope: sbu
+    :scope: bu
     :scalar: True
 
     This descriptor is computed as 2 - 2 * NPR2, and has been proposed by [Wirth]_.
@@ -71,7 +71,7 @@ Ligand shape
     :considers_geometry: True
     :considers_structure_graph: True
     :encodes_chemistry: False
-    :scope: sbu
+    :scope: bu
     :scalar: True
 
     This descriptor is computed as NPR2 - NPR1, and has been proposed by [Wirth]_.
@@ -87,7 +87,7 @@ The following featurizers are the wrapped RDKit implementations (under the same 
     :considers_geometry: True
     :considers_structure_graph: True
     :encodes_chemistry: False
-    :scope: sbu
+    :scope: bu
     :scalar: True
 
 .. featurizer::  RadiusOfGyration
@@ -95,7 +95,7 @@ The following featurizers are the wrapped RDKit implementations (under the same 
     :considers_geometry: True
     :considers_structure_graph: True
     :encodes_chemistry: False
-    :scope: sbu
+    :scope: bu
     :scalar: True
 
 .. featurizer::  Asphericity
@@ -103,7 +103,7 @@ The following featurizers are the wrapped RDKit implementations (under the same 
     :considers_geometry: True
     :considers_structure_graph: True
     :encodes_chemistry: False
-    :scope: sbu
+    :scope: bu
     :scalar: True
 
 .. featurizer::  Eccentricity
@@ -111,7 +111,7 @@ The following featurizers are the wrapped RDKit implementations (under the same 
     :considers_geometry: True
     :considers_structure_graph: True
     :encodes_chemistry: False
-    :scope: sbu
+    :scope: bu
     :scalar: True
 
 .. featurizer::  InertialShapeFactor
@@ -119,7 +119,7 @@ The following featurizers are the wrapped RDKit implementations (under the same 
     :considers_geometry: True
     :considers_structure_graph: True
     :encodes_chemistry: False
-    :scope: sbu
+    :scope: bu
     :scalar: True
 
 .. featurizer::  NPR1
@@ -127,7 +127,7 @@ The following featurizers are the wrapped RDKit implementations (under the same 
     :considers_geometry: True
     :considers_structure_graph: True
     :encodes_chemistry: False
-    :scope: sbu
+    :scope: bu
     :scalar: True
 
 .. featurizer::  NPR2
@@ -135,7 +135,7 @@ The following featurizers are the wrapped RDKit implementations (under the same 
     :considers_geometry: True
     :considers_structure_graph: True
     :encodes_chemistry: False
-    :scope: sbu
+    :scope: bu
     :scalar: True
 
 .. featurizer::  PMI1
@@ -143,7 +143,7 @@ The following featurizers are the wrapped RDKit implementations (under the same 
     :considers_geometry: True
     :considers_structure_graph: True
     :encodes_chemistry: False
-    :scope: sbu
+    :scope: bu
     :scalar: True
 
 .. featurizer::  PMI2
@@ -151,7 +151,7 @@ The following featurizers are the wrapped RDKit implementations (under the same 
     :considers_geometry: True
     :considers_structure_graph: True
     :encodes_chemistry: False
-    :scope: sbu
+    :scope: bu
     :scalar: True
 
 .. featurizer::  PMI3
@@ -159,5 +159,5 @@ The following featurizers are the wrapped RDKit implementations (under the same 
     :considers_geometry: True
     :considers_structure_graph: True
     :encodes_chemistry: False
-    :scope: sbu
+    :scope: bu
     :scalar: True

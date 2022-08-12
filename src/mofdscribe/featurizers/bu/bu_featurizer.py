@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Compute features on the SBUs and then aggregate them."""
+"""Compute features on the BUs and then aggregate them."""
 from typing import Iterable, List, Optional, Tuple, Union
 
 import numpy as np
@@ -21,30 +21,30 @@ class MOFBBs(BaseModel):
 
 
 # ToDo: Support `MultipleFeaturizer`s (should be ok, if we recursively call the operates_on method).
-class SBUFeaturizer(BaseFeaturizer):
+class BUFeaturizer(BaseFeaturizer):
     """
-    Compute features on the SBUs and then aggregate them.
+    Compute features on the BUs and then aggregate them.
 
-    This can be useful if you want to compute some features on the SBUs
+    This can be useful if you want to compute some features on the BUs
     and them aggregrate them to obtain one fixed-length feature vector for the MOF.
 
     .. warning::
         Note that, currently, not all featurizers can operate on both
         Structures and Molecules.
         If you want to include featurizers that can only operate on one type
-        (e.g. :py:obj:`~mofdscribe.sbu.rdkitadaptor.RDKitAdaptor`
+        (e.g. :py:obj:`~mofdscribe.bu.rdkitadaptor.RDKitAdaptor`
         and :py:obj:`~mofdscribe.chemistry.amd.AMD`)
-        then you need to create two separate MOFBBs and SBUFeaturizer objects.
+        then you need to create two separate MOFBBs and BUFeaturizer objects.
 
     Examples:
-        >>> from mofdscribe.sbu import SBUFeaturizer, MOFBBs
-        >>> from mofdscribe.sbu.rdkitadaptor import RDKitAdaptor
+        >>> from mofdscribe.bu import BUFeaturizer, MOFBBs
+        >>> from mofdscribe.bu.rdkitadaptor import RDKitAdaptor
         >>> from rdkit.Chem.Descriptors3D import Asphericity
         >>> from pymatgen.core import Molecule
         >> from pymatgen.io.babel import BabelMolAdaptor
         >>> base_featurizer = RDKitAdaptor(featurizer=Asphericity, feature_labels=["asphericity"])
-        >>> sbu_featurizer = SBUFeaturizer(featurizer=base_featurizer, aggregations=("mean", "std", "min", "max"))
-        >>> sbu_featurizer.featurize(
+        >>> bu_featurizer = BUFeaturizer(featurizer=base_featurizer, aggregations=("mean", "std", "min", "max"))
+        >>> bu_featurizer.featurize(
                 mofbbs=MOFBBs(nodes=[BabelMolAdaptor.from_string(
                     "[CH-]1C=CC=C1.[CH-]1C=CC=C1.[Fe+2]", "smi").pymatgen_mol],
                 linkers=[BabelMolAdaptor.from_string("CCCC", "smi").pymatgen_mol]))
@@ -55,12 +55,12 @@ class SBUFeaturizer(BaseFeaturizer):
         self, featurizer: BaseFeaturizer, aggregations: Tuple[str] = ("mean", "std", "min", "max")
     ) -> None:
         """
-        Construct a new SBUFeaturizer.
+        Construct a new BUFeaturizer.
 
         Args:
             featurizer (BaseFeaturizer): The featurizer to use.
                 Currently, we do not support `MultipleFeaturizer`s.
-                Please, instead, use multiple SBUFeaturizers.
+                Please, instead, use multiple BUFeaturizers.
                 If you use a featurizer that is not implemented in mofdscribe
                 (e.g. a matminer featurizer), you need to wrap using a method
                 that describes on which data objects the featurizer can operate on.
@@ -182,11 +182,11 @@ class SBUFeaturizer(BaseFeaturizer):
         mofbbs: Optional[MOFBBs] = None,
     ) -> np.ndarray:
         """
-        Compute features on the SBUs and then aggregate them.
+        Compute features on the BUs and then aggregate them.
 
-        If you provide a structure, we will fragment the MOF into SBUs.
+        If you provide a structure, we will fragment the MOF into BUs.
         If you already have precomputed fragements or only want to consider a subset
-        of the SBUs, you can provide them manually via the `mofbbs` argument.
+        of the BUs, you can provide them manually via the `mofbbs` argument.
 
         If you manually provide the `mofbbs`,  we will convert molecules to structures
         where possible.

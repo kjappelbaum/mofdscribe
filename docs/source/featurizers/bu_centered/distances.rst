@@ -1,4 +1,4 @@
-Distance-based description of SBU shape
+Distance-based description of BU shape
 ============================================
 
 .. featurizer::  PairwiseDistanceHist
@@ -6,7 +6,7 @@ Distance-based description of SBU shape
     :considers_geometry: True
     :considers_structure_graph: False
     :encodes_chemistry: False
-    :scope: sbu
+    :scope: bu
     :scalar: False
 
 .. featurizer::  PairwiseDistanceStats
@@ -14,5 +14,5 @@ Distance-based description of SBU shape
     :considers_geometry: True
     :considers_structure_graph: False
     :encodes_chemistry: False
-    :scope: sbu
+    :scope: bu
     :scalar: False

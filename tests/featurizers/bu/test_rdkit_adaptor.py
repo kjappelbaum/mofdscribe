@@ -3,7 +3,7 @@
 import numpy as np
 from rdkit.Chem.Descriptors3D import Asphericity
 
-from mofdscribe.featurizers.sbu.rdkitadaptor import RDKitAdaptor
+from mofdscribe.featurizers.bu.rdkitadaptor import RDKitAdaptor
 
 
 def test_rdkit_adaptor(molecule_graph, molecule):

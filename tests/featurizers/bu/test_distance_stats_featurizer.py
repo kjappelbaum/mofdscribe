@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """Test the pairwise distance stats featurizer."""
-from mofdscribe.featurizers.sbu.distance_stats_featurizer import PairwiseDistanceStats
+from mofdscribe.featurizers.bu.distance_stats_featurizer import PairwiseDistanceStats
 
 
 def test_pairwise_distance_stats_featurizer(molecule, linker_molecule, triangle_structure):

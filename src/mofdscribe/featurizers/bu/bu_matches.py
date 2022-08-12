@@ -19,7 +19,7 @@ with open(os.path.join(THIS_DIR, "prototype_env.json"), "r") as handle:
 
 ALL_AVAILABLE_TOPOS = tuple(STRUCTURE_ENVS.keys())
 
-__all__ = ("SBUMatch",)
+__all__ = ("BUMatch",)
 
 
 def match_bb(
@@ -86,7 +86,7 @@ def match_bb(
     return aggregation_results
 
 
-class SBUMatch(BaseFeaturizer):
+class BUMatch(BaseFeaturizer):
     """MOFs are assembled from building blocks on a net.
 
     The "ideal" vertex "structures" of the net can fit better or
@@ -103,11 +103,11 @@ class SBUMatch(BaseFeaturizer):
         from the vertex match values.
 
     Examples:
-        >>> from mofdscribe.sbu import SBUMatch
+        >>> from mofdscribe.bu import BUMatch
         >>> from pymatgen.core import Structure
-        >>> s = Structure.from_file("tests/test_files/sbu_test_1.cif")
-        >>> sbu_match = SBUMatch(topos=["tbo", "pcu"], aggregations=["mean", "min"])
-        >>> sbu_match.featurize(s)
+        >>> s = Structure.from_file("tests/test_files/bu_test_1.cif")
+        >>> bu_match = BUMatch(topos=["tbo", "pcu"], aggregations=["mean", "min"])
+        >>> bu_match.featurize(s)
     """
 
     def __init__(
@@ -120,7 +120,7 @@ class SBUMatch(BaseFeaturizer):
         match: str = "auto",
         skip_non_fitting_if_possible: bool = True,
     ) -> None:
-        """Create a new SBUMatch featurizer.
+        """Create a new BUMatch featurizer.
 
         Args:
             allow_rescale (bool): If True, allow to multiple coordinates of structure
@@ -161,10 +161,10 @@ class SBUMatch(BaseFeaturizer):
         labels = []
         for topo in self.topos:
             if self.return_only_best:
-                labels.append(f"sbumatch_{self.allow_rescale}_{topo}")
+                labels.append(f"bumatch_{self.allow_rescale}_{topo}")
             else:
                 for aggregation in self.aggregations:
-                    labels.append(f"sbumatch_{self.allow_rescale}_{topo}_{aggregation}")
+                    labels.append(f"bumatch_{self.allow_rescale}_{topo}_{aggregation}")
 
         return labels
 
@@ -172,7 +172,7 @@ class SBUMatch(BaseFeaturizer):
         return self._get_feature_labels()
 
     def featurize(self, s: Union[Structure, IStructure, Molecule, IMolecule]) -> np.ndarray:
-        """Structure is here spanned by the connecting points of a SBU."""
+        """Structure is here spanned by the connecting points of a BU."""
         features = []
         for topo in self.topos:
             feats = match_bb(

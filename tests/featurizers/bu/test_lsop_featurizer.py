@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Test that the fragment LSOP featurizer works."""
 
-from mofdscribe.featurizers.sbu.lsop_featurizer import LSOP
+from mofdscribe.featurizers.bu.lsop_featurizer import LSOP
 
 
 def test_lsop_featurizer(triangle_structure):

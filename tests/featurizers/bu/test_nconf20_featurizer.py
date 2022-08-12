@@ -3,7 +3,7 @@
 
 from rdkit.Chem import AllChem
 
-from mofdscribe.featurizers.sbu.nconf20_featurizer import NConf20, _n_conf20
+from mofdscribe.featurizers.bu.nconf20_featurizer import NConf20, _n_conf20
 
 
 def test_nconf20_featurizer(linker_molecule):

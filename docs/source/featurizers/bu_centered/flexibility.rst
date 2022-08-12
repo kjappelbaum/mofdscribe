@@ -1,4 +1,4 @@
-Flexibility of SBUs
+Flexibility of BUs
 ========================
 
 .. featurizer::  NConf20
@@ -6,5 +6,5 @@ Flexibility of SBUs
     :considers_geometry: True
     :considers_structure_graph: True
     :encodes_chemistry: False
-    :scope: sbu
+    :scope: bu
     :scalar: True
