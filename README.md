@@ -38,13 +38,11 @@ featurizer = RACS()
 racs_features = featurizer.featurize(structure)
 ```
 
-
 ## 🚀 Installation
 
-While we are in the process of trying to make mofdscribe work on all operating system (we're waiting for conda recipies getting merged), 
-it is currently not easy on Windows (and there might be potential issues on ARM-based Macs). 
+While we are in the process of trying to make mofdscribe work on all operating system (we're waiting for conda recipies getting merged),
+it is currently not easy on Windows (and there might be potential issues on ARM-based Macs).
 For this reason, we recommend installing mofdscribe on a UNIX machine.
-
 
 <!-- The most recent release can be installed from
 [PyPI](https://pypi.org/project/mofdscribe/) with:
@@ -63,18 +61,31 @@ $ pip install git+https://github.com/kjappelbaum/mofdscribe.git
 To install in development mode, use the following:
 
 ```bash
-$ git clone git+https://github.com/kjappelbaum/mofdscribe.git
-$ cd mofdscribe
-$ pip install -e .
+git clone git+https://github.com/kjappelbaum/mofdscribe.git
+cd mofdscribe
+pip install -e .
 ```
 
 if you want to use all utilities, you can use the `all` extra: `pip install -e ".[all]"`
 
-We depend on many other external tools. Currently, you need to manually install (due to pending merges for conda-recipies):
+We depend on many other external tools. Currently, you need to manually install these dependencies (due to pending merges for conda-recipies):
 
-- `conda install -c conda-forge raspa2 zeopp-lsmo`
-- `moltda` from my refactor branch https://github.com/kjappelbaum/molecule-tda/tree/refactor. Note that `moltda` depends on [`cgal`](https://anaconda.org/conda-forge/cgal)
-- `moffragmentor` from my private repository  https://github.com/kjappelbaum/moffragmentor (which additionally requires `conda install -c conda-forge openbabel`)
+```bash
+# RASPA and Zeo++
+conda install -c conda-forge raspa2 zeopp-lsmo
+
+# A custom branch of moltda
+pip install git+https://github.com/kjappelbaum/molecule-tda.git@refactor
+
+# cgal depdency for moltda
+conda install -c conda-forge cgal
+
+# moffragmentor (currently private)
+pip install git+https://github.com/kjappelbaum/moffragmentor.git
+
+# openbabel dependency for moffragmentor
+conda install -c conda-forge openbabel
+```
 
 ## 👐 Contributing
 
@@ -102,11 +113,9 @@ This project has been supported by the following organizations (in alphabetical 
 
 -->
 
-
 ### 💰 Funding
 
 The research was supported by the European Research Council (ERC) under the European Union’s Horizon 2020 research and innovation programme ([grant agreement 666983, MaGic](https://cordis.europa.eu/project/id/666983)), by the [NCCR-MARVEL](https://www.nccr-marvel.ch/), funded by the Swiss National Science Foundation, and by the Swiss National Science Foundation (SNSF) under Grant 200021_172759.
-
 
 ### 🍪 Cookiecutter
 
@@ -119,7 +128,6 @@ This package was created with [@audreyfeldroy](https://github.com/audreyfeldroy)
 <details>
   <summary>See developer instructions</summary>
 
-
 The final section of the README is for if you want to get involved by making a code contribution.
 
 ### ❓ Testing
@@ -128,7 +136,7 @@ After cloning the repository and installing `tox` with `pip install tox`, the un
 run reproducibly with:
 
 ```shell
-$ tox
+tox
 ```
 
 Additionally, these tests are automatically re-run with each commit in a [GitHub Action](https://github.com/kjappelbaum/mofdscribe/actions?query=workflow%3ATests).
@@ -140,7 +148,7 @@ After installing the package in development mode and installing
 in `tox.ini`. Run the following from the shell:
 
 ```shell
-$ tox -e finish
+tox -e finish
 ```
 
 This script does the following:
@@ -153,4 +161,5 @@ This script does the following:
 4. Push to GitHub. You'll need to make a release going with the commit where the version was bumped.
 5. Bump the version to the next patch. If you made big changes and want to bump the version by minor, you can
    use `tox -e bumpversion minor` after.
+
 </details>
