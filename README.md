@@ -21,6 +21,9 @@
     <a href='https://github.com/psf/black'>
         <img src='https://img.shields.io/badge/code%20style-black-000000.svg' alt='Code style: black' />
     </a>
+    <a href="https://matsci.org/c/mofdscribe/56">
+    <img src="https://img.shields.io/badge/matsci-discuss%20%26%20get%20help-yellowgreen" alt="Matsci">
+    </a>
 </p>
 
 Featurizing metal-organic frameworks (MOFs) made simple! This package builds on the power of [matminer](https://hackingmaterials.lbl.gov/matminer/) to make featurization of MOFs as easy as possible. Now, you can use features that are mostly used for porous materials in the same way as all other matminer featurizers.
@@ -75,7 +78,7 @@ We depend on many other external tools. Currently, you need to manually install 
 conda install -c conda-forge raspa2 zeopp-lsmo
 
 # A custom branch of moltda
-pip install git+https://github.com/kjappelbaum/molecule-tda.git@refactor
+pip install git+https://github.com/kjappelbaum/molecule-tda.git
 
 # cgal depdency for moltda
 conda install -c conda-forge cgal
