@@ -1,14 +1,13 @@
 # -*- coding: utf-8 -*-
 """Featurizer that runs RASPA to calculate the Henry coefficient."""
 import os
-import socket
 from glob import glob
 from typing import List, Union
 
 import numpy as np
-from matminer.featurizers.base import BaseFeaturizer
 from pymatgen.core import IStructure, Structure
 
+from mofdscribe.featurizers.base import MOFBaseFeaturizer
 from mofdscribe.featurizers.utils.extend import operates_on_istructure, operates_on_structure
 from mofdscribe.featurizers.utils.raspa.base_parser import parse_base_output
 from mofdscribe.featurizers.utils.raspa.resize_uc import resize_unit_cell
@@ -46,9 +45,7 @@ def parse_widom(directory: Union[str, os.PathLike]) -> dict:
     if len(outputs) != 1:
         raise ValueError("Expected one output file, got {}".format(len(outputs)))
 
-    parsed_output, _ = parse_base_output(
-        outputs[0], system_name=socket.gethostname(), ncomponents=1
-    )
+    parsed_output, _ = parse_base_output(outputs[0], system_name="System_0", ncomponents=1)
 
     component_results = list(parsed_output["components"].values())[0]
 
@@ -63,7 +60,7 @@ def parse_widom(directory: Union[str, os.PathLike]) -> dict:
 
 @operates_on_structure
 @operates_on_istructure
-class Henry(BaseFeaturizer):
+class Henry(MOFBaseFeaturizer):
     """Computes the Henry coefficient for a given molecule using the RASPA [1]_ program.
 
     While Henry coefficients are sometimes the targets of ML
@@ -86,6 +83,7 @@ class Henry(BaseFeaturizer):
         separate_interactions: bool = True,
         run_eqeq: bool = True,
         return_std: bool = False,
+        primitive: bool = False,
     ):
         """Initialize the featurizer.
 
@@ -120,6 +118,8 @@ class Henry(BaseFeaturizer):
                 Defaults to True.
             return_std (bool): If true, return the standard deviations.
                 Defaults to False.
+            primitive (bool): If true, use the primitive unit cell.
+                Defaults to False.
 
         Raises:
             ValueError: If the `RASPA_DIR` environment variable is not set.
@@ -144,8 +144,9 @@ class Henry(BaseFeaturizer):
         self.temperature = temperature
         self.run_eqeq = run_eqeq
         self.return_std = return_std
+        super().__init__(primitive=primitive)
 
-    def featurize(self, s: Union[Structure, IStructure]) -> np.array:
+    def _featurize(self, s: Union[Structure, IStructure]) -> np.array:
         ff_molecules = {self.mol_name: self.mol_ff}
 
         parameters = {

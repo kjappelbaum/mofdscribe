@@ -16,6 +16,11 @@ def test_henryhoa(hkust_structure, irmof_structure):
     assert is_jsonable(dict(zip(featurizer.feature_labels(), features)))
     assert features_irmof.ndim == 1
 
-    featurizer = Henry(cycles=10, return_std=True)
+    featurizer = Henry(cycles=500, return_std=True)
     features = featurizer.featurize(hkust_structure)
     assert len(features) == len(featurizer.feature_labels()) == 4
+
+    # make sure we indeed use pyeqeq
+    featurizer = Henry(cycles=500, return_std=True, run_eqeq=False)
+    features_no_charge = featurizer.featurize(hkust_structure)
+    assert features_no_charge[0] < features[0]

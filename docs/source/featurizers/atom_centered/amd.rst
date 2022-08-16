@@ -16,6 +16,5 @@ In mofdscribe, we allow the user to specify a pooling function and to compute th
     :encodes_chemistry: optionally
     :scope: local
     :scalar: False
-    :class: only-light
 
     Described by Widdowson et al. [AMD]_ [PDD]_.

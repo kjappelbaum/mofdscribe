@@ -25,6 +25,13 @@ PBE bandgap
 .. automodule:: mofdscribe.bench.pbegap
     :members:
 
+Methane deliverable capacity
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. automodule:: mofdscribe.bench.ch4dc
+    :members:
+
+
 Dummy Models 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. automodule:: mofdscribe.bench.dummy_models

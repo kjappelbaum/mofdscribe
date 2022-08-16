@@ -50,7 +50,7 @@ def test_racs(hkust_structure, irmof_structure):
 def test_racs_functional(irmof_structure, abacuf_structure, floating_structure):
     # ABACUF doesn't have linkers with a core. It is simply HCOO
     for structure in [abacuf_structure]:
-        featurizer = RACS()
+        featurizer = RACS(primitive=False)  # because also the linker structure is not primitive
         feats = featurizer.featurize(structure)
         # assert len(feats) == 4 * 3 * 8 * 5  # 4 properties, 3 scopes, 8 aggregations, 5 bb types
         sg = get_structure_graph(IStructure.from_sites(structure), featurizer.bond_heuristic)

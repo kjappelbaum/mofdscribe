@@ -39,6 +39,7 @@ class MyDummyModel:
         return s.density
 
     def fit(self, idx, structures, y):
+        self.log({"info": "hello"})
         x = np.array([self.featurize(s) for s in structures]).reshape(-1, 1)
         self.model.fit(x, y)
 
@@ -73,6 +74,8 @@ def test_mofbench(tmp_path_factory):
 
     report = bench.bench()
     assert isinstance(report, BenchResult)
+    assert len(report.logs) == 2
+    assert report.logs[0] == {"info": "hello"}
     assert isinstance(report.json(), str)
     path = os.path.join(tmp_path_factory.mktemp("report"))
     report.save_json(path)

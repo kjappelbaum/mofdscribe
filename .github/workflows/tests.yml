@@ -26,6 +26,7 @@ jobs:
   tests:
     name: Tests
     runs-on: ${{ matrix.os }}
+    if: github.event_name != 'pull_request' || !github.event.pull_request.draft
     strategy:
       matrix:
         os: [ubuntu-latest]
@@ -38,9 +39,10 @@ jobs:
           update-conda: true
           python-version: ${{ matrix.python-version }}
           conda-channels: anaconda, conda-forge
+
       - name: Install dependencies
         run: |
-          sudo apt-get install libcgal-dev
+          sudo apt-get install --fix-missing libcgal-dev
           conda install raspa2 zeopp-lsmo openbabel -c conda-forge -y
           pip install pytest tox git+https://github.com/kjappelbaum/molecule-tda.git@refactor#egg=moleculetda git+https://${{secrets.reporead}}@github.com/kjappelbaum/moffragmentor.git dscribe # we need dscribe for the SBU test
           pip install -e ".[all]"

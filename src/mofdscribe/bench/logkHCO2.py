@@ -57,7 +57,7 @@ class LogkHCO2IDBench(MOFBenchRegression):
             ds=CoREDataset(version),
             splitter=HashSplitter(
                 CoREDataset(version),
-                stratification_col="logKH_CO2",
+                stratification_col="outputs.logKH_CO2",
                 sample_frac=0.01 if debug else 1.0,
             ),
             target=["outputs.logKH_CO2"],

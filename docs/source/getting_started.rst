@@ -8,11 +8,23 @@ Featurizing a MOF
 .. code-block:: python
 
     from mofdscribe.chemistry.racs import RACS
-    from pymatgen.core import IStructure
+    from pymatgen.core import Structure
 
-    s = IStructure.from_file(<my_cif>)
+    s = Structure.from_file(<my_cif>)
     featurizer = RACS()
     features = featurizer.featurize(s)
+
+.. admonition:: mofdscribe base classes
+    :class: hint
+
+    Most featurizers in mofdscribe inherit from :py:class:`~mofdscribe.featurizers.base.MOFBaseFeaturizer`.
+    This class can also handle the conversion to primitive cells if you pass :code:`primitive=True` to the
+    constructor. This can be useful to save computational time but also make it possible to, e.g., 
+    use the :code:`sum` aggregation.
+
+    To avoid re-computation of the primitive cell, you should use the :py:class:`~mofdscribe.featurizers.base.MOFMultipleFeaturizer`
+    for combining multiple featurizers. This will accept a keyword argument :code:`primitive=True` in the constructor 
+    and then compute the primitive cell once and use it for all the featurizers.
 
 It is also easy to combine multiple featurizers into a single pipeline:
 
@@ -20,11 +32,11 @@ It is also easy to combine multiple featurizers into a single pipeline:
 
     from mofdscribe.chemistry.racs import RACS
     from mofdscribe.pore.geometric_properties import PoreDiameters
-    from pymatgen.core import IStructure
-    from matminer.featurizers.base import MultipleFeaturizer
+    from pymatgen.core import Structure
+    from mofdscribe.featurizers.base import MOFMultipleFeaturizer
 
-    s = IStructure.from_file(<my_cif>)
-    featurizer = MultipleFeaturizer([RACS(), PoreDiameters()])
+    s = Structure.from_file(<my_cif>)
+    featurizer = MOFMultipleFeaturizer([RACS(), PoreDiameters()])
     features = featurizer.featurize(s)
 
 You can, of course, also pass multiple structures to the featurizer (and the
@@ -32,8 +44,8 @@ featurization is automatically parallelized via matminer):
 
 .. code-block:: python
 
-  s = IStructure.from_file(<my_cif>)
-  s2 = IStructure.from_file(<my_cif2>)
+  s = Structure.from_file(<my_cif>)
+  s2 = Structure.from_file(<my_cif2>)
   features = featurizer.featurize_many([s, s2])
 
 
@@ -44,7 +56,7 @@ And, clearly, you can also use the `mofdscribe` featurizers alongside ones from 
     from matminer.featurizers.structure import LocalStructuralOrderParams
     from mofdscribe.chemistry.racs import RACS
 
-    featurizer = MultipleFeaturizer([RACS(), LocalStructuralOrderParams()])
+    featurizer = MOFMultipleFeaturizer([RACS(), LocalStructuralOrderParams()])
     features = featurizer.featurize_many([s, s2])
 
 
@@ -139,7 +151,7 @@ One interesting metric is the adversarial validation score, which can be a surro
 
     FEATURES = list(ds.available_features)
 
-    train_idx, test_idx = RandomSplitter().train_test_split(ds)
+    train_idx, test_idx = RandomSplitter(ds).train_test_split(fract_train=0.8)
 
     adversarial_validation_scorer = AdverserialValidator(ds._df.iloc[train_idx][FEATURES],
         ds._df.iloc[test_idx][FEATURES])
@@ -180,6 +192,12 @@ The benchmarks will run k=5-fold cross validation on the dataset. We chose this 
     computational overhead.
     Note that the choice of the k is not trivial, and k=5 is a pragmatic choice, for more details see [Raschka]_.
 
+    Also note that the errorbars one estimates via the standard error of k-fold crossvalidation 
+    are often too small. [Varoquaux]_ However, as [Varoquaux]_ writes
+
+        Cross-validation is not a silver bullet. However, it is the best tool available, because
+        it is the only non-parametric method to test for model generalization.
+
 For running a benchmark with your model, your model must be in the form of a class with `fit(idx, structures, y)` and `predict(idx, structures)` methods, for example
 
 .. code-block:: python
@@ -214,7 +232,23 @@ For running a benchmark with your model, your model must be in the form of a cla
             x = np.array([self.featurize(s) for s in structures]).reshape(-1, 1)
             return self.model.predict(x)
 
-If you have a model in this form, you can use a bench class
+.. admonition::  Use dataset in model
+    :class: hint
+
+    If you want to use the dataset in your model class, you might find the :code:`patch_in_ds` 
+    keyword argument of the :py:class:`~mofdscribe.bench.mofbench.MOFBench` class useful. 
+    This will make the dataset available to your model under the :code:`ds` attribute.
+
+.. admonition:: Logging metadata 
+    :class: hint
+
+    If you want to log any additional information during the fitting process, for instance hyperparameters, you can do so using the :py:meth:`~mofdscribe.bench.mofbench.MOFBench.log` method, that we also patch into your model. 
+
+    That is, your model will have a :code:`log` method to which you can pass a dictionary that will be appended to a list that will appear in the report.
+    In this way, for instance, you can record hyperparameters or other information in each fold.
+
+
+If you have a model in this form, you can use a bench class.
 
 .. code-block:: python
 
@@ -223,6 +257,7 @@ If you have a model in this form, you can use a bench class
     bench = LogkHCO2IDBench(MyDummyModel(), name='My great model')
     report = bench.bench()
     report.save_json(<directory>)
+    report.save_rst(<directory>)
 
 You can test this using some dummy models implemented in mofdscribe
 
@@ -240,6 +275,11 @@ You can test this using some dummy models implemented in mofdscribe
         reference="mofdscribe",
     )
 
+.. admonition:: Reference in BibTeX format
+    :class: hint
+
+    If you provide your reference in BibTeX format, it will appear in a copyable text box in the documentation. That is, it is super easy for others to cite you!
+
 For testing purposes, you can set :code:`debug=True` in the constructors of the benchmark classes.
 
 Which will generate a report file that you can use to make a pull request for adding your model to the leaderboard.
@@ -248,10 +288,11 @@ For this:
 
 1. Fork the repository.
 2. Make a new branch (e.g. named :code:`add_{modelname}`).
-3. Add your :code:`.json` file to the corresponding :code:`bench_results` sub folder. Do not change the name of the file, it will be used as unique identifier.
-4. We encourage you to also add a :code:`.rst` file with a description of your model into the same directory
-5. Push your branch to the repository.
-6. Make a pull request.
+3. Add your :code:`.json` and :code:`.rst` files to the corresponding :code:`bench_results` sub folder. Do not change the name of the file, it will be used as unique identifier.
+4. Push your branch to the repository.
+5. Make a pull request.
+
+Upon your PR, a pull request will ask one of the maintainers for approval for a rebuild of the leaderboard. Once we checked that you include all the important parts and some additional context (e.g. link to an implementation), your model will appear on the leaderboard.
 
 .. admonition:: More examples
     :class: info

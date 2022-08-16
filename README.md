@@ -23,6 +23,8 @@
     </a>
     <a href="https://matsci.org/c/mofdscribe/56">
     <img src="https://img.shields.io/badge/matsci-discuss%20%26%20get%20help-yellowgreen" alt="Matsci">
+    <a href='http://commitizen.github.io/cz-cli/'>
+        <img src='https://img.shields.io/badge/commitizen-friendly-brightgreen.svg' alt='Commitizen friendly' />
     </a>
 </p>
 

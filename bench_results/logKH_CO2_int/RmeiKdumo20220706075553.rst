@@ -1,6 +1,0 @@
-Mean dummy model
-----------------------------------------------------
-
-This model always predicts the mean of the training set.
-
-The model is available in :py:obj:`~mofdscribe.bench.dummy_models.DummyRegressor`

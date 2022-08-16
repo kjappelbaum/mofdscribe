@@ -1,0 +1,24 @@
+name: update-bench
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "bench_results/**"
+
+jobs:
+  rebuild:
+    name: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: trstringer/manual-approval@v1
+        with:
+          secret: ${{ github.TOKEN }}
+          approvers: kjappelbaum
+      - name: Rebuild
+        run: |
+          pip install -e ".[buildchart]"
+          cd dev_scripts && python update_bench.py
+      - uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: "docs: update bench results"

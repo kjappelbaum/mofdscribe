@@ -4,9 +4,9 @@ from collections import defaultdict
 from typing import List, Optional, Tuple, Union
 
 import numpy as np
-from matminer.featurizers.base import BaseFeaturizer
 from pymatgen.core import IMolecule, IStructure, Molecule, Structure
 
+from mofdscribe.featurizers.base import MOFBaseFeaturizer
 from mofdscribe.featurizers.utils.extend import (
     operates_on_imolecule,
     operates_on_istructure,
@@ -24,7 +24,7 @@ from ._tda_helpers import (
 @operates_on_molecule
 @operates_on_istructure
 @operates_on_structure
-class PHImage(BaseFeaturizer):
+class PHImage(MOFBaseFeaturizer):
     r"""Vectorize persistent diagrams as image.
 
     `Adams et al. (2017)
@@ -72,6 +72,7 @@ class PHImage(BaseFeaturizer):
         max_fit_tolerence: float = 0.1,
         periodic: bool = False,
         no_supercell: bool = False,
+        primitive: bool = False,
     ) -> None:
         """Construct a PHImage object.
 
@@ -110,6 +111,8 @@ class PHImage(BaseFeaturizer):
                 in the analysis (experimental!). Defaults to False.
             no_supercell (bool): If true, then the supercell is not created.
                 Defaults to False.
+            primitive (bool): If True, the structure is reduced to its primitive
+                form before the descriptor is computed. Defaults to False.
 
         Raises:
             AssertionError: If the length of the max_b and max_p is not equal
@@ -153,6 +156,8 @@ class PHImage(BaseFeaturizer):
         self.periodic = periodic
         self.no_supercell = no_supercell
 
+        super().__init__(primitive=primitive)
+
     def _get_feature_labels(self) -> List[str]:
         labels = []
         _elements = list(self.atom_types)
@@ -169,7 +174,9 @@ class PHImage(BaseFeaturizer):
     def feature_labels(self) -> List[str]:
         return self._get_feature_labels()
 
-    def featurize(self, structure: Union[Structure, IStructure, Molecule, IMolecule]) -> np.ndarray:
+    def _featurize(
+        self, structure: Union[Structure, IStructure, Molecule, IMolecule]
+    ) -> np.ndarray:
         results = get_persistent_images_for_structure(
             structure,
             elements=self.atom_types,
@@ -193,7 +200,7 @@ class PHImage(BaseFeaturizer):
                 features.append(np.array(results["image"][element][dim]).flatten())
         return np.concatenate(features)
 
-    def fit(self, structures: List[Union[Structure, IStructure, Molecule, IMolecule]]) -> None:
+    def _fit(self, structures: List[Union[Structure, IStructure, Molecule, IMolecule]]) -> None:
         """Use structures to estimate the settings for the featurizer.
 
         Find the limits (maximum/minimum birth/death and persistence)
@@ -203,9 +210,6 @@ class PHImage(BaseFeaturizer):
             structures (List[Union[Structure, IStructure, Molecule, IMolecule]]): List of structures
                 to find the limits for.
         """
-        if not isinstance(structures, (list, tuple)):
-            structures = [structures]
-
         limits = defaultdict(list)
 
         for structure in structures:

@@ -764,9 +764,9 @@ class ClusterSplitter(BaseSplitter):
     `Kaggle <https://www.kaggle.com/code/lucamassaron/are-you-doing-cross-validation-the-best-way/notebook>`_.
     In principle, we perform the following steps:
 
-    1. Scale the data (optional).
-    2. Perform PCA for de-correlation.
-    3. Perform k-means clustering.
+        1. Scale the data (optional).
+        2. Perform PCA for de-correlation.
+        3. Perform k-means clustering.
     """
 
     def __init__(

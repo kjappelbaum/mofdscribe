@@ -56,32 +56,32 @@ Chemistry-centred featurization
     :members:
 
 
-SBU-centred featurization
+BU-centred featurization
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. automodule:: mofdscribe.featurizers.sbu.sbu_matches
+.. automodule:: mofdscribe.featurizers.bu.bu_matches
     :members:
 
-.. automodule:: mofdscribe.featurizers.sbu.rdkitadaptor
+.. automodule:: mofdscribe.featurizers.bu.rdkitadaptor
     :members:
 
-.. automodule:: mofdscribe.featurizers.sbu.sbu_featurizer
+.. automodule:: mofdscribe.featurizers.bu.bu_featurizer
     :members:
 
-.. automodule:: mofdscribe.featurizers.sbu.lsop_featurizer
+.. automodule:: mofdscribe.featurizers.bu.lsop_featurizer
     :members:
 
-.. automodule:: mofdscribe.featurizers.sbu.nconf20_featurizer
+.. automodule:: mofdscribe.featurizers.bu.nconf20_featurizer
     :members:
 
-.. automodule:: mofdscribe.featurizers.sbu.compositionstats_featurizer
+.. automodule:: mofdscribe.featurizers.bu.compositionstats_featurizer
     :members:
 
-.. automodule:: mofdscribe.featurizers.sbu.distance_stats_featurizer
+.. automodule:: mofdscribe.featurizers.bu.distance_stats_featurizer
     :members:
 
-.. automodule:: mofdscribe.featurizers.sbu.distance_hist_featurizer
+.. automodule:: mofdscribe.featurizers.bu.distance_hist_featurizer
     :members:
 
-.. automodule:: mofdscribe.featurizers.sbu.shape_featurizer
+.. automodule:: mofdscribe.featurizers.bu.shape_featurizer
     :members:

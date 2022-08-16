@@ -102,6 +102,7 @@ needs_extra_options = [
     "encodes_chemistry",
     "scalar",
     "scope",
+    "session_info",
 ]
 
 needs_types = [
@@ -169,23 +170,13 @@ needs_table_style = "datatables"
 #
 html_theme = "furo"
 
+
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
 #
 html_theme_options = {
-    "path_to_docs": "docs",
-    "repository_url": "https://github.com/kjappelbaum/mofdscribe",
-    "repo_url": "https://github.com/kjappelbaum/mofdscribe",
-    "repo_name": "mofdscribe",
-    "repo_type": "github",
-    "use_repository_button": True,
-    "use_edit_page_button": True,
-    "use_issues_button": True,
     "globaltoc_collapse": False,
-    "launch_buttons": {
-        "binderhub_url": "https://mybinder.org/v2/gh/kjappelbaum/pyepal/HEAD?filepath=examples",
-    },
     "source_repository": "https://github.com/kjappelbaum/mofdscribe/",
     "source_branch": "main",
     "source_directory": "docs/source",
@@ -229,13 +220,14 @@ html_theme_options = {
         # Code blocks
         "color-code-foreground": "black",
         "color-code-background": "#f8f9fb",
+        "bk-input-color": "white",
     },
 }
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-# html_static_path = ['_static']
+html_static_path = ["_static"]
 
 # Custom sidebar templates, must be a dictionary that maps document names
 # to template names.
@@ -347,3 +339,7 @@ autoclass_content = "both"
 # Don't sort alphabetically, explained at:
 # https://stackoverflow.com/questions/37209921/python-how-not-to-sort-sphinx-output-in-alphabetical-order
 autodoc_member_order = "bysource"
+
+html_css_files = [
+    "css/overrides.css",
+]
