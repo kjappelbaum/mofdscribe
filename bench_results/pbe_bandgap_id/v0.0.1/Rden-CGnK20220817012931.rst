@@ -1,0 +1,53 @@
+Deepchem CGCNN
+------------------------------------
+
+We use the default `Deepchem <https://github.com/deepchem/deepchem>`_ implementation of `Crystalgraph Convolutional Neural Networks (CGCNN)<https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.120.145301>`_.
+However, we simplify the edges by using the VESTA bond heuristic and not using a distance-based edge feature vector. 
+
+
+
+Model card
+..............
+
+Feature set description
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+What features are used?
+#######################
+
+We use the default `atom.json`, which `is a one-hot encoding of the atom types <https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.120.145301>`_
+
+Why are the features informative?
+###################################
+
+The features uniquely identify the atoms in the crystal structure. Beyond this, only the connectivity is used. 
+
+
+Why do the features not leak information?
+##############################################
+
+Because the input data for the model only contain structure information (actually, parts of it, i.e., the Cartesian coordinates aren't even provided to the model).
+
+
+Will the features be accessible in real-world test applications?
+###################################################################
+
+Data split
+~~~~~~~~~~
+
+Describe preprocessing steps and how data leakage is avoided
+##############################################################
+
+We did not perform any preprocessing.
+
+
+Describe the feature selection steps and how data leakage is avoided
+#####################################################################
+
+We did not perform feature selection.
+
+
+Describe the model selection steps and how data leakage is avoided
+#####################################################################
+
+We did not perform model selection.
