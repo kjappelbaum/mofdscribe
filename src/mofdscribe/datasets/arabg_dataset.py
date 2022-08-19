@@ -10,6 +10,7 @@ from loguru import logger
 from .checks import check_all_file_exists, length_check
 from .dataset import StructureDataset
 from ..constants import MOFDSCRIBE_PYSTOW_MODULE
+from .utils import compress_dataset
 
 
 class ARABGDataset(StructureDataset):
@@ -123,6 +124,7 @@ class ARABGDataset(StructureDataset):
                 "ARABG", self.version, name="data.json", url=self._files[version]["df"]
             )
         ).reset_index(drop=True)
+        compress_dataset(self._df)
 
         length_check(self._df, self._files[version]["expected_length"])
 
