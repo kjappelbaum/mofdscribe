@@ -9,8 +9,8 @@ from loguru import logger
 
 from .checks import check_all_file_exists, length_check
 from .dataset import StructureDataset
-from ..constants import MOFDSCRIBE_PYSTOW_MODULE
 from .utils import compress_dataset
+from ..constants import MOFDSCRIBE_PYSTOW_MODULE
 
 
 class CoREDataset(StructureDataset):
