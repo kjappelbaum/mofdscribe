@@ -209,6 +209,7 @@ def get_diagrams_for_structure(
     min_size: int = 20,
     periodic: bool = False,
     no_supercell: bool = False,
+    alpha_weighting: Optional[str] = None,
 ):
     keys = [f"dim{i}" for i in range(3)]
     element_dias = defaultdict(dict)
@@ -218,9 +219,15 @@ def get_diagrams_for_structure(
         try:
             filtered_structure = filter_element(structure, element)
             coords, weights = _coords_for_structure(
-                filtered_structure, min_size=min_size, periodic=periodic, no_supercell=no_supercell
+                filtered_structure,
+                min_size=min_size,
+                periodic=periodic,
+                no_supercell=no_supercell,
+                weighting=alpha_weighting,
             )
-            arrays = _pd_arrays_from_coords(coords, periodic=periodic, bd_arrays=True)
+            arrays = _pd_arrays_from_coords(
+                coords, periodic=periodic, bd_arrays=True, weights=weights
+            )
         except Exception:
             logger.exception(f"Error for element {element}")
             arrays = {key: nan_array for key in keys}
@@ -232,9 +239,13 @@ def get_diagrams_for_structure(
 
     if compute_for_all_elements:
         coords, weights = _coords_for_structure(
-            structure, min_size=min_size, periodic=periodic, no_supercell=no_supercell
+            structure,
+            min_size=min_size,
+            periodic=periodic,
+            no_supercell=no_supercell,
+            weighting=alpha_weighting,
         )
-        arrays = _pd_arrays_from_coords(coords, periodic=periodic, bd_arrays=True)
+        arrays = _pd_arrays_from_coords(coords, periodic=periodic, bd_arrays=True, weights=weights)
         element_dias["all"] = arrays
         if len(arrays) != 4:
             for key in keys:
