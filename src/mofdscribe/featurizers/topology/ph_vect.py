@@ -47,6 +47,7 @@ def _fit_transform_structures(
     min_size: int,
     periodic: bool = False,
     no_supercell: bool = False,
+    alpha_weight: Optional[str] = None,
 ):
     logger.info(f"Computing diagrams for {len(structures)} structures")
     diagrams = defaultdict(lambda: defaultdict(list))
@@ -58,6 +59,7 @@ def _fit_transform_structures(
             min_size,
             periodic=periodic,
             no_supercell=no_supercell,
+            alpha_weighting=alpha_weight,
         )
         for element, element_d in res.items():
             for dim, dim_d in element_d.items():
@@ -95,6 +97,7 @@ def _transform_structures(
     min_size: int,
     periodic: bool = False,
     no_supercell: bool = False,
+    alpha_weight: Optional[str] = None,
 ):
     diagrams = defaultdict(lambda: defaultdict(list))
     for structure in structures:
@@ -105,6 +108,7 @@ def _transform_structures(
             min_size,
             periodic=periodic,
             no_supercell=no_supercell,
+            alpha_weighting=alpha_weight,
         )
         for element, element_d in res.items():
             for dim, dim_d in element_d.items():
@@ -158,6 +162,7 @@ class PHVect(MOFBaseFeaturizer):
         periodic: bool = False,
         no_supercell: bool = False,
         primitive: bool = False,
+        alpha_weight: Optional[str] = None,
     ) -> None:
         """Construct a PHVect instance.
 
@@ -200,6 +205,9 @@ class PHVect(MOFBaseFeaturizer):
                 Defaults to False.
             primitive (bool): If True, the structure is reduced to its primitive
                 form before the descriptor is computed. Defaults to False.
+            alpha_weight (Optional[str]): If specified, the use weighted alpha shapes,
+                i.e., replacing the points with balls of varying radii.
+                For instance `atomic_radius_calculated` or `van_der_waals_radius`.
         """
         atom_types = [] if atom_types is None else atom_types
         self.elements = atom_types
@@ -228,6 +236,7 @@ class PHVect(MOFBaseFeaturizer):
         self._fitted = False
         self.periodic = periodic
         self.no_supercell = no_supercell
+        self.alpha_weight = alpha_weight
         super().__init__(primitive=primitive)
 
     def _get_feature_labels(self) -> List[str]:
@@ -255,6 +264,7 @@ class PHVect(MOFBaseFeaturizer):
             self.min_size,
             periodic=self.periodic,
             no_supercell=self.no_supercell,
+            alpha_weight=self.alpha_weight,
         )
         compiled_results = self._reshape_results(res, 1).flatten()
         return compiled_results
@@ -270,6 +280,7 @@ class PHVect(MOFBaseFeaturizer):
             self.min_size,
             periodic=self.periodic,
             no_supercell=self.no_supercell,
+            alpha_weight=self.alpha_weight,
         )
         self._fitted = True
         return self
@@ -295,6 +306,8 @@ class PHVect(MOFBaseFeaturizer):
             self.compute_for_all_elements,
             self.min_size,
             periodic=self.periodic,
+            no_supercell=self.no_supercell,
+            alpha_weight=self.alpha_weight,
         )
         compiled_results = self._reshape_results(results, len(structures))
         self._fitted = True

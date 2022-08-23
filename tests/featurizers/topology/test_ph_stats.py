@@ -35,4 +35,4 @@ def test_ph_stats(hkust_structure, irmof_structure, cof_structure, hkust_ni_stru
     hkust_feats = featurizer.featurize(hkust_structure)
     hkust_ni_feats = featurizer.featurize(hkust_ni_structure)
     assert hkust_feats.shape == hkust_ni_feats.shape
-    assert hkust_feats == pytest.approx(hkust_ni_feats)
+    assert hkust_feats == pytest.approx(hkust_ni_feats, rel=1e-2)

@@ -32,7 +32,7 @@ def test_phimage(hkust_structure, irmof_structure, cof_structure, hkust_ni_struc
     image_cu = phi.featurize(hkust_structure)
     image_ni = phi.featurize(hkust_ni_structure)
     assert image_cu.shape == image_ni.shape
-    assert image_cu == pytest.approx(image_ni)
+    assert image_cu == pytest.approx(image_ni, rel=1e-2)
 
 
 def test_phimage_fit(hkust_structure, irmof_structure):
