@@ -73,6 +73,7 @@ class PHImage(MOFBaseFeaturizer):
         periodic: bool = False,
         no_supercell: bool = False,
         primitive: bool = False,
+        alpha_weight: Optional[str] = None,
     ) -> None:
         """Construct a PHImage object.
 
@@ -113,6 +114,9 @@ class PHImage(MOFBaseFeaturizer):
                 Defaults to False.
             primitive (bool): If True, the structure is reduced to its primitive
                 form before the descriptor is computed. Defaults to False.
+            alpha_weight (Optional[str]): If specified, the use weighted alpha shapes,
+                i.e., replacing the points with balls of varying radii.
+                For instance `atomic_radius_calculated` or `van_der_waals_radius`.
 
         Raises:
             AssertionError: If the length of the max_b and max_p is not equal
@@ -155,6 +159,7 @@ class PHImage(MOFBaseFeaturizer):
         self.max_fit_tolerance = max_fit_tolerence
         self.periodic = periodic
         self.no_supercell = no_supercell
+        self.alpha_weight = alpha_weight
 
         super().__init__(primitive=primitive)
 
@@ -189,6 +194,7 @@ class PHImage(MOFBaseFeaturizer):
             max_p=self.max_p,
             periodic=self.periodic,
             no_supercell=self.no_supercell,
+            alpha_weighting=self.alpha_weight,
         )
         features = []
         elements = list(self.atom_types)
@@ -220,6 +226,7 @@ class PHImage(MOFBaseFeaturizer):
                 self.min_size,
                 periodic=self.periodic,
                 no_supercell=self.no_supercell,
+                alpha_weighting=self.alpha_weight,
             )
             for k, v in lim.items():
                 limits[k].extend(v)

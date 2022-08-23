@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 """Utlities for working with persistence diagrams."""
 from collections import defaultdict
-from typing import List, Tuple
+from typing import Iterable, List, Optional, Tuple
 
 import numpy as np
+from element_coder import encode_many
 from loguru import logger
 from moleculetda.construct_pd import construct_pds
 from moleculetda.read_file import make_supercell
@@ -16,27 +17,54 @@ from mofdscribe.featurizers.utils.substructures import filter_element
 
 
 # @np_cache
-def construct_pds_cached(coords, periodic=False):
-    return construct_pds(coords, periodic=periodic)
+def construct_pds_cached(coords, periodic=False, weights: Optional[Iterable] = None):
+    return construct_pds(coords, periodic=periodic, weights=weights)
 
 
 def _coords_for_structure(
-    structure: Structure, min_size: int = 50, periodic: bool = False, no_supercell: bool = False
-):
+    structure: Structure,
+    min_size: int = 50,
+    periodic: bool = False,
+    no_supercell: bool = False,
+    weighting: Optional[str] = None,
+) -> Tuple[np.ndarray, np.ndarray]:
+
     if no_supercell:
-        return structure.cart_coords
+        if weighting is not None:
+            weighting = encode_many([str(s.symbol) for s in structure.species], weighting)
+        return structure.cart_coords, weighting
+
     else:
         if periodic:
             transformed_s = CubicSupercellTransformation(min_size=min_size).apply_transformation(
                 structure
             )
-            return transformed_s.cart_coords
+            if weighting is not None:
+                weighting = encode_many([str(s.symbol) for s in transformed_s.species], weighting)
+            return transformed_s.cart_coords, weighting
         else:
-            return make_supercell(structure.cart_coords, structure.lattice.matrix, min_size)
+            if weighting is not None:
+                weighting = np.array(
+                    encode_many([str(s.symbol) for s in structure.species], weighting)
+                )
+                # we can add the weighing as additional column for the cooords
+                coords_w_weight = make_supercell(
+                    np.hstack([structure.cart_coords, weighting.reshape(-1, 1)]),
+                    structure.lattice.matrix,
+                    min_size,
+                )
+                return coords_w_weight[:, :-1], coords_w_weight[:, -1]
+            else:
+                return (
+                    make_supercell(structure.cart_coords, structure.lattice.matrix, min_size),
+                    None,
+                )
 
 
-def _pd_arrays_from_coords(coords, periodic: bool = False, bd_arrays: bool = False):
-    pds = construct_pds_cached(coords, periodic=periodic)
+def _pd_arrays_from_coords(
+    coords, periodic: bool = False, bd_arrays: bool = False, weights: Optional[np.ndarray] = None
+):
+    pds = construct_pds_cached(coords, periodic=periodic, weights=weights)
     if bd_arrays:
         pd = diagrams_to_bd_arrays(pds)
     else:
@@ -59,6 +87,7 @@ def get_persistent_images_for_structure(
     max_p: int = 18,
     periodic: bool = False,
     no_supercell: bool = False,
+    alpha_weighting: Optional[str] = None,
 ) -> dict:
     """
     Get the persistent images for a structure.
@@ -81,6 +110,9 @@ def get_persistent_images_for_structure(
         no_supercell (bool): if True, then supercell expansion is not performed.
             The preceeding min_size argument is then ignored.
             Defaults to False.
+        alpha_weighting (str, optional): if given use weighted alpha shapes,
+            e.g., `atomic_radius_calculated` or `van_der_waals_radius`.
+            Defaults to None.
 
     Returns:
         persistent_images (dict): dictionary of persistent images and their
@@ -93,8 +125,12 @@ def get_persistent_images_for_structure(
     for element in elements:
         try:
             filtered_structure = filter_element(structure, element)
-            coords = _coords_for_structure(
-                filtered_structure, min_size=min_size, periodic=periodic, no_supercell=no_supercell
+            coords, weights = _coords_for_structure(
+                filtered_structure,
+                min_size=min_size,
+                periodic=periodic,
+                no_supercell=no_supercell,
+                weighting=alpha_weighting,
             )
             pd = _pd_arrays_from_coords(coords, periodic=periodic)
 
@@ -117,8 +153,12 @@ def get_persistent_images_for_structure(
         element_images["array"][element] = pd
 
     if compute_for_all_elements:
-        coords = _coords_for_structure(
-            structure, min_size=min_size, periodic=periodic, no_supercell=no_supercell
+        coords, weights = _coords_for_structure(
+            structure,
+            min_size=min_size,
+            periodic=periodic,
+            no_supercell=no_supercell,
+            weighting=alpha_weighting,
         )
         pd = _pd_arrays_from_coords(coords, periodic=periodic)
 
@@ -177,7 +217,7 @@ def get_diagrams_for_structure(
     for element in elements:
         try:
             filtered_structure = filter_element(structure, element)
-            coords = _coords_for_structure(
+            coords, weights = _coords_for_structure(
                 filtered_structure, min_size=min_size, periodic=periodic, no_supercell=no_supercell
             )
             arrays = _pd_arrays_from_coords(coords, periodic=periodic, bd_arrays=True)
@@ -191,7 +231,7 @@ def get_diagrams_for_structure(
         element_dias[element] = arrays
 
     if compute_for_all_elements:
-        coords = _coords_for_structure(
+        coords, weights = _coords_for_structure(
             structure, min_size=min_size, periodic=periodic, no_supercell=no_supercell
         )
         arrays = _pd_arrays_from_coords(coords, periodic=periodic, bd_arrays=True)
@@ -212,16 +252,21 @@ def get_persistence_image_limits_for_structure(
     min_size: int = 20,
     periodic: bool = False,
     no_supercell: bool = False,
+    alpha_weighting: Optional[str] = None,
 ) -> dict:
     limits = defaultdict(list)
     for element in elements:
         try:
             filtered_structure = filter_element(structure, element)
 
-            coords = _coords_for_structure(
-                filtered_structure, min_size=min_size, periodic=periodic, no_supercell=no_supercell
+            coords, weights = _coords_for_structure(
+                filtered_structure,
+                min_size=min_size,
+                periodic=periodic,
+                no_supercell=no_supercell,
+                weighting=alpha_weighting,
             )
-            pd = _pd_arrays_from_coords(coords, periodic=periodic)
+            pd = _pd_arrays_from_coords(coords, periodic=periodic, weights=weights)
             for k, v in pd.items():
                 limits[k].append(get_min_max_from_dia(v))
         except ValueError:
@@ -229,10 +274,14 @@ def get_persistence_image_limits_for_structure(
             pass
 
     if compute_for_all_elements:
-        coords = _coords_for_structure(
-            structure, min_size=min_size, periodic=periodic, no_supercell=no_supercell
+        coords, weights = _coords_for_structure(
+            structure,
+            min_size=min_size,
+            periodic=periodic,
+            no_supercell=no_supercell,
+            weighting=alpha_weighting,
         )
-        pd = _pd_arrays_from_coords(coords, periodic=periodic)
+        pd = _pd_arrays_from_coords(coords, periodic=periodic, weights=weights)
         for k, v in pd.items():
             limits[k].append(get_min_max_from_dia(v))
     return limits
