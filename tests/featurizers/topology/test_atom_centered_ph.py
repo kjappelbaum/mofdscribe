@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """Test the atom centred PH featurizer."""
 import numpy as np
+import pytest
 
 from mofdscribe.featurizers.topology.atom_centered_ph import AtomCenteredPH, AtomCenteredPHSite
 
@@ -25,7 +26,7 @@ def test_atom_centered_ph_site(hkust_structure, irmof_structure, cof_structure):
     assert features.ndim == 1
 
 
-def test_atom_centered_ph(hkust_structure, irmof_structure):
+def test_atom_centered_ph(hkust_structure, irmof_structure, hkust_ni_structure):
     """Ensure we get the correct number of features and that they are different for different structures."""
     for structure in [hkust_structure]:
         featurizer = AtomCenteredPH()
@@ -38,3 +39,19 @@ def test_atom_centered_ph(hkust_structure, irmof_structure):
     assert (features_hkust != features_irmof).any()
     assert is_jsonable(dict(zip(featurizer.feature_labels(), features)))
     assert features.ndim == 1
+
+    # now, try that encoding chemistry with varying atomic radii works
+    # we do this by computing the PH histograms for structures with same geometry
+    # and connectivity, but different atoms
+    featurizer = AtomCenteredPH(atom_types=None, alpha_weight="van_der_waals_radius")
+    features_hkust = featurizer.featurize(hkust_structure)
+    features_hkust_ni = featurizer.featurize(hkust_ni_structure)
+    assert features_hkust.shape == features_hkust_ni.shape
+    assert (features_hkust != features_hkust_ni).any()
+
+    # # now, to be sure do not encode the same thing with the atomic radius
+    featurizer = AtomCenteredPH(atom_types=None, alpha_weight=None)
+    features_hkust = featurizer.featurize(hkust_structure)
+    features_hkust_ni = featurizer.featurize(hkust_ni_structure)
+    assert features_hkust.shape == features_hkust_ni.shape
+    assert features_hkust == pytest.approx(features_hkust_ni, rel=1e-2)

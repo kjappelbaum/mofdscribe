@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
 """Test the PH Histogram featurizer."""
+import pytest
+
 from mofdscribe.featurizers.topology.ph_hist import PHHist
 
 from ..helpers import is_jsonable
 
 
-def test_ph_stats(hkust_structure, irmof_structure, cof_structure):
+def test_ph_stats(hkust_structure, irmof_structure, cof_structure, hkust_ni_structure):
     """Ensure we get the correct number of features and that they are different for different structures."""
     for structure in [hkust_structure, irmof_structure, cof_structure]:
         featurizer = PHHist()
@@ -19,3 +21,19 @@ def test_ph_stats(hkust_structure, irmof_structure, cof_structure):
     assert (hkust_feats != irmof_feats).any()
     assert is_jsonable(dict(zip(featurizer.feature_labels(), features)))
     assert features.ndim == 1
+
+    # now, try that encoding chemistry with varying atomic radii works
+    # we do this by computing the PH histograms for structures with same geometry
+    # and connectivity, but different atoms
+    featurizer = PHHist(atom_types=None, alpha_weight="atomic_radius_calculated")
+    hkust_feats = featurizer.featurize(hkust_structure)
+    hkust_ni_feats = featurizer.featurize(hkust_ni_structure)
+    assert hkust_feats.shape == hkust_ni_feats.shape
+    assert (hkust_feats != hkust_ni_feats).any()
+
+    # now, to be sure do not encode the same thing with the atomic radius
+    featurizer = PHHist(atom_types=None, alpha_weight=None)
+    hkust_feats = featurizer.featurize(hkust_structure)
+    hkust_ni_feats = featurizer.featurize(hkust_ni_structure)
+    assert hkust_feats.shape == hkust_ni_feats.shape
+    assert hkust_feats == pytest.approx(hkust_ni_feats, rel=1e-2)

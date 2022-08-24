@@ -90,6 +90,7 @@ For this, you can either provide your building blocks that you extracted with an
     featurizers/sbu_centered/*
 
 
+.. _encoding_chemistry:
 Encoding of chemistry
 -----------------------
 

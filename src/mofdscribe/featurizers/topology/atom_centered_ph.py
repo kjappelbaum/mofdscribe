@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
 """Featurizers using persistent homology -- applied in an atom-centred manner."""
 from collections import defaultdict
-from typing import List, Tuple, Union
+from typing import List, Optional, Tuple, Union
 
 import numpy as np
+from element_coder import encode_many
 from matminer.featurizers.base import BaseFeaturizer
-from moleculetda.construct_pd import construct_pds
-from moleculetda.vectorize_pds import diagrams_to_arrays
 from pymatgen.core import IStructure, Structure
 
 from mofdscribe.featurizers.base import MOFBaseFeaturizer
@@ -14,7 +13,7 @@ from mofdscribe.featurizers.utils import flatten
 from mofdscribe.featurizers.utils.aggregators import ARRAY_AGGREGATORS
 from mofdscribe.featurizers.utils.extend import operates_on_istructure, operates_on_structure
 
-from ._tda_helpers import persistent_diagram_stats
+from ._tda_helpers import construct_pds_cached, diagrams_to_bd_arrays, persistent_diagram_stats
 
 
 # Todo: allow doing this with cutoff and coordination shells
@@ -49,6 +48,7 @@ class AtomCenteredPHSite(BaseFeaturizer):
         aggregation_functions: Tuple[str] = ("min", "max", "mean", "std"),
         cutoff: float = 12,
         dimensions: Tuple[int] = (1, 2),
+        alpha_weight: Optional[str] = None,
     ) -> None:
         """
         Construct a new AtomCenteredPHSite featurizer.
@@ -62,16 +62,29 @@ class AtomCenteredPHSite(BaseFeaturizer):
             dimensions (Tuple[int]): Betti numbers of consider.
                 0 describes isolated components, 1 cycles and 2 cavities.
                 Defaults to (1, 2).
+            alpha_weight (Optional[str]):  If specified, the use weighted alpha shapes,
+                i.e., replacing the points with balls of varying radii.
+                For instance `atomic_radius_calculated` or `van_der_waals_radius`.
         """
         self.aggregation_functions = aggregation_functions
         self.cutoff = cutoff
         self.dimensions = dimensions
+        self.alpha_weight = alpha_weight
 
     def featurize(self, s: Union[Structure, IStructure], idx: int) -> np.ndarray:
         neighbors = s.get_neighbors(s[idx], self.cutoff)
         neighbor_structure = IStructure.from_sites(neighbors)
-        diagrams = construct_pds(neighbor_structure.cart_coords)
-        diagrams = diagrams_to_arrays(diagrams)
+        if self.alpha_weight is not None:
+            weights = encode_many(
+                [str(s.symbol) for s in neighbor_structure.species], self.alpha_weight
+            )
+        else:
+            weights = None
+
+        diagrams = construct_pds_cached(neighbor_structure.cart_coords, weights=weights)
+
+        diagrams = diagrams_to_bd_arrays(diagrams)
+
         results = {}
         for dim in self.dimensions:
             key = f"dim{dim}"
@@ -142,11 +155,13 @@ class AtomCenteredPH(MOFBaseFeaturizer):
             "Ho-Re-Be-Rb-La-Sn-Cs-Pb-Pr-Bi-Tm-Sr-Ti-Hf-Ir-Nb-Pd-Hg-"
             "Th-Np-Lu-Rh-Pu",
         ),
+        compute_for_all_elements: Optional[bool] = True,
         aggregation_functions: Tuple[str] = ("min", "max", "mean", "std"),
         species_aggregation_functions: Tuple[str] = ("min", "max", "mean", "std"),
         cutoff: float = 12,
         dimensions: Tuple[int] = (1, 2),
         primitive: bool = False,
+        alpha_weight: Optional[str] = None,
     ) -> None:
         """
         Construct a new AtomCenteredPH featurizer.
@@ -160,6 +175,8 @@ class AtomCenteredPH(MOFBaseFeaturizer):
                 "Cu-Mn-Ni-Mo-Fe-Pt-Zn-Ca-Er-Au-Cd-Co-Gd-Na-Sm-Eu-Tb-V-Ag-Nd-U-Ba-Ce-K-Ga-
                 "Cr-Al-Li-Sc-Ru-In-Mg-Zr-Dy-W-Yb-Y-Ho-Re-Be-Rb-La-Sn-Cs-Pb-Pr-Bi-Tm-Sr-Ti-Hf-Ir-
                 "Nb-Pd-Hg-Th-Np-Lu-Rh-Pu", ).
+            compute_for_all_elements (bool): Compute descriptor for original structure with all atoms.
+                Defaults to True.
             aggregation_functions (Tuple[str]): Aggregations to compute on the persistence
                 diagrams (over birth/death time and persistence).
                 Defaults to ("min", "max", "mean", "std").
@@ -172,15 +189,27 @@ class AtomCenteredPH(MOFBaseFeaturizer):
                 1 cycles and 2 cavities. Defaults to (1, 2).
             primitive (bool): If True, the structure is reduced to its primitive
                 form before the descriptor is computed. Defaults to False.
+            alpha_weight (Optional[str]):  If specified, the use weighted alpha shapes,
+                i.e., replacing the points with balls of varying radii.
+                For instance `atomic_radius_calculated` or `van_der_waals_radius`.
         """
         self.aggregation_functions = aggregation_functions
         self.species_aggregation_functions = species_aggregation_functions
         self.cutoff = cutoff
         self.dimensions = dimensions
+        self.alpha_weight = alpha_weight
         self.site_featurizer = AtomCenteredPHSite(
-            aggregation_functions=aggregation_functions, cutoff=cutoff, dimensions=dimensions
+            aggregation_functions=aggregation_functions,
+            cutoff=cutoff,
+            dimensions=dimensions,
+            alpha_weight=alpha_weight,
         )
-        self.atom_types = atom_types
+        atom_types = [] if atom_types is None else atom_types
+        self.atom_types = (
+            list(atom_types) + ["all"] if compute_for_all_elements else list(atom_types)
+        )
+        self.compute_for_all_elements = compute_for_all_elements
+
         super().__init__(primitive=primitive)
 
     def _get_relevant_atom_type(self, element: str) -> str:
@@ -193,8 +222,9 @@ class AtomCenteredPH(MOFBaseFeaturizer):
         for idx, site in enumerate(s):
             atom_type = self._get_relevant_atom_type(site.specie.symbol)
             features = self.site_featurizer.featurize(s, idx)
-            results[atom_type].append(features)
-
+            if atom_type is not None:
+                results[atom_type].append(features)
+            results["all"].append(features)
         long_results = []
         for atom_type in self.atom_types:
             if atom_type not in results:
@@ -214,10 +244,12 @@ class AtomCenteredPH(MOFBaseFeaturizer):
 
     def _get_feature_labels(self) -> List[str]:
         names = []
+
         for atom_type in self.atom_types:
             for aggregation in self.species_aggregation_functions:
                 for fl in self.site_featurizer.feature_labels():
                     names.append(f"{atom_type}_{aggregation}_{fl}")
+
         return names
 
     def feature_labels(self) -> List[str]:

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """Compute histograms of persistent images for MOFs."""
-from typing import List, Tuple, Union
+from typing import List, Optional, Tuple, Union
 
 import numpy as np
 from loguru import logger
@@ -52,6 +52,7 @@ class PHHist(MOFBaseFeaturizer):
         normed: bool = True,
         no_supercell: bool = False,
         primitive: bool = False,
+        alpha_weight: Optional[str] = None,
     ) -> None:
         """Initialize the PHStats object.
 
@@ -82,6 +83,9 @@ class PHHist(MOFBaseFeaturizer):
                 Defaults to False.
             primitive (bool): If True, the structure is reduced to its primitive
                 form before the descriptor is computed. Defaults to False.
+            alpha_weight (Optional[str]): If specified, the use weighted alpha shapes,
+                i.e., replacing the points with balls of varying radii.
+                For instance `atomic_radius_calculated` or `van_der_waals_radius`.
         """
         atom_types = [] if atom_types is None else atom_types
         self.elements = atom_types
@@ -97,6 +101,7 @@ class PHHist(MOFBaseFeaturizer):
         self.y_axis_label = y_axis_label
         self.normed = normed
         self.no_supercell = no_supercell
+        self.alpha_weight = alpha_weight
         super().__init__(primitive=primitive)
 
     def _get_feature_labels(self) -> List[str]:
@@ -124,6 +129,7 @@ class PHHist(MOFBaseFeaturizer):
             self.min_size,
             periodic=self.periodic,
             no_supercell=self.no_supercell,
+            alpha_weighting=self.alpha_weight,
         )
 
         flat_results = []

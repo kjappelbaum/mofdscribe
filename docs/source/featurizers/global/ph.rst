@@ -25,6 +25,11 @@ starting at the birth time and ending at the death time (e.g. in Angstrom).
   :alt: Illustration of filtration of a point cloud.
 
 
+mofdscribe provides users with two ways of encoding chemistry in descriptors derived from persistent homology analysis: 
+
+1. We can compute the descriptors on substructures consisting of only specific elements (e.g., metals, organic). See :ref:`Encoding Chemistry <encoding_chemistry>` for more details.
+2. We can encode the different element types by using different radii for different elements. You can enable this by setting :code:`alpha_weight` to :code:`atomic_radius_calculated` or :code:`van_der_waals_radius`
+
 Vectorizing persistence diagrams
 ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 For many machine learning models, fixed length vectors are required.
