@@ -6,7 +6,6 @@ from typing import List, Optional, Tuple, Union
 import numpy as np
 from element_coder import encode_many
 from matminer.featurizers.base import BaseFeaturizer
-from moleculetda.vectorize_pds import diagrams_to_arrays
 from pymatgen.core import IStructure, Structure
 
 from mofdscribe.featurizers.base import MOFBaseFeaturizer
@@ -14,7 +13,7 @@ from mofdscribe.featurizers.utils import flatten
 from mofdscribe.featurizers.utils.aggregators import ARRAY_AGGREGATORS
 from mofdscribe.featurizers.utils.extend import operates_on_istructure, operates_on_structure
 
-from ._tda_helpers import construct_pds_cached, persistent_diagram_stats
+from ._tda_helpers import construct_pds_cached, diagrams_to_bd_arrays, persistent_diagram_stats
 
 
 # Todo: allow doing this with cutoff and coordination shells
@@ -81,8 +80,11 @@ class AtomCenteredPHSite(BaseFeaturizer):
             )
         else:
             weights = None
-        diagrams = construct_pds_cached(neighbor_structure.cart_coords, weights)
-        diagrams = diagrams_to_arrays(diagrams)
+
+        diagrams = construct_pds_cached(neighbor_structure.cart_coords, weights=weights)
+
+        diagrams = diagrams_to_bd_arrays(diagrams)
+
         results = {}
         for dim in self.dimensions:
             key = f"dim{dim}"
@@ -153,6 +155,7 @@ class AtomCenteredPH(MOFBaseFeaturizer):
             "Ho-Re-Be-Rb-La-Sn-Cs-Pb-Pr-Bi-Tm-Sr-Ti-Hf-Ir-Nb-Pd-Hg-"
             "Th-Np-Lu-Rh-Pu",
         ),
+        compute_for_all_elements: Optional[bool] = True,
         aggregation_functions: Tuple[str] = ("min", "max", "mean", "std"),
         species_aggregation_functions: Tuple[str] = ("min", "max", "mean", "std"),
         cutoff: float = 12,
@@ -172,6 +175,8 @@ class AtomCenteredPH(MOFBaseFeaturizer):
                 "Cu-Mn-Ni-Mo-Fe-Pt-Zn-Ca-Er-Au-Cd-Co-Gd-Na-Sm-Eu-Tb-V-Ag-Nd-U-Ba-Ce-K-Ga-
                 "Cr-Al-Li-Sc-Ru-In-Mg-Zr-Dy-W-Yb-Y-Ho-Re-Be-Rb-La-Sn-Cs-Pb-Pr-Bi-Tm-Sr-Ti-Hf-Ir-
                 "Nb-Pd-Hg-Th-Np-Lu-Rh-Pu", ).
+            compute_for_all_elements (bool): Compute descriptor for original structure with all atoms.
+                Defaults to True.
             aggregation_functions (Tuple[str]): Aggregations to compute on the persistence
                 diagrams (over birth/death time and persistence).
                 Defaults to ("min", "max", "mean", "std").
@@ -199,7 +204,11 @@ class AtomCenteredPH(MOFBaseFeaturizer):
             dimensions=dimensions,
             alpha_weight=alpha_weight,
         )
-        self.atom_types = atom_types
+        atom_types = [] if atom_types is None else atom_types
+        self.atom_types = (
+            list(atom_types) + ["all"] if compute_for_all_elements else list(atom_types)
+        )
+        self.compute_for_all_elements = compute_for_all_elements
 
         super().__init__(primitive=primitive)
 
@@ -213,8 +222,9 @@ class AtomCenteredPH(MOFBaseFeaturizer):
         for idx, site in enumerate(s):
             atom_type = self._get_relevant_atom_type(site.specie.symbol)
             features = self.site_featurizer.featurize(s, idx)
-            results[atom_type].append(features)
-
+            if atom_type is not None:
+                results[atom_type].append(features)
+            results["all"].append(features)
         long_results = []
         for atom_type in self.atom_types:
             if atom_type not in results:
@@ -234,10 +244,12 @@ class AtomCenteredPH(MOFBaseFeaturizer):
 
     def _get_feature_labels(self) -> List[str]:
         names = []
+
         for atom_type in self.atom_types:
             for aggregation in self.species_aggregation_functions:
                 for fl in self.site_featurizer.feature_labels():
                     names.append(f"{atom_type}_{aggregation}_{fl}")
+
         return names
 
     def feature_labels(self) -> List[str]:
