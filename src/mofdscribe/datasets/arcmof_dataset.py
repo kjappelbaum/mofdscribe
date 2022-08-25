@@ -21,6 +21,14 @@ class ARCMOFDataset(StructureDataset):
     process properties and for which we could compute graph hashes
     and features.
 
+    .. warning::
+
+        ARC-MOF is  "a database of ~280,000 MOFs which have been either
+        experimentally characterized or computationally generated,
+        spanning all publicly available MOF databases" [Burner2022]_.
+
+        Therefore, there will be significant overlap with the other datasets.
+
     References:
         .. [Burner2022] `Burner, J.; Luo, J.; White, A.;
             Mirmiran, A.; Kwon, O.; Boyd, P. G.;
