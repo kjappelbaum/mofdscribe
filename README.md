@@ -76,19 +76,13 @@ if you want to use all utilities, you can use the `all` extra: `pip install -e "
 We depend on many other external tools. Currently, you need to manually install these dependencies (due to pending merges for conda-recipies):
 
 ```bash
-# RASPA and Zeo++
+# RASPA and Zeo++ (if you want to use energy grid/Henry coefficient and pore descriptors)
 conda install -c conda-forge raspa2 zeopp-lsmo
 
-# A custom branch of moltda
-pip install git+https://github.com/kjappelbaum/molecule-tda.git
-
-# cgal depdency for moltda
+# cgal depdency for moltda (if you want to use persistent-homology based features)
 conda install -c conda-forge cgal
 
-# moffragmentor (currently private)
-pip install git+https://github.com/kjappelbaum/moffragmentor.git
-
-# openbabel dependency for moffragmentor
+# openbabel dependency for moffragmentor (if you want to use SBU-centered features)
 conda install -c conda-forge openbabel
 ```
 
