@@ -1,36 +1,44 @@
 Installation
 ================
 
-Do to the external dependencies, we recommend installation via conda
+.. Do to the external dependencies, we recommend installation via conda
 
-.. code-block:: shell
+.. .. code-block:: shell
 
-    $ conda install -c conda-forge mofdscribe
+..     $ conda install -c conda-forge mofdscribe
 
-The most recent release can be installed from
-`PyPI <https://pypi.org/project/mofdscribe>`_ with:
+.. The most recent release can be installed from
+.. `PyPI <https://pypi.org/project/mofdscribe>`_ with:
 
-.. code-block:: shell
+.. .. code-block:: shell
 
-    $ pip install mofdscribe
+..     $ pip install mofdscribe
 
-However, in this case, the following dependencies need to be manually installed
-(e.g. via conda):
+.. However, in this case, the following dependencies need to be manually installed
+.. (e.g. via conda):
 
-.. code-block:: shell
+.. .. code-block:: shell
 
-    conda install -c conda-forge cgal zeopp-lsmo raspa2
+..     conda install -c conda-forge cgal zeopp-lsmo raspa2
 
 The most recent code and data can be installed directly from GitHub with:
 
 .. code-block:: shell
 
-    $ pip install git+https://github.com/kjappelbaum/mofdscribe.git
+    git clone git+https://github.com/kjappelbaum/mofdscribe.git
+    cd mofdscribe
+    pip install -e .
 
-To install in development mode, use the following:
+If you want to use all utilities, you can use the :code:`all` extra: :code:`pip install -e ".[all]"`
+
+We depend on many other external tools. Currently, you need to manually install these dependencies (due to pending merges for conda-recipies):
 
 .. code-block:: shell
+    # RASPA and Zeo++ (if you want to use energy grid/Henry coefficient and pore descriptors)
+    conda install -c conda-forge raspa2 zeopp-lsmo
 
-    $ git clone git+https://github.com/kjappelbaum/mofdscribe.git
-    $ cd mofdscribe
-    $ pip install -e .
+    # cgal depdency for moltda (if you want to use persistent-homology based features)
+    conda install -c conda-forge cgal
+
+    # openbabel dependency for moffragmentor (if you want to use SBU-centered features)
+    conda install -c conda-forge openbabel
