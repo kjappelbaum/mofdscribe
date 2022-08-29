@@ -26,7 +26,7 @@ def test_atom_centered_ph_site(hkust_structure, irmof_structure, cof_structure):
     assert features.ndim == 1
 
 
-def test_atom_centered_ph(hkust_structure, irmof_structure, hkust_ni_structure):
+def test_atom_centered_ph(hkust_structure, irmof_structure, hkust_la_structure):
     """Ensure we get the correct number of features and that they are different for different structures."""
     for structure in [hkust_structure]:
         featurizer = AtomCenteredPH()
@@ -45,13 +45,13 @@ def test_atom_centered_ph(hkust_structure, irmof_structure, hkust_ni_structure):
     # and connectivity, but different atoms
     featurizer = AtomCenteredPH(atom_types=None, alpha_weight="van_der_waals_radius")
     features_hkust = featurizer.featurize(hkust_structure)
-    features_hkust_ni = featurizer.featurize(hkust_ni_structure)
-    assert features_hkust.shape == features_hkust_ni.shape
-    assert (features_hkust != features_hkust_ni).any()
+    features_hkust_la = featurizer.featurize(hkust_la_structure)
+    assert features_hkust.shape == features_hkust_la.shape
+    assert (features_hkust != features_hkust_la).any()
 
     # # now, to be sure do not encode the same thing with the atomic radius
     featurizer = AtomCenteredPH(atom_types=None, alpha_weight=None)
     features_hkust = featurizer.featurize(hkust_structure)
-    features_hkust_ni = featurizer.featurize(hkust_ni_structure)
-    assert features_hkust.shape == features_hkust_ni.shape
-    assert features_hkust == pytest.approx(features_hkust_ni, rel=1e-2)
+    features_hkust_la = featurizer.featurize(hkust_la_structure)
+    assert features_hkust.shape == features_hkust_la.shape
+    assert features_hkust == pytest.approx(features_hkust_la, rel=1e-2)

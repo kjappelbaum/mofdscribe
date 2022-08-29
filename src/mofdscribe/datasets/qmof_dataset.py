@@ -178,14 +178,14 @@ class QMOFDataset(StructureDataset):
     # we expect this len for the full dataset
     _files = {
         "v0.0.1": {
-            "df": "https://www.dropbox.com/s/cubfema7havbibe/data.json?dl=1",
-            "structures": "https://www.dropbox.com/s/w66p9d78lv1m64m/structures.tar.gz?dl=1",
+            "df": "https://zenodo.org/record/7031397/files/data.json?download=1",
+            "structures": "https://zenodo.org/record/7031397/files/structures.tar.gz?download=1",
             "expected_length": 15042,
             "flavors": {
                 "all": 15042,
                 "csd": 6311,
-                "gcmc": 5158,
-                "csd-gcmc": 2229,
+                "gcmc": 5321,
+                "csd-gcmc": 2295,
             },
         }
     }

@@ -7,7 +7,7 @@ from mofdscribe.featurizers.topology.ph_image import PHImage
 from ..helpers import is_jsonable
 
 
-def test_phimage(hkust_structure, irmof_structure, cof_structure, hkust_ni_structure):
+def test_phimage(hkust_structure, irmof_structure, cof_structure, hkust_la_structure):
     """Ensure we get the correct number of features."""
     phi = PHImage()
     for structure in [hkust_structure, irmof_structure, cof_structure]:
@@ -21,18 +21,20 @@ def test_phimage(hkust_structure, irmof_structure, cof_structure, hkust_ni_struc
     # now, try that encoding chemistry with varying atomic radii works
     # we do this by computing the PH images for structures with same geometry
     # and connectivity, but different atoms
-    phi = PHImage(atom_types=None, alpha_weight="atomic_radius_calculated")
+    phi = PHImage(
+        atom_types=None, alpha_weight="atomic_radius_calculated", min_size=50, max_b=30, max_p=30
+    )
     image_cu = phi.featurize(hkust_structure)
-    image_ni = phi.featurize(hkust_ni_structure)
-    assert image_cu.shape == image_ni.shape
-    assert (image_cu != image_ni).any()
+    image_la = phi.featurize(hkust_la_structure)
+    assert image_cu.shape == image_la.shape
+    assert (image_cu != image_la).any()
 
     # now, to be sure do not encode the same thing with the atomic radius
-    phi = PHImage(atom_types=None, alpha_weight=None)
+    phi = PHImage(atom_types=None, alpha_weight=None, min_size=50, max_b=30, max_p=30)
     image_cu = phi.featurize(hkust_structure)
-    image_ni = phi.featurize(hkust_ni_structure)
-    assert image_cu.shape == image_ni.shape
-    assert image_cu == pytest.approx(image_ni, rel=1e-2)
+    image_la = phi.featurize(hkust_la_structure)
+    assert image_cu.shape == image_la.shape
+    assert image_cu == pytest.approx(image_la, rel=1e-2)
 
 
 def test_phimage_fit(hkust_structure, irmof_structure):
