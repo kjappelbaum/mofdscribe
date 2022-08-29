@@ -39,9 +39,9 @@ class ARCMOFDataset(StructureDataset):
 
     _files = {
         "v0.0.1": {
-            "df": "https://www.dropbox.com/s/pqbhoxf8lzv55ip/data.json?dl=1",
-            "structures": "https://www.dropbox.com/s/tho57ks59kpu8ee/structures.tar.gz?dl=1",
-            "expected_length": 23492,
+            "df": "https://zenodo.org/record/7032350/files/data.json?download=1",
+            "structures": "https://zenodo.org/record/7032350/files/structures.tar.gz?download=1",
+            "expected_length": 22452,
         }
     }
 
@@ -108,7 +108,7 @@ class ARCMOFDataset(StructureDataset):
         self._undecorated_graph_hashes = self._df["info.undecorated_graph_hash"]
         self._decorated_scaffold_hashes = self._df["info.decorated_scaffold_hash"]
         self._undecorated_scaffold_hashes = self._df["info.undecorated_scaffold_hash"]
-        # self._densities = self._df["info.density"]
+        self._densities = self._df["info.density"]
         self._labelnames = (c for c in self._df.columns if c.startswith("outputs."))
         self._featurenames = (c for c in self._df.columns if c.startswith("features."))
         self._infonames = (c for c in self._df.columns if c.startswith("info."))

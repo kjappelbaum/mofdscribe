@@ -86,8 +86,8 @@ class BWDataset(StructureDataset):
 
     _files = {
         "v0.0.1": {
-            "df": "https://www.dropbox.com/s/w6je3s9ldl1bz2u/data.json?dl=1",
-            "structures": "https://www.dropbox.com/s/pj8vakxvq95o196/structures.tar.gz?dl=1",
+            "df": "https://zenodo.org/record/7031985/files/data.json?download=1",
+            "structures": "https://zenodo.org/record/7031985/files/structures.tar.gz?download=1",
             "expected_length": 17970,
         }
     }

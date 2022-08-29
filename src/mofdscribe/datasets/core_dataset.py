@@ -71,8 +71,8 @@ class CoREDataset(StructureDataset):
 
     _files = {
         "v0.0.1": {
-            "df": "https://www.dropbox.com/s/i2khfte4s6mcg30/data.json?dl=1",
-            "structures": "https://www.dropbox.com/s/1v7zknesttixw68/structures.tar.gz?dl=1",
+            "df": "https://zenodo.org/record/7032358/files/data.json?download=1",
+            "structures": "https://zenodo.org/record/7032358/files/structures.tar.gz?download=1",
             "expected_length": 5393,
         }
     }

@@ -80,8 +80,8 @@ class ARABGDataset(StructureDataset):
 
     _files = {
         "v0.0.1": {
-            "df": "https://www.dropbox.com/s/gc07ktvrnz68xag/data.json?dl=1",
-            "structures": "https://www.dropbox.com/s/hvsp5vewjdr80s4/structures.tar.gz?dl=1",
+            "df": "https://zenodo.org/record/7032106/files/data.json?download=1",
+            "structures": "https://zenodo.org/record/7032106/files/structures.tar.gz?download=1",
             "expected_length": 370,
         }
     }
