@@ -15,8 +15,8 @@ from ..constants import MOFDSCRIBE_PYSTOW_MODULE
 
 class ARCMOFDataset(StructureDataset):
     """
-    Implements access to a subset of structures and labels of the ARC-MOF
-    dataset [Burner2022]_.
+    Implements access to a subset of structures and labels of the ARC-MOF dataset [Burner2022]_.
+
     The subset consistes of the structures for which the authors reported
     process properties and for which we could compute graph hashes
     and features.
