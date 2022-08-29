@@ -34,6 +34,7 @@ If you want to use all utilities, you can use the :code:`all` extra: :code:`pip 
 We depend on many other external tools. Currently, you need to manually install these dependencies (due to pending merges for conda-recipies):
 
 .. code-block:: shell
+    
     # RASPA and Zeo++ (if you want to use energy grid/Henry coefficient and pore descriptors)
     conda install -c conda-forge raspa2 zeopp-lsmo
 
