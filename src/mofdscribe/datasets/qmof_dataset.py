@@ -178,7 +178,7 @@ class QMOFDataset(StructureDataset):
     # we expect this len for the full dataset
     _files = {
         "v0.0.1": {
-            "df": "https://www.dropbox.com/s/6upmz235fy6a5rv/data.json?dl=1",
+            "df": "https://www.dropbox.com/s/cubfema7havbibe/data.json?dl=1",
             "structures": "https://www.dropbox.com/s/w66p9d78lv1m64m/structures.tar.gz?dl=1",
             "expected_length": 15042,
             "flavors": {
