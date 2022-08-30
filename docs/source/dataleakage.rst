@@ -49,7 +49,7 @@ If :math:`\hat{Y}` depends on :math:`Y`, then :math:`\operatorname{Cov}_{f}(Y, \
 
     If you want to minimize the potentials for data leakage in modeling pipelines, :py:class:`sklearn.pipeline.Pipeline` is a good mechanism to organize your code as it will take care for you to only fit the transformers on the training set.
 
-Dependence in MOF datasets
+Dependencies in MOF datasets
 ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 
 The simplest case of dependence in MOF dataset is when the same MOF occurs in both the training and test set.
