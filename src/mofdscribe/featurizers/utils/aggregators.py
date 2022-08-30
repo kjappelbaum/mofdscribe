@@ -73,6 +73,8 @@ ARRAY_AGGREGATORS = {
     "harmean": lambda x, **kwargs: hmean(x, **kwargs),
     "mad": lambda x, **kwargs: mad(x, **kwargs),
     "trimean": lambda x, **kwargs: trimean(x, **kwargs),
+    "inf": lambda x, **kwargs: np.linalg.norm(x, ord=np.inf, **kwargs),
+    "manhattan": lambda x, **kwargs: np.linalg.norm(x, ord=1, **kwargs),
 }
 
 
@@ -89,4 +91,6 @@ MA_ARRAY_AGGREGATORS = {
     "harmean": lambda x, **kwargs: mstast_hmean(x, **kwargs),
     "mad": lambda x, **kwargs: masked_mad(x, **kwargs),
     "trimean": lambda x, **kwargs: masked_trimean(x, **kwargs),
+    "inf": lambda x, **kwargs: np.linalg.norm(x, ord=np.inf, **kwargs),
+    "manhattan": lambda x, **kwargs: np.linalg.norm(x, ord=1, **kwargs),
 }
