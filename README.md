@@ -97,11 +97,23 @@ Contributions, whether filing an issue, making a pull request, or forking, are a
 
 The code in this package is licensed under the MIT License.
 
-<!--
+
 ### 📖 Citation
 
-Citation goes here!
--->
+See the [ChemRxiv preprint](https://chemrxiv.org/engage/chemrxiv/article-details/630d1f6f90802d52c16eceb2).
+
+```
+@article{Jablonka_2022,
+	doi = {10.26434/chemrxiv-2022-4g7rx},
+	url = {https://doi.org/10.26434%2Fchemrxiv-2022-4g7rx},
+	year = 2022,
+	month = {sep},
+	publisher = {American Chemical Society ({ACS})},
+	author = {Kevin Maik Jablonka and Andrew S. Rosen and Aditi S. Krishnapriyan and Berend Smit},
+	title = {An ecosystem for digital reticular chemistry}
+}
+```
+
 
 <!--
 ### 🎁 Support
