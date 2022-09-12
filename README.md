@@ -80,6 +80,7 @@ We depend on many other external tools. Currently, you need to manually install 
 conda install -c conda-forge raspa2 zeopp-lsmo
 
 # cgal depdency for moltda (if you want to use persistent-homology based features)
+# on some systems, you might need to replace this with sudo apt-get install libcgal-dev or brew install cgal 
 conda install -c conda-forge cgal
 
 # openbabel dependency for moffragmentor (if you want to use SBU-centered features)
