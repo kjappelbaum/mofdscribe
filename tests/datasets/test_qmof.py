@@ -26,3 +26,6 @@ def test_qmof(flavor):
         qmof._df.iloc[[1, 2, 3, 8]]["info.qmof_id"].values == qmof_subset._df["info.qmof_id"].values
     ).all()
     assert list(qmof.get_structures([1]))[0] == list(qmof_subset.get_structures([0]))[0]
+
+    if flavor == "all":
+        assert len(qmof) > 10_000

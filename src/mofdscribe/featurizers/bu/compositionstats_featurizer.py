@@ -23,7 +23,7 @@ from mofdscribe.featurizers.utils.extend import (
 @operates_on_structure
 class CompositionStats(BaseFeaturizer):
     """
-    Describe the shape of molecules by computing statistics of their compositions.
+    Describe the composition of molecules by computing statistics of their compositions.
 
     The featurizer will encode the element on all sites in the structure
     using user-defined encodings. Then it aggregates those encodings using
@@ -33,7 +33,7 @@ class CompositionStats(BaseFeaturizer):
     def __init__(
         self,
         encodings: Tuple[str] = ("mod_pettifor", "X"),
-        aggregtations: Tuple[str] = ("mean", "std", "max", "min"),
+        aggregations: Tuple[str] = ("mean", "std", "max", "min"),
     ) -> None:
         """Initialize a CompositionStats featurizer.
 
@@ -41,18 +41,18 @@ class CompositionStats(BaseFeaturizer):
             encodings (Tuple[str]): Encoding used for the elements.
                 Can be one of :py:obj:`element_coder.data.coding_data._PROPERTY_KEYS`.
                 Defaults to ("mod_pettifor", "X").
-            aggregtations (Tuple[str]): Statistic to compute over the element encodings.
+            aggregations (Tuple[str]): Statistic to compute over the element encodings.
                 Can be one of :py:obj:`mofdscribe.featurizers.utils.aggregators.ARRAY_AGGREGATORS`.
                 Defaults to ("mean", "std", "max", "min").
         """
-        self.aggregtations = aggregtations
+        self.aggregations = aggregations
         self.encodings = encodings
 
     def feature_labels(self) -> List[str]:
         feature_labels = []
 
         for encoding in self.encodings:
-            for agg in self.aggregtations:
+            for agg in self.aggregations:
                 feature_labels.append(f"composition_stats_{encoding}_{agg}")
 
         return feature_labels
@@ -65,7 +65,7 @@ class CompositionStats(BaseFeaturizer):
 
         features = []
         for encoding in self.encodings:
-            for agg in self.aggregtations:
+            for agg in self.aggregations:
                 features.append(ARRAY_AGGREGATORS[agg](encodings[encoding]))
 
         return np.array(features)

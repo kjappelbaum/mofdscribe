@@ -27,13 +27,13 @@ class PartialChargeStats(MOFBaseFeaturizer):
     """
 
     def __init__(
-        self, aggregtations: Tuple[str] = ("max", "min", "std"), primitive: bool = True
+        self, aggregations: Tuple[str] = ("max", "min", "std"), primitive: bool = True
     ) -> None:
         """
         Initialize the PartialChargeStats featurizer.
 
         Args:
-            aggregtations (Tuple[str]): Aggregations to compute.
+            aggregations (Tuple[str]): Aggregations to compute.
                 For available methods, see :py:obj:`mofdscribe.featurizers.utils.aggregators.ARRAY_AGGREGATORS`.
                 Defaults to ("max", "min", "std").
             primitive (bool): If True, the structure is reduced to its primitive

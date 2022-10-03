@@ -37,10 +37,10 @@ class PairwiseDistanceStats(BaseFeaturizer):
                 distances. Must be one of :py:obj:`ARRAY_AGGREGATORS`.
                 Defaults to ("mean", "std", "max", "min").
         """
-        self.aggregtations = aggregations
+        self.aggregations = aggregations
 
     def feature_labels(self) -> List[str]:
-        return [f"pairwise_distance_stats_{a}" for a in self.aggregtations]
+        return [f"pairwise_distance_stats_{a}" for a in self.aggregations]
 
     def featurize(self, structure: Union[Molecule, IMolecule, Structure, IStructure]) -> np.ndarray:
         distances = []
@@ -50,7 +50,7 @@ class PairwiseDistanceStats(BaseFeaturizer):
                     distances.append(structure.get_distance(i, j))
 
         features = []
-        for agg in self.aggregtations:
+        for agg in self.aggregations:
             features.append(ARRAY_AGGREGATORS[agg](distances))
         return np.array(features)
 
