@@ -26,7 +26,7 @@ class RDKitAdaptor(BaseFeaturizer):
     """
 
     def __init__(
-        self, featurizer: Callable, feature_labels: Iterable[str], local_env_strategy: str = "vesta"
+        self, featurizer: Callable, feature_labels: Iterable[str], local_env_strategy: str = "vesta", force_sanitize: bool = True
     ) -> None:
         """Constuct a new RDKitAdaptor.
 
@@ -39,10 +39,12 @@ class RDKitAdaptor(BaseFeaturizer):
                 object, this determines the local environment strategy to use to convert
                 the molecule to a MoleculeGraph.
                 Defaults to "vesta".
+            force_sanitize (bool): If True, the RDKit molecule will be sanitized
         """
         self._featurizer = featurizer
         self._feature_labels = list(feature_labels)
         self._local_env_strategy = local_env_strategy
+        self._force_sanitize = force_sanitize
 
     def feature_labels(self) -> List[str]:
         return self._feature_labels
@@ -66,7 +68,7 @@ class RDKitAdaptor(BaseFeaturizer):
             molecule_graph = MoleculeGraph.with_local_env_strategy(
                 molecule, get_local_env_method(self._local_env_strategy)
             )
-        rdkit_mol = create_rdkit_mol_from_mol_graph(molecule_graph)
+        rdkit_mol = create_rdkit_mol_from_mol_graph(molecule_graph, force_sanitize=self._force_sanitize)
         feats = self._featurizer(rdkit_mol)
         if isinstance(feats, (list, tuple, np.ndarray)):
             return np.asarray(feats)
