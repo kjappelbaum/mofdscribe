@@ -39,7 +39,7 @@ class PartialChargeStats(MOFBaseFeaturizer):
             primitive (bool): If True, the structure is reduced to its primitive
                 form before the descriptor is computed. Defaults to True.
         """
-        self.aggregations = aggregtations
+        self.aggregations = aggregations
         super().__init__(primitive=primitive)
 
     def feature_labels(self) -> List[str]:

@@ -85,3 +85,6 @@ BU-centred featurization
 
 .. automodule:: mofdscribe.featurizers.bu.shape_featurizer
     :members:
+
+.. automodule:: mofdscribe.featurizers.bu.smarts_matches
+    :members:
