@@ -161,3 +161,27 @@ The following featurizers are the wrapped RDKit implementations (under the same 
     :encodes_chemistry: False
     :scope: bu
     :scalar: True
+
+.. featurizer:: SmartsMatchCounter
+    :id: SmartsMatchCounter
+    :considers_geometry: False
+    :considers_structure_graph: True
+    :encodes_chemistry: False
+    :scope: bu
+    :scalar: True
+
+.. featurizer:: AcidGroupCounter
+    :id: AcidGroupCounter
+    :considers_geometry: False
+    :considers_structure_graph: True
+    :encodes_chemistry: False
+    :scope: bu
+    :scalar: True
+
+.. featurizer:: BaseGroupCounter
+    :id: BaseGroupCounter
+    :considers_geometry: False
+    :considers_structure_graph: True
+    :encodes_chemistry: False
+    :scope: bu
+    :scalar: True
