@@ -1,3 +1,4 @@
+"""Featurize a molecule using SMARTS matches."""
 from functools import partial
 from typing import Iterable, List, Optional
 
@@ -8,6 +9,7 @@ from mofdscribe.featurizers.bu.rdkitadaptor import RDKitAdaptor
 
 def number_smart_matches(mol, smarts: Iterable[str]) -> int:
     """Count the number of SMARTS matches in a molecule.
+
     This can be useful if we have some prior knowledge
     about which substructures might be interesting/relevant.
 
@@ -55,6 +57,7 @@ class AcidGroupCounter(SmartsMatchCounter):
     """
 
     def __init__(self) -> None:
+        """Construct a new AcidGroupCounter."""
         smarts = ["[O;H1]-[C,S,P]=O", "[*;-;!$(*~[*;+])]", "[NH](S(=O)=O)C(F)(F)F", "n1nnnc1"]
         super().__init__(smarts, feature_labels=["acid_groups"])
 
@@ -85,6 +88,7 @@ class BaseGroupCounter(SmartsMatchCounter):
     """
 
     def __init__(self) -> None:
+        """Construct a new BaseGroupCounter."""
         smarts = [
             "[NH2]-[CX4]",
             "[NH](-[CX4])-[CX4]",
