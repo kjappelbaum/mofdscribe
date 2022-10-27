@@ -1,0 +1,37 @@
+name: mofdscribe
+channels:
+  - defaults
+  - conda-forge
+dependencies:
+  - python=3.8
+  - openbabel
+  - raspa2
+  - zeopp-lsmo
+  - pip:
+      - numpy<=1.21
+      - matminer
+      - loguru
+      - pystow
+      - ase
+      - structuregraph_helpers
+      - element-coder
+      - pydantic
+      - pervect
+      - average-minimum-distance
+      - superpose3d
+      - rdkit
+      - moffragmentor
+      - moleculetda
+      - pyeqeq
+      - nglview
+      - sphinx
+      - furo
+      - sphinx-click
+      - sphinx-autodoc-typehints
+      - sphinx_automodapi
+      - sphinx_copybutton
+      - sphinxcontrib-katex
+      - sphinxcontrib-needs
+      - sphinxcontrib-plantuml
+      - sphinx-pydantic
+      - sphinx-jsonschema <=1.15
