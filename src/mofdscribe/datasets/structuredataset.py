@@ -61,7 +61,9 @@ class StructureDataset(AbstractStructureDataset):
         self._df = df
         if self._df is not None:
             compress_dataset(self._df)
-            self._structures = [f for f in files if Path(f).stem in self._df[structure_name_column].values]
+            self._structures = [
+                f for f in files if Path(f).stem in self._df[structure_name_column].values
+            ]
         else:
             self._structures = files
         self._structure_name_column = structure_name_column

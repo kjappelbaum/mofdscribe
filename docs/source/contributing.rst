@@ -28,4 +28,14 @@ Often, you may want to use the utilities of a :py:class:`mofdscribe.datasets.str
     This will make it easier for other researchers to build on top of your work and to compare their results with yours.
     We can then also use it to create benchmark tasks.
 
-For this, you only need a folder with ``cif`` files (or any other format supported by pymatgen) and (optionally) a :py:class:`pandas.DataFrame` with label, features, and additional information. For instance, you can provide pre-computed densities and hashes (but we will compute them on the first use if you do not provide them).
+For this, you only need a folder with ``cif`` files (or any other format supported by pymatgen) and (optionally) a :py:class:`pandas.DataFrame` with label, features, and additional information. For instance, you can provide pre-computed densities and hashes (but we will compute them on the first use if you do not provide them). In the simplest use case, you simply provide the filenames: 
+
+.. python:: 
+
+    from mofdscribe.datasets import StructureDataset
+
+    dataset = StructureDataset(["cif/1.cif", "cif/2.cif", "cif/3.cif"])
+
+    # since you did not provide them we will automatically compute the hashes
+    # by default, we do this in parallel using all available cores
+    hashes = dataset.get_decorated_graph_hashes()
