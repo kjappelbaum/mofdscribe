@@ -59,15 +59,18 @@ class StructureDataset(AbstractStructureDataset):
         """
         super().__init__()
         self._df = df
-        compress_dataset(self._df)
+        if self._df is not None:
+            compress_dataset(self._df)
+            self._structures = [f for f in files if Path(f).stem in self._df[structure_name_column].values]
+        else:
+            self._structures = files
         self._structure_name_column = structure_name_column
-
-        self._files = [f for f in files if Path(f).stem in self._df[structure_name_column].values]
+        print(self._structures)
         check_all_file_exists(self._structures)
 
         self._year_column = year_column
-        self._label_columns = tuple(label_columns)
-        self._feature_columns = tuple(feature_columns)
+        self._label_columns = tuple(label_columns) if label_columns is not None else tuple()
+        self._feature_columns = tuple(feature_columns) if feature_columns is not None else tuple()
         self._decorated_graph_hash_column = decorated_graph_hash_column
         self._undecorated_graph_hash_column = undecorated_graph_hash_column
         self._decorated_scaffold_hash_column = decorated_scaffold_hash_column
@@ -97,6 +100,9 @@ class StructureDataset(AbstractStructureDataset):
             else self._df[undecorated_scaffold_hash_column].values
         )
         self._densities = None if density_column is None else self._df[density_column].values
+
+    def __len__(self):
+        return len(self._structures)
 
     @property
     def available_features(self) -> Tuple[str]:

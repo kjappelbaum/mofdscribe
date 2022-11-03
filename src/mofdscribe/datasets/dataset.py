@@ -76,6 +76,7 @@ class AbstractStructureDataset:
     def get_decorated_graph_hashes(self, idx: Iterable[int]) -> str:
         if self._decorated_graph_hashes is None:
             logger.info("Computing hashes, this can take a while.")
+            # fixme: this is wrong, we need to compute it for all and not only for the indexed ones
             hashes = np.array(
                 Parallel(n_jobs=-1)(
                     delayed(get_decorated_graph_hash_cached)(self._structures[i]) for i in idx

@@ -7,6 +7,7 @@ import pytest
 from pymatgen.analysis.graphs import MoleculeGraph
 from pymatgen.core import IStructure, Molecule, Structure
 from structuregraph_helpers.create import get_structure_graph
+from glob import glob 
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -90,3 +91,13 @@ def floating_structure():
 @pytest.fixture(scope="session")
 def hkust_linker_structure():
     return Structure.from_file(os.path.join(THIS_DIR, "test_files", "BTC.cif"))
+
+@pytest.fixture(scope="session")
+def dataset_files():
+    structures = glob(os.path.join(THIS_DIR, "test_files", "test_dataset", "structures", "*.cif"))
+    dataset = glob(os.path.join(THIS_DIR, "test_files", "test_dataset", "data.json"))
+    return structures, dataset
+
+@pytest.fixture(scope="session")
+def dataset_folder():
+    return os.path.join(THIS_DIR, "test_files", "test_dataset")
