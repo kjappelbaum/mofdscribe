@@ -13,13 +13,13 @@ import numpy as np
 from loguru import logger
 from pydantic import BaseModel, Field
 
-from mofdscribe.datasets.dataset import StructureDataset
+from mofdscribe.datasets.dataset import AbstractStructureDataset
 from mofdscribe.metrics.metric_collection import RegressionMetricCollection
 from mofdscribe.metrics.regression import get_regression_metrics
 from mofdscribe.splitters.splitters import BaseSplitter
 from mofdscribe.version import get_version
 
-from .watermark import get_watermark
+from mofdscribe.bench.watermark import get_watermark
 
 __all__ = ["MOFBenchRegression", "BenchResult"]
 
@@ -205,7 +205,7 @@ class MOFBench(ABC):
     def __init__(
         self,
         model,
-        ds: StructureDataset,
+        ds: AbstractStructureDataset,
         splitter: BaseSplitter,
         target: List[str],
         name: str,
@@ -223,7 +223,7 @@ class MOFBench(ABC):
 
         Args:
             model: Model to be benchmarked.
-            ds (StructureDataset): Dataset to be used for benchmarking.
+            ds (AbstractStructureDataset): Dataset to be used for benchmarking.
             splitter (BaseSplitter): Splitter to be used for benchmarking.
             target (List[str]): Target labels to be used for benchmarking.
                 Must be included in the dataset.

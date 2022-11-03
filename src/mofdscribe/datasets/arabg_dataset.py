@@ -7,13 +7,14 @@ import numpy as np
 import pandas as pd
 from loguru import logger
 
-from .checks import check_all_file_exists, length_check
-from .dataset import StructureDataset
-from .utils import compress_dataset
-from ..constants import MOFDSCRIBE_PYSTOW_MODULE
+from mofdscribe.datasets.checks import check_all_file_exists, length_check
+from mofdscribe.datasets.dataset import AbstractStructureDataset
+from mofdscribe.datasets.utils import compress_dataset
+from mofdscribe.constants import MOFDSCRIBE_PYSTOW_MODULE
 
+__all__ = ["ARABGDataset"]
 
-class ARABGDataset(StructureDataset):
+class ARABGDataset(AbstractStructureDataset):
     """
     Exposes the ARABG dataset used in [Moosavi2020]_.
 
@@ -145,23 +146,23 @@ class ARABGDataset(StructureDataset):
 
         check_all_file_exists(self._structures)
 
-        self._decorated_graph_hashes = self._df["info.decorated_graph_hash"]
-        self._undecorated_graph_hashes = self._df["info.undecorated_graph_hash"]
-        self._decorated_scaffold_hashes = self._df["info.decorated_scaffold_hash"]
-        self._undecorated_scaffold_hashes = self._df["info.undecorated_scaffold_hash"]
-        self._densities = self._df["info.density"]
+        self._decorated_graph_hashes = self._df["info.decorated_graph_hash"].values
+        self._undecorated_graph_hashes = self._df["info.undecorated_graph_hash"].values
+        self._decorated_scaffold_hashes = self._df["info.decorated_scaffold_hash"].values
+        self._undecorated_scaffold_hashes = self._df["info.undecorated_scaffold_hash"].values
+        self._densities = self._df["info.density"].values
         self._labelnames = (c for c in self._df.columns if c.startswith("outputs."))
         self._featurenames = (c for c in self._df.columns if c.startswith("features."))
         self._infonames = (c for c in self._df.columns if c.startswith("info."))
 
-    def get_subset(self, indices: Iterable[int]) -> "StructureDataset":
+    def get_subset(self, indices: Iterable[int]) -> "AbstractStructureDataset":
         """Get a subset of the dataset.
 
         Args:
             indices (Iterable[int]): indices of the structures to include.
 
         Returns:
-            StructureDataset: a new dataset containing only the structures
+            AbstractStructureDataset: a new dataset containing only the structures
                 specified by the indices.
         """
         return ARABGDataset(

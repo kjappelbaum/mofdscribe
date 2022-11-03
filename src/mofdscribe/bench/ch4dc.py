@@ -5,7 +5,7 @@ from typing import Optional
 from mofdscribe.datasets import CoREDataset
 from mofdscribe.splitters.splitters import HashSplitter
 
-from .mofbench import MOFBenchRegression
+from mofdscribe.bench.mofbench import MOFBenchRegression
 
 __all__ = ["CH4DCIDBench"]
 

@@ -32,7 +32,7 @@ from .utils import (
     sort_arrays_by_len,
     stratified_train_test_partition,
 )
-from ..datasets.dataset import StructureDataset
+from ..datasets.dataset import AbstractStructureDataset
 
 __all__ = (
     "DensitySplitter",
@@ -66,7 +66,7 @@ class BaseSplitter:
 
     def __init__(
         self,
-        ds: StructureDataset,
+        ds: AbstractStructureDataset,
         shuffle: bool = True,
         random_state: Optional[Union[int, np.random.RandomState]] = None,
         sample_frac: Optional[float] = 1.0,
@@ -78,7 +78,7 @@ class BaseSplitter:
         """Initialize a BaseSplitter.
 
         Args:
-            ds (StructureDataset): A structure dataset.
+            ds (AbstractStructureDataset): A structure dataset.
                 The :code:`BaseSplitter` only requires the length magic method to be implemented.
                 However, other splitters might require additional methods.
             shuffle (bool): If True, perform a shuffled split.
@@ -352,7 +352,7 @@ class HashSplitter(BaseSplitter):
 
     def __init__(
         self,
-        ds: StructureDataset,
+        ds: AbstractStructureDataset,
         hash_type: str = "undecorated_scaffold_hash",
         shuffle: bool = True,
         random_state: Optional[Union[int, np.random.RandomState]] = None,
@@ -365,7 +365,7 @@ class HashSplitter(BaseSplitter):
         """Initialize a HashSplitter.
 
         Args:
-            ds (StructureDataset): A structure dataset.
+            ds (AbstractStructureDataset): A structure dataset.
                 The :code:`BaseSplitter` only requires the length magic method to be implemented.
                 However, other splitters might require additional methods.
             hash_type (str): Hash type to use. Must be one of the
@@ -459,7 +459,7 @@ class DensitySplitter(BaseSplitter):
 
     def __init__(
         self,
-        ds: StructureDataset,
+        ds: AbstractStructureDataset,
         density_q: Optional[Iterable[float]] = None,
         shuffle: bool = True,
         random_state: Optional[Union[int, np.random.RandomState]] = None,
@@ -472,7 +472,7 @@ class DensitySplitter(BaseSplitter):
         """Initialize the DensitySplitter class.
 
         Args:
-            ds (StructureDataset): A structure dataset.
+            ds (AbstractStructureDataset): A structure dataset.
                 The :code:`BaseSplitter` only requires the length magic method to be implemented.
                 However, other splitters might require additional methods.
             density_q (Iterable[float], optional): List of quantiles used for quantile binning for the density.
@@ -534,7 +534,7 @@ class TimeSplitter(BaseSplitter):
 
     def __init__(
         self,
-        ds: StructureDataset,
+        ds: AbstractStructureDataset,
         year_q: Optional[Iterable[float]] = None,
         shuffle: bool = True,
         random_state: Optional[Union[int, np.random.RandomState]] = None,
@@ -547,7 +547,7 @@ class TimeSplitter(BaseSplitter):
         """Initialize the TimeSplitter class.
 
         Args:
-            ds (StructureDataset): A structure dataset.
+            ds (AbstractStructureDataset): A structure dataset.
                 The :code:`BaseSplitter` only requires the length magic method to be implemented.
                 However, other splitters might require additional methods.
             year_q (Iterable[float]): List of quantiles used for quantile binning on the years.
@@ -622,7 +622,7 @@ class KennardStoneSplitter(BaseSplitter):
 
     def __init__(
         self,
-        ds: StructureDataset,
+        ds: AbstractStructureDataset,
         feature_names: List[str],
         shuffle: bool = True,
         random_state: Optional[Union[int, np.random.RandomState]] = None,
@@ -635,7 +635,7 @@ class KennardStoneSplitter(BaseSplitter):
         """Construct a KennardStoneSplitter.
 
         Args:
-            ds (StructureDataset): A structure dataset.
+            ds (AbstractStructureDataset): A structure dataset.
                 The :code:`BaseSplitter` only requires the length magic method to be implemented.
                 However, other splitters might require additional methods.
             feature_names (List[str]): Names of features to consider.
@@ -682,13 +682,13 @@ class KennardStoneSplitter(BaseSplitter):
             q=None,
         )
 
-    def get_sorted_indices(self, ds: StructureDataset) -> Iterable[int]:
+    def get_sorted_indices(self, ds: AbstractStructureDataset) -> Iterable[int]:
         """Return a list of indices, sorted by similarity using the Kennard-Stone algorithm.
 
         The first sample will be maximally distant from the center.
 
         Args:
-            ds (StructureDataset): A mofdscribe StructureDataset
+            ds (AbstractStructureDataset): A mofdscribe AbstractStructureDataset
 
         Returns:
             Iterable[int]: Sorted indices.
@@ -771,7 +771,7 @@ class ClusterSplitter(BaseSplitter):
 
     def __init__(
         self,
-        ds: StructureDataset,
+        ds: AbstractStructureDataset,
         feature_names: List[str],
         shuffle: bool = True,
         random_state: Optional[Union[int, np.random.RandomState]] = None,
@@ -789,7 +789,7 @@ class ClusterSplitter(BaseSplitter):
         """Construct a ClusterSplitter.
 
         Args:
-            ds (StructureDataset): A structure dataset.
+            ds (AbstractStructureDataset): A structure dataset.
                 The :code:`BaseSplitter` only requires the length magic method to be implemented.
                 However, other splitters might require additional methods.
             feature_names (List[str]): Names of features to consider.
@@ -850,7 +850,7 @@ class ClusterSplitter(BaseSplitter):
             sort_by_len=sort_by_len,
         )
 
-    def _get_sorted_indices(self, ds: StructureDataset, shuffle: bool = True) -> Iterable[int]:
+    def _get_sorted_indices(self, ds: AbstractStructureDataset, shuffle: bool = True) -> Iterable[int]:
         if self._sorted_indices is None:
             feats = ds._df[self.feature_names].values
 
@@ -892,7 +892,7 @@ class ClusterStratifiedSplitter(BaseSplitter):
 
     def __init__(
         self,
-        ds: StructureDataset,
+        ds: AbstractStructureDataset,
         feature_names: List[str],
         shuffle: bool = True,
         random_state: Optional[Union[int, np.random.RandomState]] = None,
@@ -989,7 +989,7 @@ class LOCOCV(BaseSplitter):
 
     def __init__(
         self,
-        ds: StructureDataset,
+        ds: AbstractStructureDataset,
         feature_names: List[str],
         shuffle: bool = True,
         random_state: Optional[Union[int, np.random.RandomState]] = None,
@@ -1002,7 +1002,7 @@ class LOCOCV(BaseSplitter):
         """Construct a LOCOCV.
 
         Args:
-            ds (StructureDataset): A structure dataset.
+            ds (AbstractStructureDataset): A structure dataset.
                 The :code:`BaseSplitter` only requires the length magic method to be implemented.
                 However, other splitters might require additional methods.
             feature_names (List[str]): Names of features to consider.

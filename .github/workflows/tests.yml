@@ -53,4 +53,5 @@ jobs:
       - name: Test with pytest
         run: |
           export RASPA_DIR=/usr/share/miniconda/envs/__setup_conda
-          pytest tests/
+          pytest -n "auto" tests/
+  

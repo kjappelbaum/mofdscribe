@@ -5,7 +5,7 @@ from typing import List, Union
 
 import pandas as pd
 
-__all__ = ("length_check", "check_all_file_exists")
+__all__ = ["length_check", "check_all_file_exists"]
 
 
 def length_check(df: pd.DataFrame, expected_length: int) -> None:

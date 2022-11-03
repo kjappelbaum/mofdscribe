@@ -9,7 +9,7 @@ from mofdscribe.splitters.splitters import DensitySplitter, HashSplitter
 
 from .mofbench import MOFBenchRegression
 
-__all__ = ("LogkHCO2IDBench", "LogkHCO2OODBench")
+__all__ = ["LogkHCO2IDBench", "LogkHCO2OODBench"]
 
 
 class LogkHCO2IDBench(MOFBenchRegression):
