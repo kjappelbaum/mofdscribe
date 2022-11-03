@@ -5,7 +5,7 @@ from typing import Iterable, List, Optional, Tuple
 import numpy as np
 from joblib import Parallel, delayed
 from loguru import logger
-from pymatgen.core import Structure
+from pymatgen.core import Structure, IStructure
 
 from mofdscribe.datasets.utils import (
     get_decorated_graph_hash_cached,
@@ -67,7 +67,7 @@ class AbstractStructureDataset:
 
     # ToDo: think about how we can cache this in memory
     def get_structures(self, idx: Iterable[int]) -> Iterable[Structure]:
-        return Parallel(n_jobs=-1)(delayed(Structure.from_file)(self._structures[i]) for i in idx)
+        return Parallel(n_jobs=-1)(delayed(IStructure.from_file)(self._structures[i]) for i in idx)
 
     def get_filenames(self, idx: Iterable[int]) -> List[Structure]:
         return [self._structures[i] for i in idx]
@@ -79,7 +79,7 @@ class AbstractStructureDataset:
             # fixme: this is wrong, we need to compute it for all and not only for the indexed ones
             hashes = np.array(
                 Parallel(n_jobs=-1)(
-                    delayed(get_decorated_graph_hash_cached)(self._structures[i]) for i in idx
+                    delayed(get_decorated_graph_hash_cached)(s) for s in self.get_structures(range(len(self)))
                 )
             )
             self._decorated_graph_hashes = hashes
@@ -90,7 +90,7 @@ class AbstractStructureDataset:
             logger.info("Computing hashes, this can take a while.")
             hashes = np.array(
                 Parallel(n_jobs=-1)(
-                    delayed(get_undecorated_graph_hash_cached)(self._structures[i]) for i in idx
+                    delayed(get_undecorated_graph_hash_cached)(s) for s in  self.get_structures(range(len(self)))
                 )
             )
             self._undecorated_graph_hashes = hashes
@@ -101,7 +101,7 @@ class AbstractStructureDataset:
             logger.info("Computing hashes, this can take a while.")
             hashes = np.array(
                 Parallel(n_jobs=-1)(
-                    delayed(get_decorated_scaffold_hash_cached)(self._structures[i]) for i in idx
+                    delayed(get_decorated_scaffold_hash_cached)(s) for s in self.get_structures(range(len(self)))
                 )
             )
             self._decorated_scaffold_hashes = hashes
@@ -113,7 +113,7 @@ class AbstractStructureDataset:
             logger.info("Computing hashes, this can take a while.")
             hashes = np.array(
                 Parallel(n_jobs=-1)(
-                    delayed(get_undecorated_graph_hash_cached)(self._structures[i]) for i in idx
+                    delayed(get_undecorated_graph_hash_cached)(s) for s in self.get_structures(range(len(self)))
                 )
             )
             self._undecorated_scaffold_hashes = hashes
@@ -121,9 +121,9 @@ class AbstractStructureDataset:
 
     def get_densities(self, idx: Iterable[int]) -> np.ndarray:
         if self._densities is None:
-
+            get_denstiy = lambda s: s.density
             self._densities = np.array(
-                Parallel(n_jobs=-1)(delayed(s.density)(s) for s in self.get_structures(idx))
+                Parallel(n_jobs=-1)(delayed(get_denstiy)(s) for s in self.get_structures(range(len(self))))
             )
         return self._densities[idx]
 
