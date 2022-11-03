@@ -850,7 +850,9 @@ class ClusterSplitter(BaseSplitter):
             sort_by_len=sort_by_len,
         )
 
-    def _get_sorted_indices(self, ds: AbstractStructureDataset, shuffle: bool = True) -> Iterable[int]:
+    def _get_sorted_indices(
+        self, ds: AbstractStructureDataset, shuffle: bool = True
+    ) -> Iterable[int]:
         if self._sorted_indices is None:
             feats = ds._df[self.feature_names].values
 
@@ -906,7 +908,7 @@ class ClusterStratifiedSplitter(BaseSplitter):
         """Construct a ClusterStratifiedSplitter.
 
         Args:
-            ds (StructureDataset): A structure dataset.
+            ds (AbstractStructureDataset): A structure dataset.
                 The :code:`BaseSplitter` only requires the length magic method to be implemented.
                 However, other splitters might require additional methods.
             feature_names (List[str]): Names of features to consider.

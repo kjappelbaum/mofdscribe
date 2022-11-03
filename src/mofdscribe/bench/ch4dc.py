@@ -2,10 +2,9 @@
 """In-dataset predictions for the methane deliverable capacity"""
 from typing import Optional
 
+from mofdscribe.bench.mofbench import MOFBenchRegression
 from mofdscribe.datasets import CoREDataset
 from mofdscribe.splitters.splitters import HashSplitter
-
-from mofdscribe.bench.mofbench import MOFBenchRegression
 
 __all__ = ["CH4DCIDBench"]
 

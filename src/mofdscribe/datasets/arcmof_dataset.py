@@ -7,12 +7,13 @@ import numpy as np
 import pandas as pd
 from loguru import logger
 
+from mofdscribe.constants import MOFDSCRIBE_PYSTOW_MODULE
 from mofdscribe.datasets.checks import check_all_file_exists, length_check
 from mofdscribe.datasets.dataset import AbstractStructureDataset
 from mofdscribe.datasets.utils import compress_dataset
-from mofdscribe.constants import MOFDSCRIBE_PYSTOW_MODULE
 
-__all__ = ["ArcMofDataset"]
+__all__ = ["ARCMOFDataset"]
+
 
 class ARCMOFDataset(AbstractStructureDataset):
     """
@@ -114,14 +115,14 @@ class ARCMOFDataset(AbstractStructureDataset):
         self._featurenames = (c for c in self._df.columns if c.startswith("features."))
         self._infonames = (c for c in self._df.columns if c.startswith("info."))
 
-    def get_subset(self, indices: Iterable[int]) -> "StructureDataset":
+    def get_subset(self, indices: Iterable[int]) -> "AbstractStructureDataset":
         """Get a subset of the dataset.
 
         Args:
             indices (Iterable[int]): indices of the structures to include.
 
         Returns:
-            StructureDataset: a new dataset containing only the structures
+            AbstractStructureDataset: a new dataset containing only the structures
                 specified by the indices.
         """
         return ARCMOFDataset(

@@ -40,6 +40,7 @@ dependencies, the featurizers are currently not integrated in matminer itself.
    leaderboard
    contributing
    api
+   maintaining
    references
 
 Indices and Tables

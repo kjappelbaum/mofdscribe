@@ -11,6 +11,7 @@ from sklearn.preprocessing import PolynomialFeatures, StandardScaler
 
 __all__ = ["DensityRegressor"]
 
+
 class DensityRegressor:
     """Dummy model."""
 

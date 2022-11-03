@@ -25,15 +25,17 @@ def test_aggregators():
         "mad": 2.0,
         "trimean": 4.0,
         "inf": 7,
-        'manhattan': 28,
+        "manhattan": 28,
     }
 
     for aggregator_name, aggregator in ARRAY_AGGREGATORS.items():
         masked_aggregator = MA_ARRAY_AGGREGATORS[aggregator_name]
         assert aggregator(test_array) == pytest.approx(true_values[aggregator_name])
-        if aggregator_name == 'inf': 
-            masked_aggregator(masked_test_array) == pytest.approx(8)
-        elif aggregator_name == 'manhattan':
-            masked_aggregator(masked_test_array) == pytest.approx(36)
+        if aggregator_name == "inf":
+            assert masked_aggregator(masked_test_array) == pytest.approx(8)
+        elif aggregator_name == "manhattan":
+            assert masked_aggregator(masked_test_array) == pytest.approx(36)
         else:
-            assert masked_aggregator(masked_test_array) == pytest.approx(true_values[aggregator_name])
+            assert masked_aggregator(masked_test_array) == pytest.approx(
+                true_values[aggregator_name]
+            )

@@ -13,13 +13,12 @@ import numpy as np
 from loguru import logger
 from pydantic import BaseModel, Field
 
+from mofdscribe.bench.watermark import get_watermark
 from mofdscribe.datasets.dataset import AbstractStructureDataset
 from mofdscribe.metrics.metric_collection import RegressionMetricCollection
 from mofdscribe.metrics.regression import get_regression_metrics
 from mofdscribe.splitters.splitters import BaseSplitter
 from mofdscribe.version import get_version
-
-from mofdscribe.bench.watermark import get_watermark
 
 __all__ = ["MOFBenchRegression", "BenchResult"]
 

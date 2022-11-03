@@ -7,12 +7,14 @@ import numpy as np
 import pandas as pd
 from loguru import logger
 
+from mofdscribe.constants import MOFDSCRIBE_PYSTOW_MODULE
 from mofdscribe.datasets.checks import check_all_file_exists, length_check
 from mofdscribe.datasets.dataset import AbstractStructureDataset
 from mofdscribe.datasets.utils import compress_dataset
-from mofdscribe.constants import MOFDSCRIBE_PYSTOW_MODULE
 
 __all__ = ["CoREDataset"]
+
+
 class CoREDataset(AbstractStructureDataset):
     """Dataset of gas uptake related features for a subset of CoRE MOFs.
 
