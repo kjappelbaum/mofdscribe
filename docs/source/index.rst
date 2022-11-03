@@ -38,6 +38,7 @@ dependencies, the featurizers are currently not integrated in matminer itself.
    datasets
    background
    leaderboard
+   contributing
    api
    references
 
