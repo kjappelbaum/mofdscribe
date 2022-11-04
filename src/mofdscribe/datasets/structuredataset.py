@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Interface for creating a custom StructureDataset."""
 from pathlib import Path
-from typing import Iterable, List, Optional, Tuple
+from typing import Iterable, List, Optional
 
 import numpy as np
 import pandas as pd
@@ -103,7 +103,7 @@ class StructureDataset(AbstractStructureDataset):
         self._densities = None if density_column is None else self._df[density_column].values
 
     def __len__(self):
-        """Number of structures in the dataset."""
+        """Return number of structures in the dataset."""
         return len(self._structures)
 
     @property
