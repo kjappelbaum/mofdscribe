@@ -33,10 +33,13 @@ jobs:
         python-version: ["3.8"]
     steps:
       - uses: actions/checkout@v2
-      - name: Setup conda
-        uses: s-weigand/setup-conda@v1
+
+      - name: Setup Mambaforge
+        uses: conda-incubator/setup-miniconda@v2
         with:
-          update-conda: true
+          miniforge-variant: Mambaforge
+          miniforge-version: latest
+          use-mamba: true
           python-version: ${{ matrix.python-version }}
           conda-channels: anaconda, conda-forge
 
