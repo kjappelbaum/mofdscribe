@@ -2,10 +2,9 @@
 """In-dataset predictions for PBE bandgaps."""
 from typing import Optional
 
+from mofdscribe.bench.mofbench import MOFBenchRegression
 from mofdscribe.datasets import QMOFDataset
 from mofdscribe.splitters.splitters import HashSplitter
-
-from .mofbench import MOFBenchRegression
 
 __all__ = ("PBEBandGapIDBench",)
 

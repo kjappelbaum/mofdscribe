@@ -7,13 +7,15 @@ import numpy as np
 import pandas as pd
 from loguru import logger
 
-from .checks import check_all_file_exists, length_check
-from .dataset import StructureDataset
-from .utils import compress_dataset
-from ..constants import MOFDSCRIBE_PYSTOW_MODULE
+from mofdscribe.constants import MOFDSCRIBE_PYSTOW_MODULE
+from mofdscribe.datasets.checks import check_all_file_exists, length_check
+from mofdscribe.datasets.dataset import AbstractStructureDataset
+from mofdscribe.datasets.utils import compress_dataset
+
+__all__ = ["QMOFDataset"]
 
 
-class QMOFDataset(StructureDataset):
+class QMOFDataset(AbstractStructureDataset):
     """
     Exposes the QMOF dataset by Rosen et al. [Rosen2021]_ [Rosen2022]_ .
 
@@ -197,7 +199,7 @@ class QMOFDataset(StructureDataset):
         drop_basename_duplicates: bool = True,
         drop_graph_duplicates: bool = True,
         subset: Optional[Iterable[int]] = None,
-        drop_nan: bool = True,
+        drop_nan: bool = False,
     ):
         """Construct an instance of the QMOF dataset.
 
@@ -214,7 +216,7 @@ class QMOFDataset(StructureDataset):
             subset (Optional[Iterable[int]]): indices of the structures to include.
                 This is useful for subsampling the dataset. Defaults to None.
             drop_nan (bool): If True, drop rows with NaN values in features or hashes.
-                Defaults to True.
+                Defaults to False.
 
         Raises:
             ValueError: If the provided version number is not available.
@@ -287,25 +289,25 @@ class QMOFDataset(StructureDataset):
 
         check_all_file_exists(self._structures)
 
-        self._years = self._df["info.year"]
+        self._years = self._df["info.year"].values
 
-        self._decorated_graph_hashes = self._df["info.decorated_graph_hash"]
-        self._undecorated_graph_hashes = self._df["info.undecorated_graph_hash"]
-        self._decorated_scaffold_hashes = self._df["info.decorated_scaffold_hash"]
-        self._undecorated_scaffold_hashes = self._df["info.undecorated_scaffold_hash"]
-        self._densities = self._df["info.density"]
+        self._decorated_graph_hashes = self._df["info.decorated_graph_hash"].values
+        self._undecorated_graph_hashes = self._df["info.undecorated_graph_hash"].values
+        self._decorated_scaffold_hashes = self._df["info.decorated_scaffold_hash"].values
+        self._undecorated_scaffold_hashes = self._df["info.undecorated_scaffold_hash"].values
+        self._densities = self._df["info.density"].values
         self._labelnames = (c for c in self._df.columns if c.startswith("outputs."))
         self._featurenames = (c for c in self._df.columns if c.startswith("features."))
         self._infonames = (c for c in self._df.columns if c.startswith("info."))
 
-    def get_subset(self, indices: Iterable[int]) -> "StructureDataset":
+    def get_subset(self, indices: Iterable[int]) -> "AbstractStructureDataset":
         """Get a subset of the dataset.
 
         Args:
             indices (Iterable[int]): indices of the structures to include.
 
         Returns:
-            StructureDataset: a new dataset containing only the structures
+            AbstractStructureDataset: a new dataset containing only the structures
                 specified by the indices.
         """
         return QMOFDataset(

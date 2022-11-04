@@ -3,17 +3,20 @@
 from typing import Iterable, List, Optional, Tuple
 
 import numpy as np
+from joblib import Parallel, delayed
 from loguru import logger
 from pymatgen.core import IStructure, Structure
 
-from .utils import (
+from mofdscribe.datasets.utils import (
     get_decorated_graph_hash_cached,
     get_decorated_scaffold_hash_cached,
     get_undecorated_graph_hash_cached,
 )
 
+__all__ = ["AbstractStructureDataset"]
 
-class StructureDataset:
+
+class AbstractStructureDataset:
     """Base class for datasets."""
 
     def __init__(self):
@@ -29,19 +32,19 @@ class StructureDataset:
         self._undecorated_scaffold_hashes = None
         self._densities = None
 
-    def get_subset(self, indices: Iterable[int]) -> "StructureDataset":
+    def get_subset(self, indices: Iterable[int]) -> "AbstractStructureDataset":
         raise NotImplementedError()
 
     @property
-    def available_info(self) -> Tuple[str]:
+    def available_info(self) -> List[str]:
         raise NotImplementedError()
 
     @property
-    def available_features(self) -> Tuple[str]:
+    def available_features(self) -> List[str]:
         raise NotImplementedError()
 
     @property
-    def available_labels(self) -> Tuple[str]:
+    def available_labels(self) -> List[str]:
         raise NotImplementedError()
 
     def __len__(self):
@@ -60,11 +63,11 @@ class StructureDataset:
     def get_years(self, idx: int) -> int:
         if self._years is None:
             raise ValueError("Years are not available.")
-        return self._years.iloc[idx].values
+        return self._years[idx]
 
     # ToDo: think about how we can cache this in memory
     def get_structures(self, idx: Iterable[int]) -> Iterable[Structure]:
-        return (IStructure.from_file(self._structures[i]) for i in idx)
+        return Parallel(n_jobs=-1)(delayed(IStructure.from_file)(self._structures[i]) for i in idx)
 
     def get_filenames(self, idx: Iterable[int]) -> List[Structure]:
         return [self._structures[i] for i in idx]
@@ -73,35 +76,65 @@ class StructureDataset:
     def get_decorated_graph_hashes(self, idx: Iterable[int]) -> str:
         if self._decorated_graph_hashes is None:
             logger.info("Computing hashes, this can take a while.")
-            hashes = [get_decorated_graph_hash_cached(self._structures[i]) for i in idx]
-            return hashes
-        return self._decorated_graph_hashes.iloc[idx].values
+            # fixme: this is wrong, we need to compute it for all and not only for the indexed ones
+            hashes = np.array(
+                Parallel(n_jobs=-1)(
+                    delayed(get_decorated_graph_hash_cached)(s)
+                    for s in self.get_structures(range(len(self)))
+                )
+            )
+            self._decorated_graph_hashes = hashes
+        return self._decorated_graph_hashes[idx]
 
     def get_undecorated_graph_hashes(self, idx: Iterable[int]) -> str:
         if self._undecorated_graph_hashes is None:
             logger.info("Computing hashes, this can take a while.")
-            hashes = [get_undecorated_graph_hash_cached(self._structures[i]) for i in idx]
-            return hashes
-        return self._undecorated_graph_hashes.iloc[idx].values
+            hashes = np.array(
+                Parallel(n_jobs=-1)(
+                    delayed(get_undecorated_graph_hash_cached)(s)
+                    for s in self.get_structures(range(len(self)))
+                )
+            )
+            self._undecorated_graph_hashes = hashes
+        return self._undecorated_graph_hashes
 
     def get_decorated_scaffold_hashes(self, idx: Iterable[int]) -> str:
         if self._decorated_graph_hashes is None:
             logger.info("Computing hashes, this can take a while.")
-            hashes = [get_decorated_scaffold_hash_cached(self._structures[i]) for i in idx]
-            return hashes
-        return self._decorated_scaffold_hashes.iloc[idx].values
+            hashes = np.array(
+                Parallel(n_jobs=-1)(
+                    delayed(get_decorated_scaffold_hash_cached)(s)
+                    for s in self.get_structures(range(len(self)))
+                )
+            )
+            self._decorated_scaffold_hashes = hashes
+
+        return self._decorated_scaffold_hashes[idx]
 
     def get_undecorated_scaffold_hashes(self, idx: Iterable[int]) -> str:
         if self._undecorated_scaffold_hashes is None:
             logger.info("Computing hashes, this can take a while.")
-            hashes = [get_undecorated_graph_hash_cached(self._structures[i]) for i in idx]
-            return hashes
-        return self._undecorated_scaffold_hashes.iloc[idx].values
+            hashes = np.array(
+                Parallel(n_jobs=-1)(
+                    delayed(get_undecorated_graph_hash_cached)(s)
+                    for s in self.get_structures(range(len(self)))
+                )
+            )
+            self._undecorated_scaffold_hashes = hashes
+        return self._undecorated_scaffold_hashes[idx]
 
     def get_densities(self, idx: Iterable[int]) -> np.ndarray:
         if self._densities is None:
-            return np.array([s.density for s in self.get_structures(idx)])
-        return self._densities.iloc[idx].values
+
+            def get_denstiy(s):
+                return s.density
+
+            self._densities = np.array(
+                Parallel(n_jobs=-1)(
+                    delayed(get_denstiy)(s) for s in self.get_structures(range(len(self)))
+                )
+            )
+        return self._densities[idx]
 
     # ToDo: think how this should behave.
     def select(self, indices: Iterable[int], labels: Optional[Iterable[str]] = None):

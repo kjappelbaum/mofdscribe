@@ -44,7 +44,7 @@ jobs:
         run: |
           sudo apt-get install --fix-missing libcgal-dev
           conda install raspa2 zeopp-lsmo openbabel -c conda-forge -y
-          pip install pytest tox dscribe # we need dscribe for the SBU test
+          pip install pytest tox dscribe pytest-xdist # we need dscribe for the SBU test
           pip install -e ".[all]"
       - name: Check for lint
         run: |

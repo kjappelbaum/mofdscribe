@@ -9,6 +9,8 @@ from sklearn.linear_model import LinearRegression
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import PolynomialFeatures, StandardScaler
 
+__all__ = ["DensityRegressor"]
+
 
 class DensityRegressor:
     """Dummy model."""

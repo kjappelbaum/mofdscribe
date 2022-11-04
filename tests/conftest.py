@@ -2,6 +2,7 @@
 """Test fixtures"""
 import json
 import os
+from glob import glob
 
 import pytest
 from pymatgen.analysis.graphs import MoleculeGraph
@@ -90,3 +91,15 @@ def floating_structure():
 @pytest.fixture(scope="session")
 def hkust_linker_structure():
     return Structure.from_file(os.path.join(THIS_DIR, "test_files", "BTC.cif"))
+
+
+@pytest.fixture(scope="session")
+def dataset_files():
+    structures = glob(os.path.join(THIS_DIR, "test_files", "test_dataset", "structures", "*.cif"))
+    dataset = glob(os.path.join(THIS_DIR, "test_files", "test_dataset", "data.json"))
+    return structures, dataset
+
+
+@pytest.fixture(scope="session")
+def dataset_folder():
+    return os.path.join(THIS_DIR, "test_files", "test_dataset")

@@ -5,6 +5,8 @@ from typing import Iterable, Optional
 
 from loguru import logger
 
+__all__ = ["DFModel"]
+
 
 class DFModel:
     def __init__(self, model, features: Optional[Iterable[str]] = None):
