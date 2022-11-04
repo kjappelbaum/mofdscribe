@@ -36,15 +36,15 @@ class AbstractStructureDataset:
         raise NotImplementedError()
 
     @property
-    def available_info(self) -> Tuple[str]:
+    def available_info(self) -> List[str]:
         raise NotImplementedError()
 
     @property
-    def available_features(self) -> Tuple[str]:
+    def available_features(self) -> List[str]:
         raise NotImplementedError()
 
     @property
-    def available_labels(self) -> Tuple[str]:
+    def available_labels(self) -> List[str]:
         raise NotImplementedError()
 
     def __len__(self):

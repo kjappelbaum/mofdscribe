@@ -70,8 +70,8 @@ class StructureDataset(AbstractStructureDataset):
         check_all_file_exists(self._structures)
 
         self._year_column = year_column
-        self._label_columns = tuple(label_columns) if label_columns is not None else tuple()
-        self._feature_columns = tuple(feature_columns) if feature_columns is not None else tuple()
+        self._label_columns = list(label_columns) if label_columns is not None else tuple()
+        self._feature_columns = list(feature_columns) if feature_columns is not None else tuple()
         self._decorated_graph_hash_column = decorated_graph_hash_column
         self._undecorated_graph_hash_column = undecorated_graph_hash_column
         self._decorated_scaffold_hash_column = decorated_scaffold_hash_column
@@ -107,11 +107,11 @@ class StructureDataset(AbstractStructureDataset):
         return len(self._structures)
 
     @property
-    def available_features(self) -> Tuple[str]:
+    def available_features(self) -> List[str]:
         return self._featurenames
 
     @property
-    def available_labels(self) -> Tuple[str]:
+    def available_labels(self) -> List[str]:
         return self._labelnames
 
     def get_labels(self, idx: Iterable[int], labelnames: Iterable[str] = None) -> np.ndarray:
