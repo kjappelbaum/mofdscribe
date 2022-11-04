@@ -62,7 +62,7 @@ def run_zeopp(structure: Structure, command: str, parser: Callable, ha: bool = T
     with TemporaryDirectory(dir=TEMPDIR) as tempdir:
         structure_path = os.path.join(tempdir, "structure.cif")
         result_path = os.path.join(tempdir, "result.res")
-        structure.to("cif", structure_path)
+        structure.to(filename=structure_path, fmt="cif")
         if ha:
             cmd = (
                 ZEOPP_BASE_COMMAND + HA_COMMAND + command + [str(result_path), str(structure_path)]
