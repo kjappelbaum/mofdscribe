@@ -42,11 +42,12 @@ jobs:
           use-mamba: true
           python-version: ${{ matrix.python-version }}
           conda-channels: anaconda, conda-forge
+          activate-environment: test
 
       - name: Install dependencies
         run: |
           sudo apt-get install --fix-missing libcgal-dev
-          conda install raspa2 zeopp-lsmo openbabel -c conda-forge -y
+          mamba install raspa2 zeopp-lsmo openbabel -c conda-forge -y
           pip install pytest tox dscribe pytest-xdist # we need dscribe for the SBU test
           pip install -e ".[all]"
       - name: Check for lint
@@ -55,5 +56,5 @@ jobs:
           tox -e flake8
       - name: Test with pytest
         run: |
-          export RASPA_DIR=/usr/share/miniconda/envs/__setup_conda
+          export RASPA_DIR=/usr/share/miniconda/envs/test
           pytest tests/
