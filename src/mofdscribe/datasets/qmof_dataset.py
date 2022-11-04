@@ -199,7 +199,7 @@ class QMOFDataset(AbstractStructureDataset):
         drop_basename_duplicates: bool = True,
         drop_graph_duplicates: bool = True,
         subset: Optional[Iterable[int]] = None,
-        drop_nan: bool = True,
+        drop_nan: bool = False,
     ):
         """Construct an instance of the QMOF dataset.
 
@@ -216,7 +216,7 @@ class QMOFDataset(AbstractStructureDataset):
             subset (Optional[Iterable[int]]): indices of the structures to include.
                 This is useful for subsampling the dataset. Defaults to None.
             drop_nan (bool): If True, drop rows with NaN values in features or hashes.
-                Defaults to True.
+                Defaults to False.
 
         Raises:
             ValueError: If the provided version number is not available.

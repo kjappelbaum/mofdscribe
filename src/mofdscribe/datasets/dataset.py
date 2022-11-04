@@ -125,7 +125,10 @@ class AbstractStructureDataset:
 
     def get_densities(self, idx: Iterable[int]) -> np.ndarray:
         if self._densities is None:
-            get_denstiy = lambda s: s.density
+
+            def get_denstiy(s):
+                return s.density
+
             self._densities = np.array(
                 Parallel(n_jobs=-1)(
                     delayed(get_denstiy)(s) for s in self.get_structures(range(len(self)))

@@ -67,7 +67,6 @@ class StructureDataset(AbstractStructureDataset):
         else:
             self._structures = files
         self._structure_name_column = structure_name_column
-        print(self._structures)
         check_all_file_exists(self._structures)
 
         self._year_column = year_column
@@ -104,6 +103,7 @@ class StructureDataset(AbstractStructureDataset):
         self._densities = None if density_column is None else self._df[density_column].values
 
     def __len__(self):
+        """Number of structures in the dataset."""
         return len(self._structures)
 
     @property
@@ -137,7 +137,7 @@ class StructureDataset(AbstractStructureDataset):
 
         Args:
             folder (PathType): Path to the folder containing the structures.
-            extension (str, optional): Extension of the files. Defaults to 'cif'.
+            extension (str): Extension of the files. Defaults to 'cif'.
             dataframe (Optional[pd.DataFrame], optional): Dataframe containing the structures.
                 Defaults to None.
             structure_name_column (str): Name of the column containing the structure names.
@@ -152,8 +152,8 @@ class StructureDataset(AbstractStructureDataset):
                 Defaults to None.
             decorated_scaffold_hash_column (str, optional): Name of the column containing the decorated scaffold hash.
                 Defaults to None.
-            undecorated_scaffold_hash_column (str, optional): Name of the column containing the undecorated scaffold hash.
-                Defaults to None.
+            undecorated_scaffold_hash_column (str, optional): Name of the column containing the undecorated scaffold
+                hash. Defaults to None.
             density_column (str, optional): Name of the column containing the density of the structure.
                 Defaults to None.
 
