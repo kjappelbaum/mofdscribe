@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
 """Test CoRE dataset."""
 import numpy as np
+import pytest
 from pymatgen.core import IStructure
 
 from mofdscribe.datasets.core_dataset import CoREDataset
 
 
+@pytest.mark.xdist_group(name="core-ds")
 def test_core():
     """Ensure we can instantiate the CoRE dataset as access a few key methods."""
     core = CoREDataset()

@@ -16,6 +16,7 @@ from mofdscribe.splitters import ClusterStratifiedSplitter
 from mofdscribe.splitters.splitters import BaseSplitter
 
 
+@pytest.mark.xdist_group(name="core-ds")
 class MyDummyModel:
     """Dummy model."""
 

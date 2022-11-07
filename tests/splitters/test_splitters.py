@@ -19,7 +19,7 @@ from mofdscribe.splitters.splitters import (
 
 FEATURES = list(CoREDataset().available_features)
 
-
+@pytest.mark.xdist_group(name="core-ds")
 @pytest.mark.parametrize("sample_frac", (0.2, 0.5, 1.0))
 @pytest.mark.parametrize("shuffle", (True, False))
 def test_base_splitter(sample_frac, shuffle):
@@ -41,7 +41,7 @@ def test_base_splitter(sample_frac, shuffle):
     groups_test = set(groups[test_idx])
     assert groups_train & groups_test == set()
 
-
+@pytest.mark.xdist_group(name="core-ds")
 @pytest.mark.parametrize("sample_frac", (0.2, 0.5, 1.0))
 def test_hash_splitter(sample_frac):
     """Ensure that the splits add up to the total number of structures and are non-overlapping."""
@@ -61,7 +61,7 @@ def test_hash_splitter(sample_frac):
     assert len(splits) == 3
     assert len(splits[0]) > len(splits[1]) > len(splits[2])
 
-
+@pytest.mark.xdist_group(name="core-ds")
 def test_time_splitter():
     """Ensure that the splits add up to the total number of structures and are non-overlapping."""
     ds = CoREDataset()
@@ -76,7 +76,7 @@ def test_time_splitter():
     assert len(splits) == 3
     assert len(splits[0]) > len(splits[1]) > len(splits[2])
 
-
+@pytest.mark.xdist_group(name="core-ds")
 def test_density_splitter():
     """Ensure that the splits add up to the total number of structures and are non-overlapping."""
     ds = CoREDataset()
@@ -113,7 +113,7 @@ def test_density_splitter():
     set0 = set(groups[splits[0]])
     set1 = set(groups[splits[1]])
 
-
+@pytest.mark.xdist_group(name="core-ds")
 def test_kennard_stone_splitter():
     """Ensure that the splits add up to the total number of structures and are non-overlapping."""
     ds = CoREDataset()
@@ -151,7 +151,7 @@ def test_cluster_splitter():
     assert len(splits) == 3
     assert len(splits[0]) > len(splits[1]) > len(splits[2])
 
-
+@pytest.mark.xdist_group(name="core-ds")
 def test_cluster_stratified_splitter():
     """Ensure that the splits add up to the total number of structures and are non-overlapping.
 
@@ -178,7 +178,7 @@ def test_cluster_stratified_splitter():
     assert len(splits) == 3
     assert len(splits[0]) > len(splits[1]) > len(splits[2])
 
-
+@pytest.mark.xdist_group(name="core-ds")
 def test_locov():
     """Ensure that the splits add up to the total number of structures and are non-overlapping.
 
