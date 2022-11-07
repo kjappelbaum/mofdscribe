@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import pytest
 from sklearn.ensemble import RandomForestRegressor
 
 from mofdscribe.bench.df_model import DFModel
@@ -7,6 +8,7 @@ from mofdscribe.bench.mofbench import BenchResult
 from mofdscribe.datasets import CoREDataset
 
 
+@pytest.mark.xdist_group(name="core-ds")
 def test_df_model():
     ds = CoREDataset()
     model = RandomForestRegressor(n_estimators=100)

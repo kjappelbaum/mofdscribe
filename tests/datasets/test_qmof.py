@@ -7,6 +7,7 @@ from pymatgen.core import IStructure
 from mofdscribe.datasets.qmof_dataset import QMOFDataset
 
 
+@pytest.mark.xdist_group(name="qmof-ds")
 @pytest.mark.parametrize("flavor", ["all", "csd", "gcmc", "csd-gcmc"])
 def test_qmof(flavor):
     """Ensure we can instantiate the QMOF dataset and access a few key methods."""

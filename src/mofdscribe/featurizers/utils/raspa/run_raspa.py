@@ -89,7 +89,7 @@ def run_raspa(
             run_template = RUN_SCRIPT.replace("RASPA_DIR", raspa_dir)
             handle.write(run_template)
 
-        structure.to(filename=os.path.join(tempdir, "input.cif"), fmt='cif')
+        structure.to(filename=os.path.join(tempdir, "input.cif"), fmt="cif")
         if run_eqeq:
             try:
                 call_eqeq(structure, os.path.join(tempdir, "input.cif"))
