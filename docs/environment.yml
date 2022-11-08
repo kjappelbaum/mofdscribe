@@ -10,7 +10,7 @@ dependencies:
   - cgal
   - zeopp-lsmo
   - pip:
-      - numpy<=1.21
+      - numpy
       - matminer
       - loguru
       - pystow
