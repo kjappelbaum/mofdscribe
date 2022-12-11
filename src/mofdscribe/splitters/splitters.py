@@ -13,7 +13,7 @@ See also the `sklearn docs
     match the one you requested.
     For this reason, please get the length of the train/test/valid indices the methods produce.
 """
-from typing import Any, Callable, Dict, Iterable, List, Optional, Tuple, Union
+from typing import Any, Callable, Collection, Dict, List, Optional, Tuple, Union
 
 import numpy as np
 from loguru import logger
@@ -72,7 +72,7 @@ class BaseSplitter:
         sample_frac: Optional[float] = 1.0,
         stratification_col: Optional[Union[str, np.typing.ArrayLike]] = None,
         center: callable = np.median,
-        q: Iterable[float] = (0, 0.25, 0.5, 0.75, 1),
+        q: Collection[float] = (0, 0.25, 0.5, 0.75, 1),
         sort_by_len: bool = True,
     ):
         """Initialize a BaseSplitter.
@@ -98,7 +98,7 @@ class BaseSplitter:
                 of all the points in a group such that this can then be used for stratification.
                 This is only used for continuos inputs. For categorical inputs, we always use
                 the mode. Defaults to np.median.
-            q (Iterable[float], optional): List of quantiles used for quantile binning.
+            q (Collection[float], optional): List of quantiles used for quantile binning.
                 Defaults to (0, 0.25, 0.5, 0.75, 1).
             sort_by_len (bool): If True, sort the splits by length.
                 (Applies to the train/test/valid and train/test splits). Defaults to True.
@@ -123,7 +123,7 @@ class BaseSplitter:
         idx = np.arange(self._len)
         return idx
 
-    def train_test_split(self, frac_train: float = 0.7) -> Tuple[Iterable[int], Iterable[int]]:
+    def train_test_split(self, frac_train: float = 0.7) -> Tuple[Collection[int], Collection[int]]:
         """Perform a train/test partition.
 
         Args:
@@ -131,7 +131,7 @@ class BaseSplitter:
                 Defaults to 0.7.
 
         Returns:
-            Tuple[Iterable[int], Iterable[int]]: Train indices, test indices
+            Tuple[Collection[int], Collection[int]]: Train indices, test indices
         """
         if self._grouping_q is None or self._set_grouping:
             self._set_grouping = True
@@ -188,7 +188,7 @@ class BaseSplitter:
 
     def train_valid_test_split(
         self, frac_train: float = 0.7, frac_valid: float = 0.1
-    ) -> Tuple[Iterable[int], Iterable[int], Iterable[int]]:
+    ) -> Tuple[Collection[int], Collection[int], Collection[int]]:
         """Perform a train/valid/test partition.
 
         Args:
@@ -198,7 +198,7 @@ class BaseSplitter:
                 Defaults to 0.1.
 
         Returns:
-            Tuple[Iterable[int], Iterable[int], Iterable[int]]: Training, validation, test set.
+            Tuple[Collection[int], Collection[int], Collection[int]]: Training, validation, test set.
         """
         if self._grouping_q is None or self._set_grouping:
             self._set_grouping = True
@@ -258,14 +258,14 @@ class BaseSplitter:
 
         return sort_arrays_by_len([train_idx, valid_idx, test_index], self._sort_by_len)
 
-    def k_fold(self, k: int = 5) -> Tuple[Iterable[int], Iterable[int]]:
+    def k_fold(self, k: int = 5) -> Tuple[Collection[int], Collection[int]]:
         """Peform k-fold crossvalidation.
 
         Args:
             k (int): Number of folds. Defaults to 5.
 
         Yields:
-            Tuple[Iterable[int], Iterable[int]]: Train indices, test indices.
+            Tuple[Collection[int], Collection[int]]: Train indices, test indices.
         """
         if self._grouping_q is None or self._set_grouping:
             self._set_grouping = True
@@ -317,10 +317,10 @@ class BaseSplitter:
                 else:
                     yield train_index, test_index
 
-    def _get_groups(self) -> Iterable[Union[int, str]]:
+    def _get_groups(self) -> Collection[Union[int, str]]:
         return None
 
-    def _get_stratification_col(self) -> Iterable[Union[int, float]]:
+    def _get_stratification_col(self) -> Collection[Union[int, float]]:
         if isinstance(self._stratification_col, str):
             return self._ds._df[self._stratification_col].values
         else:
@@ -359,7 +359,7 @@ class HashSplitter(BaseSplitter):
         sample_frac: Optional[float] = 1.0,
         stratification_col: Optional[Union[str, np.typing.ArrayLike]] = None,
         center=np.median,
-        q: Iterable[float] = (0, 0.25, 0.5, 0.75, 1),
+        q: Collection[float] = (0, 0.25, 0.5, 0.75, 1),
         sort_by_len: bool = True,
     ) -> None:
         """Initialize a HashSplitter.
@@ -392,7 +392,7 @@ class HashSplitter(BaseSplitter):
                 of all the points in a group such that this can then be used for stratification.
                 This is only used for continuos inputs. For categorical inputs, we always use
                 the mode. Defaults to np.median.
-            q (Iterable[float], optional): List of quantiles used for quantile binning.
+            q (Collection[float], optional): List of quantiles used for quantile binning.
                 Defaults to (0, 0.25, 0.5, 0.75, 1).
             sort_by_len (bool): If True, sort the splits by length.
                 (Applies to the train/test/valid and train/test splits). Defaults to True.
@@ -409,7 +409,7 @@ class HashSplitter(BaseSplitter):
             sort_by_len=sort_by_len,
         )
 
-    def _get_hashes(self) -> Iterable[str]:
+    def _get_hashes(self) -> Collection[str]:
         """Retrieve the list of hashes from the dataset
 
         Raises:
@@ -420,7 +420,7 @@ class HashSplitter(BaseSplitter):
                 * undecorated_graph_hash
 
         Returns:
-            Iterable[str]: list of hashes
+            Collection[str]: list of hashes
         """
         number_of_points = len(self._ds)
         if self.hash_type == "undecorated_scaffold_hash":
@@ -436,7 +436,7 @@ class HashSplitter(BaseSplitter):
 
         return hashes
 
-    def _get_groups(self) -> Iterable[int]:
+    def _get_groups(self) -> Collection[int]:
         return self._get_hashes()
 
 
@@ -460,13 +460,13 @@ class DensitySplitter(BaseSplitter):
     def __init__(
         self,
         ds: AbstractStructureDataset,
-        density_q: Optional[Iterable[float]] = None,
+        density_q: Optional[Collection[float]] = None,
         shuffle: bool = True,
         random_state: Optional[Union[int, np.random.RandomState]] = None,
         sample_frac: Optional[float] = 1.0,
         stratification_col: Optional[Union[str, np.typing.ArrayLike]] = None,
         center: callable = np.median,
-        q: Iterable[float] = (0, 0.25, 0.5, 0.75, 1),
+        q: Collection[float] = (0, 0.25, 0.5, 0.75, 1),
         sort_by_len: bool = True,
     ) -> None:
         """Initialize the DensitySplitter class.
@@ -475,7 +475,7 @@ class DensitySplitter(BaseSplitter):
             ds (AbstractStructureDataset): A structure dataset.
                 The :code:`BaseSplitter` only requires the length magic method to be implemented.
                 However, other splitters might require additional methods.
-            density_q (Iterable[float], optional): List of quantiles used for quantile binning for the density.
+            density_q (Collection[float], optional): List of quantiles used for quantile binning for the density.
                 Defaults to None. If None, then we use two bins for test/train split, three for
                 validation/train/test split and k for k-fold.
             shuffle (bool): If True, perform a shuffled split.
@@ -495,7 +495,7 @@ class DensitySplitter(BaseSplitter):
                 of all the points in a group such that this can then be used for stratification.
                 This is only used for continuos inputs. For categorical inputs, we always use
                 the mode. Defaults to np.median.
-            q (Iterable[float], optional): List of quantiles used for quantile binning.
+            q (Collection[float], optional): List of quantiles used for quantile binning.
                 Defaults to (0, 0.25, 0.5, 0.75, 1]. Defaults to [0, 0.25, 0.5, 0.75, 1).
             sort_by_len (bool): If True, sort the splits by length.
                 (Applies to the train/test/valid and train/test splits). Defaults to True.
@@ -512,7 +512,7 @@ class DensitySplitter(BaseSplitter):
             sort_by_len=sort_by_len,
         )
 
-    def _get_groups(self) -> Iterable[int]:
+    def _get_groups(self) -> Collection[int]:
         return quantile_binning(self._ds.get_densities(range(len(self._ds))), self._grouping_q)
 
 
@@ -535,13 +535,13 @@ class TimeSplitter(BaseSplitter):
     def __init__(
         self,
         ds: AbstractStructureDataset,
-        year_q: Optional[Iterable[float]] = None,
+        year_q: Optional[Collection[float]] = None,
         shuffle: bool = True,
         random_state: Optional[Union[int, np.random.RandomState]] = None,
         sample_frac: Optional[float] = 1.0,
         stratification_col: Optional[Union[str, np.typing.ArrayLike]] = None,
         center: callable = np.median,
-        q: Iterable[float] = (0, 0.25, 0.5, 0.75, 1),
+        q: Collection[float] = (0, 0.25, 0.5, 0.75, 1),
         sort_by_len: bool = True,
     ) -> None:
         """Initialize the TimeSplitter class.
@@ -550,7 +550,7 @@ class TimeSplitter(BaseSplitter):
             ds (AbstractStructureDataset): A structure dataset.
                 The :code:`BaseSplitter` only requires the length magic method to be implemented.
                 However, other splitters might require additional methods.
-            year_q (Iterable[float]): List of quantiles used for quantile binning on the years.
+            year_q (Collection[float]): List of quantiles used for quantile binning on the years.
                 Defaults to None. If None, then we use two bins for test/train split, three for
                 validation/train/test split and k for k-fold.
             shuffle (bool): If True, perform a shuffled split.
@@ -570,7 +570,7 @@ class TimeSplitter(BaseSplitter):
                 of all the points in a group such that this can then be used for stratification.
                 This is only used for continuos inputs. For categorical inputs, we always use
                 the mode. Defaults to np.median.
-            q (Iterable[float], optional): List of quantiles used for quantile binning.
+            q (Collection[float], optional): List of quantiles used for quantile binning.
                 Defaults to (0, 0.25, 0.5, 0.75, 1).
             sort_by_len (bool): If True, sort the splits by length.
                 (Applies to the train/test/valid and train/test splits). Defaults to True.
@@ -587,7 +587,7 @@ class TimeSplitter(BaseSplitter):
             sort_by_len=sort_by_len,
         )
 
-    def _get_groups(self) -> Iterable[int]:
+    def _get_groups(self) -> Collection[int]:
         return quantile_binning(self._ds.get_years(range(len(self._ds))), self._grouping_q)
 
 
@@ -682,7 +682,7 @@ class KennardStoneSplitter(BaseSplitter):
             q=None,
         )
 
-    def get_sorted_indices(self, ds: AbstractStructureDataset) -> Iterable[int]:
+    def get_sorted_indices(self, ds: AbstractStructureDataset) -> Collection[int]:
         """Return a list of indices, sorted by similarity using the Kennard-Stone algorithm.
 
         The first sample will be maximally distant from the center.
@@ -691,7 +691,7 @@ class KennardStoneSplitter(BaseSplitter):
             ds (AbstractStructureDataset): A mofdscribe AbstractStructureDataset
 
         Returns:
-            Iterable[int]: Sorted indices.
+            Collection[int]: Sorted indices.
         """
         if self._sorted_indices is None:
             feats = ds._df[self.feature_names].values
@@ -709,7 +709,7 @@ class KennardStoneSplitter(BaseSplitter):
             self._sorted_indices = indices
         return self._sorted_indices
 
-    def train_test_split(self, frac_train: float = 0.7) -> Tuple[Iterable[int], Iterable[int]]:
+    def train_test_split(self, frac_train: float = 0.7) -> Tuple[Collection[int], Collection[int]]:
         num_train_points = int(frac_train * len(self._ds))
 
         if self._shuffle:
@@ -724,7 +724,7 @@ class KennardStoneSplitter(BaseSplitter):
 
     def train_valid_test_split(
         self, frac_train: float = 0.7, frac_valid: float = 0.1
-    ) -> Tuple[Iterable[int], Iterable[int], Iterable[int]]:
+    ) -> Tuple[Collection[int], Collection[int], Collection[int]]:
         num_train_points = int(frac_train * len(self._ds))
         num_valid_points = int(frac_valid * len(self._ds))
 
@@ -748,7 +748,7 @@ class KennardStoneSplitter(BaseSplitter):
             self.get_sorted_indices(self._ds)[num_train_points + num_valid_points :],
         )
 
-    def k_fold(self, k=5) -> Tuple[Iterable[int], Iterable[int]]:
+    def k_fold(self, k=5) -> Tuple[Collection[int], Collection[int]]:
         kf = KFold(n_splits=k, shuffle=False, random_state=self._random_state)
         for train_index, test_index in kf.split(self.get_sorted_indices(self._ds)):
             if self._shuffle:
@@ -778,7 +778,7 @@ class ClusterSplitter(BaseSplitter):
         sample_frac: Optional[float] = 1.0,
         stratification_col: Optional[Union[str, np.typing.ArrayLike]] = None,
         center: callable = np.median,
-        q: Iterable[float] = (0, 0.25, 0.5, 0.75, 1),
+        q: Collection[float] = (0, 0.25, 0.5, 0.75, 1),
         sort_by_len: bool = False,
         scaled: bool = True,
         n_pca_components: Optional[Union[int, str]] = "mle",
@@ -812,7 +812,7 @@ class ClusterSplitter(BaseSplitter):
                 of all the points in a group such that this can then be used for stratification.
                 This is only used for continuos inputs. For categorical inputs, we always use
                 the mode. Defaults to np.median.
-            q (Iterable[float], optional): List of quantiles used for quantile binning.
+            q (Collection[float], optional): List of quantiles used for quantile binning.
                 Defaults to (0, 0.25, 0.5, 0.75, 1]. Defaults to [0, 0.25, 0.5, 0.75, 1).
             sort_by_len (bool): If True, sort the splits by length.
                 (Applies to the train/test/valid and train/test splits). Defaults to True.
@@ -852,7 +852,7 @@ class ClusterSplitter(BaseSplitter):
 
     def _get_sorted_indices(
         self, ds: AbstractStructureDataset, shuffle: bool = True
-    ) -> Iterable[int]:
+    ) -> Collection[int]:
         if self._sorted_indices is None:
             feats = ds._df[self.feature_names].values
 
@@ -875,7 +875,7 @@ class ClusterSplitter(BaseSplitter):
             self._sorted_indices = indices
         return self._sorted_indices
 
-    def _get_groups(self) -> Iterable[Union[int, str]]:
+    def _get_groups(self) -> Collection[Union[int, str]]:
         si = self._get_sorted_indices(self._ds, self._shuffle)
         return np.array(si)
 
@@ -954,7 +954,7 @@ class ClusterStratifiedSplitter(BaseSplitter):
             q=None,
         )
 
-    def _get_stratification_col(self) -> Iterable[int]:
+    def _get_stratification_col(self) -> Collection[int]:
         if self._stratification_groups is None:
             feats = self._ds._df[self.feature_names].values
 
@@ -1049,11 +1049,11 @@ class LOCOCV(BaseSplitter):
 
     def train_test_split(
         self,
-    ) -> Tuple[Iterable[int], Iterable[int]]:
+    ) -> Tuple[Collection[int], Collection[int]]:
         """Perform a train/test partition.
 
         Returns:
-            Tuple[Iterable[int], Iterable[int]]: Train indices, test indices
+            Tuple[Collection[int], Collection[int]]: Train indices, test indices
         """
         groups = pca_kmeans(
             self._ds._df[self.feature_names].values,
@@ -1083,11 +1083,11 @@ class LOCOCV(BaseSplitter):
 
     def train_valid_test_split(
         self,
-    ) -> Tuple[Iterable[int], Iterable[int], Iterable[int]]:
+    ) -> Tuple[Collection[int], Collection[int], Collection[int]]:
         """Perform a train/valid/test partition.
 
         Returns:
-            Tuple[Iterable[int], Iterable[int], Iterable[int]]: Training, validation, test set.
+            Tuple[Collection[int], Collection[int], Collection[int]]: Training, validation, test set.
         """
         groups = pca_kmeans(
             self._ds._df[self.feature_names].values,
@@ -1118,14 +1118,14 @@ class LOCOCV(BaseSplitter):
         )
         return groups_sorted_by_len[0], groups_sorted_by_len[2], groups_sorted_by_len[1]
 
-    def k_fold(self, k: int) -> Tuple[Iterable[int], Iterable[int]]:
+    def k_fold(self, k: int) -> Tuple[Collection[int], Collection[int]]:
         """Peform k-fold crossvalidation.
 
         Args:
             k (int): Number of folds. Defaults to 5.
 
         Yields:
-            Iterator[Tuple[Iterable[int], Iterable[int]]]: Train indices, test indices.
+            Iterator[Tuple[Collection[int], Collection[int]]]: Train indices, test indices.
         """
         groups = pca_kmeans(
             self._ds._df[self.feature_names].values,

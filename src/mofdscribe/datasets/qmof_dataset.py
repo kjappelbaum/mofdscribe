@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Subset of the QMOF dataset."""
 import os
-from typing import Iterable, Optional, Tuple
+from typing import Collection, Optional, Tuple
 
 import numpy as np
 import pandas as pd
@@ -198,7 +198,7 @@ class QMOFDataset(AbstractStructureDataset):
         flavor: str = "all",
         drop_basename_duplicates: bool = True,
         drop_graph_duplicates: bool = True,
-        subset: Optional[Iterable[int]] = None,
+        subset: Optional[Collection[int]] = None,
         drop_nan: bool = False,
     ):
         """Construct an instance of the QMOF dataset.
@@ -213,7 +213,7 @@ class QMOFDataset(AbstractStructureDataset):
                 per CSD basename. Defaults to True.
             drop_graph_duplicates (bool): If True, keep only one structure
                 per decorated graph hash. Defaults to True.
-            subset (Optional[Iterable[int]]): indices of the structures to include.
+            subset (Optional[Collection[int]]): indices of the structures to include.
                 This is useful for subsampling the dataset. Defaults to None.
             drop_nan (bool): If True, drop rows with NaN values in features or hashes.
                 Defaults to False.
@@ -300,11 +300,11 @@ class QMOFDataset(AbstractStructureDataset):
         self._featurenames = (c for c in self._df.columns if c.startswith("features."))
         self._infonames = (c for c in self._df.columns if c.startswith("info."))
 
-    def get_subset(self, indices: Iterable[int]) -> "AbstractStructureDataset":
+    def get_subset(self, indices: Collection[int]) -> "AbstractStructureDataset":
         """Get a subset of the dataset.
 
         Args:
-            indices (Iterable[int]): indices of the structures to include.
+            indices (Collection[int]): indices of the structures to include.
 
         Returns:
             AbstractStructureDataset: a new dataset containing only the structures
@@ -331,7 +331,7 @@ class QMOFDataset(AbstractStructureDataset):
     def available_labels(self) -> Tuple[str]:
         return self._labelnames
 
-    def get_labels(self, idx: Iterable[int], labelnames: Iterable[str] = None) -> np.ndarray:
+    def get_labels(self, idx: Collection[int], labelnames: Collection[str] = None) -> np.ndarray:
         labelnames = labelnames if labelnames is not None else self._labelnames
         return self._df.iloc[idx][list(labelnames)].values
 

@@ -389,7 +389,7 @@ of liability.
 """
 from collections import defaultdict
 from ctypes import Structure
-from typing import Dict, Iterable, Optional, Tuple
+from typing import Collection, Dict, Optional, Tuple
 
 import numpy as np
 from loguru import logger
@@ -489,10 +489,10 @@ def pymatgen_2_babel_atom_idx_map(pmg_mol: Molecule, ob_mol: ob.OBMol) -> Dict[i
 
 
 def create_rdkit_mol(
-    species: Iterable[str],
+    species: Collection[str],
     coords: ArrayLike,
     bond_types: Dict[Tuple[int, int], Chem.rdchem.BondType],
-    formal_charge: Optional[Iterable[float]] = None,
+    formal_charge: Optional[Collection[float]] = None,
     name: Optional[str] = None,
     force_sanitize: bool = True,
 ):
@@ -502,11 +502,11 @@ def create_rdkit_mol(
     Followed: https://sourceforge.net/p/rdkit/mailman/message/36474923/
 
     Args:
-        species (list): species str of each molecule
+        species (Collection[str],): species str of each molecule
         coords (ArrayLike): positions of atoms
         bond_types (Dict[Tuple[int, int]): with bond indices (2 tuple) as key and bond type
             (e.g. Chem.rdchem.BondType.DOUBLE) as value
-        formal_charge (list, optional): formal charge of each atom.
+        formal_charge (Collection[float], optional): formal charge of each atom.
             Defaults to None.
         name (str, optional): name of the molecule.
             Defaults to None.
@@ -550,13 +550,13 @@ def create_rdkit_mol(
     return m
 
 
-def adjust_formal_charge(species: Iterable[str], bonds: Iterable[Tuple[int, int]]):
+def adjust_formal_charge(species: Collection[str], bonds: Collection[Tuple[int, int]]):
     """
     Adjust formal charge of metal atoms.
 
     Args:
-        species (Iterable[str]): species string of atoms
-        bonds (Iterable[Tuple[int, int]]): 2-tuple index of bonds
+        species (Collection[str]): species string of atoms
+        bonds (Collection[Tuple[int, int]]): 2-tuple index of bonds
 
     Returns:
         list: formal charge of atoms. None for non metal atoms.

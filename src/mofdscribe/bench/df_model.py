@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Helper to build bench model for models that operate on pre-computed feature frames."""
 
-from typing import Iterable, Optional
+from typing import Collection, Optional
 
 from loguru import logger
 
@@ -9,7 +9,7 @@ __all__ = ["DFModel"]
 
 
 class DFModel:
-    def __init__(self, model, features: Optional[Iterable[str]] = None):
+    def __init__(self, model, features: Optional[Collection[str]] = None):
         """Initialize the model.
 
         .. note:::
@@ -21,7 +21,7 @@ class DFModel:
         Args:
             model (object): Must implement `fit` and `predict` methods.
                 Using a sklearn function signature will work.
-            features (Iterable[str], optional): Feature names to use.
+            features (Collection[str], optional): Feature names to use.
                 If not provided, all features will be used.
                 Defaults to None.
         """

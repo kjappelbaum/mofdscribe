@@ -3,7 +3,7 @@
 
 Some of these methods might also be useful for constructing nested cross-validation loops.
 """
-from typing import Any, Callable, Dict, Iterable, List, Optional, Tuple, Union
+from typing import Any, Callable, Dict, List, Optional, Sequence, Tuple, Union
 
 import numpy as np
 import pandas as pd
@@ -155,14 +155,14 @@ def is_categorical(x: Union[float, int, np.typing.ArrayLike]) -> bool:
 
 
 def stratified_train_test_partition(
-    idxs: Iterable[int],
+    idxs: Sequence[int],
     stratification_col: np.typing.ArrayLike,
     train_size: float,
     valid_size: float,
     test_size: float,
     shuffle: bool = True,
     random_state: Optional[Union[int, np.random.RandomState]] = None,
-    q: Iterable[float] = (0, 0.25, 0.5, 0.75, 1),
+    q: Sequence[float] = (0, 0.25, 0.5, 0.75, 1),
 ) -> Tuple[np.array, np.array, np.array]:
     """Perform a stratified train/test split.
 
@@ -174,7 +174,7 @@ def stratified_train_test_partition(
           performs an grouped un-stratified train/test split
 
     Args:
-        idxs (Iterable[int]): Indices of points to split
+        idxs (Sequence[int]): Indices of points to split
         stratification_col (np.typing.ArrayLike): Data used for stratification.
             If it is categorical (see :py:meth:`mofdscribe.splitters.utils.is_categorical`)
             then we directly use it for stratification. Otherwise, we use quantile binning.
@@ -184,7 +184,7 @@ def stratified_train_test_partition(
         shuffle (bool): If True, perform a shuffled split. Defaults to True.
         random_state (Union[int, np.random.RandomState], optional):
             Random state for the suffler. Defaults to None.
-        q (Iterable[float], optional): List of quantiles used for quantile binning.
+        q (Sequence[float], optional): List of quantiles used for quantile binning.
             Defaults to (0, 0.25, 0.5, 0.75, 1).
 
     Returns:
@@ -237,8 +237,8 @@ def grouped_stratified_train_test_partition(
     test_size: float,
     shuffle: bool = True,
     random_state: Optional[Union[int, np.random.RandomState]] = None,
-    q: Iterable[float] = (0, 0.25, 0.5, 0.75, 1),
-    center: callable = np.median,
+    q: Sequence[float] = (0, 0.25, 0.5, 0.75, 1),
+    center: Callable = np.median,
 ) -> Tuple[np.array, np.array, np.array]:
     """Return grouped stratified train-test partition.
 
@@ -271,9 +271,9 @@ def grouped_stratified_train_test_partition(
         shuffle (bool): If True, perform a shuffled split. Defaults to True.
         random_state (Union[int, np.random.RandomState], optional):
             Random state for the suffler. Defaults to None.
-        q (Iterable[float], optional): List of quantiles used for quantile binning.
+        q (Sequence[float], optional): List of quantiles used for quantile binning.
             Defaults to [0, 0.25, 0.5, 0.75, 1].
-        center (callable): Aggregation function to compute a measure of centrality
+        center (Callable): Aggregation function to compute a measure of centrality
             of all the points in a group such that this can then be used for stratification.
             This is only used for continuos inputs. For categorical inputs, we always use
             the mode.
@@ -349,7 +349,7 @@ def grouped_train_valid_test_partition(
     test_size: float,
     shuffle: bool = True,
     random_state: Optional[Union[int, np.random.RandomState]] = None,
-) -> Tuple[np.array, np.array, np.array]:
+) -> Tuple[np.array, Optional[np.array], np.array]:
     """Perform a grouped train/test split without stratification.
 
     .. seealso::
@@ -369,10 +369,10 @@ def grouped_train_valid_test_partition(
             Random state for the suffler. Defaults to None.
 
     Returns:
-        Tuple[np.array, np.array, np.array]: Train, validation, test indices.
+        Tuple[np.array, Optional[np.array], np.array]: Train, validation, test indices.
     """
     train_indices = []
-    valid_indices = []
+    valid_indices: Optional[List[Any]] = []
     test_indices = []
 
     unique_groups = np.unique(groups)
@@ -408,7 +408,7 @@ def grouped_train_valid_test_partition(
     return train_indices, valid_indices, test_indices
 
 
-def quantile_binning(values: np.typing.ArrayLike, q: Iterable[float]) -> np.array:
+def quantile_binning(values: np.typing.ArrayLike, q: Sequence[float]) -> np.array:
     """Use :py:meth:`pandas.qcut` to bin the values based on quantiles."""
     values = pd.qcut(values, q, labels=np.arange(len(q) - 1)).astype(int)
     return values

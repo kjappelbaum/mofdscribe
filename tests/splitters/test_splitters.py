@@ -19,6 +19,7 @@ from mofdscribe.splitters.splitters import (
 
 FEATURES = list(CoREDataset().available_features)
 
+
 @pytest.mark.xdist_group(name="core-ds")
 @pytest.mark.parametrize("sample_frac", (0.2, 0.5, 1.0))
 @pytest.mark.parametrize("shuffle", (True, False))
@@ -41,6 +42,7 @@ def test_base_splitter(sample_frac, shuffle):
     groups_test = set(groups[test_idx])
     assert groups_train & groups_test == set()
 
+
 @pytest.mark.xdist_group(name="core-ds")
 @pytest.mark.parametrize("sample_frac", (0.2, 0.5, 1.0))
 def test_hash_splitter(sample_frac):
@@ -61,6 +63,7 @@ def test_hash_splitter(sample_frac):
     assert len(splits) == 3
     assert len(splits[0]) > len(splits[1]) > len(splits[2])
 
+
 @pytest.mark.xdist_group(name="core-ds")
 def test_time_splitter():
     """Ensure that the splits add up to the total number of structures and are non-overlapping."""
@@ -75,6 +78,7 @@ def test_time_splitter():
     splits = ts.train_valid_test_split(frac_train=0.5, frac_valid=0.3)
     assert len(splits) == 3
     assert len(splits[0]) > len(splits[1]) > len(splits[2])
+
 
 @pytest.mark.xdist_group(name="core-ds")
 def test_density_splitter():
@@ -112,6 +116,7 @@ def test_density_splitter():
 
     set0 = set(groups[splits[0]])
     set1 = set(groups[splits[1]])
+
 
 @pytest.mark.xdist_group(name="core-ds")
 def test_kennard_stone_splitter():
@@ -151,6 +156,7 @@ def test_cluster_splitter():
     assert len(splits) == 3
     assert len(splits[0]) > len(splits[1]) > len(splits[2])
 
+
 @pytest.mark.xdist_group(name="core-ds")
 def test_cluster_stratified_splitter():
     """Ensure that the splits add up to the total number of structures and are non-overlapping.
@@ -177,6 +183,7 @@ def test_cluster_stratified_splitter():
     splits = fps.train_valid_test_split(frac_train=0.5, frac_valid=0.3)
     assert len(splits) == 3
     assert len(splits[0]) > len(splits[1]) > len(splits[2])
+
 
 @pytest.mark.xdist_group(name="core-ds")
 def test_locov():

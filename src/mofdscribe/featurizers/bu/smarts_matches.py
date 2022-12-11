@@ -1,13 +1,13 @@
 """Featurize a molecule using SMARTS matches."""
 from functools import partial
-from typing import Iterable, List, Optional
+from typing import Collection, List, Optional
 
 from rdkit import Chem
 
 from mofdscribe.featurizers.bu.rdkitadaptor import RDKitAdaptor
 
 
-def number_smart_matches(mol, smarts: Iterable[str]) -> int:
+def number_smart_matches(mol, smarts: Collection[str]) -> int:
     """Count the number of SMARTS matches in a molecule.
 
     This can be useful if we have some prior knowledge
@@ -15,7 +15,7 @@ def number_smart_matches(mol, smarts: Iterable[str]) -> int:
 
     Args:
         mol (rdkit.Chem.rdchem.Mol): RDKit molecule.
-        smarts (Iterable[str]): SMARTS patterns to match.
+        smarts (Collection[str]): SMARTS patterns to match.
 
     Returns:
         int: Number of SMARTS matches.
@@ -35,11 +35,11 @@ class SmartsMatchCounter(RDKitAdaptor):
     """
 
     # ToDo: Perhaps normalize by the length of the SMARTS substructure
-    def __init__(self, smarts: Iterable[str], feature_labels: Optional[Iterable[str]]) -> None:
+    def __init__(self, smarts: Collection[str], feature_labels: Optional[Collection[str]]) -> None:
         """Construct a new SmartsMatchCounter.
 
         Args:
-            smarts (Iterable[str]): SMARTS patterns to match.
+            smarts (Collection[str]): SMARTS patterns to match.
             feature_labels (str, optional): Feature labels.
                 If None, the SMARTS patterns are concatenated to a labels.
         """

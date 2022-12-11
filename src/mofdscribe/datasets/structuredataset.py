@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
 """Interface for creating a custom StructureDataset."""
 from pathlib import Path
-from typing import Iterable, List, Optional
+from typing import Collection, List, Optional
 
 import numpy as np
 import pandas as pd
+from loguru import logger
 
 from mofdscribe.datasets.checks import check_all_file_exists
 from mofdscribe.datasets.dataset import AbstractStructureDataset
 from mofdscribe.datasets.utils import compress_dataset
 from mofdscribe.types import PathType
-from loguru import logger
 
 __all__ = ["StructureDataset", "FrameDataset"]
 
@@ -20,7 +20,7 @@ class StructureDataset(AbstractStructureDataset):
 
     def __init__(
         self,
-        files: Iterable[PathType],
+        files: Collection[PathType],
         df: Optional[pd.DataFrame] = None,
         structure_name_column: Optional[str] = None,
         year_column: Optional[str] = None,
@@ -35,7 +35,7 @@ class StructureDataset(AbstractStructureDataset):
         """Initialize a dataset.
 
         Args:
-            files (Iterable[PathType]): List of files to load structures from.
+            files (Collection[PathType]): List of files to load structures from.
             df (Optional[pd.DataFrame], optional): Dataframe containing the structures.
                 Defaults to None.
             structure_name_column (str): Name of the column containing the structure names.
@@ -115,7 +115,7 @@ class StructureDataset(AbstractStructureDataset):
     def available_labels(self) -> List[str]:
         return self._labelnames
 
-    def get_labels(self, idx: Iterable[int], labelnames: Iterable[str] = None) -> np.ndarray:
+    def get_labels(self, idx: Collection[int], labelnames: Collection[str] = None) -> np.ndarray:
         labelnames = labelnames if labelnames is not None else self._labelnames
         return self._df.iloc[idx][list(labelnames)].values
 
@@ -212,7 +212,9 @@ class FrameDataset(AbstractStructureDataset):
                 Defaults to None.
         """
         super().__init__()
-        logger.warning("FrameDataset support is experimental. Some splitter integrations may not work.")
+        logger.warning(
+            "FrameDataset support is experimental. Some splitter integrations may not work."
+        )
         self._df = df
         compress_dataset(self._df)
         self._structure_name_column = structure_name_column
@@ -260,6 +262,6 @@ class FrameDataset(AbstractStructureDataset):
     def available_labels(self) -> List[str]:
         return self._labelnames
 
-    def get_labels(self, idx: Iterable[int], labelnames: Iterable[str] = None) -> np.ndarray:
+    def get_labels(self, idx: Collection[int], labelnames: Collection[str] = None) -> np.ndarray:
         labelnames = labelnames if labelnames is not None else self._labelnames
         return self._df.iloc[idx][list(labelnames)].values
