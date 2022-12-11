@@ -10,18 +10,11 @@ from pymatgen.core import IMolecule, IStructure, Molecule, Structure
 from structuregraph_helpers.subgraph import get_subgraphs_as_molecules
 
 from mofdscribe.featurizers.bu.utils import boxed_molecule
-from mofdscribe.featurizers.hostguest.utils import remove_guests_from_structure
+from mofdscribe.featurizers.hostguest.utils import remove_guests_from_structure, HostGuest, _extract_host_guest
 from mofdscribe.featurizers.utils import set_operates_on
 from mofdscribe.featurizers.utils.aggregators import ARRAY_AGGREGATORS
 from mofdscribe.featurizers.utils.structure_graph import get_structure_graph
-
-
-class HostGuest(BaseModel):
-    """Container for host and guests."""
-
-    host: Union[Structure, IStructure]
-    guests: Optional[List[Union[Structure, Molecule, IStructure, IMolecule]]]
-
+from mofdscribe.featurizers.base import MOFBaseFeaturizer
 
 # ToDo: How do we handle if there is no guest?
 # make it optional to remove guests from the structure?
@@ -99,31 +92,7 @@ class HostGuestFeaturizer(BaseFeaturizer):
         structure: Optional[Union[Structure, IStructure]] = None,
         host_guest: Optional[HostGuest] = None,
     ):
-        if structure is None and host_guest is None:
-            raise ValueError("You must provide a structure or host_guest.")
-
-        if structure is not None:
-            if not isinstance(structure, (IStructure)):
-                structure = IStructure.from_sites(structure.sites)
-            structure_graph = get_structure_graph(structure, self._local_env_method)
-            mols, _mol_graphs, mol_indices, _centers, _coordinates = get_subgraphs_as_molecules(
-                structure_graph
-            )
-            if self._remove_guests:
-                host = remove_guests_from_structure(structure_graph.structure, mol_indices)
-            else:
-                host = structure_graph.structure
-                
-            if self._operates_on == "structure":
-                mols = [boxed_molecule(mol) for mol in mols]
-
-        else:
-            host = host_guest.host
-            mols = host_guest.guests
-            if self._operates_on == "structure" and isinstance(mols[0], (Molecule, IMolecule)):
-                mols = [boxed_molecule(mol) for mol in mols]
-
-        return HostGuest(host=host, guests=mols)
+       return _extract_host_guest(structure=structure, host_guest=host_guest, remove_guests=self._remove_guests, operates_on=self._operates_on, local_env_method=self._local_env_method)
 
     def fit(
         self,
@@ -151,7 +120,6 @@ class HostGuestFeaturizer(BaseFeaturizer):
                 host_guest = self._extract_host_guest(host_guest=host_guest)
                 all_hosts.append(host_guest.host)
                 all_guests.extend(host_guest.guests)
-        print(all_hosts, all_guests)
         self._featurizer.fit(all_hosts + all_guests)
 
     def featurize(

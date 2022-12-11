@@ -94,7 +94,7 @@ For this, you can either provide your building blocks that you extracted with an
 Host-Guest Featurization
 -----------------------------
 
-If you have structures loaded with guest molecules as input, you might find the :py:obj:`~mofdscribe.featurizers.hostguest.HostGuestFeaturizer` convenient. 
+If you have structures loaded with guest molecules as input, you might find the :py:class:`~mofdscribe.featurizers.hostguest.HostGuestFeaturizer` convenient. 
 This featurizer will automatically extract the host and guest structures from the input structures and then featurize them separately. If there are multiple guests in the input structures, the featurizer will featurize each guest separately and then aggregate the features.
 
 .. code-block:: python

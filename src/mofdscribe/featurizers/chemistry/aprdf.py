@@ -4,8 +4,6 @@
 See alternative implementation https://github.com/tomdburns/AP-RDF (likely
 faster as it also has a lower-level implementation)
 """
-
-from collections import defaultdict
 from functools import cached_property
 from typing import List, Tuple, Union
 
@@ -17,9 +15,9 @@ from mofdscribe.featurizers.base import MOFBaseFeaturizer
 
 from ..utils.aggregators import AGGREGATORS
 from ..utils.extend import operates_on_istructure, operates_on_structure
-from ..utils.histogram import get_rdf, smear_histogram
 
 __all__ = ["APRDF"]
+
 
 
 @operates_on_structure
@@ -48,10 +46,11 @@ class APRDF(MOFBaseFeaturizer):
         self,
         cutoff: float = 20.0,
         lower_lim: float = 2.0,
-        bin_size: float = 0.1,
-        bw: Union[float, None] = 0.1,
+        bin_size: float = 0.25,
+        b_smear: Union[float, None] = 10,
         properties: Tuple[str, int] = ("X", "electron_affinity"),
         aggregations: Tuple[str] = ("avg", "product", "diff"),
+        normalize: bool = False,
         primitive: bool = True,
     ):
         """Set up an atomic property (AP) weighted radial distribution function.
@@ -63,7 +62,7 @@ class APRDF(MOFBaseFeaturizer):
                 Defaults to 2.0.
             bin_size (float): Bin size for binning.
                 Defaults to 0.1.
-            bw (Union[float, None]): Band width for Gaussian smearing.
+            b_smear (Union[float, None]): Band width for Gaussian smearing.
                 If None, the unsmeared histogram is used. Defaults to 0.1.
             properties (Tuple[str, int]): Properties used for calculation of the AP-RDF.
                 All properties of `pymatgen.core.Species` are available in
@@ -73,6 +72,8 @@ class APRDF(MOFBaseFeaturizer):
                 properties.
                 See `mofdscribe.featurizers.utils.aggregators.AGGREGATORS` for available
                 options. Defaults to ("avg", "product", "diff").
+            normalize (bool): If True, the histogram is normalized by dividing
+                by the number of atoms. Defaults to False.
             primitive (bool): If True, the structure is reduced to its primitive
                 form before the descriptor is computed. Defaults to True.
         """
@@ -80,8 +81,9 @@ class APRDF(MOFBaseFeaturizer):
         self.cutoff = cutoff
         self.bin_size = bin_size
         self.properties = properties
+        self.normalize = normalize
 
-        self.bw = bw
+        self.b_smear = b_smear
         self.aggregations = aggregations
         super().__init__(primitive=primitive)
 
@@ -90,58 +92,42 @@ class APRDF(MOFBaseFeaturizer):
 
     @cached_property
     def _bins(self):
-        return np.arange(self.lower_lim, self.cutoff, self.bin_size)
+        num_bins = int((self.cutoff-self.lower_lim)//self.bin_size)
+        bins = np.linspace(self.lower_lim, self.cutoff, num_bins)
+        return bins
 
     def _get_feature_labels(self):
-        labels = []
-        for prop in self.properties:
-            for aggregation in self.aggregations:
-                for _, bin_ in enumerate(self._bins):
-                    labels.append(f"aprdf_{prop}_{aggregation}_{bin_}")
+        aprdfs = np.empty((len(self.properties), len(self.aggregations), len(self._bins)), dtype=object)
+        for pi, prop in enumerate(self.properties):
+            for ai, aggregation in enumerate(self.aggregations):
+                for bin_index, _ in enumerate(self._bins):
+                    aprdfs[pi][ai][bin_index] = f"aprdf_{prop}_{aggregation}_{bin_index}"
 
-        return labels
+        return list(aprdfs.flatten())
 
     def _featurize(self, s: Union[Structure, IStructure]) -> np.array:
-        neighbors_lst = s.get_all_neighbors(self.cutoff)
+        bins = self._bins
+        aprdfs = np.zeros((len(self.properties), len(self.aggregations), len(bins)))
 
-        results = defaultdict(lambda: defaultdict(list))
-
-        # ToDo: This is quite slow. We can, however, only use numba if we do not access the
-        # pymatgen object
-        # for numba, we could make one "slow" loop where we store everything we need
-        # in one/two arrays and then we make the N*N loop
-        for i, site in enumerate(s):
-            site_neighbors = neighbors_lst[i]
-            for n in site_neighbors:
-                if n.nn_distance > self.lower_lim:
-                    for prop in self.properties:
-                        if prop in ("I", 1):
-                            p0 = 1
-                            p1 = 1
-                        else:
-                            p0 = encode(site.specie.symbol, prop)
-                            p1 = encode(n.specie.symbol, prop)
-                        for agg in self.aggregations:
+        # todo: use numba to speed up
+        for i in range(len(s)):
+            for j in range(i+1, len(s)):
+                dist = s.get_distance(i, j)
+                if dist < self.cutoff and dist > self.lower_lim:
+                    bin_idx = int((dist-self.lower_lim)//self.bin_size)
+                    for pi, prop in enumerate(self.properties):
+                        for ai, agg in enumerate(self.aggregations):
+                            p0 = encode(s[i].specie, prop)
+                            p1 = encode(s[j].specie, prop)
+                
                             agg_func = AGGREGATORS[agg]
-                            results[prop][agg].append(agg_func((p0, p1)) * n.nn_distance)
+                            p = agg_func([p0, p1])
+                            aprdfs[pi][ai][bin_idx] += p * np.exp(-self.b_smear * (dist - bins[bin_idx]) ** 2)
 
-        feature_vec = []
-        for prop in self.properties:
-            for aggregation in self.aggregations:
-                rdf = get_rdf(
-                    results[prop][aggregation],
-                    self.lower_lim,
-                    self.cutoff,
-                    self.bin_size,
-                    s.num_sites,
-                    s.volume,
-                )
-                if self.bw is not None:
-                    rdf = smear_histogram(rdf, self.bw, self.lower_lim, self.cutoff + self.bin_size)
-
-                feature_vec.append(rdf)
-
-        return np.concatenate(feature_vec)
+        if self.normalize: 
+            aprdfs /= len(s)
+        
+        return aprdfs.flatten()
 
     def feature_labels(self) -> List[str]:
         return self._get_feature_labels()

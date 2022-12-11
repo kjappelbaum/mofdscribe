@@ -59,6 +59,7 @@ def smear_histogram(histogram: np.array, bw: float, lower_lim: float, upper_lim:
     Returns:
         np.array: smoothed histogram
     """
+    print(histogram)
     kernel = gaussian_kde(histogram, bw_method=bw)
     x = np.linspace(lower_lim, upper_lim, len(histogram))
     y = kernel(x)
