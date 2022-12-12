@@ -55,7 +55,7 @@ class ThermalStabilityDataset(AbstractStructureDataset):
             "df": "https://zenodo.org/record/7428485/files/data.json?download=1",
             "structures": "https://zenodo.org/record/7428485/files/structures.tar.gz?download=1",
             "expected_length": 2039,
-        }x
+        }
     }
 
     def __init__(
