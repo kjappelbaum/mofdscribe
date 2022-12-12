@@ -111,14 +111,14 @@ class APRDF(MOFBaseFeaturizer):
         aprdfs = np.zeros((len(self.properties), len(self.aggregations), len(bins)))
 
         # todo: use numba to speed up
-        for i in range(len(s)):
+        for i, item in enumerate(s):
             for j in range(i + 1, len(s)):
                 dist = s.get_distance(i, j)
                 if dist < self.cutoff and dist > self.lower_lim:
                     bin_idx = int((dist - self.lower_lim) // self.bin_size)
                     for pi, prop in enumerate(self.properties):
                         for ai, agg in enumerate(self.aggregations):
-                            p0 = encode(s[i].specie, prop)
+                            p0 = encode(item.specie, prop)
                             p1 = encode(s[j].specie, prop)
 
                             agg_func = AGGREGATORS[agg]
