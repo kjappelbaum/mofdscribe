@@ -43,15 +43,19 @@ class ThermalStabilityDataset(AbstractStructureDataset):
         * `outputs.assigned_T_decomp`: Decomposition temperature in Kelvin.
 
     References::
-        .. [Nandy2022] `Nandy, A.; Terrones, G.; Arunachalam, N.; Duan, C.; Kastner, D. W.; Kulik, H. J. MOFSimplify, Machine Learning Models with Extracted Stability Data of Three Thousand Metal–Organic Frameworks. Scientific Data 2022, 9 (1). <https://doi.org/10.1038/s41597-022-01181-0>`_
+        .. [Nandy2022] `Nandy, A.; Terrones, G.; Arunachalam, N.; Duan, C.;
+            Kastner, D. W.; Kulik, H. J.
+            MOFSimplify, Machine Learning Models with Extracted Stability Data
+            of Three Thousand Metal–Organic Frameworks.
+            Scientific Data 2022, 9 (1). <https://doi.org/10.1038/s41597-022-01181-0>`_
     """
 
     _files = {
         "v0.0.1": {
-            "df": "https://www.dropbox.com/s/68z3d7wxh3lojrr/data.json?dl=1",
-            "structures": "https://www.dropbox.com/s/yd2s7fd8qp257w3/structures.tar.gz?dl=1",
+            "df": "https://zenodo.org/record/7428485/files/data.json?download=1",
+            "structures": "https://zenodo.org/record/7428485/files/structures.tar.gz?download=1",
             "expected_length": 2039,
-        }
+        }x
     }
 
     def __init__(
@@ -62,6 +66,23 @@ class ThermalStabilityDataset(AbstractStructureDataset):
         subset: Optional[Collection[int]] = None,
         drop_nan: bool = False,
     ):
+        """Construct an instance of the ThermalStabilityDataset.
+
+        Args:
+            version (str): version number to use.
+                Defaults to "v0.0.1".
+            drop_basename_duplicates (bool): If True, keep only one structure
+                per CSD basename. Defaults to True.
+            drop_graph_duplicates (bool): If True, keep only one structure
+                per decorated graph hash. Defaults to True.
+            subset (Collection[int], optional): indices of the structures to include.
+                Defaults to None.
+            drop_nan (bool): If True, drop rows with NaN values in features or hashes.
+                Defaults to True.
+
+        Raises:
+            ValueError: If the provided version number is not available.
+        """
         self._drop_basename_duplicates = drop_basename_duplicates
         self._drop_nan = drop_nan
         self._drop_graph_duplicates = drop_graph_duplicates
@@ -129,7 +150,6 @@ class ThermalStabilityDataset(AbstractStructureDataset):
         self._featurenames = (c for c in self._df.columns if c.startswith("features."))
         self._infonames = (c for c in self._df.columns if c.startswith("info."))
 
-
     def get_subset(self, indices: Collection[int]) -> "AbstractStructureDataset":
         """Get a subset of the dataset.
 
@@ -147,7 +167,6 @@ class ThermalStabilityDataset(AbstractStructureDataset):
             subset=indices,
             drop_nan=self._drop_nan,
         )
-
 
     @property
     def available_info(self) -> Tuple[str]:
@@ -211,8 +230,10 @@ class ThermalStabilityDataset(AbstractStructureDataset):
             "publisher = {Springer Science and Business Media {LLC}},"
             "volume = {9},"
             "number = {1},"
-            "author = {Aditya Nandy and Gianmarco Terrones and Naveen Arunachalam and Chenru Duan and David W. Kastner and Heather J. Kulik},"
-            "title = {{MOFSimplify}, machine learning models with extracted stability data of three thousand metal{\textendash}organic frameworks},"
+            "author = {Aditya Nandy and Gianmarco Terrones and "
+            "Naveen Arunachalam and Chenru Duan and David W. Kastner and Heather J. Kulik},"
+            "title = {{MOFSimplify}, machine learning models with extracted stability data "
+            "of three thousand metal{\textendash}organic frameworks},"
             "journal = {Sci Data}"
             "}",
         ]

@@ -1,6 +1,9 @@
 Guest-centered atomic-property labeled radial distribution function (APRDF)
 ............................................................................
 
+This featurizer builds on the :ref:`APRDF` featurizer, but instead of using the 
+correlations between all atoms, it only considers the ones between the guest and all host atoms 
+(within some cutoff distance). 
 
 .. math::
 

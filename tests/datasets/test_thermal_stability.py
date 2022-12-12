@@ -22,7 +22,6 @@ def test_thermal_stability():
     assert isinstance(subset, ThermalStabilityDataset)
     assert len(subset._df) == 4
     assert (
-        dataset._df.iloc[[1, 2, 3, 8]]["info.basename"].values
-        == subset._df["info.basename"].values
+        dataset._df.iloc[[1, 2, 3, 8]]["info.basename"].values == subset._df["info.basename"].values
     ).all()
     assert list(dataset.get_structures([1]))[0] == list(subset.get_structures([0]))[0]
