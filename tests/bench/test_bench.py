@@ -48,7 +48,7 @@ class MyDummyModel:
         x = np.array([self.featurize(s) for s in structures]).reshape(-1, 1)
         return self.model.predict(x)
 
-
+@pytest.mark.xdist_group(name="core-ds")
 def test_mofbench(tmp_path_factory):
     """Test the MOFBench class."""
     ds = CoREDataset()

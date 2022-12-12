@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 """Test the adversial validation"""
-
+import pytest
 import numpy as np
 
 from mofdscribe.datasets import CoREDataset
 from mofdscribe.metrics.adverserial import AdverserialValidator
 from mofdscribe.splitters import DensitySplitter, HashSplitter
 
-
+@pytest.mark.xdist_group(name="core-ds")
 def test_adverserial_validator():
     """Test the adverserial validation"""
     dataset = CoREDataset()
@@ -25,7 +25,7 @@ def test_adverserial_validator():
     assert len(score) == 5
     assert np.abs(score.mean() - 0.5) < 0.25
 
-
+@pytest.mark.xdist_group(name="core-ds")
 def test_adverserial_validator_with_different_dist():
     """We use the DensitySplitter to create different distributions.
 
