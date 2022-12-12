@@ -19,7 +19,6 @@ from ..utils.extend import operates_on_istructure, operates_on_structure
 __all__ = ["APRDF"]
 
 
-
 @operates_on_structure
 @operates_on_istructure
 class APRDF(MOFBaseFeaturizer):
@@ -61,9 +60,9 @@ class APRDF(MOFBaseFeaturizer):
             lower_lim (float): Lowest distance (in Angstrom) to consider.
                 Defaults to 2.0.
             bin_size (float): Bin size for binning.
-                Defaults to 0.1.
+                Defaults to 0.25.
             b_smear (Union[float, None]): Band width for Gaussian smearing.
-                If None, the unsmeared histogram is used. Defaults to 0.1.
+                If None, the unsmeared histogram is used. Defaults to 10.
             properties (Tuple[str, int]): Properties used for calculation of the AP-RDF.
                 All properties of `pymatgen.core.Species` are available in
                 addition to the integer `1` that will set P_i=P_j=1. Defaults to
@@ -92,12 +91,14 @@ class APRDF(MOFBaseFeaturizer):
 
     @cached_property
     def _bins(self):
-        num_bins = int((self.cutoff-self.lower_lim)//self.bin_size)
+        num_bins = int((self.cutoff - self.lower_lim) // self.bin_size)
         bins = np.linspace(self.lower_lim, self.cutoff, num_bins)
         return bins
 
     def _get_feature_labels(self):
-        aprdfs = np.empty((len(self.properties), len(self.aggregations), len(self._bins)), dtype=object)
+        aprdfs = np.empty(
+            (len(self.properties), len(self.aggregations), len(self._bins)), dtype=object
+        )
         for pi, prop in enumerate(self.properties):
             for ai, aggregation in enumerate(self.aggregations):
                 for bin_index, _ in enumerate(self._bins):
@@ -111,22 +112,24 @@ class APRDF(MOFBaseFeaturizer):
 
         # todo: use numba to speed up
         for i in range(len(s)):
-            for j in range(i+1, len(s)):
+            for j in range(i + 1, len(s)):
                 dist = s.get_distance(i, j)
                 if dist < self.cutoff and dist > self.lower_lim:
-                    bin_idx = int((dist-self.lower_lim)//self.bin_size)
+                    bin_idx = int((dist - self.lower_lim) // self.bin_size)
                     for pi, prop in enumerate(self.properties):
                         for ai, agg in enumerate(self.aggregations):
                             p0 = encode(s[i].specie, prop)
                             p1 = encode(s[j].specie, prop)
-                
+
                             agg_func = AGGREGATORS[agg]
                             p = agg_func([p0, p1])
-                            aprdfs[pi][ai][bin_idx] += p * np.exp(-self.b_smear * (dist - bins[bin_idx]) ** 2)
+                            aprdfs[pi][ai][bin_idx] += p * np.exp(
+                                -self.b_smear * (dist - bins[bin_idx]) ** 2
+                            )
 
-        if self.normalize: 
+        if self.normalize:
             aprdfs /= len(s)
-        
+
         return aprdfs.flatten()
 
     def feature_labels(self) -> List[str]:

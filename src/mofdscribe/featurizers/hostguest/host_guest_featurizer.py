@@ -5,16 +5,12 @@ from typing import Collection, List, Optional, Tuple, Union
 import numpy as np
 from loguru import logger
 from matminer.featurizers.base import BaseFeaturizer
-from pydantic import BaseModel
-from pymatgen.core import IMolecule, IStructure, Molecule, Structure
-from structuregraph_helpers.subgraph import get_subgraphs_as_molecules
+from pymatgen.core import IStructure, Structure
 
-from mofdscribe.featurizers.bu.utils import boxed_molecule
-from mofdscribe.featurizers.hostguest.utils import remove_guests_from_structure, HostGuest, _extract_host_guest
+from mofdscribe.featurizers.hostguest.utils import HostGuest, _extract_host_guest
 from mofdscribe.featurizers.utils import set_operates_on
 from mofdscribe.featurizers.utils.aggregators import ARRAY_AGGREGATORS
-from mofdscribe.featurizers.utils.structure_graph import get_structure_graph
-from mofdscribe.featurizers.base import MOFBaseFeaturizer
+
 
 # ToDo: How do we handle if there is no guest?
 # make it optional to remove guests from the structure?
@@ -92,7 +88,13 @@ class HostGuestFeaturizer(BaseFeaturizer):
         structure: Optional[Union[Structure, IStructure]] = None,
         host_guest: Optional[HostGuest] = None,
     ):
-       return _extract_host_guest(structure=structure, host_guest=host_guest, remove_guests=self._remove_guests, operates_on=self._operates_on, local_env_method=self._local_env_method)
+        return _extract_host_guest(
+            structure=structure,
+            host_guest=host_guest,
+            remove_guests=self._remove_guests,
+            operates_on=self._operates_on,
+            local_env_method=self._local_env_method,
+        )
 
     def fit(
         self,

@@ -112,6 +112,14 @@ This featurizer will automatically extract the host and guest structures from th
     
 If you are interested in surface chemistry features, you might also find suitable featurizers in the `matminer <https://hackingmaterials.lbl.gov/matminer/>`_ package.
 
+mofdscribe also implements some featurizers that are specifically designed for host-guest systems.
+
+.. toctree::
+    :glob:
+    :maxdepth: 1
+
+    featurizers/host_guest/*
+
 .. _encoding_chemistry:
 Encoding of chemistry
 -----------------------

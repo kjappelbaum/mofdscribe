@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
 """Helper functions for the host-guest featurizers."""
-from typing import List, Union, Optional
-from pydantic import BaseModel
+from typing import List, Optional, Union
 
-from pymatgen.core import Structure, IMolecule, IStructure, Molecule
-from mofdscribe.featurizers.utils.structure_graph import get_structure_graph
+from pydantic import BaseModel
+from pymatgen.core import IMolecule, IStructure, Molecule, Structure
 from structuregraph_helpers.subgraph import get_subgraphs_as_molecules
+
 from mofdscribe.featurizers.bu.utils import boxed_molecule
+from mofdscribe.featurizers.utils.structure_graph import get_structure_graph
+
 
 def remove_guests_from_structure(structure, guest_indices: List[List[int]]) -> Structure:
     """
@@ -28,13 +30,11 @@ def remove_guests_from_structure(structure, guest_indices: List[List[int]]) -> S
     return Structure.from_sites(ok_sites)
 
 
-
 class HostGuest(BaseModel):
     """Container for host and guests."""
 
     host: Union[Structure, IStructure]
     guests: Optional[List[Union[Structure, Molecule, IStructure, IMolecule]]]
-
 
 
 def _extract_host_guest(

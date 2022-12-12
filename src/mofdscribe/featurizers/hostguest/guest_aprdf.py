@@ -1,28 +1,39 @@
 # -*- coding: utf-8 -*-
-"""Guest-centered atomic-property weighted autocorrelation function.
-"""
-from typing import Union, Tuple, List, Optional
-from mofdscribe.featurizers.base import MOFBaseFeaturizer
-from ..utils.extend import operates_on_istructure, operates_on_structure
-
-from mofdscribe.featurizers.chemistry.aprdf import compute_aprdf_dict, flatten_aprdf
-import numpy as np
+"""Guest-centered atomic-property weighted autocorrelation function."""
 from functools import cached_property
-from pymatgen.core import IStructure, Structure, Site
+from typing import List, Optional, Tuple, Union
+
+import numpy as np
+from element_coder import encode
+from matminer.featurizers.base import BaseFeaturizer
+from pymatgen.core import IStructure, Structure
 
 from mofdscribe.featurizers.hostguest.utils import HostGuest, _extract_host_guest
-from matminer.featurizers.base import BaseFeaturizer
+
+from ..utils.aggregators import AGGREGATORS
+
+__all__ = ["GuestCenteredAPRDF"]
 
 
 class GuestCenteredAPRDF(BaseFeaturizer):
-    def __init__(self,
+    """Guest-centered atomic-property weighted autocorrelation function.
+
+    This is a modification of the AP-RDF that is centered on the guest atoms.
+    That is, we only consider the distances between the guest atoms and the host atoms (within the cutoffs).
+
+    For more details about the AP-RDF, see `mofdscribe.featurizers.chemistry.aprdf.APRDF`.
+    """
+
+    def __init__(
+        self,
         cutoff: float = 20.0,
-        lower_lim: float = 0,
-        bin_size: float = 1,
-        bw: Union[float, None] = 0.1,
+        lower_lim: float = 2,
+        bin_size: float = 0.25,
+        b_smear: Union[float, None] = 10,
         properties: Tuple[str, int] = ("X", "electron_affinity"),
         aggregations: Tuple[str] = ("avg", "product", "diff"),
         local_env_method: str = "vesta",
+        normalize: bool = False,
     ):
         """Set up an atomic property (AP) weighted radial distribution function.
 
@@ -30,11 +41,11 @@ class GuestCenteredAPRDF(BaseFeaturizer):
             cutoff (float): Consider neighbors up to this value (in
                 Angstrom). Defaults to 20.0.
             lower_lim (float): Lowest distance (in Angstrom) to consider.
-                Defaults to 0.5.
+                Defaults to 2.
             bin_size (float): Bin size for binning.
-                Defaults to 0.1.
-            bw (Union[float, None]): Band width for Gaussian smearing.
-                If None, the unsmeared histogram is used. Defaults to 0.1.
+                Defaults to 0.25.
+            b_smear (Union[float, None]): Band width for Gaussian smearing.
+                If None, the unsmeared histogram is used. Defaults to 10.
             properties (Tuple[str, int]): Properties used for calculation of the AP-RDF.
                 All properties of `pymatgen.core.Species` are available in
                 addition to the integer `1` that will set P_i=P_j=1. Defaults to
@@ -44,35 +55,47 @@ class GuestCenteredAPRDF(BaseFeaturizer):
                 See `mofdscribe.featurizers.utils.aggregators.AGGREGATORS` for available
                 options. Defaults to ("avg", "product", "diff").
             local_env_method (str): Method used to compute the structure graph.
+            normalize (bool): If True, the histogram is normalized by dividing
+                by the number of atoms. Defaults to False.
         """
         self.lower_lim = lower_lim
         self.cutoff = cutoff
         self.bin_size = bin_size
         self.properties = properties
         self._local_env_method = local_env_method
-        self.bw = bw
+        self.b_smear = b_smear
         self.aggregations = aggregations
-  
+        self.normalize = normalize
+
     @cached_property
     def _bins(self):
-        return np.arange(self.lower_lim, self.cutoff, self.bin_size)
+        num_bins = int((self.cutoff - self.lower_lim) // self.bin_size)
+        bins = np.linspace(self.lower_lim, self.cutoff, num_bins)
+        return bins
 
     def _get_feature_labels(self):
-        labels = []
-        for prop in self.properties:
-            for aggregation in self.aggregations:
-                for _, bin_ in enumerate(self._bins):
-                    labels.append(f"host_guest_aprdf_{prop}_{aggregation}_{bin_}")
+        aprdfs = np.empty(
+            (len(self.properties), len(self.aggregations), len(self._bins)), dtype=object
+        )
+        for pi, prop in enumerate(self.properties):
+            for ai, aggregation in enumerate(self.aggregations):
+                for bin_index, _ in enumerate(self._bins):
+                    aprdfs[pi][ai][bin_index] = f"guest_aprdf_{prop}_{aggregation}_{bin_index}"
 
-        return labels
-
+        return list(aprdfs.flatten())
 
     def _extract_host_guest(
         self,
         structure: Optional[Union[Structure, IStructure]] = None,
         host_guest: Optional[HostGuest] = None,
     ):
-       return _extract_host_guest(structure=structure, host_guest=host_guest, remove_guests=True, operates_on='molecule', local_env_method=self._local_env_method)
+        return _extract_host_guest(
+            structure=structure,
+            host_guest=host_guest,
+            remove_guests=True,
+            operates_on="molecule",
+            local_env_method=self._local_env_method,
+        )
 
     def featurize(
         self,
@@ -109,13 +132,33 @@ class GuestCenteredAPRDF(BaseFeaturizer):
         for guest in host_guest.guests:
             flattened_guests.extend(guest.sites)
 
-        neighbors= [host_guest.host.get_sites_in_sphere(site.coords, self.cutoff) for site in flattened_guests]
+        bins = self._bins
+        aprdfs = np.zeros((len(self.properties), len(self.aggregations), len(bins)))
 
-        results = compute_aprdf_dict(flattened_guests, neighbors, self.properties, self.aggregations, self.lower_lim)
-     
-        return flatten_aprdf(results, self.properties, self.aggregations, self.lower_lim, self.cutoff, self.bin_size, self.bw, host_guest.host)
+        # todo: use numba to speed up
+        for _i, guest in enumerate(flattened_guests):
+            guest_frac_coords = host_guest.host.lattice.get_fractional_coords(guest.coords)
+            for _j, site in enumerate(host_guest.host):
+                dist, _ = host_guest.host.lattice.get_distance_and_image(
+                    guest_frac_coords, site.frac_coords
+                )
+                if dist < self.cutoff and dist > self.lower_lim:
+                    bin_idx = int((dist - self.lower_lim) // self.bin_size)
+                    for pi, prop in enumerate(self.properties):
+                        for ai, agg in enumerate(self.aggregations):
+                            p0 = encode(guest.specie, prop)
+                            p1 = encode(site.specie, prop)
 
+                            agg_func = AGGREGATORS[agg]
+                            p = agg_func([p0, p1])
+                            aprdfs[pi][ai][bin_idx] += p * np.exp(
+                                -self.b_smear * (dist - bins[bin_idx]) ** 2
+                            )
 
+        if self.normalize:
+            aprdfs /= len(host_guest.guests)
+
+        return aprdfs.flatten()
 
     def feature_labels(self) -> List[str]:
         return self._get_feature_labels()
