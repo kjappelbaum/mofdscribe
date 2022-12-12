@@ -256,17 +256,5 @@ class CoREDataset(AbstractStructureDataset):
             "title = {Computation-Ready,  Experimental Metal{\textendash}Organic Frameworks: "
             "A Tool To Enable High-Throughput Screening of Nanoporous Crystals},"
             "journal = {Chemistry of Materials}"
-            "}",
-            "@article{Nandy_2022,"
-            "doi = {10.1038/s41597-022-01181-0},"
-            "url = {https://doi.org/10.1038%2Fs41597-022-01181-0},"
-            "year = 2022,"
-            "month = {mar},"
-            "publisher = {Springer Science and Business Media {LLC}},"
-            "volume = {9},"
-            "number = {1},"
-            "author = {Aditya Nandy and Gianmarco Terrones and Naveen Arunachalam and Chenru Duan and David W. Kastner and Heather J. Kulik},"
-            "title = {{MOFSimplify}, machine learning models with extracted stability data of three thousand metal{\textendash}organic frameworks},"
-            "journal = {Sci Data}"
-            "}",
+            "}"
         ]
