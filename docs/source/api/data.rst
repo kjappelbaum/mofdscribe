@@ -24,5 +24,9 @@ Structure datasets
     :members:
 
 
+.. automodule:: mofdscribe.datasets.thermal_stability_dataset
+    :members:
+
+
 .. automodule:: mofdscribe.datasets.structuredataset
     :members:

@@ -58,4 +58,4 @@ jobs:
       - name: Test with pytest
         run: |
           export RASPA_DIR=/usr/share/miniconda3/envs/test
-          pytest -n "auto" tests/
+          pytest -n "auto"  --dist="loadgroup" tests/
