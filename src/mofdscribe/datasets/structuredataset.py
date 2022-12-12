@@ -71,8 +71,8 @@ class StructureDataset(AbstractStructureDataset):
         check_all_file_exists(self._structures)
 
         self._year_column = year_column
-        self._label_columns = list(label_columns) if label_columns is not None else tuple()
-        self._feature_columns = list(feature_columns) if feature_columns is not None else tuple()
+        self._label_columns = list(label_columns) if label_columns is not None else ()
+        self._feature_columns = list(feature_columns) if feature_columns is not None else ()
         self._decorated_graph_hash_column = decorated_graph_hash_column
         self._undecorated_graph_hash_column = undecorated_graph_hash_column
         self._decorated_scaffold_hash_column = decorated_scaffold_hash_column
@@ -219,7 +219,7 @@ class FrameDataset(AbstractStructureDataset):
         compress_dataset(self._df)
         self._structure_name_column = structure_name_column
         self._year_column = year_column
-        self._label_columns = list(label_columns) if label_columns is not None else tuple()
+        self._label_columns = list(label_columns) if label_columns is not None else ()
         self._decorated_graph_hash_column = decorated_graph_hash_column
         self._undecorated_graph_hash_column = undecorated_graph_hash_column
         self._decorated_scaffold_hash_column = decorated_scaffold_hash_column
