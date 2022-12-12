@@ -61,23 +61,24 @@ descriptor that only considers the local environment (of e.g., 3 atoms). For thi
 
 
 
-SBU-centered featurizers
+BU-centered featurizers
 -----------------------------
 
 Reticular chemistry describes materials built via a tinker-toy approach.
 Hence, a natural approach is to focus on the building blocks.
 
-mofdscribe can compute descriptors that are SBU-centred, for instance, using RDKit descriptors on the building blocks.  However, you are not limited to descriptors operating on molecules -- you can convert any featurizer into an SBU-centered fearturizer:
+mofdscribe can compute descriptors that are BU-centred, for instance, using RDKit descriptors on the building blocks.  However, you are not limited to descriptors operating on molecules -- you can convert any featurizer into an BU-centered fearturizer:
 
 .. code-block:: python
 
     from matminer.featurizers.site import SOAP
     from matminer.featurizers.structure import SiteStatsFingerprint
     from pymatgen.core import Structure
+    from mofdscribe.featurizers.bu import BUFeaturizer
 
     base_feat = SiteStatsFingerprint(SOAP.from_preset("formation_energy"))
     base_feat.fit([hkust_structure])
-    featurizer = SBUFeaturizer(base_feat, aggregations=("mean",))
+    featurizer = BUFeaturizer(base_feat, aggregations=("mean",))
     features = featurizer.featurize(structure=hkust_structure)
 
 For this, you can either provide your building blocks that you extracted with any of the available tools, or use our integration with our `moffragmentor <https://github.com/kjappelbaum/moffragmentor>`_ package. In this case, we will fragment the MOF into its building blocks and then compute the features for each building block and let you choose how you want to aggregate them.
@@ -87,8 +88,37 @@ For this, you can either provide your building blocks that you extracted with an
     :glob:
     :maxdepth: 1
 
-    featurizers/sbu_centered/*
+    featurizers/bu_centered/*
 
+
+Host-Guest Featurization
+-----------------------------
+
+If you have structures loaded with guest molecules as input, you might find the :py:class:`~mofdscribe.featurizers.hostguest.HostGuestFeaturizer` convenient. 
+This featurizer will automatically extract the host and guest structures from the input structures and then featurize them separately. If there are multiple guests in the input structures, the featurizer will featurize each guest separately and then aggregate the features.
+
+.. code-block:: python
+
+    from matminer.featurizers.structure.sites import SiteStatsFingerprint
+
+    from mofdscribe.featurizers.hostguest import HostGuestFeaturizer
+
+    featurizer = HostGuestFeaturizer(
+        featurizer=SiteStatsFingerprint.from_preset("SOAP_formation_energy"),
+        aggregations=("mean",),
+    )
+    featurizer.fit([structure])
+    features = featurizer.featurize(structure)
+    
+If you are interested in surface chemistry features, you might also find suitable featurizers in the `matminer <https://hackingmaterials.lbl.gov/matminer/>`_ package.
+
+mofdscribe also implements some featurizers that are specifically designed for host-guest systems.
+
+.. toctree::
+    :glob:
+    :maxdepth: 1
+
+    featurizers/host_guest/*
 
 .. _encoding_chemistry:
 Encoding of chemistry

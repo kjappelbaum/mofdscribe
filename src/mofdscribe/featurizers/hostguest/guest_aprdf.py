@@ -1,56 +1,39 @@
 # -*- coding: utf-8 -*-
-"""Atomic-property weighted autocorrelation function.
-
-See alternative implementation https://github.com/tomdburns/AP-RDF (likely
-faster as it also has a lower-level implementation)
-"""
+"""Guest-centered atomic-property weighted autocorrelation function."""
 from functools import cached_property
-from typing import List, Tuple, Union
+from typing import List, Optional, Tuple, Union
 
 import numpy as np
 from element_coder import encode
+from matminer.featurizers.base import BaseFeaturizer
 from pymatgen.core import IStructure, Structure
 
-from mofdscribe.featurizers.base import MOFBaseFeaturizer
+from mofdscribe.featurizers.hostguest.utils import HostGuest, _extract_host_guest
 
 from ..utils.aggregators import AGGREGATORS
-from ..utils.extend import operates_on_istructure, operates_on_structure
 
-__all__ = ["APRDF"]
+__all__ = ["GuestCenteredAPRDF"]
 
 
-@operates_on_structure
-@operates_on_istructure
-class APRDF(MOFBaseFeaturizer):
-    r"""Generalization of descriptor described by `Fernandez et al. <https://pubs.acs.org/doi/10.1021/jp404287t>`_.
+class GuestCenteredAPRDF(BaseFeaturizer):
+    """Guest-centered atomic-property weighted autocorrelation function.
 
-    In the article they describe the product of atomic properties as weighting
-    of a "conventional" radiual distribution function "RDF".
+    This is a modification of the AP-RDF that is centered on the guest atoms.
+    That is, we only consider the distances between the guest atoms and the host atoms (within the cutoffs).
 
-    .. math::
-        \operatorname{RDF}^{p}(R)=f \sum_{i, j}^{\text {all atom puirs }} P_{i} P_{j} \mathrm{e}^{-B\left(r_{ij}-R\right)^{2}} # noqa: E501
-
-    Here, we allow for a wider choice of option for aggregation of properties
-    :math:`P_{i}` and :math:`P_{j}` (not only the product).
-
-    Examples:
-        >>> from mofdscribe.chemistry.aprdf import APRDF
-        >>> from pymatgen.core.structure import Structure
-        >>> s = Structure.from_file("tests/test_files/LiTiO3.cif")
-        >>> aprdf = APRDF()
-        >>> features = aprdf.featurize(s)
+    For more details about the AP-RDF, see `mofdscribe.featurizers.chemistry.aprdf.APRDF`.
     """
 
     def __init__(
         self,
         cutoff: float = 20.0,
-        lower_lim: float = 2.0,
+        lower_lim: float = 2,
         bin_size: float = 0.25,
         b_smear: Union[float, None] = 10,
         properties: Tuple[str, int] = ("X", "electron_affinity"),
         aggregations: Tuple[str] = ("avg", "product", "diff"),
+        local_env_method: str = "vesta",
         normalize: bool = False,
-        primitive: bool = True,
     ):
         """Set up an atomic property (AP) weighted radial distribution function.
 
@@ -58,7 +41,7 @@ class APRDF(MOFBaseFeaturizer):
             cutoff (float): Consider neighbors up to this value (in
                 Angstrom). Defaults to 20.0.
             lower_lim (float): Lowest distance (in Angstrom) to consider.
-                Defaults to 2.0.
+                Defaults to 2.
             bin_size (float): Bin size for binning.
                 Defaults to 0.25.
             b_smear (Union[float, None]): Band width for Gaussian smearing.
@@ -71,23 +54,18 @@ class APRDF(MOFBaseFeaturizer):
                 properties.
                 See `mofdscribe.featurizers.utils.aggregators.AGGREGATORS` for available
                 options. Defaults to ("avg", "product", "diff").
+            local_env_method (str): Method used to compute the structure graph.
             normalize (bool): If True, the histogram is normalized by dividing
                 by the number of atoms. Defaults to False.
-            primitive (bool): If True, the structure is reduced to its primitive
-                form before the descriptor is computed. Defaults to True.
         """
         self.lower_lim = lower_lim
         self.cutoff = cutoff
         self.bin_size = bin_size
         self.properties = properties
-        self.normalize = normalize
-
+        self._local_env_method = local_env_method
         self.b_smear = b_smear
         self.aggregations = aggregations
-        super().__init__(primitive=primitive)
-
-    def precheck(self):
-        pass
+        self.normalize = normalize
 
     @cached_property
     def _bins(self):
@@ -102,24 +80,74 @@ class APRDF(MOFBaseFeaturizer):
         for pi, prop in enumerate(self.properties):
             for ai, aggregation in enumerate(self.aggregations):
                 for bin_index, _ in enumerate(self._bins):
-                    aprdfs[pi][ai][bin_index] = f"aprdf_{prop}_{aggregation}_{bin_index}"
+                    aprdfs[pi][ai][bin_index] = f"guest_aprdf_{prop}_{aggregation}_{bin_index}"
 
         return list(aprdfs.flatten())
 
-    def _featurize(self, s: Union[Structure, IStructure]) -> np.array:
+    def _extract_host_guest(
+        self,
+        structure: Optional[Union[Structure, IStructure]] = None,
+        host_guest: Optional[HostGuest] = None,
+    ):
+        return _extract_host_guest(
+            structure=structure,
+            host_guest=host_guest,
+            remove_guests=True,
+            operates_on="molecule",
+            local_env_method=self._local_env_method,
+        )
+
+    def featurize(
+        self,
+        structure: Optional[Union[Structure, IStructure]],
+        host_guest: Optional[HostGuest] = None,
+    ) -> np.ndarray:
+        """
+        Compute the features of the host and the guests and aggregate them.
+
+        Args:
+            structure (Optional[Union[Structure, IStructure]]): The structure to featurize.
+            host_guest (Optional[HostGuest]): The host_guest to featurize.
+                If you provide this, you must not provide structure.
+
+        Returns:
+            np.ndarray: The features of the host and the guests.
+
+        Raises:
+            ValueError: If we cannot detect a host.
+        """
+        host_guest = self._extract_host_guest(structure=structure, host_guest=host_guest)
+
+        if not host_guest.host:
+            raise ValueError(
+                "Did not find a framework. This is required for the host guest featurizer."
+            )
+
+        if not host_guest.guests:
+            raise ValueError(
+                "Did not find any guests. This is required for the host guest featurizer."
+            )
+
+        flattened_guests = []
+        for guest in host_guest.guests:
+            flattened_guests.extend(guest.sites)
+
         bins = self._bins
         aprdfs = np.zeros((len(self.properties), len(self.aggregations), len(bins)))
 
         # todo: use numba to speed up
-        for i in range(len(s)):
-            for j in range(i + 1, len(s)):
-                dist = s.get_distance(i, j)
+        for _i, guest in enumerate(flattened_guests):
+            guest_frac_coords = host_guest.host.lattice.get_fractional_coords(guest.coords)
+            for _j, site in enumerate(host_guest.host):
+                dist, _ = host_guest.host.lattice.get_distance_and_image(
+                    guest_frac_coords, site.frac_coords
+                )
                 if dist < self.cutoff and dist > self.lower_lim:
                     bin_idx = int((dist - self.lower_lim) // self.bin_size)
                     for pi, prop in enumerate(self.properties):
                         for ai, agg in enumerate(self.aggregations):
-                            p0 = encode(s[i].specie, prop)
-                            p1 = encode(s[j].specie, prop)
+                            p0 = encode(guest.specie, prop)
+                            p1 = encode(site.specie, prop)
 
                             agg_func = AGGREGATORS[agg]
                             p = agg_func([p0, p1])
@@ -128,7 +156,7 @@ class APRDF(MOFBaseFeaturizer):
                             )
 
         if self.normalize:
-            aprdfs /= len(s)
+            aprdfs /= len(host_guest.guests)
 
         return aprdfs.flatten()
 

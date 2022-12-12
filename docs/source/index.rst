@@ -6,7 +6,7 @@ mofdscribe |release|
 ======================
 
 mofdscribe is a Python library for digital reticular chemistry.
-mofdscribe contains 30+ featurizers that have been adapted from scientific
+mofdscribe contains 40+ featurizers that have been adapted from scientific
 publications (or that have been not reported so far) and are accessible using
 the consistent and battle-proof `matminer
 <https://hackingmaterials.lbl.gov/matminer/>`_ API.

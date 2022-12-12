@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """Base class for datasets."""
-from typing import Iterable, List, Optional, Tuple
+from typing import Collection, List, Optional, Tuple
 
 import numpy as np
 from joblib import Parallel, delayed
@@ -32,7 +32,7 @@ class AbstractStructureDataset:
         self._undecorated_scaffold_hashes = None
         self._densities = None
 
-    def get_subset(self, indices: Iterable[int]) -> "AbstractStructureDataset":
+    def get_subset(self, indices: Collection[int]) -> "AbstractStructureDataset":
         raise NotImplementedError()
 
     @property
@@ -56,7 +56,7 @@ class AbstractStructureDataset:
         return self.get_structures(range(len(self)))
 
     def get_labels(
-        self, idx: Iterable[int], labelnames: Optional[Iterable[str]] = None
+        self, idx: Collection[int], labelnames: Optional[Collection[str]] = None
     ) -> np.ndarray:
         raise NotImplementedError()
 
@@ -66,14 +66,14 @@ class AbstractStructureDataset:
         return self._years[idx]
 
     # ToDo: think about how we can cache this in memory
-    def get_structures(self, idx: Iterable[int]) -> Iterable[Structure]:
+    def get_structures(self, idx: Collection[int]) -> Collection[Structure]:
         return Parallel(n_jobs=-1)(delayed(IStructure.from_file)(self._structures[i]) for i in idx)
 
-    def get_filenames(self, idx: Iterable[int]) -> List[Structure]:
+    def get_filenames(self, idx: Collection[int]) -> List[Structure]:
         return [self._structures[i] for i in idx]
 
     # ToDo: parallelize hash computation
-    def get_decorated_graph_hashes(self, idx: Iterable[int]) -> str:
+    def get_decorated_graph_hashes(self, idx: Collection[int]) -> str:
         if self._decorated_graph_hashes is None:
             logger.info("Computing hashes, this can take a while.")
             # fixme: this is wrong, we need to compute it for all and not only for the indexed ones
@@ -86,7 +86,7 @@ class AbstractStructureDataset:
             self._decorated_graph_hashes = hashes
         return self._decorated_graph_hashes[idx]
 
-    def get_undecorated_graph_hashes(self, idx: Iterable[int]) -> str:
+    def get_undecorated_graph_hashes(self, idx: Collection[int]) -> str:
         if self._undecorated_graph_hashes is None:
             logger.info("Computing hashes, this can take a while.")
             hashes = np.array(
@@ -98,7 +98,7 @@ class AbstractStructureDataset:
             self._undecorated_graph_hashes = hashes
         return self._undecorated_graph_hashes
 
-    def get_decorated_scaffold_hashes(self, idx: Iterable[int]) -> str:
+    def get_decorated_scaffold_hashes(self, idx: Collection[int]) -> str:
         if self._decorated_graph_hashes is None:
             logger.info("Computing hashes, this can take a while.")
             hashes = np.array(
@@ -111,7 +111,7 @@ class AbstractStructureDataset:
 
         return self._decorated_scaffold_hashes[idx]
 
-    def get_undecorated_scaffold_hashes(self, idx: Iterable[int]) -> str:
+    def get_undecorated_scaffold_hashes(self, idx: Collection[int]) -> str:
         if self._undecorated_scaffold_hashes is None:
             logger.info("Computing hashes, this can take a while.")
             hashes = np.array(
@@ -123,7 +123,7 @@ class AbstractStructureDataset:
             self._undecorated_scaffold_hashes = hashes
         return self._undecorated_scaffold_hashes[idx]
 
-    def get_densities(self, idx: Iterable[int]) -> np.ndarray:
+    def get_densities(self, idx: Collection[int]) -> np.ndarray:
         if self._densities is None:
 
             def get_denstiy(s):
@@ -137,7 +137,7 @@ class AbstractStructureDataset:
         return self._densities[idx]
 
     # ToDo: think how this should behave.
-    def select(self, indices: Iterable[int], labels: Optional[Iterable[str]] = None):
+    def select(self, indices: Collection[int], labels: Optional[Collection[str]] = None):
         return indices
 
     def show_structure(self, index):

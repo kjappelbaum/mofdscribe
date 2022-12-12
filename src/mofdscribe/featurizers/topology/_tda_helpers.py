@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Utlities for working with persistence diagrams."""
 from collections import defaultdict
-from typing import Iterable, List, Optional, Tuple
+from typing import Collection, Dict, List, Optional, Tuple
 
 import numpy as np
 from element_coder import encode_many
@@ -17,7 +17,7 @@ from mofdscribe.featurizers.utils.substructures import filter_element
 
 
 # @np_cache
-def construct_pds_cached(coords, periodic=False, weights: Optional[Iterable] = None):
+def construct_pds_cached(coords, periodic=False, weights: Optional[Collection] = None):
     return construct_pds(coords, periodic=periodic, weights=weights)
 
 
@@ -44,12 +44,12 @@ def _coords_for_structure(
             return transformed_s.cart_coords, weighting
         else:
             if weighting is not None:
-                weighting = np.array(
+                weighting_arr = np.array(
                     encode_many([str(s.symbol) for s in structure.species], weighting)
                 )
                 # we can add the weighing as additional column for the cooords
                 coords_w_weight = make_supercell(
-                    np.hstack([structure.cart_coords, weighting.reshape(-1, 1)]),
+                    np.hstack([structure.cart_coords, weighting_arr.reshape(-1, 1)]),
                     structure.lattice.matrix,
                     min_size,
                 )
@@ -118,7 +118,7 @@ def get_persistent_images_for_structure(
         persistent_images (dict): dictionary of persistent images and their
             barcode representations
     """
-    element_images = defaultdict(dict)
+    element_images: Dict[dict] = defaultdict(dict)
     specs = []
     for mb, mp in zip(max_b, max_p):
         specs.append({"minBD": 0, "maxB": mb, "maxP": mp})

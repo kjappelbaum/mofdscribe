@@ -1,23 +1,22 @@
 # -*- coding: utf-8 -*-
 """Compute features on the BUs and then aggregate them."""
-from typing import Iterable, List, Optional, Tuple, Union
+from typing import Collection, List, Optional, Tuple, Union
 
 import numpy as np
 from matminer.featurizers.base import BaseFeaturizer
 from pydantic import BaseModel
 from pymatgen.core import IMolecule, IStructure, Molecule, Structure
 
-from mofdscribe.featurizers.utils import nan_array
+from mofdscribe.featurizers.bu.utils import boxed_molecule
+from mofdscribe.featurizers.utils import nan_array, set_operates_on
 from mofdscribe.featurizers.utils.aggregators import ARRAY_AGGREGATORS
-
-from .utils import boxed_molecule
 
 
 class MOFBBs(BaseModel):
     """Container for MOF building blocks."""
 
-    nodes: Optional[Iterable[Union[Structure, Molecule, IStructure, IMolecule]]]
-    linkers: Optional[Iterable[Union[Structure, Molecule, IStructure, IMolecule]]]
+    nodes: Optional[List[Union[Structure, Molecule, IStructure, IMolecule]]]
+    linkers: Optional[List[Union[Structure, Molecule, IStructure, IMolecule]]]
 
 
 # ToDo: Support `MultipleFeaturizer`s (should be ok, if we recursively call the operates_on method).
@@ -70,17 +69,7 @@ class BUFeaturizer(BaseFeaturizer):
         """
         self._featurizer = featurizer
         self._aggregations = aggregations
-        try:
-            _operates_on = featurizer.operates_on()
-            if (Structure in _operates_on) and (Molecule in _operates_on):
-                self._operates_on = "both"
-            elif Structure in _operates_on:
-                self._operates_on = "structure"
-            elif Molecule in _operates_on:
-                self._operates_on = "molecule"
-
-        except AttributeError:
-            self._operates_on = "structure"
+        set_operates_on(self, featurizer)
 
     def feature_labels(self) -> List[str]:
         labels = []
@@ -146,15 +135,15 @@ class BUFeaturizer(BaseFeaturizer):
 
     def fit(
         self,
-        structures: Optional[Iterable[Structure]] = None,
-        mofbbs: Optional[Iterable[MOFBBs]] = None,
+        structures: Optional[Collection[Structure]] = None,
+        mofbbs: Optional[Collection[MOFBBs]] = None,
     ) -> None:
         """
         Fit the featurizer to the given structures.
 
         Args:
-            structures (Iterable[Structure], optional): The structures to featurize.
-            mofbbs (Iterable[MOFBBs], optional): The MOF fragments (nodes and linkers).
+            structures (Collection[Structure], optional): The structures to featurize.
+            mofbbs (Collection[MOFBBs], optional): The MOF fragments (nodes and linkers).
         """
         all_nodes, all_linkers = [], []
         if structures is not None:

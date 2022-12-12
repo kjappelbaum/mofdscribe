@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Use RDkit featurizers on pymatgen molecules."""
 
-from typing import Callable, Iterable, List, Union
+from typing import Callable, Collection, List, Union
 
 import numpy as np
 from loguru import logger
@@ -28,7 +28,7 @@ class RDKitAdaptor(BaseFeaturizer):
     def __init__(
         self,
         featurizer: Callable,
-        feature_labels: Iterable[str],
+        feature_labels: Collection[str],
         local_env_strategy: str = "vesta",
         force_sanitize: bool = True,
     ) -> None:
@@ -37,7 +37,7 @@ class RDKitAdaptor(BaseFeaturizer):
         Args:
             featurizer (Callable): Function that takes an RDKit molecule and returns
                 some features (int, float, or list or array of them).
-            feature_labels (Iterable[str]): Names of features. Must be the same length as
+            feature_labels (Collection[str]): Names of features. Must be the same length as
                 the number of features returned by the featurizer.
             local_env_strategy (str): If the `featurize` method is called with a `Molecule`
                 object, this determines the local environment strategy to use to convert

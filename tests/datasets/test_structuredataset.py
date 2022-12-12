@@ -1,6 +1,6 @@
 import pandas as pd
 
-from mofdscribe.datasets.structuredataset import StructureDataset, FrameDataset
+from mofdscribe.datasets.structuredataset import FrameDataset, StructureDataset
 
 
 def test_structuredataset(dataset_files, dataset_folder):
@@ -42,8 +42,11 @@ def test_structuredataset(dataset_files, dataset_folder):
 def test_framedataset(dataset_files):
     _, frame = dataset_files
     frame = pd.read_json(frame[0])
-    ds = FrameDataset(frame,  structure_name_column="info.basename",
-        decorated_graph_hash_column="info.decorated_graph_hash")
+    ds = FrameDataset(
+        frame,
+        structure_name_column="info.basename",
+        decorated_graph_hash_column="info.decorated_graph_hash",
+    )
     # only two of them are in the dataframe
     assert len(ds) == 2
     hashes = ds.get_decorated_graph_hashes([0, 1])

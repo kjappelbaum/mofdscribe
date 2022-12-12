@@ -57,6 +57,7 @@ AGGREGATORS = {
     "last": lambda x: x[1],
     "product": lambda x: x[0] * x[1],
     "diff": lambda x: abs(x[1] - x[0]),
+    "absdiff": lambda x: abs(x[1] - x[0]),
 }
 
 

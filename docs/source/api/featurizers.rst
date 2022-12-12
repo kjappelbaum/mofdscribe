@@ -88,3 +88,10 @@ BU-centred featurization
 
 .. automodule:: mofdscribe.featurizers.bu.smarts_matches
     :members:
+
+
+Host Guest featurization
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. automodule:: mofdscribe.featurizers.hostguest.host_guest_featurizer
+    :members:

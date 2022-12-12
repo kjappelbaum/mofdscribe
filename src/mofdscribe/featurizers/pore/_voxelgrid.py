@@ -24,17 +24,17 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 """
 
-from typing import Iterable, List
+from typing import List
 
 import numpy as np
 from scipy.spatial import cKDTree
 
 
-def cartesian(arrays: List[Iterable], out: np.ndarray = None) -> np.ndarray:
+def cartesian(arrays: List[np.typing.ArrayLike], out: np.ndarray = None) -> np.ndarray:
     """Generate a Cartesian product of input arrays.
 
     Args:
-        arrays (List[Iterable]): list of array-like 1-D arrays to form the
+        arrays (List[np.typing.ArrayLike]): list of array-like 1-D arrays to form the
             Cartesian product of.
         out (np.ndarray): Array to  place the cartesian product in.
             Defaults to None.

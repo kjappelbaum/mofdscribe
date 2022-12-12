@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Revised autocorrelation functions (RACs) for MOFs."""
 from collections import OrderedDict, defaultdict
-from typing import Iterable, List, Optional, Tuple, Union
+from typing import Collection, List, Optional, Tuple, Union
 
 import numpy as np
 from element_coder import encode
@@ -24,7 +24,7 @@ __all__ = ("RACS",)
 
 
 def _compute_racs(
-    start_indices: Iterable[int],
+    start_indices: Collection[int],
     structure_graph: StructureGraph,
     properties: Tuple[str],
     scope: int,
@@ -83,7 +83,7 @@ def _compute_racs(
 
 
 def _get_racs_for_bbs(
-    bb_indices: Iterable[int],
+    bb_indices: Collection[int],
     structure_graph: StructureGraph,
     properties: Tuple[str],
     scopes: List[int],
