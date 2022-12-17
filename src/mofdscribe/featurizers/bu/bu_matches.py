@@ -49,6 +49,7 @@ def match_bb(
         The RMSD between the two structures.
     """
     from superpose3d import Superpose3D
+
     if match != "auto":
         is_node = 1 if match == "node" else -1
     else:

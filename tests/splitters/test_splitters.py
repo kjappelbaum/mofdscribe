@@ -138,6 +138,7 @@ def test_kennard_stone_splitter():
     assert len(splits) == 3
     assert len(splits[0]) > len(splits[1]) > len(splits[2])
 
+
 @pytest.mark.xdist_group(name="core-ds")
 def test_cluster_splitter():
     """Ensure that the splits add up to the total number of structures and are non-overlapping."""
