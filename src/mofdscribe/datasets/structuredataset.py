@@ -254,6 +254,28 @@ class FrameDataset(AbstractStructureDataset):
         """Return number of structures in the dataset."""
         return len(self._df)
 
+    def get_subset(self, indices: Collection[int]) -> "FrameDataset":
+        """Get a subset of the dataset.
+
+        Args:
+            indices (Collection[int]): indices of the structures to include.
+
+        Returns:
+            FrameDataset: a new dataset containing only the structures
+                specified by the indices.
+        """
+        return FrameDataset(
+            self._df.iloc[indices],
+            structure_name_column=self._structure_name_column,
+            year_column=self._year_column,
+            label_columns=self._label_columns,
+            decorated_graph_hash_column=self._decorated_graph_hash_column,
+            undecorated_graph_hash_column=self._undecorated_graph_hash_column,
+            decorated_scaffold_hash_column=self._decorated_scaffold_hash_column,
+            undecorated_scaffold_hash_column=self._undecorated_scaffold_hash_column,
+            density_column=self._density_column,
+        )
+
     @property
     def available_features(self) -> List[str]:
         return self._featurenames

@@ -9,7 +9,6 @@ import numpy as np
 from loguru import logger
 from matminer.featurizers.base import BaseFeaturizer
 from pymatgen.core import IMolecule, IStructure, Molecule, Structure
-from superpose3d import Superpose3D
 
 from ..utils.aggregators import ARRAY_AGGREGATORS
 
@@ -49,6 +48,7 @@ def match_bb(
     Returns:
         The RMSD between the two structures.
     """
+    from superpose3d import Superpose3D
     if match != "auto":
         is_node = 1 if match == "node" else -1
     else:
