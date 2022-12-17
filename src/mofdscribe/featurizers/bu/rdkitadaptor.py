@@ -50,6 +50,13 @@ class RDKitAdaptor(BaseFeaturizer):
         self._local_env_strategy = local_env_strategy
         self._force_sanitize = force_sanitize
 
+    def __repr__(self) -> str:
+        return "RDKitAdaptor(featurizer={}, feature_labels={})".format(
+            self._featurizer, self._feature_labels)
+
+    def _repr_mimebundle_(self, include=None, exclude=None):
+        return self.__repr__()
+
     def feature_labels(self) -> List[str]:
         return self._feature_labels
 
