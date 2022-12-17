@@ -394,7 +394,6 @@ from typing import Collection, Dict, Optional, Tuple
 import numpy as np
 from loguru import logger
 from numpy.typing import ArrayLike
-
 from pymatgen.core import Molecule
 from rdkit import Chem
 from rdkit.Chem import BondType
@@ -452,7 +451,7 @@ METALS = {
 }
 
 
-def pymatgen_2_babel_atom_idx_map(pmg_mol: Molecule, ob_mol: "ob.OBMol") -> Dict[int, int]:
+def pymatgen_2_babel_atom_idx_map(pmg_mol: Molecule, ob_mol) -> Dict[int, int]:
     """
     Create an atom index mapping between pymatgen mol and openbabel mol.
 
@@ -471,6 +470,7 @@ def pymatgen_2_babel_atom_idx_map(pmg_mol: Molecule, ob_mol: "ob.OBMol") -> Dict
         RuntimeError: if mapping is not possible.
     """
     from openbabel import openbabel as ob
+
     pmg_coords = pmg_mol.cart_coords
     ob_coords = [[a.GetX(), a.GetY(), a.GetZ()] for a in ob.OBMolAtomIter(ob_mol)]
     ob_index = [a.GetIdx() for a in ob.OBMolAtomIter(ob_mol)]
@@ -644,6 +644,7 @@ def create_rdkit_mol_from_mol_graph(
     """
     from openbabel import openbabel as ob
     from pymatgen.io.babel import BabelMolAdaptor
+
     pymatgen_mol = mol_graph.molecule
     species = [str(s) for s in pymatgen_mol.species]
     coords = pymatgen_mol.cart_coords

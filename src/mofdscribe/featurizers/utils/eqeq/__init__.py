@@ -8,13 +8,14 @@ from tempfile import NamedTemporaryFile
 from typing import List, Tuple
 
 from ase.io.cif import write_cif
-from pyeqeq import run_on_cif
 from pymatgen.core import IStructure
 from pymatgen.io.ase import AseAtomsAdaptor
 
 
 @lru_cache(maxsize=32)
 def get_eqeq_charges(structure: IStructure) -> Tuple[str, List[float]]:
+    from pyeqeq import run_on_cif
+
     with open(os.devnull, "w") as devnull, contextlib.redirect_stdout(devnull), NamedTemporaryFile(
         "w", suffix=".cif"
     ) as f:

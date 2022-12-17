@@ -6,9 +6,6 @@ from typing import Collection, Dict, List, Optional, Tuple
 import numpy as np
 from element_coder import encode_many
 from loguru import logger
-from moleculetda.construct_pd import construct_pds
-from moleculetda.read_file import make_supercell
-from moleculetda.vectorize_pds import diagrams_to_arrays, get_images
 from pymatgen.core import Structure
 from pymatgen.transformations.advanced_transformations import CubicSupercellTransformation
 
@@ -18,6 +15,8 @@ from mofdscribe.featurizers.utils.substructures import filter_element
 
 # @np_cache
 def construct_pds_cached(coords, periodic=False, weights: Optional[Collection] = None):
+    from moleculetda.construct_pd import construct_pds
+
     return construct_pds(coords, periodic=periodic, weights=weights)
 
 
@@ -28,6 +27,7 @@ def _coords_for_structure(
     no_supercell: bool = False,
     weighting: Optional[str] = None,
 ) -> Tuple[np.ndarray, np.ndarray]:
+    from moleculetda.read_file import make_supercell
 
     if no_supercell:
         if weighting is not None:
@@ -64,6 +64,8 @@ def _coords_for_structure(
 def _pd_arrays_from_coords(
     coords, periodic: bool = False, bd_arrays: bool = False, weights: Optional[np.ndarray] = None
 ):
+    from moleculetda.vectorize_pds import diagrams_to_arrays
+
     pds = construct_pds_cached(coords, periodic=periodic, weights=weights)
     if bd_arrays:
         pd = diagrams_to_bd_arrays(pds)
@@ -118,6 +120,8 @@ def get_persistent_images_for_structure(
         persistent_images (dict): dictionary of persistent images and their
             barcode representations
     """
+    from moleculetda.vectorize_pds import get_images
+
     element_images: Dict[dict] = defaultdict(dict)
     specs = []
     for mb, mp in zip(max_b, max_p):
