@@ -10,3 +10,4 @@ API documentation
    api/splitters
    api/metrics
    api/bench
+   api/helpers
