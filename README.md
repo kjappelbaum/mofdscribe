@@ -26,6 +26,9 @@
     <a href='http://commitizen.github.io/cz-cli/'>
         <img src='https://img.shields.io/badge/commitizen-friendly-brightgreen.svg' alt='Commitizen friendly' />
     </a>
+    <a href="https://colab.research.google.com/github/kjappelbaum/mofdscribe/">
+        <img src=https://colab.research.google.com/assets/colab-badge.svg >
+    </a>
 </p>
 
 Featurizing metal-organic frameworks (MOFs) made simple! This package builds on the power of [matminer](https://hackingmaterials.lbl.gov/matminer/) to make featurization of MOFs as easy as possible. Now, you can use features that are mostly used for porous materials in the same way as all other matminer featurizers.
@@ -73,18 +76,10 @@ pip install -e .
 
 if you want to use all utilities, you can use the `all` extra: `pip install -e ".[all]"`
 
-We depend on many other external tools. Currently, you need to manually install these dependencies (due to pending merges for conda-recipies):
+We depend on many other external tools. Most external tools are automatically installed if you install mofdscribe via conda:
 
 ```bash
-# RASPA and Zeo++ (if you want to use energy grid/Henry coefficient and pore descriptors)
-conda install -c conda-forge raspa2 zeopp-lsmo
-
-# cgal dependency for moltda (if you want to use persistent-homology based features)
-# on some systems, you might need to replace this with sudo apt-get install libcgal-dev or brew install cgal 
-conda install -c conda-forge cgal dionysus
-
-# openbabel dependency for moffragmentor (if you want to use SBU-centered features)
-conda install -c conda-forge openbabel
+conda install -c conda-forge mofdscribe
 ```
 
 ## 👐 Contributing
@@ -105,13 +100,13 @@ See the [ChemRxiv preprint](https://chemrxiv.org/engage/chemrxiv/article-details
 
 ```
 @article{Jablonka_2022,
-	doi = {10.26434/chemrxiv-2022-4g7rx},
-	url = {https://doi.org/10.26434%2Fchemrxiv-2022-4g7rx},
-	year = 2022,
-	month = {sep},
-	publisher = {American Chemical Society ({ACS})},
-	author = {Kevin Maik Jablonka and Andrew S. Rosen and Aditi S. Krishnapriyan and Berend Smit},
-	title = {An ecosystem for digital reticular chemistry}
+    doi = {10.26434/chemrxiv-2022-4g7rx},
+    url = {https://doi.org/10.26434%2Fchemrxiv-2022-4g7rx},
+    year = 2022,
+    month = {sep},
+    publisher = {American Chemical Society ({ACS})},
+    author = {Kevin Maik Jablonka and Andrew S. Rosen and Aditi S. Krishnapriyan and Berend Smit},
+    title = {An ecosystem for digital reticular chemistry}
 }
 ```
 

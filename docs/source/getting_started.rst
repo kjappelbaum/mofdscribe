@@ -318,3 +318,38 @@ If you use a dataset or featurizers please cite all the references you find in
 the `citations` property of the featurizer/dataset.
 
 
+Logging 
+---------
+
+mofdscribe uses the `loguru <https://loguru.readthedocs.io/en/stable/index.html>`_  for logging. 
+By default, logging from mofdscribe is disabled to not interfere with your logs.
+
+However, you can easily customize the logging:
+
+.. code-block:: python
+
+    import sys
+    from loguru import logger
+
+    # enable mofdscribe logging 
+    logger.enable("mofdscribe")
+    
+    # define the logging level
+    LEVEL = "INFO || DEBUG || WARNING || etc."
+
+    # set the handler
+    # for logging to stdout
+    logger.add(sys.stdout, level=LEVEL) 
+    # or for logging to a file
+    logger.add("my_log_file.log", level=LEVEL, enqueue=True) 
+
+
+In many cases, however, you might find it convenient to simply call :py:meth:`~mofdscribe.helpers.enable_logging`
+
+.. code-block:: python
+
+    from mofdscribe.helpers import enable_logging
+
+    enable_logging()
+
+which will enable logging with sane defaults (i.e. logging to ``stderr`` for ``INFO`` and ``WARNING`` levels).

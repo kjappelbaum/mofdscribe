@@ -51,10 +51,13 @@ class RDKitAdaptor(BaseFeaturizer):
         self._force_sanitize = force_sanitize
 
     def __repr__(self) -> str:
+        """String representation of the featurizer."""
         return "RDKitAdaptor(featurizer={}, feature_labels={})".format(
-            self._featurizer, self._feature_labels)
+            self._featurizer, self._feature_labels
+        )
 
     def _repr_mimebundle_(self, include=None, exclude=None):
+        """Printing in Ipyython notebooks."""
         return self.__repr__()
 
     def feature_labels(self) -> List[str]:
