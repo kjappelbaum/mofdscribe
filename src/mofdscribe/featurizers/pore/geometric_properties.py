@@ -21,7 +21,7 @@ from pymatgen.core import Structure
 from mofdscribe.featurizers.base import MOFBaseFeaturizer
 from mofdscribe.featurizers.utils import is_tool
 from mofdscribe.featurizers.utils.tempdir import TEMPDIR
-from mofdscribe.types import StuctureIStructureType
+from mofdscribe.types import StructureIStructureType
 
 ZEOPP_BASE_COMMAND = ["network"]
 HA_COMMAND = ["-ha"]
@@ -197,7 +197,7 @@ class PoreDiameters(MOFBaseFeaturizer):
     def featurize(self, mof: "MOF") -> np.ndarray:
         return self._featurize(mof.structure)
 
-    def _featurize(self, s: StuctureIStructureType):
+    def _featurize(self, s: StructureIStructureType):
         result = run_zeopp(s, ["-res"], _parse_res_zeopp, self.ha)
         return np.array(list(result.values()))
 
@@ -284,7 +284,7 @@ class SurfaceArea(MOFBaseFeaturizer):
     def featurize(self, mof: "MOF") -> np.ndarray:
         return self._featurize(mof.structure)
 
-    def _featurize(self, s: StuctureIStructureType) -> np.ndarray:
+    def _featurize(self, s: StructureIStructureType) -> np.ndarray:
         command = [
             "-sa",
             f"{self.channel_radius}",
@@ -375,7 +375,7 @@ class AccessibleVolume(MOFBaseFeaturizer):
     def featurize(self, mof: "MOF") -> np.ndarray:
         return self._featurize(mof.structure)
 
-    def _featurize(self, s: StuctureIStructureType) -> np.ndarray:
+    def _featurize(self, s: StructureIStructureType) -> np.ndarray:
         command = ["-vol", f"{self.channel_radius}", f"{self.probe_radius}", f"{self.num_samples}"]
         results = run_zeopp(s, command, _parse_volpo_zeopp, self.ha)
         return np.array(list(results.values()))
@@ -489,7 +489,7 @@ class RayTracingHistogram(MOFBaseFeaturizer):
     def featurize(self, mof: "MOF") -> np.ndarray:
         return self._featurize(mof.structure)
 
-    def _featurize(self, s: StuctureIStructureType) -> np.ndarray:
+    def _featurize(self, s: StructureIStructureType) -> np.ndarray:
         command = [
             "-ray_atom",
             f"{self.channel_radius}",
@@ -627,7 +627,7 @@ class PoreSizeDistribution(MOFBaseFeaturizer):
     def featurize(self, mof: "MOF") -> np.ndarray:
         return self._featurize(mof.structure)
 
-    def _featurize(self, s: StuctureIStructureType) -> np.ndarray:
+    def _featurize(self, s: StructureIStructureType) -> np.ndarray:
         command = [
             "-psd",
             f"{self.channel_radius}",

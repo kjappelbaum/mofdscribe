@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """Partial charge histogram featurizer."""
-from typing import List, Union
+from typing import List
 
 import numpy as np
 from pymatgen.core import IStructure, Structure
@@ -9,6 +9,7 @@ from mofdscribe.featurizers.base import MOFBaseFeaturizer
 from mofdscribe.featurizers.utils.eqeq import get_eqeq_charges
 from mofdscribe.featurizers.utils.extend import operates_on_istructure, operates_on_structure
 from mofdscribe.featurizers.utils.histogram import get_rdf
+from mofdscribe.types import StructureIStructureType
 
 __all__ = ["PartialChargeHistogram"]
 
@@ -27,7 +28,6 @@ class PartialChargeHistogram(MOFBaseFeaturizer):
         min_charge: float = -4,
         max_charge: float = 4,
         bin_size: float = 0.5,
-        primitive: bool = False,
     ) -> None:
         """Construct a new PartialChargeHistogram featurizer.
 
@@ -38,13 +38,10 @@ class PartialChargeHistogram(MOFBaseFeaturizer):
                 Defaults to 4.
             bin_size (float): Bin size.
                 Defaults to 0.5.
-            primitive (bool): If True, the structure is reduced to its primitive
-                form before the descriptor is computed. Defaults to True.
         """
         self.min_charge = min_charge
         self.max_charge = max_charge
         self.bin_size = bin_size
-        super().__init__(primitive=primitive)
 
     def _get_grid(self):
         return np.arange(self.min_charge, self.max_charge, self.bin_size)
@@ -52,7 +49,10 @@ class PartialChargeHistogram(MOFBaseFeaturizer):
     def feature_labels(self) -> List[str]:
         return [f"chargehist_{val}" for val in self._get_grid()]
 
-    def _featurize(self, s: Union[Structure, IStructure]) -> np.ndarray:
+    def featurize(self, mof: "MOF") -> np.ndarray:
+        return self._featurize(s=mof.structure)
+
+    def _featurize(self, s: StructureIStructureType) -> np.ndarray:
         if isinstance(s, Structure):
             s = IStructure.from_sites(s.sites)
         _, results = get_eqeq_charges(s)

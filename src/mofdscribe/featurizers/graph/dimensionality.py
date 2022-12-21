@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+"""Compute the bond-topological dimensionality."""
 from typing import List
 
 import numpy as np
@@ -10,6 +12,9 @@ from mofdscribe.featurizers.graph.graphfeaturizer import GraphFeaturizer
 class Dimensionality(GraphFeaturizer):
     def __init__(self) -> None:
         super().__init__()
+
+    def featurize(self, mof: "MOF") -> np.ndarray:
+        return self._featurize(mof.structure_graph)
 
     def _featurize(self, structure_graph: StructureGraph) -> np.ndarray:
         return get_dimensionality_larsen(structure_graph)

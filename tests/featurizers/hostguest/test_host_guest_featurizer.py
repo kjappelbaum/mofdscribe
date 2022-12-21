@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from matminer.featurizers.structure.sites import SiteStatsFingerprint
 
 from mofdscribe.featurizers.hostguest import HostGuestFeaturizer

@@ -14,7 +14,7 @@ from structuregraph_helpers.hash import (
     undecorated_scaffold_hash,
 )
 
-from mofdscribe.types import PathType, StuctureIStructureType
+from mofdscribe.types import PathType, StructureIStructureType
 
 
 class MOF:
@@ -48,7 +48,7 @@ class MOF:
 
     def __init__(
         self,
-        structure: StuctureIStructureType,
+        structure: StructureIStructureType,
         structure_graph: Optional[StructureGraph] = None,
         local_env_strategy: str = "vesta",
         fragmentation_kwargs: Optional[dict] = None,

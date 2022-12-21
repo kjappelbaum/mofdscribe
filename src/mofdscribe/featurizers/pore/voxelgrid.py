@@ -8,7 +8,7 @@ from pymatgen.core import Element
 
 from mofdscribe.featurizers.base import MOFBaseFeaturizer
 from mofdscribe.featurizers.pore._voxelgrid import VoxelGrid as VGBase
-from mofdscribe.types import StuctureIStructureType
+from mofdscribe.types import StructureIStructureType
 
 
 def make_supercell(
@@ -154,7 +154,7 @@ class VoxelGrid(MOFBaseFeaturizer):
     def featurize(self, mof: "MOF") -> np.ndarray:
         return self._featurize(mof.structure)
 
-    def _featurize(self, structure: StuctureIStructureType) -> np.ndarray:
+    def _featurize(self, structure: StructureIStructureType) -> np.ndarray:
         coords, numbers = make_supercell(
             structure.cart_coords, structure.atomic_numbers, structure.lattice.matrix, self.min_size
         )

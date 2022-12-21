@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """Partial charge statistics featurizer."""
-from typing import List, Tuple, Union
+from typing import List, Tuple
 
 import numpy as np
 from pymatgen.core import IStructure, Structure
@@ -9,6 +9,7 @@ from mofdscribe.featurizers.base import MOFBaseFeaturizer
 from mofdscribe.featurizers.utils.aggregators import ARRAY_AGGREGATORS
 from mofdscribe.featurizers.utils.eqeq import get_eqeq_charges
 from mofdscribe.featurizers.utils.extend import operates_on_istructure, operates_on_structure
+from mofdscribe.types import StructureIStructureType
 
 __all__ = ["PartialChargeStats"]
 
@@ -26,9 +27,7 @@ class PartialChargeStats(MOFBaseFeaturizer):
     <https://www.nature.com/articles/s41467-020-17755-8>`_
     """
 
-    def __init__(
-        self, aggregations: Tuple[str] = ("max", "min", "std"), primitive: bool = True
-    ) -> None:
+    def __init__(self, aggregations: Tuple[str] = ("max", "min", "std")) -> None:
         """
         Initialize the PartialChargeStats featurizer.
 
@@ -36,16 +35,16 @@ class PartialChargeStats(MOFBaseFeaturizer):
             aggregations (Tuple[str]): Aggregations to compute.
                 For available methods, see :py:obj:`mofdscribe.featurizers.utils.aggregators.ARRAY_AGGREGATORS`.
                 Defaults to ("max", "min", "std").
-            primitive (bool): If True, the structure is reduced to its primitive
-                form before the descriptor is computed. Defaults to True.
         """
         self.aggregations = aggregations
-        super().__init__(primitive=primitive)
 
     def feature_labels(self) -> List[str]:
         return [f"chargestat_{agg}" for agg in self.aggregations]
 
-    def _featurize(self, s: Union[Structure, IStructure]) -> np.ndarray:
+    def featurize(self, mof: "MOF") -> np.ndarray:
+        return self._featurize(s=mof.structure)
+
+    def _featurize(self, s: StructureIStructureType) -> np.ndarray:
         if isinstance(s, Structure):
             s = IStructure.from_sites(s.sites)
         _, results = get_eqeq_charges(s)

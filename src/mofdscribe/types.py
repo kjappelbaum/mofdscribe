@@ -6,4 +6,4 @@ from pymatgen.core.structure import IStructure, Structure
 from typing_extensions import TypeAlias
 
 PathType: TypeAlias = Union[str, Path]
-StuctureIStructureType: TypeAlias = Union[IStructure, Structure]
+StructureIStructureType: TypeAlias = Union[IStructure, Structure]

@@ -10,6 +10,7 @@ from pymatgen.analysis.graphs import StructureGraph
 from pymatgen.core import IStructure, Structure
 
 from mofdscribe.featurizers.base import MOFBaseFeaturizer
+from mofdscribe.featurizers.chemistry._fragment import get_bb_indices
 from mofdscribe.featurizers.utils.aggregators import AGGREGATORS, ARRAY_AGGREGATORS
 from mofdscribe.featurizers.utils.extend import operates_on_istructure, operates_on_structure
 from mofdscribe.featurizers.utils.structure_graph import (
@@ -17,8 +18,7 @@ from mofdscribe.featurizers.utils.structure_graph import (
     get_neighbors_at_distance,
     get_structure_graph,
 )
-
-from ._fragment import get_bb_indices
+from mofdscribe.types import StructureIStructureType
 
 __all__ = ("RACS",)
 
@@ -166,7 +166,6 @@ class RACS(MOFBaseFeaturizer):
             "linker_scaffold",
             "nodes",
         ),
-        primitive: bool = True,
     ) -> None:
         """
         Initialize the RACS featurizer.
@@ -184,8 +183,6 @@ class RACS(MOFBaseFeaturizer):
             bond_heuristic (str): Method used to guess bonds. Defaults to "vesta".
             bbs (Tuple[str]): Building blocks to use. Defaults to ("linker_all",
                 "linker_connecting", "linker_functional", "linker_scaffold", "nodes").
-            primitive (bool): If True, the structure is reduced to its primitive
-                form before the descriptor is computed. Defaults to True.
         """
         self.attributes = attributes
         self.scopes = scopes
@@ -203,9 +200,11 @@ class RACS(MOFBaseFeaturizer):
                 "linker_scaffold",
                 "nodes",
             ]
-        super().__init__(primitive=primitive)
 
-    def _featurize(self, structure: Union[Structure, IStructure]) -> np.ndarray:
+    def featurize(self, mof: "MOF") -> np.ndarray:
+        return self._featurize(mof.structure)
+
+    def _featurize(self, structure: StructureIStructureType) -> np.ndarray:
         if isinstance(structure, Structure):
             structure = IStructure.from_sites(structure)
         sg = get_structure_graph(structure, self.bond_heuristic)
