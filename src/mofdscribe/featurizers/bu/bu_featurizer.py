@@ -3,11 +3,10 @@
 from typing import Collection, List, Optional, Tuple, Union
 
 import numpy as np
-from matminer.featurizers.base import BaseFeaturizer
-from pydantic import BaseModel
 from pymatgen.analysis.graphs import StructureGraph
 from pymatgen.core import IMolecule, IStructure, Molecule, Structure
 
+from mofdscribe.featurizers.base import MOFBaseFeaturizer
 from mofdscribe.featurizers.bu.fragment import fragment
 from mofdscribe.featurizers.bu.utils import boxed_molecule
 from mofdscribe.featurizers.utils import nan_array, set_operates_on
@@ -16,25 +15,18 @@ from mofdscribe.featurizers.utils.aggregators import ARRAY_AGGREGATORS
 STRUCTURE_VIEWS = ("all_atom", "connecting", "binding")
 
 
-class MOFBBs(BaseModel):
-    """Container for MOF building blocks."""
-
-    nodes: Optional[List[Union[Structure, Molecule, IStructure, IMolecule, StructureGraph]]]
-    linkers: Optional[List[Union[Structure, Molecule, IStructure, IMolecule, StructureGraph]]]
-
-
-class ConnectingSitesFeaturizer(BaseFeaturizer):
+class ConnectingSitesFeaturizer(MOFBaseFeaturizer):
     ...
 
 
-class BindingSitesFeaturizer(BaseFeaturizer):
+class BindingSitesFeaturizer(MOFBaseFeaturizer):
     ...
 
 
 # If we would cache the fragmentation, the implementation would be simpler
 # ToDo: support moffragmentor options
 # ToDo: Support `MultipleFeaturizer`s (should be ok, if we recursively call the operates_on method).
-class BUFeaturizer(BaseFeaturizer):
+class BUFeaturizer(MOFBaseFeaturizer):
     """
     Compute features on the BUs and then aggregate them.
 
@@ -65,13 +57,15 @@ class BUFeaturizer(BaseFeaturizer):
     """
 
     def __init__(
-        self, featurizer: BaseFeaturizer, aggregations: Tuple[str] = ("mean", "std", "min", "max")
+        self,
+        featurizer: MOFBaseFeaturizer,
+        aggregations: Tuple[str] = ("mean", "std", "min", "max"),
     ) -> None:
         """
         Construct a new BUFeaturizer.
 
         Args:
-            featurizer (BaseFeaturizer): The featurizer to use.
+            featurizer (MOFBaseFeaturizer): The featurizer to use.
                 Currently, we do not support `MultipleFeaturizer`s.
                 Please, instead, use multiple BUFeaturizers.
                 If you use a featurizer that is not implemented in mofdscribe

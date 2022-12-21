@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Base featurizer for MOF structure based featurizers.
 
 The main purpose of these classes is currently that they handle

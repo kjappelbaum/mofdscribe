@@ -10,7 +10,7 @@ from loguru import logger
 from matminer.featurizers.base import BaseFeaturizer
 from pymatgen.core import IMolecule, IStructure, Molecule, Structure
 
-from ..utils.aggregators import ARRAY_AGGREGATORS
+from mofdscribe.featurizers.utils.aggregators import ARRAY_AGGREGATORS
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 with open(os.path.join(THIS_DIR, "prototype_env.json"), "r") as handle:
