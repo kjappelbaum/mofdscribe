@@ -5,22 +5,24 @@ from typing import List, Optional, Tuple, Union
 
 import numpy as np
 from element_coder import encode_many
-from matminer.featurizers.base import BaseFeaturizer
 from pymatgen.core import IStructure, Structure
 
-from mofdscribe.featurizers.base import MOFBaseFeaturizer
+from mofdscribe.featurizers.base import MOFBaseFeaturizer, MOFBaseSiteFeaturizer
+from mofdscribe.featurizers.topology._tda_helpers import (
+    construct_pds_cached,
+    diagrams_to_bd_arrays,
+    persistent_diagram_stats,
+)
 from mofdscribe.featurizers.utils import flatten
 from mofdscribe.featurizers.utils.aggregators import ARRAY_AGGREGATORS
 from mofdscribe.featurizers.utils.extend import operates_on_istructure, operates_on_structure
-
-from ._tda_helpers import construct_pds_cached, diagrams_to_bd_arrays, persistent_diagram_stats
 
 
 # Todo: allow doing this with cutoff and coordination shells
 # ToDo: check if this works with molecules
 @operates_on_istructure
 @operates_on_structure
-class AtomCenteredPHSite(BaseFeaturizer):
+class AtomCenteredPHSite(MOFBaseSiteFeaturizer):
     """Site featurizer for atom-centered statistics of persistence diagrams.
 
     This featurizer is an abstraction of the on described in the work of Jiang
@@ -71,7 +73,19 @@ class AtomCenteredPHSite(BaseFeaturizer):
         self.dimensions = dimensions
         self.alpha_weight = alpha_weight
 
-    def featurize(self, s: Union[Structure, IStructure], idx: int) -> np.ndarray:
+    def featurize(self, mof: "MOF", idx: int) -> np.ndarray:
+        """Compute the features for a single site.
+
+        Args:
+            mof (MOF): MOF to featurize.
+            idx (int): Index of site to featurize.
+
+        Returns:
+            np.ndarray: Features for the site.
+        """
+        return self._featurize(mof.structure, idx)
+
+    def _featurize(self, s: Union[Structure, IStructure], idx: int) -> np.ndarray:
         neighbors = s.get_neighbors(s[idx], self.cutoff)
         neighbor_structure = IStructure.from_sites(neighbors)
         if self.alpha_weight is not None:
@@ -160,7 +174,6 @@ class AtomCenteredPH(MOFBaseFeaturizer):
         species_aggregation_functions: Tuple[str] = ("min", "max", "mean", "std"),
         cutoff: float = 12,
         dimensions: Tuple[int] = (1, 2),
-        primitive: bool = False,
         alpha_weight: Optional[str] = None,
     ) -> None:
         """
@@ -187,8 +200,6 @@ class AtomCenteredPH(MOFBaseFeaturizer):
                 Defaults to 12.
             dimensions (Tuple[int]): Betti numbers of consider. 0 describes isolated components,
                 1 cycles and 2 cavities. Defaults to (1, 2).
-            primitive (bool): If True, the structure is reduced to its primitive
-                form before the descriptor is computed. Defaults to False.
             alpha_weight (Optional[str]):  If specified, the use weighted alpha shapes,
                 i.e., replacing the points with balls of varying radii.
                 For instance `atomic_radius_calculated` or `van_der_waals_radius`.
@@ -210,18 +221,19 @@ class AtomCenteredPH(MOFBaseFeaturizer):
         )
         self.compute_for_all_elements = compute_for_all_elements
 
-        super().__init__(primitive=primitive)
-
     def _get_relevant_atom_type(self, element: str) -> str:
         for atom_type in self.atom_types:
             if element in atom_type:
                 return atom_type
 
+    def featurize(self, mof: "MOF") -> np.ndarray:
+        return self._featurize(mof.structure)
+
     def _featurize(self, s: Union[Structure, IStructure]) -> np.ndarray:
         results = defaultdict(list)
         for idx, site in enumerate(s):
             atom_type = self._get_relevant_atom_type(site.specie.symbol)
-            features = self.site_featurizer.featurize(s, idx)
+            features = self.site_featurizer._featurize(s, idx)
             if atom_type is not None:
                 results[atom_type].append(features)
             results["all"].append(features)

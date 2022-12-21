@@ -1,21 +1,20 @@
 # -*- coding: utf-8 -*-
 """Guest-centered atomic-property weighted autocorrelation function."""
 from functools import cached_property
-from typing import List, Optional, Tuple, Union
+from typing import List, Tuple, Union
 
 import numpy as np
 from element_coder import encode
-from matminer.featurizers.base import BaseFeaturizer
 from pymatgen.core import IStructure, Structure
 
-from mofdscribe.featurizers.hostguest.utils import HostGuest, _extract_host_guest
-
-from ..utils.aggregators import AGGREGATORS
+from mofdscribe.featurizers.base import MOFBaseFeaturizer
+from mofdscribe.featurizers.hostguest.utils import _extract_host_guest
+from mofdscribe.featurizers.utils.aggregators import AGGREGATORS
 
 __all__ = ["GuestCenteredAPRDF"]
 
 
-class GuestCenteredAPRDF(BaseFeaturizer):
+class GuestCenteredAPRDF(MOFBaseFeaturizer):
     """Guest-centered atomic-property weighted autocorrelation function.
 
     This is a modification of the AP-RDF that is centered on the guest atoms.
@@ -86,29 +85,27 @@ class GuestCenteredAPRDF(BaseFeaturizer):
 
     def _extract_host_guest(
         self,
-        structure: Optional[Union[Structure, IStructure]] = None,
-        host_guest: Optional[HostGuest] = None,
+        structure: Union[Structure, IStructure],
     ):
         return _extract_host_guest(
             structure=structure,
-            host_guest=host_guest,
             remove_guests=True,
             operates_on="molecule",
             local_env_method=self._local_env_method,
         )
 
-    def featurize(
+    def featurize(self, mof: "MOF") -> np.ndarray:
+        return self._featurize(structure=mof.structure)
+
+    def _featurize(
         self,
-        structure: Optional[Union[Structure, IStructure]],
-        host_guest: Optional[HostGuest] = None,
+        structure: Union[Structure, IStructure],
     ) -> np.ndarray:
         """
         Compute the features of the host and the guests and aggregate them.
 
         Args:
-            structure (Optional[Union[Structure, IStructure]]): The structure to featurize.
-            host_guest (Optional[HostGuest]): The host_guest to featurize.
-                If you provide this, you must not provide structure.
+            structure (Union[Structure, IStructure]): The structure to featurize.
 
         Returns:
             np.ndarray: The features of the host and the guests.
@@ -116,7 +113,7 @@ class GuestCenteredAPRDF(BaseFeaturizer):
         Raises:
             ValueError: If we cannot detect a host.
         """
-        host_guest = self._extract_host_guest(structure=structure, host_guest=host_guest)
+        host_guest = self._extract_host_guest(structure=structure)
 
         if not host_guest.host:
             raise ValueError(

@@ -1,5 +1,11 @@
 # -*- coding: utf-8 -*-
-"""Computing pore properties using Zeo++."""
+"""Computing pore properties using Zeo++.
+
+.. warning::
+
+    Note that we found that the results from zeo++ might depend on the
+    operating system. See https://github.com/lsmo-epfl/zeopp-lsmo/issues/18.
+"""
 import os
 import re
 import subprocess
@@ -10,12 +16,12 @@ from typing import Callable, List, Optional, Tuple, Union
 import numpy as np
 import pandas as pd
 from loguru import logger
-from pymatgen.core import IStructure, Structure
+from pymatgen.core import Structure
 
 from mofdscribe.featurizers.base import MOFBaseFeaturizer
-
-from ..utils import is_tool
-from ..utils.tempdir import TEMPDIR
+from mofdscribe.featurizers.utils import is_tool
+from mofdscribe.featurizers.utils.tempdir import TEMPDIR
+from mofdscribe.types import StuctureIStructureType
 
 ZEOPP_BASE_COMMAND = ["network"]
 HA_COMMAND = ["-ha"]
@@ -175,7 +181,6 @@ class PoreDiameters(MOFBaseFeaturizer):
     def __init__(
         self,
         ha: bool = True,
-        primitive: bool = True,
     ):
         """Initialize the featurizer.
 
@@ -185,14 +190,14 @@ class PoreDiameters(MOFBaseFeaturizer):
                 It has been reported that this can lead to issues
                 for some structures.
                 Default is True.
-            primitive (bool): If True, the structure is reduced to its primitive
-                form before the descriptor is computed. Defaults to True.
         """
         self.labels = ["lis", "lifs", "lifsp"]
         self.ha = ha
-        super().__init__(primitive=primitive)
 
-    def _featurize(self, s):
+    def featurize(self, mof: "MOF") -> np.ndarray:
+        return self._featurize(mof.structure)
+
+    def _featurize(self, s: StuctureIStructureType):
         result = run_zeopp(s, ["-res"], _parse_res_zeopp, self.ha)
         return np.array(list(result.values()))
 
@@ -229,7 +234,6 @@ class SurfaceArea(MOFBaseFeaturizer):
         num_samples: int = 100,
         channel_radius: Union[str, float, None] = None,
         ha: bool = True,
-        primitive: bool = True,
     ):
         """Initialize the SurfaceArea featurizer.
 
@@ -245,8 +249,6 @@ class SurfaceArea(MOFBaseFeaturizer):
                 It has been reported that this can lead to issues
                 for some structures.
                 Default is True.
-            primitive (bool): If True, the structure is reduced to its primitive
-                form before the descriptor is computed. Defaults to True.
         """
         if channel_radius is not None and probe_radius != channel_radius:
             logger.warning(
@@ -278,9 +280,11 @@ class SurfaceArea(MOFBaseFeaturizer):
         ]
 
         self.labels = [f"{label}_{self.probe_radius}" for label in labels]
-        super().__init__(primitive=primitive)
 
-    def _featurize(self, s: Union[Structure, IStructure]) -> np.ndarray:
+    def featurize(self, mof: "MOF") -> np.ndarray:
+        return self._featurize(mof.structure)
+
+    def _featurize(self, s: StuctureIStructureType) -> np.ndarray:
         command = [
             "-sa",
             f"{self.channel_radius}",
@@ -323,7 +327,6 @@ class AccessibleVolume(MOFBaseFeaturizer):
         num_samples: int = 100,
         channel_radius: Union[str, float, None] = None,
         ha: bool = True,
-        primitive: bool = True,
     ):
         """Initialize the AccessibleVolume featurizer.
 
@@ -339,8 +342,6 @@ class AccessibleVolume(MOFBaseFeaturizer):
                 It has been reported that this can lead to issues
                 for some structures.
                 Default is True.
-            primitive (bool): If True, the structure is reduced to its primitive
-                form before the descriptor is computed. Defaults to True.
         """
         if channel_radius is not None and probe_radius != channel_radius:
             logger.warning(
@@ -370,9 +371,11 @@ class AccessibleVolume(MOFBaseFeaturizer):
             "nav_cm3g",
         ]
         self.labels = [f"{label}_{self.probe_radius}" for label in labels]
-        super().__init__(primitive=primitive)
 
-    def _featurize(self, s: Union[Structure, IStructure]) -> np.ndarray:
+    def featurize(self, mof: "MOF") -> np.ndarray:
+        return self._featurize(mof.structure)
+
+    def _featurize(self, s: StuctureIStructureType) -> np.ndarray:
         command = ["-vol", f"{self.channel_radius}", f"{self.probe_radius}", f"{self.num_samples}"]
         results = run_zeopp(s, command, _parse_volpo_zeopp, self.ha)
         return np.array(list(results.values()))
@@ -439,7 +442,6 @@ class RayTracingHistogram(MOFBaseFeaturizer):
         num_samples: int = 50000,
         channel_radius: Optional[Union[str, float]] = None,
         ha: bool = True,
-        primitive: bool = True,
     ) -> None:
         """Initialize the RayTracingHistogram featurizer.
 
@@ -480,12 +482,14 @@ class RayTracingHistogram(MOFBaseFeaturizer):
         self.num_samples = num_samples
         self.channel_radius = channel_radius
         self.ha = ha
-        super().__init__(primitive=primitive)
 
     def feature_labels(self) -> List[str]:
         return [f"ray_hist_{self.probe_radius}_{i}" for i in range(1000)]
 
-    def _featurize(self, s: Union[Structure, IStructure]) -> np.ndarray:
+    def featurize(self, mof: "MOF") -> np.ndarray:
+        return self._featurize(mof.structure)
+
+    def _featurize(self, s: StuctureIStructureType) -> np.ndarray:
         command = [
             "-ray_atom",
             f"{self.channel_radius}",
@@ -585,8 +589,6 @@ class PoreSizeDistribution(MOFBaseFeaturizer):
                 It has been reported that this can lead to issues
                 for some structures.
                 Default is True.
-            primitive (bool): If True, the structure is reduced to its primitive
-                form before the descriptor is computed. Defaults to True.
 
         Raises:
             ValueError: If type not one of 'count', 'cumulative', 'derivative'.
@@ -618,12 +620,14 @@ class PoreSizeDistribution(MOFBaseFeaturizer):
         self.num_samples = num_samples
         self.channel_radius = channel_radius
         self.ha = ha
-        super().__init__(primitive=primitive)
 
     def feature_labels(self) -> List[str]:
         return [f"psd_hist_{self.probe_radius}_{i}" for i in range(1000)]
 
-    def _featurize(self, s: Union[Structure, IStructure]) -> np.ndarray:
+    def featurize(self, mof: "MOF") -> np.ndarray:
+        return self._featurize(mof.structure)
+
+    def _featurize(self, s: StuctureIStructureType) -> np.ndarray:
         command = [
             "-psd",
             f"{self.channel_radius}",

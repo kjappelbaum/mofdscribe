@@ -7,14 +7,13 @@ from loguru import logger
 from pymatgen.core import IMolecule, IStructure, Molecule, Structure
 
 from mofdscribe.featurizers.base import MOFBaseFeaturizer
+from mofdscribe.featurizers.topology._tda_helpers import get_diagrams_for_structure
 from mofdscribe.featurizers.utils.extend import (
     operates_on_imolecule,
     operates_on_istructure,
     operates_on_molecule,
     operates_on_structure,
 )
-
-from ._tda_helpers import get_diagrams_for_structure
 
 
 @operates_on_imolecule
@@ -51,7 +50,6 @@ class PHHist(MOFBaseFeaturizer):
         y_axis_label: str = "persistence",
         normed: bool = True,
         no_supercell: bool = False,
-        primitive: bool = False,
         alpha_weight: Optional[str] = None,
     ) -> None:
         """Initialize the PHStats object.
@@ -81,8 +79,6 @@ class PHHist(MOFBaseFeaturizer):
                 Defaults to True.
             no_supercell (bool): If true, then the supercell is not created.
                 Defaults to False.
-            primitive (bool): If True, the structure is reduced to its primitive
-                form before the descriptor is computed. Defaults to False.
             alpha_weight (Optional[str]): If specified, the use weighted alpha shapes,
                 i.e., replacing the points with balls of varying radii.
                 For instance `atomic_radius_calculated` or `van_der_waals_radius`.
@@ -102,7 +98,6 @@ class PHHist(MOFBaseFeaturizer):
         self.normed = normed
         self.no_supercell = no_supercell
         self.alpha_weight = alpha_weight
-        super().__init__(primitive=primitive)
 
     def _get_feature_labels(self) -> List[str]:
         labels = []
@@ -118,6 +113,9 @@ class PHHist(MOFBaseFeaturizer):
 
     def feature_labels(self) -> List[str]:
         return self._get_feature_labels()
+
+    def featurize(self, mof: "MOF") -> np.ndarray:
+        return self._featurize(mof.structure)
 
     def _featurize(
         self, structure: Union[Structure, IStructure, Molecule, IMolecule]

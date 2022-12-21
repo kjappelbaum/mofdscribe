@@ -1,20 +1,21 @@
 # -*- coding: utf-8 -*-
 """Compute features on the host and the guests and then aggregate them."""
-from typing import Collection, List, Optional, Tuple, Union
+from typing import Collection, List, Tuple, Union
 
 import numpy as np
 from loguru import logger
 from matminer.featurizers.base import BaseFeaturizer
 from pymatgen.core import IStructure, Structure
 
-from mofdscribe.featurizers.hostguest.utils import HostGuest, _extract_host_guest
+from mofdscribe.featurizers.base import MOFBaseFeaturizer
+from mofdscribe.featurizers.hostguest.utils import _extract_host_guest
 from mofdscribe.featurizers.utils import set_operates_on
 from mofdscribe.featurizers.utils.aggregators import ARRAY_AGGREGATORS
 
 
 # ToDo: How do we handle if there is no guest?
 # make it optional to remove guests from the structure?
-class HostGuestFeaturizer(BaseFeaturizer):
+class HostGuestFeaturizer(MOFBaseFeaturizer):
     """
     Compoute features on the host and the guests and then aggregate them.
 
@@ -83,59 +84,52 @@ class HostGuestFeaturizer(BaseFeaturizer):
                     labels.append(f"{bb}_{aggregation}_{label}")
         return labels
 
-    def _extract_host_guest(
-        self,
-        structure: Optional[Union[Structure, IStructure]] = None,
-        host_guest: Optional[HostGuest] = None,
-    ):
+    def _extract_host_guest(self, structure: Union[Structure, IStructure]):
         return _extract_host_guest(
             structure=structure,
-            host_guest=host_guest,
             remove_guests=self._remove_guests,
             operates_on=self._operates_on,
             local_env_method=self._local_env_method,
         )
 
-    def fit(
+    def fit(self, mofs: Collection["MOF"]):
+        """
+        Fit the featurizer to the given MOFs.
+
+        Args:
+            mofs (Collection["MOF"]): The MOFs to fit to.
+        """
+        structures = [mof.structure for mof in mofs]
+        self._fit(structures=structures)
+
+    def _fit(
         self,
         structures: Collection[Union[Structure, IStructure]],
-        host_guests: Optional[Collection[HostGuest]] = None,
     ) -> None:
         """
         Fit the featurizer to the given structures.
 
         Args:
             structures (Collection[Union[Structure, IStructure]]): The structures to fit to.
-            host_guests (Optional[Collection[HostGuest]]): The host_guests to fit to.
-                If you provide this, you must not provide structures.
         """
         all_hosts, all_guests = [], []
 
-        if structures is not None:
-            for structure in structures:
-                host_guest = self._extract_host_guest(structure=structure)
-                all_hosts.append(host_guest.host)
-                all_guests.extend(host_guest.guests)
+        for structure in structures:
+            host_guest = self._extract_host_guest(structure=structure)
+            all_hosts.append(host_guest.host)
+            all_guests.extend(host_guest.guests)
 
-        if host_guests is not None:
-            for host_guest in host_guests:
-                host_guest = self._extract_host_guest(host_guest=host_guest)
-                all_hosts.append(host_guest.host)
-                all_guests.extend(host_guest.guests)
         self._featurizer.fit(all_hosts + all_guests)
 
-    def featurize(
-        self,
-        structure: Optional[Union[Structure, IStructure]],
-        host_guest: Optional[HostGuest] = None,
-    ) -> np.ndarray:
+    def featurize(self, mof: "MOF") -> np.ndarray:
+        return self._featurize(structure=mof.structure)
+
+    def _featurize(self, structure: Union[Structure, IStructure]) -> np.ndarray:
         """
         Compute the features of the host and the guests and aggregate them.
 
         Args:
-            structure (Optional[Union[Structure, IStructure]]): The structure to featurize.
-            host_guest (Optional[HostGuest]): The host_guest to featurize.
-                If you provide this, you must not provide structure.
+            structure (Union[Structure, IStructure]): The structure to featurize.
 
         Returns:
             np.ndarray: The features of the host and the guests.
@@ -143,7 +137,7 @@ class HostGuestFeaturizer(BaseFeaturizer):
         Raises:
             ValueError: If we cannot detect a host.
         """
-        host_guest = self._extract_host_guest(structure=structure, host_guest=host_guest)
+        host_guest = self._extract_host_guest(structure=structure)
 
         if host_guest.host is None:
             raise ValueError(

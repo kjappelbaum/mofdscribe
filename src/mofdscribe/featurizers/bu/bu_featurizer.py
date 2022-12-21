@@ -5,20 +5,34 @@ from typing import Collection, List, Optional, Tuple, Union
 import numpy as np
 from matminer.featurizers.base import BaseFeaturizer
 from pydantic import BaseModel
+from pymatgen.analysis.graphs import StructureGraph
 from pymatgen.core import IMolecule, IStructure, Molecule, Structure
 
+from mofdscribe.featurizers.bu.fragment import fragment
 from mofdscribe.featurizers.bu.utils import boxed_molecule
 from mofdscribe.featurizers.utils import nan_array, set_operates_on
 from mofdscribe.featurizers.utils.aggregators import ARRAY_AGGREGATORS
+
+STRUCTURE_VIEWS = ("all_atom", "connecting", "binding")
 
 
 class MOFBBs(BaseModel):
     """Container for MOF building blocks."""
 
-    nodes: Optional[List[Union[Structure, Molecule, IStructure, IMolecule]]]
-    linkers: Optional[List[Union[Structure, Molecule, IStructure, IMolecule]]]
+    nodes: Optional[List[Union[Structure, Molecule, IStructure, IMolecule, StructureGraph]]]
+    linkers: Optional[List[Union[Structure, Molecule, IStructure, IMolecule, StructureGraph]]]
 
 
+class ConnectingSitesFeaturizer(BaseFeaturizer):
+    ...
+
+
+class BindingSitesFeaturizer(BaseFeaturizer):
+    ...
+
+
+# If we would cache the fragmentation, the implementation would be simpler
+# ToDo: support moffragmentor options
 # ToDo: Support `MultipleFeaturizer`s (should be ok, if we recursively call the operates_on method).
 class BUFeaturizer(BaseFeaturizer):
     """
@@ -89,10 +103,7 @@ class BUFeaturizer(BaseFeaturizer):
             raise ValueError("You must provide a structure or mofbbs.")
 
         if structure is not None:
-            from moffragmentor import MOF
-
-            mof = MOF.from_structure(structure)
-            fragments = mof.fragment()
+            fragments = fragment(structure)
 
             if self._operates_on in ("both", "molecule"):
                 linkers = [linker.molecule for linker in fragments.linkers]

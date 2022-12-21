@@ -6,6 +6,10 @@ import numpy as np
 from pymatgen.core import IMolecule, IStructure, Molecule, Structure
 
 from mofdscribe.featurizers.base import MOFBaseFeaturizer
+from mofdscribe.featurizers.topology._tda_helpers import (
+    get_diagrams_for_structure,
+    persistent_diagram_stats,
+)
 from mofdscribe.featurizers.utils import flatten
 from mofdscribe.featurizers.utils.extend import (
     operates_on_imolecule,
@@ -13,8 +17,6 @@ from mofdscribe.featurizers.utils.extend import (
     operates_on_molecule,
     operates_on_structure,
 )
-
-from ._tda_helpers import get_diagrams_for_structure, persistent_diagram_stats
 
 
 @operates_on_imolecule
@@ -73,8 +75,6 @@ class PHStats(MOFBaseFeaturizer):
                 Defaults to False.
             no_supercell (bool): If true, then the supercell is not created.
                 Defaults to False.
-            primitive (bool): If True, the structure is reduced to its primitive
-                form before the descriptor is computed. Defaults to False.
             alpha_weight (Optional[str]): If specified, the use weighted alpha shapes,
                 i.e., replacing the points with balls of varying radii.
                 For instance `atomic_radius_calculated` or `van_der_waals_radius`.
@@ -91,7 +91,6 @@ class PHStats(MOFBaseFeaturizer):
         self.periodic = periodic
         self.no_supercell = no_supercell
         self.alpha_weight = alpha_weight
-        super().__init__(primitive=primitive)
 
     def _get_feature_labels(self) -> List[str]:
         labels = []
@@ -105,6 +104,9 @@ class PHStats(MOFBaseFeaturizer):
 
     def feature_labels(self) -> List[str]:
         return self._get_feature_labels()
+
+    def featurize(self, mof: "MOF") -> np.ndarray:
+        return self._featurize(mof.structure)
 
     def _featurize(
         self, structure: Union[Structure, IStructure, Molecule, IMolecule]

@@ -38,34 +38,24 @@ class HostGuest(BaseModel):
 
 
 def _extract_host_guest(
-    structure: Optional[Union[Structure, IStructure]] = None,
-    host_guest: Optional[HostGuest] = None,
+    structure: Union[Structure, IStructure],
     operates_on: str = "structure",
     remove_guests: bool = True,
     local_env_method: str = "vesta",
 ):
-    if structure is None and host_guest is None:
-        raise ValueError("You must provide a structure or host_guest.")
 
-    if structure is not None:
-        if not isinstance(structure, (IStructure)):
-            structure = IStructure.from_sites(structure.sites)
-        structure_graph = get_structure_graph(structure, local_env_method)
-        mols, _mol_graphs, mol_indices, _centers, _coordinates = get_subgraphs_as_molecules(
-            structure_graph
-        )
-        if remove_guests:
-            host = remove_guests_from_structure(structure_graph.structure, mol_indices)
-        else:
-            host = structure_graph.structure
-
-        if operates_on == "structure":
-            mols = [boxed_molecule(mol) for mol in mols]
-
+    if not isinstance(structure, (IStructure)):
+        structure = IStructure.from_sites(structure.sites)
+    structure_graph = get_structure_graph(structure, local_env_method)
+    mols, _mol_graphs, mol_indices, _centers, _coordinates = get_subgraphs_as_molecules(
+        structure_graph
+    )
+    if remove_guests:
+        host = remove_guests_from_structure(structure_graph.structure, mol_indices)
     else:
-        host = host_guest.host
-        mols = host_guest.guests
-        if operates_on == "structure" and isinstance(mols[0], (Molecule, IMolecule)):
-            mols = [boxed_molecule(mol) for mol in mols]
+        host = structure_graph.structure
+
+    if operates_on == "structure":
+        mols = [boxed_molecule(mol) for mol in mols]
 
     return HostGuest(host=host, guests=mols)
