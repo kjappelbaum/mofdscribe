@@ -58,6 +58,9 @@ class CompositionStats(BaseFeaturizer):
         return feature_labels
 
     def featurize(self, molecule: Union[Molecule, IMolecule, Structure, IStructure]) -> np.ndarray:
+        return self._featurize(molecule)
+
+    def _featurize(self, molecule: Union[Molecule, IMolecule, Structure, IStructure]) -> np.ndarray:
         encodings = defaultdict(list)
         for encoding in self.encodings:
             for site in molecule.sites:

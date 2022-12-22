@@ -88,7 +88,18 @@ class LSOP(BaseFeaturizer):
     def feature_labels(self) -> List[str]:
         return [f"lsop_{val}" for val in self.types]
 
-    def featurize(self, s: Union[Structure, IStructure, Molecule, IMolecule]) -> np.ndarray:
+    def featurize(self, mof: "MOF") -> np.ndarray:
+        """Compute the LSOP for a fragment.
+
+        Args:
+            mof (MOF): The MOF to compute the LSOP for.
+
+        Returns:
+            np.ndarray: The LSOP values.
+        """
+        return self._featurize(mof.structure)
+
+    def _featurize(self, s: Union[Structure, IStructure, Molecule, IMolecule]) -> np.ndarray:
         molecule = Molecule.from_sites(s.sites)
         com = molecule.center_of_mass
         orginal_len = len(molecule)

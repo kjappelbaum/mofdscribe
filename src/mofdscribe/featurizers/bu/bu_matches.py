@@ -174,6 +174,10 @@ class BUMatch(BaseFeaturizer):
 
     def featurize(self, s: Union[Structure, IStructure, Molecule, IMolecule]) -> np.ndarray:
         """Structure is here spanned by the connecting points of a BU."""
+        return self._featurize(s)
+
+    def _featurize(self, s: Union[Structure, IStructure, Molecule, IMolecule]) -> np.ndarray:
+        """Structure is here spanned by the connecting points of a BU."""
         features = []
         for topo in self.topos:
             feats = match_bb(

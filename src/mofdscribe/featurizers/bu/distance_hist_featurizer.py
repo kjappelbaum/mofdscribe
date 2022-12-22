@@ -63,6 +63,11 @@ class PairwiseDistanceHist(BaseFeaturizer):
         return [f"pairwise_distance_hist_{a}" for a in self._get_grid()]
 
     def featurize(self, structure: Union[Molecule, IMolecule, Structure, IStructure]) -> np.ndarray:
+        return self._featurize(structure)
+
+    def _featurize(
+        self, structure: Union[Molecule, IMolecule, Structure, IStructure]
+    ) -> np.ndarray:
         distances = []
         for i, _ in enumerate(structure):
             for j, _ in enumerate(structure):

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 """Compute features on the BUs and then aggregate them."""
+from abc import abstractmethod
 from typing import Collection, List, Optional, Tuple, Union
 
 import numpy as np
@@ -10,6 +11,7 @@ from mofdscribe.featurizers.base import MOFBaseFeaturizer
 from mofdscribe.featurizers.bu.utils import boxed_molecule
 from mofdscribe.featurizers.utils import nan_array, set_operates_on
 from mofdscribe.featurizers.utils.aggregators import ARRAY_AGGREGATORS
+from mofdscribe.mof import MOF
 
 STRUCTURE_VIEWS = ("all_atom", "connecting", "binding")
 
@@ -20,14 +22,6 @@ class MOFBBs(BaseModel):
 
     nodes: Optional[List[Union[Structure, Molecule, IStructure, IMolecule]]]
     linkers: Optional[List[Union[Structure, Molecule, IStructure, IMolecule]]]
-
-
-class ConnectingSitesFeaturizer(MOFBaseFeaturizer):
-    ...
-
-
-class BindingSitesFeaturizer(MOFBaseFeaturizer):
-    ...
 
 
 # If we would cache the fragmentation, the implementation would be simpler
@@ -62,6 +56,8 @@ class BUFeaturizer(MOFBaseFeaturizer):
                 linkers=[BabelMolAdaptor.from_string("CCCC", "smi").pymatgen_mol]))
     """
 
+    _NAME = "BUFeaturizer"
+
     def __init__(
         self,
         featurizer: MOFBaseFeaturizer,
@@ -91,7 +87,7 @@ class BUFeaturizer(MOFBaseFeaturizer):
         for bb in ["node", "linker"]:
             for aggregation in self._aggregations:
                 for label in base_labels:
-                    labels.append(f"{bb}_{aggregation}_{label}")
+                    labels.append(f"{self._NAME}_{bb}_{aggregation}_{label}")
         return labels
 
     def _extract_bbs(
@@ -226,3 +222,91 @@ class BUFeaturizer(MOFBaseFeaturizer):
 
     def implementors(self) -> List[str]:
         return self._featurizer.implementors()
+
+
+class _BUSubBaseFeaturizer(BUFeaturizer):
+    def featurize(
+        self,
+        mof: Optional["MOF"] = None,
+    ) -> np.ndarray:
+        """
+        Compute features on the BUs and then aggregate them.
+
+        If you provide a structure, we will fragment the MOF into BUs.
+        If you already have precomputed fragements or only want to consider a subset
+        of the BUs, you can provide them manually via the `mofbbs` argument.
+
+        If you manually provide the `mofbbs`,  we will convert molecules to structures
+        where possible.
+
+        Args:
+            mof (MOF, optional): The structure to featurize.
+
+        Returns:
+            A numpy array of features.
+        """
+        # if i know what the featurizer wants, I can always cast to a structure
+        num_features = len(self._featurizer.feature_labels())
+        nodes, linkers = self._extract(mof)
+        linker_feats = [self._featurizer._featurize(linker) for linker in linkers]
+        if not linker_feats:
+            linker_feats = [nan_array(num_features)]
+
+        node_feats = [self._featurizer._featurize(node) for node in nodes]
+        if not node_feats:
+            node_feats = [nan_array(num_features)]
+
+        aggregated_linker_feats = []
+        for aggregation in self._aggregations:
+            aggregated_linker_feats.extend(ARRAY_AGGREGATORS[aggregation](linker_feats, axis=0))
+        aggregated_linker_feats = np.array(aggregated_linker_feats)
+
+        aggregated_node_feats = []
+        for aggregation in self._aggregations:
+            aggregated_node_feats.extend(ARRAY_AGGREGATORS[aggregation](node_feats, axis=0))
+        aggregated_node_feats = np.array(aggregated_node_feats)
+
+        return np.concatenate((aggregated_node_feats, aggregated_linker_feats))
+
+    @abstractmethod
+    def _extract(self, mof: "MOF") -> Tuple[List[Structure], List[Structure]]:
+        raise NotImplementedError()
+
+    def fit(self, mofs: Collection["MOF"]):
+        all_nodes, all_linkers = [], []
+        for mof in mofs:
+            nodes, linkers = self._extract(mof)
+            all_nodes.extend(nodes)
+            all_linkers.extend(linkers)
+        self._featurizer.fit(all_nodes + all_linkers)
+
+    def citations(self) -> List[str]:
+        return self._featurizer.citations()
+
+    def implementors(self) -> List[str]:
+        return self._featurizer.implementors()
+
+
+class BindingSitesFeaturizer(_BUSubBaseFeaturizer):
+    """A special BU featurizer that operates on structures spanned by "binding sites".
+
+    From more details see.
+
+
+    Example:
+        >>> from mofdscribe.mof import MOF
+        >>> from mofdscribe.featurizers.bu.bu_featurizer import BindingSitesFeaturizer
+        >>> from mofdscribe.featurizers.bu.lsop_featurizer import LSOP
+        >>> import pandas as pd
+        >>> mof = MOF.from_file("mof_file.cif")
+        >>> featurizer = BindingSitesFeaturizer(LSOP())
+        >>> feats = featurizer.featurize(mof)
+        >>> pd.DataFrame([feats], columns=featurizer.feature_labels())
+    """
+
+    _NAME = "BindingSitesFeaturizer"
+
+    def _extract(self, mof: "MOF"):
+        linkers = [l._get_binding_sites_structure() for l in mof.fragments.linkers]
+        nodes = [n._get_binding_sites_structure() for n in mof.fragments.nodes]
+        return nodes, linkers

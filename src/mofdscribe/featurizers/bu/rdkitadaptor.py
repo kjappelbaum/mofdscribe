@@ -76,6 +76,21 @@ class RDKitAdaptor(BaseFeaturizer):
         Returns:
             A numpy array of features.
         """
+        return self._featurize(molecule)
+
+    def _featurize(self, molecule: Union[Molecule, MoleculeGraph]) -> np.ndarray:
+        """
+        Call the RDKit featurizer on the molecule.
+
+        If the input molecule is a Molecule, we convert it to a MoleculeGraph
+        using the local environment strategy specified in the constructor.
+
+        Args:
+            molecule: A pymatgen Molecule or MoleculeGraph object.
+
+        Returns:
+            A numpy array of features.
+        """
         if isinstance(molecule, MoleculeGraph):
             molecule_graph = molecule
         else:

@@ -58,5 +58,5 @@ def test_bu_featurizer_with_matminer_featurizer(hkust_structure, hkust_linker_st
     linker_feats = featurizer._featurizer._featurize(hkust_linker_structure)
     linker_feature_mask = [i for i, f in enumerate(featurizer.feature_labels()) if "linker" in f]
     assert len(features[linker_feature_mask]) == len(linker_feats)
-    # todo: check where potential differences come from 
+    # todo: check where potential differences come from
     assert np.allclose(features[linker_feature_mask], linker_feats, rtol=0.005, atol=1e-3)
