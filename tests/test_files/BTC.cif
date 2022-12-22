@@ -1,57 +1,44 @@
-
-#######################################################################
-#
-#                 Cambridge Crystallographic Data Centre
-#                                CCDC
-#
-#######################################################################
-#
-# If this CIF has been generated from an entry in the Cambridge
-# Structural Database, then it will include bibliographic, chemical,
-# crystal, experimental, refinement or atomic coordinate data resulting
-# from the CCDC's data processing and validation procedures.
-#
-#######################################################################
-
+# generated using pymatgen
 data_HC3O2
-_symmetry_cell_setting           triclinic
 _symmetry_space_group_name_H-M   'P 1'
-_symmetry_Int_Tables_number      1
-_space_group_name_Hall           'P 1'
+_cell_length_a   7.82719732
+_cell_length_b   7.82719732
+_cell_length_c   7.82719732
+_cell_angle_alpha   90.00000000
+_cell_angle_beta   90.00000000
+_cell_angle_gamma   90.00000000
+_symmetry_Int_Tables_number   1
+_chemical_formula_structural   HC3O2
+_chemical_formula_sum   'H3 C9 O6'
+_cell_volume   479.53338312
+_cell_formula_units_Z   3
 loop_
-_symmetry_equiv_pos_site_id
-_symmetry_equiv_pos_as_xyz
-1 x,y,z
-_cell_length_a                   26.34300000
-_cell_length_b                   26.34300000
-_cell_length_c                   26.34300000
-_cell_angle_alpha                90.00000000
-_cell_angle_beta                 90.00000000
-_cell_angle_gamma                90.00000000
-_cell_volume                     18280.8
+ _symmetry_equiv_pos_site_id
+ _symmetry_equiv_pos_as_xyz
+  1  'x, y, z'
 loop_
-_atom_site_label
-_atom_site_type_symbol
-_atom_site_fract_x
-_atom_site_fract_y
-_atom_site_fract_z
-C378 C 0.32200000 0.67800000 0.61300000
-O379 O 0.44800000 0.74300000 0.68300000
-C380 C 0.43100000 0.70300000 0.70300000
-C381 C 0.29700000 0.70300000 0.56900000
-C382 C 0.32200000 0.61300000 0.67800000
-H383 H 0.38000000 0.72800000 0.62000000
-O384 O 0.31700000 0.74300000 0.55200000
-C385 C 0.38700000 0.67800000 0.67800000
-C386 C 0.30100000 0.63400000 0.63400000
-H387 H 0.27200000 0.62000000 0.62000000
-C388 C 0.36600000 0.63400000 0.69900000
-H389 H 0.38000000 0.62000000 0.72800000
-O390 O 0.44800000 0.68300000 0.74300000
-O391 O 0.25700000 0.68300000 0.55200000
-O392 O 0.25700000 0.55200000 0.68300000
-C393 C 0.36600000 0.69900000 0.63400000
-O394 O 0.31700000 0.55200000 0.74300000
-C395 C 0.29700000 0.56900000 0.70300000
-
-#END
+ _atom_site_type_symbol
+ _atom_site_label
+ _atom_site_symmetry_multiplicity
+ _atom_site_fract_x
+ _atom_site_fract_y
+ _atom_site_fract_z
+ _atom_site_occupancy
+  H  H0  1  -2.08665495  -1.27891755  -2.45013678  1
+  O  O1  1  -2.50062036  -1.50777648  -2.29868601  1
+  C  C2  1  -2.28185815  -1.30247656  -2.28185815  1
+  O  O3  1  -1.85779602  -0.86495213  -2.29868601  1
+  C  C4  1  -2.13377296  -1.22843396  -2.35253517  1
+  O  O5  1  -2.50062036  -1.06688648  -1.85779602  1
+  H  H6  1  -2.45013678  -1.27891755  -2.08665495  1
+  C  C7  1  -2.28185815  -1.08371434  -2.06309594  1
+  C  C8  1  -2.36599746  -0.99957503  -1.91501075  1
+  C  C9  1  -2.13377296  -1.01303732  -2.13377296  1
+  O  O10  1  -2.29868601  -0.86495213  -1.85779602  1
+  O  O11  1  -2.29868601  -1.50777648  -2.50062036  1
+  C  C12  1  -2.35253517  -1.22843396  -2.13377296  1
+  C  C13  1  -1.91501075  -0.99957503  -2.36599746  1
+  C  C14  1  -2.06309594  -1.08371434  -2.28185815  1
+  H  H15  1  -2.08665495  -0.91543572  -2.08665495  1
+  O  O16  1  -1.85779602  -1.06688648  -2.50062036  1
+  C  C17  1  -2.36599746  -1.45056175  -2.36599746  1

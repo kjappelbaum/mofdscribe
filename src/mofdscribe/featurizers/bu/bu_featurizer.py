@@ -3,16 +3,23 @@
 from typing import Collection, List, Optional, Tuple, Union
 
 import numpy as np
-from pymatgen.analysis.graphs import StructureGraph
+from pydantic import BaseModel
 from pymatgen.core import IMolecule, IStructure, Molecule, Structure
 
 from mofdscribe.featurizers.base import MOFBaseFeaturizer
-from mofdscribe.featurizers.bu.fragment import fragment
 from mofdscribe.featurizers.bu.utils import boxed_molecule
 from mofdscribe.featurizers.utils import nan_array, set_operates_on
 from mofdscribe.featurizers.utils.aggregators import ARRAY_AGGREGATORS
 
 STRUCTURE_VIEWS = ("all_atom", "connecting", "binding")
+
+# since fragmentation is not super straightforward,
+# we give the option to provide the fragments directly
+class MOFBBs(BaseModel):
+    """Container for MOF building blocks."""
+
+    nodes: Optional[List[Union[Structure, Molecule, IStructure, IMolecule]]]
+    linkers: Optional[List[Union[Structure, Molecule, IStructure, IMolecule]]]
 
 
 class ConnectingSitesFeaturizer(MOFBaseFeaturizer):
@@ -53,7 +60,6 @@ class BUFeaturizer(MOFBaseFeaturizer):
                 mofbbs=MOFBBs(nodes=[BabelMolAdaptor.from_string(
                     "[CH-]1C=CC=C1.[CH-]1C=CC=C1.[Fe+2]", "smi").pymatgen_mol],
                 linkers=[BabelMolAdaptor.from_string("CCCC", "smi").pymatgen_mol]))
-
     """
 
     def __init__(
@@ -90,25 +96,24 @@ class BUFeaturizer(MOFBaseFeaturizer):
 
     def _extract_bbs(
         self,
-        structure: Optional[Union[Structure, IStructure]] = None,
+        mof: Optional["MOF"],
         mofbbs: Optional[MOFBBs] = None,
     ):
-        if structure is None and mofbbs is None:
+        if mof is None and mofbbs is None:
             raise ValueError("You must provide a structure or mofbbs.")
 
-        if structure is not None:
-            fragments = fragment(structure)
+        if mof is not None:
+            fragments = mof.fragments
 
             if self._operates_on in ("both", "molecule"):
                 linkers = [linker.molecule for linker in fragments.linkers]
                 nodes = [node.molecule for node in fragments.nodes]
             else:
                 # create a boxed structure
-                linkers = [boxed_molecule(linker.molecule) for linker in fragments.linkers]
-                nodes = [boxed_molecule(node.molecule) for node in fragments.nodes]
+                linkers = [linker._get_boxed_structure() for linker in fragments.linkers]
+                nodes = [node._get_boxed_structure() for node in fragments.nodes]
 
         if mofbbs is not None:
-
             linkers = list(mofbbs.linkers) if mofbbs.linkers is not None else []
             nodes = list(mofbbs.nodes) if mofbbs.nodes is not None else []
             types = [type(node) for node in nodes] + [type(linker) for linker in linkers]
@@ -138,22 +143,25 @@ class BUFeaturizer(MOFBaseFeaturizer):
 
         return nodes, linkers
 
+    def _fit(self):
+        raise NotImplementedError("BUFeaturizer does not support _fit.")
+
     def fit(
         self,
-        structures: Optional[Collection[Structure]] = None,
+        mofs: Optional[Collection["MOF"]] = None,
         mofbbs: Optional[Collection[MOFBBs]] = None,
     ) -> None:
         """
         Fit the featurizer to the given structures.
 
         Args:
-            structures (Collection[Structure], optional): The structures to featurize.
+            structures (Collection[MOF], optional): The MOFs to featurize.
             mofbbs (Collection[MOFBBs], optional): The MOF fragments (nodes and linkers).
         """
         all_nodes, all_linkers = [], []
-        if structures is not None:
-            for structure in structures:
-                nodes, linkers = self._extract_bbs(structure=structure)
+        if mofs is not None:
+            for mof in mofs:
+                nodes, linkers = self._extract_bbs(mof=mof)
                 all_nodes.extend(nodes)
                 all_linkers.extend(linkers)
         if mofbbs is not None:
@@ -163,16 +171,14 @@ class BUFeaturizer(MOFBaseFeaturizer):
                 all_linkers.extend(linkers)
 
         all_fragments = all_nodes + all_linkers
-        self._featurizer.fit(all_fragments)
+        self._featurizer._fit(all_fragments)
 
-    # ToDo:
-    # - Perhaps use type dispatch instead of different keyword arguments.
-    #   (we can use fastcore or code it ourselves)
-    # - We can also directly pass the graph to the featurizer if it want to work
-    #     on the graph.
+    def _featurize(self):
+        raise NotImplementedError("BUFeaturizer does not support _featurize.")
+
     def featurize(
         self,
-        structure: Optional[Union[Structure, IStructure]] = None,
+        mof: Optional["MOF"] = None,
         mofbbs: Optional[MOFBBs] = None,
     ) -> np.ndarray:
         """
@@ -186,7 +192,7 @@ class BUFeaturizer(MOFBaseFeaturizer):
         where possible.
 
         Args:
-            structure (Union[Structure, IStructure], optional): The structure to featurize.
+            mof (MOF, optional): The structure to featurize.
             mofbbs (MOFBBs, optional): The MOF fragments (nodes and linkers).
 
         Returns:
@@ -194,12 +200,12 @@ class BUFeaturizer(MOFBaseFeaturizer):
         """
         # if i know what the featurizer wants, I can always cast to a structure
         num_features = len(self._featurizer.feature_labels())
-        nodes, linkers = self._extract_bbs(structure, mofbbs)
-        linker_feats = [self._featurizer.featurize(linker) for linker in linkers]
+        nodes, linkers = self._extract_bbs(mof, mofbbs)
+        linker_feats = [self._featurizer._featurize(linker) for linker in linkers]
         if not linker_feats:
             linker_feats = [nan_array(num_features)]
 
-        node_feats = [self._featurizer.featurize(node) for node in nodes]
+        node_feats = [self._featurizer._featurize(node) for node in nodes]
         if not node_feats:
             node_feats = [nan_array(num_features)]
 

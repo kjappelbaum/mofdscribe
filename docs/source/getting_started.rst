@@ -8,23 +8,12 @@ Featurizing a MOF
 .. code-block:: python
 
     from mofdscribe.chemistry.racs import RACS
-    from pymatgen.core import Structure
+    from mofdscribe.mof import MOF
 
-    s = Structure.from_file(<my_cif>)
+    mof = MOF.from_file(<my_cif>)
     featurizer = RACS()
-    features = featurizer.featurize(s)
+    features = featurizer.featurize(mof)
 
-.. admonition:: mofdscribe base classes
-    :class: hint
-
-    Most featurizers in mofdscribe inherit from :py:class:`~mofdscribe.featurizers.base.MOFBaseFeaturizer`.
-    This class can also handle the conversion to primitive cells if you pass :code:`primitive=True` to the
-    constructor. This can be useful to save computational time but also make it possible to, e.g., 
-    use the :code:`sum` aggregation.
-
-    To avoid re-computation of the primitive cell, you should use the :py:class:`~mofdscribe.featurizers.base.MOFMultipleFeaturizer`
-    for combining multiple featurizers. This will accept a keyword argument :code:`primitive=True` in the constructor 
-    and then compute the primitive cell once and use it for all the featurizers.
 
 It is also easy to combine multiple featurizers into a single pipeline:
 
@@ -32,21 +21,21 @@ It is also easy to combine multiple featurizers into a single pipeline:
 
     from mofdscribe.chemistry.racs import RACS
     from mofdscribe.pore.geometric_properties import PoreDiameters
-    from pymatgen.core import Structure
+    from mofdscribe.mof import MOF
     from mofdscribe.featurizers.base import MOFMultipleFeaturizer
 
-    s = Structure.from_file(<my_cif>)
+    mof = MOF.from_file(<my_cif>)
     featurizer = MOFMultipleFeaturizer([RACS(), PoreDiameters()])
-    features = featurizer.featurize(s)
+    features = featurizer.featurize(mof)
 
 You can, of course, also pass multiple structures to the featurizer (and the
 featurization is automatically parallelized via matminer):
 
 .. code-block:: python
 
-  s = Structure.from_file(<my_cif>)
-  s2 = Structure.from_file(<my_cif2>)
-  features = featurizer.featurize_many([s, s2])
+  mof_1 = MOF.from_file(<my_cif>)
+  mof_2 = MOF.from_file(<my_cif2>)
+  features = featurizer.featurize_many([mof_1, mof_2])
 
 
 And, clearly, you can also use the `mofdscribe` featurizers alongside ones from `matminer`:
@@ -55,9 +44,10 @@ And, clearly, you can also use the `mofdscribe` featurizers alongside ones from 
 
     from matminer.featurizers.structure import LocalStructuralOrderParams
     from mofdscribe.chemistry.racs import RACS
+    from mofdscribe.featurizers.matmineradapter import MatminerAdapter
 
-    featurizer = MOFMultipleFeaturizer([RACS(), LocalStructuralOrderParams()])
-    features = featurizer.featurize_many([s, s2])
+    featurizer = MOFMultipleFeaturizer([RACS(), MatminerAdapter(LocalStructuralOrderParams())])
+    features = featurizer.featurize_many([mof_2, mof_2])
 
 
 If you use the :code:`zeo++` or :code:`raspa2` packages, you can customize the temporary

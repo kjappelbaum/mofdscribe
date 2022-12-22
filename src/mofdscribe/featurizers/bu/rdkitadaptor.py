@@ -10,8 +10,8 @@ from pymatgen.analysis.graphs import MoleculeGraph
 from pymatgen.core import Molecule
 from structuregraph_helpers.create import get_local_env_method
 
-from .utils import create_rdkit_mol_from_mol_graph
-from ..utils.extend import operates_on_imolecule, operates_on_molecule
+from mofdscribe.featurizers.bu.utils import create_rdkit_mol_from_mol_graph
+from mofdscribe.featurizers.utils.extend import operates_on_imolecule, operates_on_molecule
 
 
 @operates_on_molecule
