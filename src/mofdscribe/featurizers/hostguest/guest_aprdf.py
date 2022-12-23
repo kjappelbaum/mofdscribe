@@ -5,7 +5,7 @@ from typing import List, Tuple, Union
 
 import numpy as np
 from element_coder import encode
-from pymatgen.core import IStructure, Structure, Molecule
+from pymatgen.core import IStructure, Molecule, Structure
 
 from mofdscribe.featurizers.base import MOFBaseFeaturizer
 from mofdscribe.featurizers.hostguest.utils import _extract_host_guest

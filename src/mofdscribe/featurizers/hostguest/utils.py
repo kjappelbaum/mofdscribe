@@ -39,10 +39,12 @@ class HostGuest(BaseModel):
 
 def _extract_host_guest(
     structure: Union[Structure, IStructure],
-    operates_on: str = set([Structure]),
+    operates_on: Optional[str] = None,
     remove_guests: bool = True,
     local_env_method: str = "vesta",
 ):
+    if operates_on is None:
+        operates_on = set([Structure])
 
     if not isinstance(structure, (IStructure)):
         structure = IStructure.from_sites(structure.sites)
