@@ -9,6 +9,7 @@ from mofdscribe.featurizers.base import MOFBaseFeaturizer
 from mofdscribe.featurizers.utils.eqeq import get_eqeq_charges
 from mofdscribe.featurizers.utils.extend import operates_on_istructure, operates_on_structure
 from mofdscribe.featurizers.utils.histogram import get_rdf
+from mofdscribe.mof import MOF
 from mofdscribe.types import StructureIStructureType
 
 __all__ = ["PartialChargeHistogram"]
@@ -49,7 +50,7 @@ class PartialChargeHistogram(MOFBaseFeaturizer):
     def feature_labels(self) -> List[str]:
         return [f"chargehist_{val}" for val in self._get_grid()]
 
-    def featurize(self, mof: "MOF") -> np.ndarray:
+    def featurize(self, mof: MOF) -> np.ndarray:
         return self._featurize(s=mof.structure)
 
     def _featurize(self, s: StructureIStructureType) -> np.ndarray:

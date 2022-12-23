@@ -98,6 +98,7 @@ class MOF:
             path (PathType): The path to the file.
             primitive (bool): Whether to use the primitive cell or not.
                 Defaults to ``True``.
+
         Returns:
             MOF: The MOF class.
         """
@@ -119,14 +120,14 @@ class MOF:
             namedtuple: :py:class:`~moffragmentor.fragment.Fragments` namedtuple.
         """
         try:
-            from moffragmentor import MOF as MOFFragmentorMOF
+            from moffragmentor import MOF as MOFFRAGMENTORMOF
         except ImportError:
             raise ImportError(
                 "moffragmentor is not installed. Please install it to use the fragments feature.\
                 See https://github.com/kjappelbaum/moffragmentor for more information."
             )
 
-        mof = MOFFragmentorMOF(self.__structure, self.structure_graph)
+        mof = MOFFRAGMENTORMOF(self.__structure, self.structure_graph)
         return mof.fragment(**self.__fragmentation_kwargs)
 
     @cached_property

@@ -7,23 +7,21 @@ from matminer.featurizers.base import BaseFeaturizer
 from pymatgen.core.structure import Structure
 
 from mofdscribe.featurizers.base import MOFBaseFeaturizer
+from mofdscribe.mof import MOF
 
 
 class MatminerAdapter(MOFBaseFeaturizer):
-    """
-    MatminerAdapter is a wrapper for matminer featurizers to be used in mofdscribe.
+    """MatminerAdapter is a wrapper for matminer featurizers to be used in mofdscribe.
 
     That is, you can then pass :py:class:`mofdscribe.mof.MOF` objects to the
     featurizer.
 
     .. note::
-
         If your matminer featurizer needs an expensive
         computation, e.g., the structure graph, if cannot reuse the
         one computed on the ``MOF`` object.
 
     Example:
-
         >>> from mofdscribe.featurizers.matmineradapter import MatminerAdapter
         >>> from matminer.featurizers.structure import DensityFeatures
         >>> from mofdscribe.mof import MOF
@@ -49,7 +47,7 @@ class MatminerAdapter(MOFBaseFeaturizer):
         """Call the featurize method of the matminer featurizer."""
         return self.matminer_featurizer.featurize(structure)
 
-    def featurize(self, mof: "MOF") -> np.ndarray:
+    def featurize(self, mof: MOF) -> np.ndarray:
         """Call the featurize method of the matminer featurizer using a MOF as input.
 
         Args:
@@ -64,7 +62,7 @@ class MatminerAdapter(MOFBaseFeaturizer):
         """Call the fit method of the matminer featurizer."""
         self.matminer_featurizer.fit(structures)
 
-    def fit(self, mofs: List["MOF"]):
+    def fit(self, mofs: List[MOF]):
         """Call the fit method of the matminer featurizer using a list of MOFs as input.
 
         Args:

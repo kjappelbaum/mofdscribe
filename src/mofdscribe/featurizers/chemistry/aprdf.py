@@ -13,6 +13,7 @@ from element_coder import encode
 from mofdscribe.featurizers.base import MOFBaseFeaturizer
 from mofdscribe.featurizers.utils.aggregators import AGGREGATORS
 from mofdscribe.featurizers.utils.extend import operates_on_istructure, operates_on_structure
+from mofdscribe.mof import MOF
 from mofdscribe.types import StructureIStructureType
 
 __all__ = ["APRDF"]
@@ -101,7 +102,7 @@ class APRDF(MOFBaseFeaturizer):
 
         return list(aprdfs.flatten())
 
-    def featurize(self, mof: "MOF") -> np.ndarray:
+    def featurize(self, mof: MOF) -> np.ndarray:
         return self._featurize(mof.structure)
 
     def _featurize(self, s: StructureIStructureType) -> np.array:

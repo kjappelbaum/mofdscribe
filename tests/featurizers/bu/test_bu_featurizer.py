@@ -2,11 +2,18 @@
 """Test the BU featurizer."""
 
 import numpy as np
+import pandas as pd
 from matminer.featurizers.site import SOAP
 from matminer.featurizers.structure import SiteStatsFingerprint
 from pymatgen.core import Structure
 
-from mofdscribe.featurizers.bu.bu_featurizer import BUFeaturizer, MOFBBs
+from mofdscribe.featurizers.bu.bu_featurizer import (
+    BindingSitesFeaturizer,
+    BranchingSitesFeaturizer,
+    BUFeaturizer,
+    MOFBBs,
+)
+from mofdscribe.featurizers.bu.lsop_featurizer import LSOP
 from mofdscribe.featurizers.matmineradapter import MatminerAdapter
 from mofdscribe.featurizers.topology import PHStats
 from mofdscribe.mof import MOF
@@ -60,3 +67,42 @@ def test_bu_featurizer_with_matminer_featurizer(hkust_structure, hkust_linker_st
     assert len(features[linker_feature_mask]) == len(linker_feats)
     # todo: check where potential differences come from
     assert np.allclose(features[linker_feature_mask], linker_feats, rtol=0.005, atol=1e-3)
+
+
+def test_binding_site_featurizer(hkust_structure):
+    """Make sure we can featurize on the 'binding' substructure and that the features make some sense."""
+    featurizer = BindingSitesFeaturizer(LSOP())
+    feats = featurizer.featurize(mof=MOF(hkust_structure))
+    labels = featurizer.feature_labels()
+    for label in labels:
+        assert "BindingSite" in label
+    assert len(feats) == len(labels)
+
+    df = pd.DataFrame(data=[feats], columns=labels)
+
+    assert df["BindingSitesFeaturizer_node_mean_lsop_cn"].values[0] == 8.0
+
+    assert df["BindingSitesFeaturizer_node_mean_lsop_cuboct_max"].values[0] > 0.95
+
+    assert df["BindingSitesFeaturizer_linker_mean_lsop_cn"].values[0] == 6.0
+
+    assert df["BindingSitesFeaturizer_linker_mean_lsop_hex_plan_max"].values[0] > 0.4
+
+
+def test_branching_site_featurizer(hkust_structure):
+    """Make sure we can featurize on the 'branching' substructure and that the features make some sense."""
+    featurizer = BranchingSitesFeaturizer(LSOP())
+    feats = featurizer.featurize(mof=MOF(hkust_structure))
+    labels = featurizer.feature_labels()
+    for label in labels:
+        assert "BranchingSite" in label
+    assert len(feats) == len(labels)
+
+    df = pd.DataFrame(data=[feats], columns=labels)
+
+    assert df["BranchingSitesFeaturizer_node_mean_lsop_cn"].values[0] == 4.0
+    assert df["BranchingSitesFeaturizer_linker_mean_lsop_cn"].values[0] == 3.0
+
+    assert df["BranchingSitesFeaturizer_node_mean_lsop_sq_plan_max"].values[0] > 0.9
+
+    assert df["BranchingSitesFeaturizer_linker_mean_lsop_tri_plan"].values[0] > 0.98

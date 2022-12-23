@@ -16,6 +16,7 @@ from mofdscribe.featurizers.topology._tda_helpers import (
 from mofdscribe.featurizers.utils import flatten
 from mofdscribe.featurizers.utils.aggregators import ARRAY_AGGREGATORS
 from mofdscribe.featurizers.utils.extend import operates_on_istructure, operates_on_structure
+from mofdscribe.mof import MOF
 
 
 # Todo: allow doing this with cutoff and coordination shells
@@ -73,7 +74,7 @@ class AtomCenteredPHSite(MOFBaseSiteFeaturizer):
         self.dimensions = dimensions
         self.alpha_weight = alpha_weight
 
-    def featurize(self, mof: "MOF", idx: int) -> np.ndarray:
+    def featurize(self, mof: MOF, idx: int) -> np.ndarray:
         """Compute the features for a single site.
 
         Args:
@@ -226,7 +227,7 @@ class AtomCenteredPH(MOFBaseFeaturizer):
             if element in atom_type:
                 return atom_type
 
-    def featurize(self, mof: "MOF") -> np.ndarray:
+    def featurize(self, mof: MOF) -> np.ndarray:
         return self._featurize(mof.structure)
 
     def _featurize(self, s: Union[Structure, IStructure]) -> np.ndarray:

@@ -9,6 +9,7 @@ from mofdscribe.featurizers.base import MOFBaseFeaturizer
 from mofdscribe.featurizers.utils.aggregators import ARRAY_AGGREGATORS
 from mofdscribe.featurizers.utils.eqeq import get_eqeq_charges
 from mofdscribe.featurizers.utils.extend import operates_on_istructure, operates_on_structure
+from mofdscribe.mof import MOF
 from mofdscribe.types import StructureIStructureType
 
 __all__ = ["PartialChargeStats"]
@@ -41,7 +42,7 @@ class PartialChargeStats(MOFBaseFeaturizer):
     def feature_labels(self) -> List[str]:
         return [f"chargestat_{agg}" for agg in self.aggregations]
 
-    def featurize(self, mof: "MOF") -> np.ndarray:
+    def featurize(self, mof: MOF) -> np.ndarray:
         return self._featurize(s=mof.structure)
 
     def _featurize(self, s: StructureIStructureType) -> np.ndarray:

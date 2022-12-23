@@ -21,6 +21,7 @@ from pymatgen.core import Structure
 from mofdscribe.featurizers.base import MOFBaseFeaturizer
 from mofdscribe.featurizers.utils import is_tool
 from mofdscribe.featurizers.utils.tempdir import TEMPDIR
+from mofdscribe.mof import MOF
 from mofdscribe.types import StructureIStructureType
 
 ZEOPP_BASE_COMMAND = ["network"]
@@ -194,7 +195,7 @@ class PoreDiameters(MOFBaseFeaturizer):
         self.labels = ["lis", "lifs", "lifsp"]
         self.ha = ha
 
-    def featurize(self, mof: "MOF") -> np.ndarray:
+    def featurize(self, mof: MOF) -> np.ndarray:
         return self._featurize(mof.structure)
 
     def _featurize(self, s: StructureIStructureType):
@@ -281,7 +282,7 @@ class SurfaceArea(MOFBaseFeaturizer):
 
         self.labels = [f"{label}_{self.probe_radius}" for label in labels]
 
-    def featurize(self, mof: "MOF") -> np.ndarray:
+    def featurize(self, mof: MOF) -> np.ndarray:
         return self._featurize(mof.structure)
 
     def _featurize(self, s: StructureIStructureType) -> np.ndarray:
@@ -372,7 +373,7 @@ class AccessibleVolume(MOFBaseFeaturizer):
         ]
         self.labels = [f"{label}_{self.probe_radius}" for label in labels]
 
-    def featurize(self, mof: "MOF") -> np.ndarray:
+    def featurize(self, mof: MOF) -> np.ndarray:
         return self._featurize(mof.structure)
 
     def _featurize(self, s: StructureIStructureType) -> np.ndarray:
@@ -462,8 +463,6 @@ class RayTracingHistogram(MOFBaseFeaturizer):
                 It has been reported that this can lead to issues
                 for some structures.
                 Default is True.
-            primitive (bool): If True, the structure is reduced to its primitive
-                form before the descriptor is computed. Defaults to True.
         """
         if channel_radius is not None and probe_radius != channel_radius:
             logger.warning(
@@ -486,7 +485,7 @@ class RayTracingHistogram(MOFBaseFeaturizer):
     def feature_labels(self) -> List[str]:
         return [f"ray_hist_{self.probe_radius}_{i}" for i in range(1000)]
 
-    def featurize(self, mof: "MOF") -> np.ndarray:
+    def featurize(self, mof: MOF) -> np.ndarray:
         return self._featurize(mof.structure)
 
     def _featurize(self, s: StructureIStructureType) -> np.ndarray:
@@ -566,7 +565,6 @@ class PoreSizeDistribution(MOFBaseFeaturizer):
         channel_radius: Optional[Union[str, float]] = None,
         hist_type: str = "derivative",
         ha: bool = False,
-        primitive: bool = True,
     ) -> None:
         """Initialize the PoreSizeDistribution featurizer.
 
@@ -624,7 +622,7 @@ class PoreSizeDistribution(MOFBaseFeaturizer):
     def feature_labels(self) -> List[str]:
         return [f"psd_hist_{self.probe_radius}_{i}" for i in range(1000)]
 
-    def featurize(self, mof: "MOF") -> np.ndarray:
+    def featurize(self, mof: MOF) -> np.ndarray:
         return self._featurize(mof.structure)
 
     def _featurize(self, s: StructureIStructureType) -> np.ndarray:

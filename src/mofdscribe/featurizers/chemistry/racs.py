@@ -18,6 +18,7 @@ from mofdscribe.featurizers.utils.structure_graph import (
     get_neighbors_at_distance,
     get_structure_graph,
 )
+from mofdscribe.mof import MOF
 from mofdscribe.types import StructureIStructureType
 
 __all__ = ("RACS",)
@@ -201,13 +202,20 @@ class RACS(MOFBaseFeaturizer):
                 "nodes",
             ]
 
-    def featurize(self, mof: "MOF") -> np.ndarray:
-        return self._featurize(mof.structure)
+    def featurize(self, mof: MOF) -> np.ndarray:
+        return self._featurize(mof.structure_graph)
 
-    def _featurize(self, structure: StructureIStructureType) -> np.ndarray:
-        if isinstance(structure, Structure):
+    def _featurize(self, structure: Union[StructureIStructureType, StructureGraph]) -> np.ndarray:
+        if isinstance(structure, (Structure, IStructure)):
             structure = IStructure.from_sites(structure)
-        sg = get_structure_graph(structure, self.bond_heuristic)
+            sg = get_structure_graph(structure, self.bond_heuristic)
+        elif isinstance(structure, StructureGraph):
+            sg = structure
+            structure = sg.structure
+        else:
+            raise TypeError(
+                f"Structure must be pymatgen Structure or StructureGraph, found {type(structure)}"
+            )
 
         racs = {}
         # This finds all indices for a particular subset of atoms

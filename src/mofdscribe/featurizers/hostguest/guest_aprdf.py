@@ -10,6 +10,7 @@ from pymatgen.core import IStructure, Structure
 from mofdscribe.featurizers.base import MOFBaseFeaturizer
 from mofdscribe.featurizers.hostguest.utils import _extract_host_guest
 from mofdscribe.featurizers.utils.aggregators import AGGREGATORS
+from mofdscribe.mof import MOF
 
 __all__ = ["GuestCenteredAPRDF"]
 
@@ -94,7 +95,7 @@ class GuestCenteredAPRDF(MOFBaseFeaturizer):
             local_env_method=self._local_env_method,
         )
 
-    def featurize(self, mof: "MOF") -> np.ndarray:
+    def featurize(self, mof: MOF) -> np.ndarray:
         return self._featurize(structure=mof.structure)
 
     def _featurize(

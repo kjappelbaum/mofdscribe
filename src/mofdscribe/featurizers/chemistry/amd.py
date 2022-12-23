@@ -7,6 +7,7 @@ import numpy as np
 from mofdscribe.featurizers.base import MOFBaseFeaturizer
 from mofdscribe.featurizers.utils.extend import operates_on_istructure, operates_on_structure
 from mofdscribe.featurizers.utils.substructures import filter_element
+from mofdscribe.mof import MOF
 from mofdscribe.types import StructureIStructureType
 
 __all__ = ["AMD"]
@@ -81,7 +82,7 @@ class AMD(MOFBaseFeaturizer):
     def feature_labels(self) -> List[str]:
         return self._get_feature_labels()
 
-    def featurize(self, mof: "MOF") -> np.ndarray:
+    def featurize(self, mof: MOF) -> np.ndarray:
         return self._featurize(mof.structure)
 
     def _featurize(self, structure: StructureIStructureType) -> np.ndarray:
@@ -92,6 +93,9 @@ class AMD(MOFBaseFeaturizer):
 
         Returns:
             A numpy array containing the AMD descriptor.
+
+        Raises:
+            ImportError: If the AMD package is not installed.
         """
         try:
             from amd._nns import nearest_neighbours

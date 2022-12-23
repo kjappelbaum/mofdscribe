@@ -17,6 +17,7 @@ from mofdscribe.featurizers.utils.extend import (
     operates_on_molecule,
     operates_on_structure,
 )
+from mofdscribe.mof import MOF
 
 
 @operates_on_imolecule
@@ -50,7 +51,6 @@ class PHStats(MOFBaseFeaturizer):
         aggregation_functions: Tuple[str] = ("min", "max", "mean", "std"),
         periodic: bool = False,
         no_supercell: bool = False,
-        primitive: bool = False,
         alpha_weight: Optional[str] = None,
     ) -> None:
         """Initialize the PHStats object.
@@ -105,7 +105,7 @@ class PHStats(MOFBaseFeaturizer):
     def feature_labels(self) -> List[str]:
         return self._get_feature_labels()
 
-    def featurize(self, mof: "MOF") -> np.ndarray:
+    def featurize(self, mof: MOF) -> np.ndarray:
         return self._featurize(mof.structure)
 
     def _featurize(

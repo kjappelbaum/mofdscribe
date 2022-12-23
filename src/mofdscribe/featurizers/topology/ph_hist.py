@@ -14,6 +14,7 @@ from mofdscribe.featurizers.utils.extend import (
     operates_on_molecule,
     operates_on_structure,
 )
+from mofdscribe.mof import MOF
 
 
 @operates_on_imolecule
@@ -114,7 +115,7 @@ class PHHist(MOFBaseFeaturizer):
     def feature_labels(self) -> List[str]:
         return self._get_feature_labels()
 
-    def featurize(self, mof: "MOF") -> np.ndarray:
+    def featurize(self, mof: MOF) -> np.ndarray:
         return self._featurize(mof.structure)
 
     def _featurize(

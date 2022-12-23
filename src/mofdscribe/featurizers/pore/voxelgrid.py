@@ -8,6 +8,7 @@ from pymatgen.core import Element
 
 from mofdscribe.featurizers.base import MOFBaseFeaturizer
 from mofdscribe.featurizers.pore._voxelgrid import VoxelGrid as VGBase
+from mofdscribe.mof import MOF
 from mofdscribe.types import StructureIStructureType
 
 
@@ -151,7 +152,7 @@ class VoxelGrid(MOFBaseFeaturizer):
         self.flatten = flatten
         self.regular_bounding_box = regular_bounding_box
 
-    def featurize(self, mof: "MOF") -> np.ndarray:
+    def featurize(self, mof: MOF) -> np.ndarray:
         return self._featurize(mof.structure)
 
     def _featurize(self, structure: StructureIStructureType) -> np.ndarray:

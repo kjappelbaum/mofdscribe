@@ -11,6 +11,7 @@ from mofdscribe.featurizers.base import MOFBaseFeaturizer
 from mofdscribe.featurizers.hostguest.utils import _extract_host_guest
 from mofdscribe.featurizers.utils import set_operates_on
 from mofdscribe.featurizers.utils.aggregators import ARRAY_AGGREGATORS
+from mofdscribe.mof import MOF
 
 
 # ToDo: How do we handle if there is no guest?
@@ -92,12 +93,12 @@ class HostGuestFeaturizer(MOFBaseFeaturizer):
             local_env_method=self._local_env_method,
         )
 
-    def fit(self, mofs: Collection["MOF"]):
+    def fit(self, mofs: Collection[MOF]):
         """
         Fit the featurizer to the given MOFs.
 
         Args:
-            mofs (Collection["MOF"]): The MOFs to fit to.
+            mofs (Collection[MOF]): The MOFs to fit to.
         """
         structures = [mof.structure for mof in mofs]
         self._fit(structures=structures)
@@ -121,7 +122,7 @@ class HostGuestFeaturizer(MOFBaseFeaturizer):
 
         self._featurizer.fit(all_hosts + all_guests)
 
-    def featurize(self, mof: "MOF") -> np.ndarray:
+    def featurize(self, mof: MOF) -> np.ndarray:
         return self._featurize(structure=mof.structure)
 
     def _featurize(self, structure: Union[Structure, IStructure]) -> np.ndarray:

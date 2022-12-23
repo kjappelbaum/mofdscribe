@@ -4,16 +4,18 @@ from abc import abstractmethod
 from typing import Collection, List, Optional, Tuple, Union
 
 import numpy as np
+from matminer.featurizers.base import MultipleFeaturizer
 from pydantic import BaseModel
 from pymatgen.core import IMolecule, IStructure, Molecule, Structure
 
-from mofdscribe.featurizers.base import MOFBaseFeaturizer
+from mofdscribe.featurizers.base import MOFBaseFeaturizer, MOFMultipleFeaturizer
 from mofdscribe.featurizers.bu.utils import boxed_molecule
 from mofdscribe.featurizers.utils import nan_array, set_operates_on
 from mofdscribe.featurizers.utils.aggregators import ARRAY_AGGREGATORS
 from mofdscribe.mof import MOF
 
-STRUCTURE_VIEWS = ("all_atom", "connecting", "binding")
+__all__ = ("BUFeaturizer", "BranchingSitesFeaturizer", "BindingSitesFeaturizer")
+
 
 # since fragmentation is not super straightforward,
 # we give the option to provide the fragments directly
@@ -24,9 +26,6 @@ class MOFBBs(BaseModel):
     linkers: Optional[List[Union[Structure, Molecule, IStructure, IMolecule]]]
 
 
-# If we would cache the fragmentation, the implementation would be simpler
-# ToDo: support moffragmentor options
-# ToDo: Support `MultipleFeaturizer`s (should be ok, if we recursively call the operates_on method).
 class BUFeaturizer(MOFBaseFeaturizer):
     """
     Compute features on the BUs and then aggregate them.
@@ -76,7 +75,12 @@ class BUFeaturizer(MOFBaseFeaturizer):
                 If you do not do this, we default to assuming that it operates on structures.
             aggregations (Tuple[str]): The aggregations to use.
                 Must be one of :py:obj:`ARRAY_AGGREGATORS`.
+
+        Raises:
+            ValueError: If the featurizer is a `MultipleFeaturizer`.
         """
+        if isinstance(featurizer, (MOFMultipleFeaturizer, MultipleFeaturizer)):
+            raise ValueError("BUFeaturizer does not support MultipleFeaturizer.")
         self._featurizer = featurizer
         self._aggregations = aggregations
         set_operates_on(self, featurizer)
@@ -92,7 +96,7 @@ class BUFeaturizer(MOFBaseFeaturizer):
 
     def _extract_bbs(
         self,
-        mof: Optional["MOF"],
+        mof: Optional[MOF],
         mofbbs: Optional[MOFBBs] = None,
     ):
         if mof is None and mofbbs is None:
@@ -144,14 +148,14 @@ class BUFeaturizer(MOFBaseFeaturizer):
 
     def fit(
         self,
-        mofs: Optional[Collection["MOF"]] = None,
+        mofs: Optional[Collection[MOF]] = None,
         mofbbs: Optional[Collection[MOFBBs]] = None,
     ) -> None:
         """
         Fit the featurizer to the given structures.
 
         Args:
-            structures (Collection[MOF], optional): The MOFs to featurize.
+            mofs (Collection[MOF], optional): The MOFs to featurize.
             mofbbs (Collection[MOFBBs], optional): The MOF fragments (nodes and linkers).
         """
         all_nodes, all_linkers = [], []
@@ -174,7 +178,7 @@ class BUFeaturizer(MOFBaseFeaturizer):
 
     def featurize(
         self,
-        mof: Optional["MOF"] = None,
+        mof: Optional[MOF] = None,
         mofbbs: Optional[MOFBBs] = None,
     ) -> np.ndarray:
         """
@@ -227,7 +231,7 @@ class BUFeaturizer(MOFBaseFeaturizer):
 class _BUSubBaseFeaturizer(BUFeaturizer):
     def featurize(
         self,
-        mof: Optional["MOF"] = None,
+        mof: Optional[MOF] = None,
     ) -> np.ndarray:
         """
         Compute features on the BUs and then aggregate them.
@@ -269,10 +273,10 @@ class _BUSubBaseFeaturizer(BUFeaturizer):
         return np.concatenate((aggregated_node_feats, aggregated_linker_feats))
 
     @abstractmethod
-    def _extract(self, mof: "MOF") -> Tuple[List[Structure], List[Structure]]:
+    def _extract(self, mof: MOF) -> Tuple[List[Structure], List[Structure]]:
         raise NotImplementedError()
 
-    def fit(self, mofs: Collection["MOF"]):
+    def fit(self, mofs: Collection[MOF]):
         all_nodes, all_linkers = [], []
         for mof in mofs:
             nodes, linkers = self._extract(mof)
@@ -290,7 +294,11 @@ class _BUSubBaseFeaturizer(BUFeaturizer):
 class BindingSitesFeaturizer(_BUSubBaseFeaturizer):
     """A special BU featurizer that operates on structures spanned by "binding sites".
 
-    From more details see.
+    We define binding sites as the linker atoms that directly connect to
+    the metal atoms of a node.
+    A good example are the carboxy oxygen atoms in a copper paddlewheel.
+    From more details see the `moffragmentor documentation
+    <https://moffragmentor.readthedocs.io/en/latest/background.html#fragmentation>`_.
 
 
     Example:
@@ -306,7 +314,35 @@ class BindingSitesFeaturizer(_BUSubBaseFeaturizer):
 
     _NAME = "BindingSitesFeaturizer"
 
-    def _extract(self, mof: "MOF"):
-        linkers = [l._get_binding_sites_structure() for l in mof.fragments.linkers]
-        nodes = [n._get_binding_sites_structure() for n in mof.fragments.nodes]
+    def _extract(self, mof: MOF):
+        linkers = [linker._get_binding_sites_structure() for linker in mof.fragments.linkers]
+        nodes = [node._get_binding_sites_structure() for node in mof.fragments.nodes]
+        return nodes, linkers
+
+
+class BranchingSitesFeaturizer(_BUSubBaseFeaturizer):
+    """A special BU featurizer that operates on structures spanned by "branching sites".
+
+    Branching sites are defined as the sites where a linker connects to a node.
+    The most common example is the carbon atom in a carboxy group.
+    From more details see the `moffragmentor documentation
+    <https://moffragmentor.readthedocs.io/en/latest/background.html#fragmentation>`_.
+
+
+    Example:
+        >>> from mofdscribe.mof import MOF
+        >>> from mofdscribe.featurizers.bu.bu_featurizer import BranchingSitesFeaturizer
+        >>> from mofdscribe.featurizers.bu.lsop_featurizer import LSOP
+        >>> import pandas as pd
+        >>> mof = MOF.from_file("mof_file.cif")
+        >>> featurizer = BranchingSitesFeaturizer(LSOP())
+        >>> feats = featurizer.featurize(mof)
+        >>> pd.DataFrame([feats], columns=featurizer.feature_labels())
+    """
+
+    _NAME = "BranchingSitesFeaturizer"
+
+    def _extract(self, mof: MOF):
+        linkers = [linker._get_branching_sites_structure() for linker in mof.fragments.linkers]
+        nodes = [node._get_branching_sites_structure() for node in mof.fragments.nodes]
         return nodes, linkers

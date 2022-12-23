@@ -13,6 +13,7 @@ from mofdscribe.featurizers.utils.extend import operates_on_istructure, operates
 from mofdscribe.featurizers.utils.histogram import get_rdf
 from mofdscribe.featurizers.utils.raspa.resize_uc import resize_unit_cell
 from mofdscribe.featurizers.utils.raspa.run_raspa import detect_raspa_dir, run_raspa
+from mofdscribe.mof import MOF
 from mofdscribe.types import StructureIStructureType
 
 __all__ = ["EnergyGridHistogram"]
@@ -190,7 +191,7 @@ class EnergyGridHistogram(MOFBaseFeaturizer):
                 labels.append(f"energygridhist_{self.mol_name}_{site}_{grid_point}")
         return labels
 
-    def featurize(self, mof: "MOF") -> np.ndarray:
+    def featurize(self, mof: MOF) -> np.ndarray:
         return self._featurize(mof.structure)
 
     def _featurize(self, s: StructureIStructureType) -> np.array:

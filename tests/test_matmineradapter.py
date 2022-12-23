@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+"""Test the MatminerAdapter."""
 import numpy as np
 from matminer.featurizers.site import SOAP
 from matminer.featurizers.structure import DensityFeatures, SiteStatsFingerprint

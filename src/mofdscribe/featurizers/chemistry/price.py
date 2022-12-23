@@ -9,6 +9,7 @@ import numpy as np
 import pandas as pd
 
 from mofdscribe.featurizers.base import MOFBaseFeaturizer
+from mofdscribe.mof import MOF
 from mofdscribe.types import StructureIStructureType
 
 _THIS_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -121,7 +122,7 @@ class PriceLowerBound(MOFBaseFeaturizer):
             labels.append(f"price_lower_bound_{projection}")
         return labels
 
-    def featurize(self, mof: "MOF") -> np.ndarray:
+    def featurize(self, mof: MOF) -> np.ndarray:
         return self._featurize(mof.structure)
 
     def _featurize(self, structure: StructureIStructureType) -> np.ndarray:

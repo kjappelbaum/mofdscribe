@@ -17,6 +17,7 @@ from mofdscribe.featurizers.utils.extend import (
     operates_on_molecule,
     operates_on_structure,
 )
+from mofdscribe.mof import MOF
 
 
 @operates_on_imolecule
@@ -110,8 +111,6 @@ class PHImage(MOFBaseFeaturizer):
                 in the analysis (experimental!). Defaults to False.
             no_supercell (bool): If true, then the supercell is not created.
                 Defaults to False.
-            primitive (bool): If True, the structure is reduced to its primitive
-                form before the descriptor is computed. Defaults to False.
             alpha_weight (Optional[str]): If specified, the use weighted alpha shapes,
                 i.e., replacing the points with balls of varying radii.
                 For instance `atomic_radius_calculated` or `van_der_waals_radius`.
@@ -175,7 +174,7 @@ class PHImage(MOFBaseFeaturizer):
     def feature_labels(self) -> List[str]:
         return self._get_feature_labels()
 
-    def featurize(self, mof: "MOF") -> np.ndarray:
+    def featurize(self, mof: MOF) -> np.ndarray:
         return self._featurize(mof.structure)
 
     def _featurize(
@@ -205,14 +204,14 @@ class PHImage(MOFBaseFeaturizer):
                 features.append(np.array(results["image"][element][dim]).flatten())
         return np.concatenate(features)
 
-    def fit(self, mofs: List["MOF"]) -> None:
+    def fit(self, mofs: List[MOF]) -> None:
         """Use structures to estimate the settings for the featurizer.
 
         Find the limits (maximum/minimum birth/death and persistence)
         for all the structures in the dataset and store them in the object.
 
         Args:
-            mofs (List["MOF"]): List of MOFs to find the limits for.
+            mofs (List[MOF]): List of MOFs to find the limits for.
         """
         structures = [mof.structure for mof in mofs]
         self._fit(structures)

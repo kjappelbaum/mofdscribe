@@ -14,6 +14,7 @@ from mofdscribe.featurizers.utils.extend import (
     operates_on_molecule,
     operates_on_structure,
 )
+from mofdscribe.mof import MOF
 
 _default_types = (
     "cn",
@@ -88,7 +89,7 @@ class LSOP(BaseFeaturizer):
     def feature_labels(self) -> List[str]:
         return [f"lsop_{val}" for val in self.types]
 
-    def featurize(self, mof: "MOF") -> np.ndarray:
+    def featurize(self, mof: MOF) -> np.ndarray:
         """Compute the LSOP for a fragment.
 
         Args:

@@ -7,7 +7,7 @@ import numpy as np
 from rdkit import Chem
 from rdkit.Chem import AllChem
 
-from .rdkitadaptor import RDKitAdaptor
+from mofdscribe.featurizers.bu.rdkitadaptor import RDKitAdaptor
 
 
 # ToDo: Allow to set some of the options, e.g. for UFF

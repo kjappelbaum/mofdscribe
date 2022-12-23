@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Featurizers using persistent homology -- vectorized using Gaussian mixture models."""
 from collections import defaultdict
-from typing import List, Optional, Tuple, Union
+from typing import Collection, List, Optional, Tuple, Union
 
 import numpy as np
 from loguru import logger
@@ -9,14 +9,14 @@ from pervect import PersistenceVectorizer
 from pymatgen.core import IMolecule, IStructure, Molecule, Structure
 
 from mofdscribe.featurizers.base import MOFBaseFeaturizer
+from mofdscribe.featurizers.topology._tda_helpers import get_diagrams_for_structure
 from mofdscribe.featurizers.utils.extend import (
     operates_on_imolecule,
     operates_on_istructure,
     operates_on_molecule,
     operates_on_structure,
 )
-
-from ._tda_helpers import get_diagrams_for_structure
+from mofdscribe.mof import MOF
 
 
 def _apply_and_fill(transformer_func, diagrams):
@@ -237,7 +237,6 @@ class PHVect(MOFBaseFeaturizer):
         self.periodic = periodic
         self.no_supercell = no_supercell
         self.alpha_weight = alpha_weight
-        super().__init__(primitive=primitive)
 
     def _get_feature_labels(self) -> List[str]:
         labels = []
@@ -250,6 +249,9 @@ class PHVect(MOFBaseFeaturizer):
 
     def feature_labels(self) -> List[str]:
         return self._get_feature_labels()
+
+    def featurize(self, mof: MOF) -> np.ndarray:
+        return self._featurize(mof.structure)
 
     def _featurize(
         self, structure: Union[Structure, IStructure, Molecule, IMolecule]
@@ -269,9 +271,15 @@ class PHVect(MOFBaseFeaturizer):
         compiled_results = self._reshape_results(res, 1).flatten()
         return compiled_results
 
-    def fit(self, structures: Union[Structure, IStructure, Molecule, IMolecule]) -> "PHVect":
-        if self.primitive:
-            structures = self._get_primitive_many(structures)
+    def fit(self, mofs: Collection["MOF"]):
+        """Fit the featurizer to a collection of MOFs.
+
+        Args:
+            mofs (Collection[MOF]): A collection of MOFs to fit the featurizer to.
+        """
+        self._fit([mof.structure for mof in mofs])
+
+    def _fit(self, structures: Union[Structure, IStructure, Molecule, IMolecule]) -> "PHVect":
         self.transformers, _ = _fit_transform_structures(
             self.transformers,
             structures,
@@ -294,11 +302,20 @@ class PHVect(MOFBaseFeaturizer):
                 n_col += self.n_components
         return compiled_results
 
-    def fit_transform(
+    def fit_transform(self, mofs: Collection["MOF"]) -> np.ndarray:
+        """Fit the featurizer to a collection of MOFs and return the featurized values.
+
+        Args:
+            mofs (Collection[MOF]): A collection of MOFs to fit the featurizer to.
+
+        Returns:
+            np.ndarray: The featurized values.
+        """
+        return self._fit_transform([mof.structure for mof in mofs])
+
+    def _fit_transform(
         self, structures: Union[Structure, IStructure, Molecule, IMolecule]
     ) -> np.ndarray:
-        if self.primitive:
-            structures = self._get_primitive_many(structures)
         self.transformers, results = _fit_transform_structures(
             self.transformers,
             structures,

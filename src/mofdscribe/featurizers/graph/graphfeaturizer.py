@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+"""Base class for featurizers that operate on graphs."""
 from mofdscribe.featurizers.base import MOFBaseFeaturizer
 from mofdscribe.featurizers.utils.extend import operates_on_structuregraph
 
@@ -12,4 +13,6 @@ from mofdscribe.featurizers.utils.extend import operates_on_structuregraph
 # all of this could then be orchestrated in a pipeline object
 @operates_on_structuregraph
 class GraphFeaturizer(MOFBaseFeaturizer):
+    """Base class for graph featurizers."""
+
     pass
