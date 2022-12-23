@@ -14,6 +14,7 @@ from mofdscribe.featurizers.bu.bu_featurizer import (
     MOFBBs,
 )
 from mofdscribe.featurizers.bu.lsop_featurizer import LSOP
+from mofdscribe.featurizers.graph.dimensionality import Dimensionality
 from mofdscribe.featurizers.matmineradapter import MatminerAdapter
 from mofdscribe.featurizers.topology import PHStats
 from mofdscribe.mof import MOF
@@ -34,6 +35,13 @@ def test_bu_featurizer(hkust_structure, molecule):
     assert features.shape == (768,)
     assert features[0] > 0
     assert features[0] < 2
+
+    # test if it works with graph featurizers
+    featurizer = BUFeaturizer(Dimensionality(), aggregations=("mean",))
+    features = featurizer.featurize(mof=MOF(hkust_structure))
+    assert features.shape == (2,)
+    assert features[0] == 0
+    assert features[1] == 0
 
 
 def test_bu_featurizer_with_matminer_featurizer(hkust_structure, hkust_linker_structure):

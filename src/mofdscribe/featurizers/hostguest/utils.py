@@ -39,7 +39,7 @@ class HostGuest(BaseModel):
 
 def _extract_host_guest(
     structure: Union[Structure, IStructure],
-    operates_on: str = "structure",
+    operates_on: str = set([Structure]),
     remove_guests: bool = True,
     local_env_method: str = "vesta",
 ):
@@ -55,7 +55,8 @@ def _extract_host_guest(
     else:
         host = structure_graph.structure
 
-    if operates_on == "structure":
+    # ToDo: generalize this to other types
+    if operates_on & set([Structure]):
         mols = [boxed_molecule(mol) for mol in mols]
 
     return HostGuest(host=host, guests=mols)

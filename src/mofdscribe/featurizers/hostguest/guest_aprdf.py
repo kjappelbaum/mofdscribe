@@ -5,7 +5,7 @@ from typing import List, Tuple, Union
 
 import numpy as np
 from element_coder import encode
-from pymatgen.core import IStructure, Structure
+from pymatgen.core import IStructure, Structure, Molecule
 
 from mofdscribe.featurizers.base import MOFBaseFeaturizer
 from mofdscribe.featurizers.hostguest.utils import _extract_host_guest
@@ -91,7 +91,7 @@ class GuestCenteredAPRDF(MOFBaseFeaturizer):
         return _extract_host_guest(
             structure=structure,
             remove_guests=True,
-            operates_on="molecule",
+            operates_on=set([Molecule]),
             local_env_method=self._local_env_method,
         )
 

@@ -7,9 +7,11 @@ from pymatgen.analysis.dimensionality import get_dimensionality_larsen
 from pymatgen.analysis.graphs import StructureGraph
 
 from mofdscribe.featurizers.graph.graphfeaturizer import GraphFeaturizer
+from mofdscribe.featurizers.utils.extend import operates_on_structuregraph
 from mofdscribe.mof import MOF
 
 
+@operates_on_structuregraph
 class Dimensionality(GraphFeaturizer):
     def __init__(self) -> None:
         """Construct a new Dimensionality featurizer."""
@@ -19,7 +21,7 @@ class Dimensionality(GraphFeaturizer):
         return self._featurize(mof.structure_graph)
 
     def _featurize(self, structure_graph: StructureGraph) -> np.ndarray:
-        return get_dimensionality_larsen(structure_graph)
+        return np.array([get_dimensionality_larsen(structure_graph)])
 
     def feature_labels(self) -> List[str]:
         return ["dimensionality"]

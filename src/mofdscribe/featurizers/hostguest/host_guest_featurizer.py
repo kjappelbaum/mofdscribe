@@ -120,7 +120,7 @@ class HostGuestFeaturizer(MOFBaseFeaturizer):
             all_hosts.append(host_guest.host)
             all_guests.extend(host_guest.guests)
 
-        self._featurizer.fit(all_hosts + all_guests)
+        self._featurizer._fit(all_hosts + all_guests)
 
     def featurize(self, mof: MOF) -> np.ndarray:
         return self._featurize(structure=mof.structure)
@@ -151,10 +151,10 @@ class HostGuestFeaturizer(MOFBaseFeaturizer):
             )
 
         guest_feats = []
-        host_feats = self._featurizer.featurize(host_guest.host)
+        host_feats = self._featurizer._featurize(host_guest.host)
 
         for guest in host_guest.guests:
-            guest_feats.append(self._featurizer.featurize(guest))
+            guest_feats.append(self._featurizer._featurize(guest))
 
         aggregated_feats = []
         for aggregation in self._aggregations:

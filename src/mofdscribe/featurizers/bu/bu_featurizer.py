@@ -6,6 +6,7 @@ from typing import Collection, List, Optional, Tuple, Union
 import numpy as np
 from matminer.featurizers.base import MultipleFeaturizer
 from pydantic import BaseModel
+from pymatgen.analysis.graphs import MoleculeGraph, StructureGraph
 from pymatgen.core import IMolecule, IStructure, Molecule, Structure
 
 from mofdscribe.featurizers.base import MOFBaseFeaturizer, MOFMultipleFeaturizer
@@ -14,6 +15,8 @@ from mofdscribe.featurizers.utils import nan_array, set_operates_on
 from mofdscribe.featurizers.utils.aggregators import ARRAY_AGGREGATORS
 from mofdscribe.mof import MOF
 
+if False:
+    from moffragmentor import SBU
 __all__ = ("BUFeaturizer", "BranchingSitesFeaturizer", "BindingSitesFeaturizer")
 
 
@@ -24,6 +27,18 @@ class MOFBBs(BaseModel):
 
     nodes: Optional[List[Union[Structure, Molecule, IStructure, IMolecule]]]
     linkers: Optional[List[Union[Structure, Molecule, IStructure, IMolecule]]]
+
+
+def _structuregraph_from_indices(mof, indices) -> StructureGraph:
+    from moffragmentor.utils import remove_all_nodes_not_in_indices
+
+    structure_graph = mof.structure_graph.__copy__()
+    remove_all_nodes_not_in_indices(structure_graph, indices)
+    return structure_graph
+
+
+def structuregraph_from_bu(mof: "MOF", bu: "SBU") -> StructureGraph:
+    return _structuregraph_from_indices(mof, bu._original_indices)
 
 
 class BUFeaturizer(MOFBaseFeaturizer):
@@ -104,10 +119,15 @@ class BUFeaturizer(MOFBaseFeaturizer):
 
         if mof is not None:
             fragments = mof.fragments
-
-            if self._operates_on in ("both", "molecule"):
+            if self._operates_on & set([Molecule]):
                 linkers = [linker.molecule for linker in fragments.linkers]
                 nodes = [node.molecule for node in fragments.nodes]
+            elif self._operates_on & set([StructureGraph]):
+                linkers = [structuregraph_from_bu(mof, linker) for linker in fragments.linkers]
+                nodes = [structuregraph_from_bu(mof, node) for node in fragments.nodes]
+            elif self._operates_on & set([MoleculeGraph]):
+                linkers = [linker.molecule_graph for linker in fragments.linkers]
+                nodes = [node.molecule_graph for node in fragments.nodes]
             else:
                 # create a boxed structure
                 linkers = [linker._get_boxed_structure() for linker in fragments.linkers]
@@ -122,18 +142,22 @@ class BUFeaturizer(MOFBaseFeaturizer):
                 raise ValueError("All nodes and linkers must be of the same type.")
 
             this_type = types[0]
-            if this_type in (Structure, IStructure) and self._operates_on in ("both", "structure"):
+            if this_type in (Structure, IStructure) and self._operates_on & set(
+                [Molecule, Structure]
+            ):
                 # this is the simple case, we do not need to convert to molecules
                 pass
-            elif this_type in (Molecule, IMolecule) and self._operates_on in ("both", "molecule"):
+            elif this_type in (Molecule, IMolecule) and self._operates_on & set(
+                [Molecule, Structure]
+            ):
                 # again simple case, we do not need to convert to structures
 
                 pass
-            elif this_type in (Molecule, IMolecule) and (self._operates_on == "structure"):
+            elif this_type in (Molecule, IMolecule) and (self._operates_on & set([Molecule])):
                 # we need to convert to structures
                 nodes = [boxed_molecule(node) for node in nodes]
                 linkers = [boxed_molecule(linker) for linker in linkers]
-            elif this_type in (Structure, IStructure) and (self._operates_on == "molecule"):
+            elif this_type in (Structure, IStructure) and (self._operates_on & set([Molecule])):
                 raise ValueError(
                     "You provided structures for a featurizer that operates on molecules. "
                     / "Cannot automatically convert to molecules from structures."
@@ -291,6 +315,7 @@ class _BUSubBaseFeaturizer(BUFeaturizer):
         return self._featurizer.implementors()
 
 
+# ToDo: generalize extract depending on what the featurizer operates on
 class BindingSitesFeaturizer(_BUSubBaseFeaturizer):
     """A special BU featurizer that operates on structures spanned by "binding sites".
 
@@ -315,9 +340,25 @@ class BindingSitesFeaturizer(_BUSubBaseFeaturizer):
     _NAME = "BindingSitesFeaturizer"
 
     def _extract(self, mof: MOF):
-        linkers = [linker._get_binding_sites_structure() for linker in mof.fragments.linkers]
-        nodes = [node._get_binding_sites_structure() for node in mof.fragments.nodes]
-        return nodes, linkers
+        if Structure in self._operates_on:
+            linkers = [linker._get_binding_sites_structure() for linker in mof.fragments.linkers]
+            nodes = [node._get_binding_sites_structure() for node in mof.fragments.nodes]
+            return nodes, linkers
+        elif StructureGraph in self._operates_on:
+            linkers = [
+                _structuregraph_from_indices(mof, linker._original_binding_indices)
+                for linker in mof.fragments.linkers
+            ]
+            nodes = [
+                _structuregraph_from_indices(mof, node._original_binding_indices)
+                for node in mof.fragments.nodes
+            ]
+        elif Molecule in self._operates_on:
+            raise NotImplementedError("BindingSitesFeaturizer does not support Molecule yet.")
+        else:
+            raise NotImplementedError(
+                f"BindingSitesFeaturizer does not support featurizers operating on {self._operates_on}."
+            )
 
 
 class BranchingSitesFeaturizer(_BUSubBaseFeaturizer):
@@ -343,6 +384,22 @@ class BranchingSitesFeaturizer(_BUSubBaseFeaturizer):
     _NAME = "BranchingSitesFeaturizer"
 
     def _extract(self, mof: MOF):
-        linkers = [linker._get_branching_sites_structure() for linker in mof.fragments.linkers]
-        nodes = [node._get_branching_sites_structure() for node in mof.fragments.nodes]
-        return nodes, linkers
+        if Structure in self._operates_on:
+            linkers = [linker._get_branching_sites_structure() for linker in mof.fragments.linkers]
+            nodes = [node._get_branching_sites_structure() for node in mof.fragments.nodes]
+            return nodes, linkers
+        elif StructureGraph in self._operates_on:
+            linkers = [
+                _structuregraph_from_indices(mof, linker._original_binding_indices)
+                for linker in mof.fragments.linkers
+            ]
+            nodes = [
+                _structuregraph_from_indices(mof, node._original_binding_indices)
+                for node in mof.fragments.nodes
+            ]
+        elif Molecule in self._operates_on:
+            raise NotImplementedError("BranchingSitesFeaturizer does not support Molecule yet.")
+        else:
+            raise NotImplementedError(
+                f"BranchingSitesFeaturizer does not support featurizers operating on {self._operates_on}."
+            )

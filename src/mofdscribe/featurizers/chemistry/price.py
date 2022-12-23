@@ -9,6 +9,7 @@ import numpy as np
 import pandas as pd
 
 from mofdscribe.featurizers.base import MOFBaseFeaturizer
+from mofdscribe.featurizers.utils.extend import operates_on_istructure, operates_on_structure
 from mofdscribe.mof import MOF
 from mofdscribe.types import StructureIStructureType
 
@@ -77,6 +78,8 @@ def _price_per_atom(element_price_fractions_kg, structure):
     )
 
 
+@operates_on_istructure
+@operates_on_structure
 class PriceLowerBound(MOFBaseFeaturizer):
     """Compute a lower bound for the price based on the element prices.
 
