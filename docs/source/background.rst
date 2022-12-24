@@ -60,6 +60,17 @@ descriptor that only considers the local environment (of e.g., 3 atoms). For thi
     featurizers/global/*
 
 
+Graph featurizers
+--------------------
+
+Graph featurizers are a special class of featurizers that are based on the structure graph. The structure graph is a periodic graph in which the edges are bonds and the nodes are atoms.
+
+.. toctree::
+    :glob:
+    :maxdepth: 1
+
+    featurizers/graph/*
+
 
 BU-centered featurizers
 -----------------------------
