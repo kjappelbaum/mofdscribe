@@ -102,13 +102,14 @@ class MOF:
         return self.__structure_graph
 
     @classmethod
-    def from_file(cls, path: PathType, primitive: bool = True) -> "MOF":
+    def from_file(cls, path: PathType, primitive: bool = True, fragmentation_kwargs: Optional[dict]=None) -> "MOF":
         """Create a MOF class from a file.
 
         Args:
             path (PathType): The path to the file.
             primitive (bool): Whether to use the primitive cell or not.
                 Defaults to ``True``.
+            fragmentation_kwargs: The fragmentation kwargs to use for the fragmentation using ``moffragmentor``.
 
         Returns:
             MOF: The MOF class.
@@ -116,7 +117,8 @@ class MOF:
         return cls(
             IStructure.from_file(path).get_primitive_structure()
             if primitive
-            else IStructure.from_file(path)
+            else IStructure.from_file(path),
+            fragmentation_kwargs=fragmentation_kwargs,
         )
 
     @cached_property
