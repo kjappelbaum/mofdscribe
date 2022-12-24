@@ -20,7 +20,7 @@ from mofdscribe.featurizers.topology import PHStats
 from mofdscribe.mof import MOF
 
 
-def test_bu_featurizer(hkust_structure, molecule):
+def test_bu_featurizer(hkust_structure, molecule, mof74_structure):
     """Test that we can call BU featurizers with pymatgen molecules."""
     featurizer = BUFeaturizer(PHStats(no_supercell=True))
 
@@ -41,6 +41,14 @@ def test_bu_featurizer(hkust_structure, molecule):
     features = featurizer.featurize(mof=MOF(hkust_structure))
     assert features.shape == (2,)
     assert features[0] == 0
+    assert features[1] == 0
+
+    # make sure we find the rod node
+    featurizer = BUFeaturizer(Dimensionality(), aggregations=("mean",))
+    mof4 = MOF(mof74_structure, fragmentation_kwargs={"check_dimensionality": False})
+    features = featurizer.featurize(mof=mof4)
+    assert features.shape == (2,)
+    assert features[0] == 1
     assert features[1] == 0
 
 

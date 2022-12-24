@@ -64,6 +64,17 @@ class MOF:
                 Defaults to ``"vesta"``.
             fragmentation_kwargs: The fragmentation kwargs to use for the fragmentation using ``moffragmentor``.
                 Defaults to ``None``.
+                Some relevant kwargs are:
+                * check_dimensionality (bool): Check if the node is 0D.
+                    If not, split into isolated metals.
+                    Defaults to True.
+                * create_single_metal_bus (bool): Create a single metal BUs.
+                    Defaults to False.
+                * break_organic_nodes_at_metal (bool): Break nodes into single metal BU
+                    if they appear "too organic".
+
+                For the dimensionality featurizers applied to building blocks, you want
+                to be careful wtih ``check_dimensionality``.
         """
         self.__structure = (
             IStructure.from_sites(structure.sites)
