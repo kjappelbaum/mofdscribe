@@ -1,45 +1,69 @@
 # -*- coding: utf-8 -*-
 """perform analyses on structure graphs."""
 from functools import lru_cache
-from typing import List, Optional, Set, Tuple
+from typing import List, Optional, Set, Tuple, Dict
 
 from pymatgen.analysis.graphs import StructureGraph
 from pymatgen.core import IStructure
 from structuregraph_helpers.create import get_structure_graph as get_sg
+from collections import defaultdict
+import networkx as nx
+
+def leads_to_terminal(nx_graph, edge, bridges: Dict[int, int]=None):
+    if bridges is None:
+        bridges = _generate_bridges(nx_graph)
+    sorted_edge = sorted(edge)
+    try:
+        bridge_edge = bridges[sorted_edge[0]]
+        return sorted_edge[1] in bridge_edge
+    except KeyError:
+        return False
 
 
-def get_neighbors_at_distance(
-    structure_graph: StructureGraph, start: int, scope: int
-) -> Tuple[Set[int], List[int]]:
-    """For a structure graph and a start site, return all sites within a certain\
-        distance (scope) of the start site.
+
+def _generate_bridges(nx_graph) -> Dict[int, int]:
+    
+    bridges = list(nx.bridges(nx_graph))
+
+    bridges_dict = defaultdict(list)
+    for key, value in bridges:
+        bridges_dict[key].append(value)
+
+   
+    return bridges_dict
+
+
+
+
+def get_connected_site_indices(sg, site: int):
+    """Get list of indices of neighboring sites."""
+    return [site.index for site in sg.get_connected_sites(site)]
+
+def get_neighbors_up_to_scope(structure_graph, site_index, scope):
+    """Get only the neighbors at a certain scope.
+
+    That is, scope=3 will return all neighbors three bonds away from the
+    site_index.
 
     Args:
-        structure_graph (StructureGraph): pymatgen StructureGraph object
-        start (int): starting atom
-        scope (int): distance to search
+        structure_graph (StructureGraph): The structure graph.
+        site_index (int): The site index.
+        scope (int): The scope.
 
     Returns:
-        Tuple[Set[int], List[int]]: All sites within the scope of the start
-        site, and the indices of the sites in the last shell
+        list: The list of neighbors.
     """
-    # Todo: This code is stupid.
-    neighbors_at_last_level = [start]
-    all_neighbors = set()
-    neighbors_at_next_level = []
-    for _ in range(scope):
-        for n in neighbors_at_last_level:
-            neighbors_at_next_level.extend(get_connected_site_indices(structure_graph, n))
+    neighbors_in_scope = defaultdict(set)
+    neighbors_in_scope[0] = [site_index]
+    visited = set([site_index])
+    for i in range(1, scope + 1):
+        for site in neighbors_in_scope[i - 1]:
+            neighbors = get_connected_site_indices(structure_graph, site)
+            neighbors = [n for n in neighbors if n not in visited]
+            neighbors_in_scope[i].update(neighbors)
+            visited.update(neighbors)
 
-        all_neighbors.update(neighbors_at_last_level)
-        neighbors_at_last_level = neighbors_at_next_level
-        neighbors_at_next_level = []
-    all_neighbors.remove(start)
-    neighbors_at_last_level = set(neighbors_at_last_level)
-    if start in neighbors_at_last_level:
-        neighbors_at_last_level.remove(start)
-
-    return all_neighbors, neighbors_at_last_level
+    return neighbors_in_scope
 
 
 @lru_cache()

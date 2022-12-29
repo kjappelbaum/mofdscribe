@@ -7,7 +7,10 @@ from pymatgen.core import IStructure
 
 from mofdscribe.featurizers.chemistry._fragment import get_bb_indices
 from mofdscribe.featurizers.chemistry.racs import RACS, _get_racs_for_bbs
-from mofdscribe.featurizers.utils.structure_graph import get_structure_graph
+from mofdscribe.featurizers.utils.structure_graph import (
+    get_structure_graph,
+    get_neighbors_up_to_scope,
+)
 from mofdscribe.mof import MOF
 
 from ..helpers import is_jsonable
@@ -21,10 +24,15 @@ def test_racs(hkust_structure, irmof_structure):
         sg = get_structure_graph(IStructure.from_sites(structure), featurizer.bond_heuristic)
         racs = {}
         bb_indices = get_bb_indices(sg)
+        neighbors_at_distance = {
+            i: get_neighbors_up_to_scope(sg, i, max(featurizer.scopes))
+            for i in range(len(structure))
+        }
         for bb in featurizer._bbs:
             v = _get_racs_for_bbs(
                 bb_indices[bb],
                 sg,
+                neighbors_at_distance,
                 featurizer.attributes,
                 featurizer.scopes,
                 featurizer.prop_agg,
@@ -55,12 +63,17 @@ def test_racs_functional(irmof_structure, abacuf_structure, floating_structure):
         feats = featurizer.featurize(MOF(structure))
         # assert len(feats) == 4 * 3 * 8 * 5  # 4 properties, 3 scopes, 8 aggregations, 5 bb types
         sg = get_structure_graph(IStructure.from_sites(structure), featurizer.bond_heuristic)
+        neighbors_at_distance = {
+            i: get_neighbors_up_to_scope(sg, i, max(featurizer.scopes))
+            for i in range(len(structure))
+        }
         racs = {}
         bb_indices = get_bb_indices(sg)
         for bb in featurizer._bbs:
             v = _get_racs_for_bbs(
                 bb_indices[bb],
                 sg,
+                neighbors_at_distance,
                 featurizer.attributes,
                 featurizer.scopes,
                 featurizer.prop_agg,

@@ -53,6 +53,8 @@ def test_get_bb_indices(hkust_structure):
     bb_indices = get_bb_indices(sg)
     assert len(bb_indices["nodes"]) < len(sg)
     assert len(bb_indices["nodes"]) > 0
+
+    # in this fragmentation, we assign as node only the metal part, but not the carboxy or
     assert (
         len(set(sum(bb_indices["nodes"], []))) == dict(hkust_structure.composition)[Element("Cu")]
     )
@@ -70,6 +72,7 @@ def test_get_bb_indices(hkust_structure):
         == 0
     )
 
+    # HKUST has no functional groups
     assert len(sum(bb_indices["linker_functional"], [])) == 0
     assert len(sum(bb_indices["linker_all"], [])) == len(
         sum(bb_indices["linker_scaffold"], [])
