@@ -1,16 +1,28 @@
 # -*- coding: utf-8 -*-
-from typing import Tuple, Union, List, Optional, Collection, Dict, Set
+""""RACs on molecule and structure graphs with optional community detection."""
+from collections import OrderedDict, defaultdict
+from typing import Collection, Dict, List, Optional, Set, Tuple, Union
+
 import networkx.algorithms.community as nx_comm
-from mofdscribe.featurizers.base import MOFBaseFeaturizer
+import numpy as np
 from pymatgen.analysis.graphs import MoleculeGraph, StructureGraph
-from mofdscribe.utils.extend import operates_on_moleculegraph, operates_on_structuregraph
-from mofdscribe.mof import MOF
-from element_coder.data.coding_data import get_coding_dict
-from mofdscribe.utils.structuregraph import get_neighbors_up_to_scope
-from collections import defaultdict
-from mofdscribe.featurizers.utils.aggregators import AGGREGATORS, ARRAY_AGGREGATORS
+
+from mofdscribe.featurizers.base import MOFBaseFeaturizer
 from mofdscribe.featurizers.chemistry.racs import compute_racs
-from collections import OrderedDict
+from mofdscribe.featurizers.utils.aggregators import ARRAY_AGGREGATORS
+from mofdscribe.featurizers.utils.definitions import (
+    ALL_ELEMENTS,
+    ALL_ELEMENTS_EXCEPT_C_H,
+    ALL_METAL_ELEMENTS,
+    ALL_NONMETAL_ELEMENTS,
+)
+from mofdscribe.featurizers.utils.extend import (
+    operates_on_moleculegraph,
+    operates_on_structuregraph,
+)
+from mofdscribe.featurizers.utils.structure_graph import get_neighbors_up_to_scope
+from mofdscribe.mof import MOF
+
 
 def _get_site_iter(structuregraph: Union[StructureGraph, MoleculeGraph]):
     if isinstance(structuregraph, StructureGraph):
@@ -20,14 +32,19 @@ def _get_site_iter(structuregraph: Union[StructureGraph, MoleculeGraph]):
     else:
         raise ValueError("structuregraph must be either a StructureGraph or a MoleculeGraph")
 
-def _get_atom_site_indices(structuregraph: Union[StructureGraph, MoleculeGraph], atom_groups: Collection[Tuple[str, List[str], bool]]):
+
+def _get_atom_site_indices(
+    structuregraph: Union[StructureGraph, MoleculeGraph],
+    atom_groups: Collection[Tuple[str, List[str], bool]],
+):
     """Get the indices of the sites that belong to the atom groups."""
     atom_grouped_indices = defaultdict(set)
     for atom_group_name, elements, _no_terminal in atom_groups:
-        for site in _get_site_iter(structuregraph):
+        for i, site in enumerate(_get_site_iter(structuregraph)):
             if site.specie.symbol in elements:
-                atom_grouped_indices[atom_group_name].add(site.index)
+                atom_grouped_indices[atom_group_name].add(i)
     return atom_grouped_indices
+
 
 def _split_up_communities(
     structuregraph: Union[StructureGraph, MoleculeGraph],
@@ -35,23 +52,23 @@ def _split_up_communities(
     atom_groups: Collection[Tuple[str, List[str], bool]],
 ):
     """Create dictionary of communities with atom groups as keys."""
-    atom_grouped_communities = defaultdict(set)
-    indices_to_atom_group = _get_atom_site_indices()
+    atom_grouped_communities = defaultdict(list)
+    indices_to_atom_group = _get_atom_site_indices(
+        structuregraph=structuregraph, atom_groups=atom_groups
+    )
 
     for atom_group_name, elements, _no_terminal in atom_groups:
         for communities in communities:
-            atom_grouped_communities[atom_group_name].update(indices_to_atom_group & set(communities))
+            if not isinstance(communities, set):
+                communities = set([communities])
+            atom_grouped_communities[atom_group_name].append(
+                indices_to_atom_group[atom_group_name] & set(communities)
+            )
 
     return atom_grouped_communities
-    
-    
 
 
-_ALL_ELEMENTS = set(get_coding_dict("atomic").keys())
-_ALL_ELEMENTS_EXCEPT_C_H = _ALL_ELEMENTS - {"C", "H"}
-
-
-# ToDo: generalize the code and implement in only one place 
+# ToDo: generalize the code and implement in only one place
 # the main racs code is quite similar to this one
 def _get_racs_for_community(
     community_indices,
@@ -97,6 +114,8 @@ def _get_racs_for_community(
 @operates_on_structuregraph
 @operates_on_moleculegraph
 class ModularityCommunityCenteredRACS(MOFBaseFeaturizer):
+    """RACs on molecule and structure graphs with optional community detection."""
+
     _NAME = "ModularityCommunityCenteredRACS"
 
     def __init__(
@@ -107,31 +126,72 @@ class ModularityCommunityCenteredRACS(MOFBaseFeaturizer):
         prop_agg: Tuple[str] = ("product", "diff"),
         corr_agg: Tuple[str] = ("sum", "avg"),
         atom_groups_agg: Tuple[str] = ("avg", "sum"),
-        bond_heuristic: str = "vesta",
         dont_use_communities: bool = False,
     ):
-        # heteroatom groups is a list of atoms which we will aggregate seperately if they are in a community
-        # additional, we can specify if we only aggregate them seperately if they are not terminal or part of a bridge
-        # if the atom groups are specified, there should maybe (?) also be an option to specify "all"
+        """Constuct a ModularityCommunityCenteredRACS featurizer.
+
+        Features are computed for each atom group and for each community. The features are then aggregated
+        over the communities.
+
+        Args:
+            atom_groups (Optional[Collection[Tuple[str, Collection[str], bool]]], optional):
+                Elements which form start scopes for RACs.
+                The first element is the name of the atom group, and will appear in the feature name.
+                The second element is a list of elements that belong to the atom group. For example,
+                ('C-H', ['C', 'H'], False) will create a feature for all carbon atoms and hydrogen atoms.
+                The third element of the tuple is currently not used (but will be used as a flag to
+                indicate whether to include terminal/leading to terminal atoms in the start scope).
+                If set to None, there will be one atom group with all atoms.
+                Defaults to None.
+            attributes (Tuple[Union[int, str]], optional):
+                Elemental properties used for the construction of RACs. Defaults to ("X", "mod_pettifor", "I", "T").
+            scopes (Tuple[int], optional): Scopes used for the construction of RACs.
+                Defaults to (1, 2, 3).
+            prop_agg (Tuple[str], optional): Aggregation methods used for the aggregation of
+                properties. "Product" corresponds to "product-RACs" and "diff" to "difference-RACs".
+                Defaults to ("product", "diff").
+            corr_agg (Tuple[str], optional): Aggregation methods used for the aggregation of the
+                correlated properties. Defaults to ("sum", "avg").
+            atom_groups_agg (Tuple[str], optional): Aggregation methods used for the pooling
+                over atom communities within one atom group. Defaults to ("avg", "sum").
+            dont_use_communities (bool, optional): If set to true, we do not use modularity-based community detection.
+                Features are then simply averaged over all atoms.
+                Defaults to False.
+        """
         if atom_groups is None:
-            atom_groups = [("all", _ALL_ELEMENTS, False)]
+            atom_groups = [("all", ALL_ELEMENTS, False)]
         self.atom_groups = atom_groups
         self.attributes = attributes
         self.scopes = scopes
         self.prop_agg = prop_agg
         self.corr_agg = corr_agg
         self.atom_groups_agg = atom_groups_agg
-        self.bond_heuristic = bond_heuristic
         self.dont_use_communities = dont_use_communities
 
+    @classmethod
+    def from_preset(cls, preset: str, **kwargs):
+        if preset.lower() == "cof":
+            atom_groups = [
+                ("all", ALL_ELEMENTS, False),
+                ("C-H", {"C", "H"}, False),
+                ("not_C-H", ALL_ELEMENTS_EXCEPT_C_H, False),
+            ]
+        elif preset.lower() == "mof":
+            atom_groups = [
+                ("all", ALL_ELEMENTS, False),
+                ("metal", ALL_METAL_ELEMENTS, False),
+                ("nonmetal", ALL_NONMETAL_ELEMENTS, False),
+            ]
+        return cls(atom_groups=atom_groups, **kwargs)
+
     def _featurize(self, structuregraph: Union[StructureGraph, MoleculeGraph]):
-        
+
         if not self.dont_use_communities:
             communities = list(
                 nx_comm.greedy_modularity_communities(structuregraph.graph.to_undirected())
             )
         else:
-            communities = [range(len(structuregraph))] # make one community with all atoms
+            communities = [range(len(structuregraph))]  # make one community with all atoms
 
         neighbors_at_distance = {
             i: get_neighbors_up_to_scope(structuregraph, i, max(self.scopes))
@@ -139,6 +199,8 @@ class ModularityCommunityCenteredRACS(MOFBaseFeaturizer):
         }
 
         groups = _split_up_communities(structuregraph, communities, self.atom_groups)
+
+        print(groups)
 
         racs = {}
         for group_name, group_indices in groups.items():
@@ -158,7 +220,6 @@ class ModularityCommunityCenteredRACS(MOFBaseFeaturizer):
 
         racs_ordered = OrderedDict(sorted(racs.items()))
         return np.array(list(racs_ordered.values()))
-
 
     def featurize(self, mof: MOF):
         return self._featurize(mof.structure_graph)

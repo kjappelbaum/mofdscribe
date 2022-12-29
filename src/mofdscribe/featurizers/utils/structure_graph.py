@@ -1,15 +1,16 @@
 # -*- coding: utf-8 -*-
 """perform analyses on structure graphs."""
+from collections import defaultdict
 from functools import lru_cache
-from typing import List, Optional, Set, Tuple, Dict
+from typing import Dict, List, Optional, Set, Tuple
 
+import networkx as nx
 from pymatgen.analysis.graphs import StructureGraph
 from pymatgen.core import IStructure
 from structuregraph_helpers.create import get_structure_graph as get_sg
-from collections import defaultdict
-import networkx as nx
 
-def leads_to_terminal(nx_graph, edge, bridges: Dict[int, int]=None):
+
+def leads_to_terminal(nx_graph, edge, bridges: Dict[int, int] = None):
     if bridges is None:
         bridges = _generate_bridges(nx_graph)
     sorted_edge = sorted(edge)
@@ -20,24 +21,21 @@ def leads_to_terminal(nx_graph, edge, bridges: Dict[int, int]=None):
         return False
 
 
-
 def _generate_bridges(nx_graph) -> Dict[int, int]:
-    
+
     bridges = list(nx.bridges(nx_graph))
 
     bridges_dict = defaultdict(list)
     for key, value in bridges:
         bridges_dict[key].append(value)
 
-   
     return bridges_dict
-
-
 
 
 def get_connected_site_indices(sg, site: int):
     """Get list of indices of neighboring sites."""
     return [site.index for site in sg.get_connected_sites(site)]
+
 
 def get_neighbors_up_to_scope(structure_graph, site_index, scope):
     """Get only the neighbors at a certain scope.

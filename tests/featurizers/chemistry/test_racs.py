@@ -8,8 +8,8 @@ from pymatgen.core import IStructure
 from mofdscribe.featurizers.chemistry._fragment import get_bb_indices
 from mofdscribe.featurizers.chemistry.racs import RACS, _get_racs_for_bbs
 from mofdscribe.featurizers.utils.structure_graph import (
-    get_structure_graph,
     get_neighbors_up_to_scope,
+    get_structure_graph,
 )
 from mofdscribe.mof import MOF
 

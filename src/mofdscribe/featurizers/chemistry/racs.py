@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Revised autocorrelation functions (RACs) for MOFs."""
 from collections import OrderedDict, defaultdict
-from typing import Collection, List, Optional, Tuple, Union, Dict, Set
+from typing import Collection, Dict, List, Optional, Set, Tuple, Union
 
 import numpy as np
 from element_coder import encode
@@ -19,8 +19,8 @@ from mofdscribe.featurizers.utils.extend import (
 )
 from mofdscribe.featurizers.utils.structure_graph import (
     get_connected_site_indices,
-    get_structure_graph,
     get_neighbors_up_to_scope,
+    get_structure_graph,
 )
 from mofdscribe.mof import MOF
 from mofdscribe.types import StructureIStructureType
@@ -176,6 +176,7 @@ class RACS(MOFBaseFeaturizer):
     <https://github.com/hjkgrp/molSimplify>`_.
     """
     _MAME = "RACS"
+
     def __init__(
         self,
         attributes: Tuple[Union[int, str]] = ("X", "mod_pettifor", "I", "T"),
