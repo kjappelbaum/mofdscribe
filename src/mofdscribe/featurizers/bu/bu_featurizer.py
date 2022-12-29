@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Compute features on the BUs and then aggregate them."""
 from abc import abstractmethod
-from typing import Collection, List, Optional, Tuple, Union
+from typing import Callable, Collection, List, Optional, Tuple, Union
 
 import numpy as np
 from matminer.featurizers.base import MultipleFeaturizer
@@ -11,13 +11,20 @@ from pymatgen.core import IMolecule, IStructure, Molecule, Structure
 
 from mofdscribe.featurizers.base import MOFBaseFeaturizer, MOFMultipleFeaturizer
 from mofdscribe.featurizers.bu.utils import boxed_molecule
+from mofdscribe.featurizers.graph.numhops import NumHops
 from mofdscribe.featurizers.utils import nan_array, set_operates_on
 from mofdscribe.featurizers.utils.aggregators import ARRAY_AGGREGATORS
 from mofdscribe.mof import MOF
 
 if False:
-    from moffragmentor import SBU
-__all__ = ("BUFeaturizer", "BranchingSitesFeaturizer", "BindingSitesFeaturizer")
+    from moffragmentor import SBU  # for type hints
+__all__ = (
+    "BUFeaturizer",
+    "BranchingSitesFeaturizer",
+    "BindingSitesFeaturizer",
+    "BranchingNumHopFeaturizer",
+    "BindingNumHopFeaturizer",
+)
 
 
 # since fragmentation is not super straightforward,
@@ -353,6 +360,7 @@ class BindingSitesFeaturizer(_BUSubBaseFeaturizer):
                 _structuregraph_from_indices(mof, node._original_binding_indices)
                 for node in mof.fragments.nodes
             ]
+            return nodes, linkers
         elif Molecule in self._operates_on:
             raise NotImplementedError("BindingSitesFeaturizer does not support Molecule yet.")
         else:
@@ -397,9 +405,123 @@ class BranchingSitesFeaturizer(_BUSubBaseFeaturizer):
                 _structuregraph_from_indices(mof, node._original_binding_indices)
                 for node in mof.fragments.nodes
             ]
+            return nodes, linkers
         elif Molecule in self._operates_on:
             raise NotImplementedError("BranchingSitesFeaturizer does not support Molecule yet.")
         else:
             raise NotImplementedError(
                 f"BranchingSitesFeaturizer does not support featurizers operating on {self._operates_on}."
             )
+
+
+def _extract_branching_indices(bu):
+    return bu.graph_branching_indices
+
+
+def _extract_binding_indices(bu):
+    return bu.binding_indices
+
+
+class _NumSiteHops(BUFeaturizer):
+    _NAME = "NumBranchingSiteHops"
+
+    def __init__(self, hop_stat_aggregations, aggregations, index_extractor: Callable):
+        self.hop_stat_aggregations = hop_stat_aggregations
+        self.aggregations = aggregations
+        self.index_extractor = index_extractor
+        self._featurizer = NumHops(self.hop_stat_aggregations)
+
+    def _extract(self, mof: MOF):
+
+        linkers = [linker.molecule_graph for linker in mof.fragments.linkers]
+        nodes = [node.molecule_graph for node in mof.fragments.nodes]
+
+        linker_indices = [self.index_extractor(linker) for linker in mof.fragments.linkers]
+        node_indices = [self.index_extractor(node) for node in mof.fragments.nodes]
+        return nodes, linkers, node_indices, linker_indices
+
+    def featurize(self, mof: Optional[MOF] = None) -> np.ndarray:
+        nodes, linkers, node_indices, linker_indices = self._extract(mof)
+        node_feats = np.array(
+            [
+                self._featurizer._featurize(node, node_idx)
+                for node, node_idx in zip(nodes, node_indices)
+            ]
+        )
+        linker_feats = np.array(
+            [
+                self._featurizer._featurize(linker, linker_idx)
+                for linker, linker_idx in zip(linkers, linker_indices)
+            ]
+        )
+
+        node_aggregated = np.concatenate(
+            [ARRAY_AGGREGATORS[agg](node_feats, axis=0) for agg in self.aggregations]
+        )
+        linker_aggregated = np.concatenate(
+            [ARRAY_AGGREGATORS[agg](linker_feats, axis=0) for agg in self.aggregations]
+        )
+        return np.concatenate([node_aggregated, linker_aggregated])
+
+    def feature_labels(self) -> List[str]:
+        base_feature_labels = self._featurizer.feature_labels()
+        feature_labels = []
+        for bb in ["node", "linker"]:
+            for agg in self.aggregations:
+                for feat in base_feature_labels:
+                    feature_labels.append(f"{self._NAME}_{bb}_{agg}_{feat}")
+        return feature_labels
+
+    def implementors(self) -> List[str]:
+        return ["Kevin Maik Jablonka"]
+
+    def citations(self) -> List[str]:
+        return []
+
+
+class BranchingNumHopFeaturizer(_NumSiteHops):
+    """Compute statistics on the shortest path lengths between branching sites."""
+
+    _NAME = "BranchingNumHopFeaturizer"
+
+    def __init__(
+        self,
+        hop_stat_aggregations: Tuple[str] = ("mean", "std", "min", "max"),
+        aggregations: Tuple[str] = ("mean", "std", "min", "max"),
+    ):
+        """Construct a BranchingNumHopFeaturizer.
+
+        Args:
+            hop_stat_aggregations (Tuple[str]): Aggregation functions to apply to the
+                shortest path lengths between branching sites on a building blocks.
+                Defaults to ("mean", "std", "min", "max").
+            aggregations (Tuple[str]): Aggregation functions to apply to the
+                aggregated statistcs of the shortest path lengths between branching sites
+                of different building blocks of the same .
+                Defaults to ("mean", "std", "min", "max").
+        """
+        super().__init__(hop_stat_aggregations, aggregations, _extract_branching_indices)
+
+
+class BindingNumHopFeaturizer(_NumSiteHops):
+    """Compute statistics on the shortest path lengths between binding sites."""
+
+    _NAME = "BindingNumHopFeaturizer"
+
+    def __init__(
+        self,
+        hop_stat_aggregations: Tuple[str] = ("mean", "std", "min", "max"),
+        aggregations: Tuple[str] = ("mean", "std", "min", "max"),
+    ):
+        """Construct a BindingNumHopFeaturizer.
+
+        Args:
+            hop_stat_aggregations (Tuple[str]): Aggregation functions to apply to the
+                shortest path lengths between branching sites on a building blocks.
+                Defaults to ("mean", "std", "min", "max").
+            aggregations (Tuple[str]): Aggregation functions to apply to the
+                aggregated statistcs of the shortest path lengths between branching sites
+                of different building blocks of the same .
+                Defaults to ("mean", "std", "min", "max").
+        """
+        super().__init__(hop_stat_aggregations, aggregations, _extract_binding_indices)

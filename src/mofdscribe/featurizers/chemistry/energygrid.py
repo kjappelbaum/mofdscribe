@@ -11,6 +11,7 @@ from pymatgen.core import IStructure, Structure
 from mofdscribe.featurizers.base import MOFBaseFeaturizer
 from mofdscribe.featurizers.utils.extend import operates_on_istructure, operates_on_structure
 from mofdscribe.featurizers.utils.histogram import get_rdf
+from mofdscribe.featurizers.utils.mixins import GetGridMixin
 from mofdscribe.featurizers.utils.raspa.resize_uc import resize_unit_cell
 from mofdscribe.featurizers.utils.raspa.run_raspa import detect_raspa_dir, run_raspa
 from mofdscribe.mof import MOF
@@ -64,7 +65,7 @@ def read_ascii_grid(filename: Union[str, os.PathLike]) -> pd.DataFrame:
 
 @operates_on_istructure
 @operates_on_structure
-class EnergyGridHistogram(MOFBaseFeaturizer):
+class EnergyGridHistogram(MOFBaseFeaturizer, GetGridMixin):
     """Computes the energy grid histograms as originally proposed by Bucior et al. [Bucior2019]_.
 
     Conventionally, energy grids can be used to speed up molecular simulations.
@@ -87,6 +88,8 @@ class EnergyGridHistogram(MOFBaseFeaturizer):
             Alkanes and Xe/Kr Mixtures. J. Chem. Phys. 2021, 155 (1), 014701.
             https://doi.org/10.1063/5.0050823.
     """
+
+    _NAME = "EnergyGridHistogram"
 
     def __init__(
         self,
@@ -180,15 +183,12 @@ class EnergyGridHistogram(MOFBaseFeaturizer):
     def fit(self, structure: Union[Structure, IStructure]):
         ...
 
-    def _get_grid(self):
-        return np.arange(self.min_energy_vdw, self.max_energy_vdw, self.bin_size_vdw)
-
     def feature_labels(self) -> List[str]:
-        grid = self._get_grid()
+        grid = self._get_grid(self.min_energy_vdw, self.max_energy_vdw, self.bin_size_vdw)
         labels = []
         for site in self.sites:
             for grid_point in grid:
-                labels.append(f"energygridhist_{self.mol_name}_{site}_{grid_point}")
+                labels.append(f"{self._NAME}_{self.mol_name}_{site}_{grid_point}")
         return labels
 
     def featurize(self, mof: MOF) -> np.ndarray:

@@ -9,6 +9,7 @@ from mofdscribe.featurizers.base import MOFBaseFeaturizer
 from mofdscribe.featurizers.utils.eqeq import get_eqeq_charges
 from mofdscribe.featurizers.utils.extend import operates_on_istructure, operates_on_structure
 from mofdscribe.featurizers.utils.histogram import get_rdf
+from mofdscribe.featurizers.utils.mixins import GetGridMixin
 from mofdscribe.mof import MOF
 from mofdscribe.types import StructureIStructureType
 
@@ -17,12 +18,14 @@ __all__ = ["PartialChargeHistogram"]
 
 @operates_on_istructure
 @operates_on_structure
-class PartialChargeHistogram(MOFBaseFeaturizer):
+class PartialChargeHistogram(MOFBaseFeaturizer, GetGridMixin):
     """Compute partial charges using the EqEq charge equilibration method [Ongari2019]_.
 
     Then derive a fix-length feature vector from the partial charges by binning
     charges in a histogram.
     """
+
+    _NAME = "PartialChargeHistogram"
 
     def __init__(
         self,
@@ -44,11 +47,11 @@ class PartialChargeHistogram(MOFBaseFeaturizer):
         self.max_charge = max_charge
         self.bin_size = bin_size
 
-    def _get_grid(self):
-        return np.arange(self.min_charge, self.max_charge, self.bin_size)
-
     def feature_labels(self) -> List[str]:
-        return [f"chargehist_{val}" for val in self._get_grid()]
+        return [
+            f"{self._NAME}_{val}"
+            for val in self._get_grid(self.min_charge, self.max_charge, self.bin_size)
+        ]
 
     def featurize(self, mof: MOF) -> np.ndarray:
         return self._featurize(s=mof.structure)

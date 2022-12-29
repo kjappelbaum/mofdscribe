@@ -13,13 +13,14 @@ from mofdscribe.featurizers.utils.extend import (
     operates_on_structure,
 )
 from mofdscribe.featurizers.utils.histogram import get_rdf
+from mofdscribe.featurizers.utils.mixins import GetGridMixin
 
 
 @operates_on_molecule
 @operates_on_imolecule
 @operates_on_istructure
 @operates_on_structure
-class PairwiseDistanceHist(BaseFeaturizer):
+class PairwiseDistanceHist(BaseFeaturizer, GetGridMixin):
     """
     Describe the shape of molecules by computing a histogram of pairwise distances.
 
@@ -31,6 +32,8 @@ class PairwiseDistanceHist(BaseFeaturizer):
     It also has some similarities to the "Grouped representation of interatomic distances"
     reported in [Zhang2022]_.
     """
+
+    _NAME = "PairwiseDistanceHist"
 
     def __init__(
         self,
@@ -56,11 +59,11 @@ class PairwiseDistanceHist(BaseFeaturizer):
         self.bin_size = bin_size
         self.density = density
 
-    def _get_grid(self):
-        return np.arange(self.lower_bound, self.upper_bound, self.bin_size)
-
     def feature_labels(self) -> List[str]:
-        return [f"pairwise_distance_hist_{a}" for a in self._get_grid()]
+        return [
+            f"{self._NAME}_{a}"
+            for a in self._get_grid(self.lower_bound, self.upper_bound, self.bin_size)
+        ]
 
     def featurize(self, structure: Union[Molecule, IMolecule, Structure, IStructure]) -> np.ndarray:
         return self._featurize(structure)

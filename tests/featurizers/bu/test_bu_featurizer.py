@@ -8,7 +8,9 @@ from matminer.featurizers.structure import SiteStatsFingerprint
 from pymatgen.core import Structure
 
 from mofdscribe.featurizers.bu.bu_featurizer import (
+    BindingNumHopFeaturizer,
     BindingSitesFeaturizer,
+    BranchingNumHopFeaturizer,
     BranchingSitesFeaturizer,
     BUFeaturizer,
     MOFBBs,
@@ -122,3 +124,60 @@ def test_branching_site_featurizer(hkust_structure):
     assert df["BranchingSitesFeaturizer_node_mean_lsop_sq_plan_max"].values[0] > 0.9
 
     assert df["BranchingSitesFeaturizer_linker_mean_lsop_tri_plan"].values[0] > 0.98
+
+
+def test_branching_num_hop(hkust_structure):
+    mof = MOF(hkust_structure)
+
+    featurizer = BranchingNumHopFeaturizer()
+    feats = featurizer.featurize(mof=mof)
+    labels = featurizer.feature_labels()
+    assert len(feats) == len(labels)
+    assert np.allclose(
+        feats,
+        [
+            4.0,
+            0.0,
+            4.0,
+            4.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            4.0,
+            0.0,
+            4.0,
+            4.0,
+            4.0,
+            0.0,
+            4.0,
+            4.0,
+            4.0,
+            0.0,
+            4.0,
+            4.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            4.0,
+            0.0,
+            4.0,
+            4.0,
+            4.0,
+            0.0,
+            4.0,
+            4.0,
+        ],
+    )
+
+
+def test_binding_num_hop(hkust_structure):
+    mof = MOF(hkust_structure)
+
+    featurizer = BindingNumHopFeaturizer()
+    feats = featurizer.featurize(mof=mof)
+    labels = featurizer.feature_labels()
+    assert len(feats) == len(labels)
+    assert feats[2] == 2.0
+    assert feats[3] == 4.0

@@ -62,6 +62,22 @@ directory.
     and notebook in the `examples folder <https://github.com/kjappelbaum/mofdscribe/tree/main/examples>`_.
 
 
+.. admonition:: Saving time using the MOF object 
+    :class: tip 
+
+    From our experience, the most time-consuming part of featurization is the
+    the computation of the structure graph or the fragments. 
+
+    Additionally, you often do not know in advance which featurizers you will
+    use.
+
+    If you want to save in the case you need to compute additional features, 
+    it can be practical to serialize the :py:class:`~mofdscribe.mof.MOF` objects
+    after the first featurization. 
+    The objects will already contain the structure graph and the fragments (if 
+    they have been computed in the first featurization).
+    
+
 Using a reference dataset
 --------------------------
 

@@ -102,7 +102,9 @@ class MOF:
         return self.__structure_graph
 
     @classmethod
-    def from_file(cls, path: PathType, primitive: bool = True, fragmentation_kwargs: Optional[dict]=None) -> "MOF":
+    def from_file(
+        cls, path: PathType, primitive: bool = True, fragmentation_kwargs: Optional[dict] = None
+    ) -> "MOF":
         """Create a MOF class from a file.
 
         Args:
