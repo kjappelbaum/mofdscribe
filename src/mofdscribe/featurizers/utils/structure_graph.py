@@ -2,7 +2,7 @@
 """perform analyses on structure graphs."""
 from collections import defaultdict
 from functools import lru_cache
-from typing import Dict, List, Optional, Set, Tuple
+from typing import Dict, List, Optional
 
 import networkx as nx
 from pymatgen.analysis.graphs import StructureGraph
@@ -30,11 +30,6 @@ def _generate_bridges(nx_graph) -> Dict[int, int]:
         bridges_dict[key].append(value)
 
     return bridges_dict
-
-
-def get_connected_site_indices(sg, site: int):
-    """Get list of indices of neighboring sites."""
-    return [site.index for site in sg.get_connected_sites(site)]
 
 
 def get_neighbors_up_to_scope(structure_graph, site_index, scope):

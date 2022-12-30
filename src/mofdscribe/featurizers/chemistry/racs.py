@@ -49,8 +49,8 @@ def compute_racs(
         scope (int): The scope of the RACs.
         property_aggregations (Tuple[str]): The aggregations to perform on the properties.
         corr_aggregations (Tuple[str]): The aggregations to perform on the correlations.
-        part_name (str, optional): The name of the part. Defaults to "".
-        nan_value (float, optional): The value to use for missing values. Defaults to np.nan.
+        part_name (str): The name of the part. Defaults to "".
+        nan_value (float): The value to use for missing values. Defaults to np.nan.
 
     Returns:
         Dict[str, float]: The RACs.
@@ -175,7 +175,8 @@ class RACS(MOFBaseFeaturizer):
     To use to original implementation, see `molSimplify
     <https://github.com/hjkgrp/molSimplify>`_.
     """
-    _MAME = "RACS"
+
+    _NAME = "RACS"
 
     def __init__(
         self,

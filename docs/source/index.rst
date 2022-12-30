@@ -37,6 +37,7 @@ dependencies, the featurizers are currently not integrated in matminer itself.
    splitters
    datasets
    background
+   metrics
    leaderboard
    contributing
    api

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-""""RACs on molecule and structure graphs with optional community detection."""
+"""RACs on molecule and structure graphs with optional community detection."""
 from collections import OrderedDict, defaultdict
 from typing import Collection, Dict, List, Optional, Set, Tuple, Union
 
@@ -57,12 +57,14 @@ def _split_up_communities(
         structuregraph=structuregraph, atom_groups=atom_groups
     )
 
-    for atom_group_name, elements, _no_terminal in atom_groups:
-        for communities in communities:
-            if not isinstance(communities, set):
-                communities = set([communities])
+    for atom_group_name, _elements, _no_terminal in atom_groups:
+        for community in communities:
+            if not isinstance(community, set):
+                communities_set = set([community])
+            else:
+                communities_set = community
             atom_grouped_communities[atom_group_name].append(
-                indices_to_atom_group[atom_group_name] & set(communities)
+                indices_to_atom_group[atom_group_name] & set(communities_set)
             )
 
     return atom_grouped_communities
@@ -114,7 +116,26 @@ def _get_racs_for_community(
 @operates_on_structuregraph
 @operates_on_moleculegraph
 class ModularityCommunityCenteredRACS(MOFBaseFeaturizer):
-    """RACs on molecule and structure graphs with optional community detection."""
+    """RACs on molecule and structure graphs with optional community detection.
+
+    This featurizer is a flavor of the :ref:`RACs <RACs>` featurizer.
+    It can split the computation over user-defined atom groups and automatically determined communities.
+    For determining communities, we use ``networkx``'s implementation
+    of greedy modularity maximization [NewmanModularity]_.
+
+    The features are computed for each communinty within each atom group and then aggregated over the communities.
+    That is, the number of features will depend on the number of atom groups.
+    The communities will only impact how the features within an atom group are aggregated.
+
+    There are different ways in which you might want to use this featurizer.
+
+    1) No prior on communitiy structure. In this case, you can set ``dont_use_communities=True``.
+    It will still compute the RACs over the atom groups you specify but won't have an inner loop over communities
+    that are then aggegated for the final features for a given atom group.
+
+    2) No prior on atom grouping. In this case, you can set ``atom_groups=None``.
+    This will compute the RACs over all atoms.
+    """
 
     _NAME = "ModularityCommunityCenteredRACS"
 
@@ -154,7 +175,7 @@ class ModularityCommunityCenteredRACS(MOFBaseFeaturizer):
                 correlated properties. Defaults to ("sum", "avg").
             atom_groups_agg (Tuple[str], optional): Aggregation methods used for the pooling
                 over atom communities within one atom group. Defaults to ("avg", "sum").
-            dont_use_communities (bool, optional): If set to true, we do not use modularity-based community detection.
+            dont_use_communities (bool): If set to true, we do not use modularity-based community detection.
                 Features are then simply averaged over all atoms.
                 Defaults to False.
         """
@@ -185,7 +206,6 @@ class ModularityCommunityCenteredRACS(MOFBaseFeaturizer):
         return cls(atom_groups=atom_groups, **kwargs)
 
     def _featurize(self, structuregraph: Union[StructureGraph, MoleculeGraph]):
-
         if not self.dont_use_communities:
             communities = list(
                 nx_comm.greedy_modularity_communities(structuregraph.graph.to_undirected())
@@ -199,8 +219,6 @@ class ModularityCommunityCenteredRACS(MOFBaseFeaturizer):
         }
 
         groups = _split_up_communities(structuregraph, communities, self.atom_groups)
-
-        print(groups)
 
         racs = {}
         for group_name, group_indices in groups.items():

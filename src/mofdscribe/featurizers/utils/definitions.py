@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+"""Constants used in the featurizers."""
 from element_coder.data.coding_data import get_coding_dict
 
 ALL_ELEMENTS = set(get_coding_dict("atomic").keys())
