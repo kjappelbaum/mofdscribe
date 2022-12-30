@@ -30,6 +30,7 @@ ALL_METAL_ELEMENTS = set(
         "Zr",
         "Nb",
         "Mo",
+
         "Tc",
         "Ru",
         "Rh",
@@ -106,4 +107,4 @@ ALL_METAL_ELEMENTS = set(
     )
 )
 
-_ALL_NONMETAL_ELEMENTS = ALL_ELEMENTS - ALL_METAL_ELEMENTS
+ALL_NONMETAL_ELEMENTS = ALL_ELEMENTS - ALL_METAL_ELEMENTS
