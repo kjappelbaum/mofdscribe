@@ -48,7 +48,9 @@ def test_racs(hkust_structure, irmof_structure):
                 assert np.isnan(np.array(list(v.values()))).sum() == len(v)
         racs_ordered = OrderedDict(sorted(racs.items()))
 
-        assert list(map(lambda x: x.lower(), list(racs_ordered.keys()))) == list(map(lambda x: x.lower(), featurizer.feature_labels()))
+        assert list(map(lambda x: x.lower(), list(racs_ordered.keys()))) == list(
+            map(lambda x: x.lower(), featurizer.feature_labels())
+        )
 
     # assert len(featurizer.feature_labels()) == 120
     assert len(featurizer.citations()) == 2
@@ -85,7 +87,9 @@ def test_racs_functional(irmof_structure, abacuf_structure, floating_structure):
             # we classify the "O" as a functional group
             assert np.isnan(np.array(list(v.values()))).sum() == 0
         racs_ordered = OrderedDict(sorted(racs.items()))
-        assert list(map(lambda x: x.lower(), list(racs_ordered.keys()))) == list(map(lambda x: x.lower(), featurizer.feature_labels()))
+        assert list(map(lambda x: x.lower(), list(racs_ordered.keys()))) == list(
+            map(lambda x: x.lower(), featurizer.feature_labels())
+        )
 
     # assert len(featurizer.feature_labels()) == 120
     assert len(featurizer.citations()) == 2

@@ -348,8 +348,16 @@ class BindingSitesFeaturizer(_BUSubBaseFeaturizer):
 
     def _extract(self, mof: MOF):
         if Structure in self._operates_on:
-            linkers = [linker._get_binding_sites_structure() for linker in mof.fragments.linkers]
-            nodes = [node._get_binding_sites_structure() for node in mof.fragments.nodes]
+            try:
+                linkers = [
+                    linker._get_binding_sites_structure() for linker in mof.fragments.linkers
+                ]
+            except Exception:
+                linkers = []
+            try:
+                nodes = [node._get_binding_sites_structure() for node in mof.fragments.nodes]
+            except Exception:
+                nodes = []
             return nodes, linkers
         elif StructureGraph in self._operates_on:
             linkers = [
@@ -393,8 +401,16 @@ class BranchingSitesFeaturizer(_BUSubBaseFeaturizer):
 
     def _extract(self, mof: MOF):
         if Structure in self._operates_on:
-            linkers = [linker._get_branching_sites_structure() for linker in mof.fragments.linkers]
-            nodes = [node._get_branching_sites_structure() for node in mof.fragments.nodes]
+            try:
+                linkers = [
+                    linker._get_branching_sites_structure() for linker in mof.fragments.linkers
+                ]
+            except Exception:
+                linkers = []
+            try:
+                nodes = [node._get_branching_sites_structure() for node in mof.fragments.nodes]
+            except Exception:
+                nodes = []
             return nodes, linkers
         elif StructureGraph in self._operates_on:
             linkers = [
@@ -434,7 +450,9 @@ class _NumSiteHops(BUFeaturizer):
     def _extract(self, mof: MOF):
 
         linkers = [linker.molecule_graph for linker in mof.fragments.linkers]
-        nodes = [node.molecule_graph for node in mof.fragments.nodes]
+        nodes = [
+            node.molecule_graph for node in mof.fragments.nodes
+        ]  # fixme: should use the dummy graph
 
         linker_indices = [self.index_extractor(linker) for linker in mof.fragments.linkers]
         node_indices = [self.index_extractor(node) for node in mof.fragments.nodes]
@@ -442,18 +460,36 @@ class _NumSiteHops(BUFeaturizer):
 
     def featurize(self, mof: Optional[MOF] = None) -> np.ndarray:
         nodes, linkers, node_indices, linker_indices = self._extract(mof)
-        node_feats = np.array(
-            [
-                self._featurizer._featurize(node, node_idx)
-                for node, node_idx in zip(nodes, node_indices)
-            ]
-        )
-        linker_feats = np.array(
-            [
-                self._featurizer._featurize(linker, linker_idx)
-                for linker, linker_idx in zip(linkers, linker_indices)
-            ]
-        )
+        node_feats = []
+
+        # np.array(
+        #     [
+        #         self._featurizer._featurize(node, node_idx)
+        #         for node, node_idx in zip(nodes, node_indices)
+        #     ]
+        # )
+
+        for node, node_idx in zip(nodes, node_indices):
+            try:
+                node_feats.append(self._featurizer._featurize(node, node_idx))
+            except Exception:
+                node_feats.append([np.nan] * len(self._featurizer.feature_labels()))
+
+        node_feats = np.array(node_feats)
+
+        linker_feats = []  # np.array(
+        #     [
+        #         self._featurizer._featurize(linker, linker_idx)
+        #         for linker, linker_idx in zip(linkers, linker_indices)
+        #     ]
+        # )
+
+        for linker, linker_idx in zip(linkers, linker_indices):
+            try:
+                linker_feats.append(self._featurizer._featurize(linker, linker_idx))
+            except Exception:
+                linker_feats.append([np.nan] * len(self._featurizer.feature_labels()))
+        linker_feats = np.array(linker_feats)
 
         node_aggregated = np.concatenate(
             [ARRAY_AGGREGATORS[agg](node_feats, axis=0) for agg in self.aggregations]

@@ -30,7 +30,6 @@ ALL_METAL_ELEMENTS = set(
         "Zr",
         "Nb",
         "Mo",
-
         "Tc",
         "Ru",
         "Rh",

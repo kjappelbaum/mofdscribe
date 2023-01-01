@@ -97,9 +97,13 @@ class RDKitAdaptor(BaseFeaturizer):
             molecule_graph = MoleculeGraph.with_local_env_strategy(
                 molecule, get_local_env_method(self._local_env_strategy)
             )
-        rdkit_mol = create_rdkit_mol_from_mol_graph(
-            molecule_graph, force_sanitize=self._force_sanitize
-        )
+        try:
+            rdkit_mol = create_rdkit_mol_from_mol_graph(
+                molecule_graph, force_sanitize=self._force_sanitize
+            )
+        except Exception:
+            logger.warning("Could not create RDKit molecule from pymatgen molecule.")
+            return np.array([np.nan] * len(self._feature_labels))
         feats = self._featurizer(rdkit_mol)
         if isinstance(feats, (list, tuple, np.ndarray)):
             return np.asarray(feats)

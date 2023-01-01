@@ -30,3 +30,4 @@ from .shape_featurizer import (  # noqa: F401
     SphereLikeness,
     SpherocityIndex,
 )
+from .smarts_matches import AcidGroupCounter, BaseGroupCounter, SmartsMatchCounter  # noqa: F401
