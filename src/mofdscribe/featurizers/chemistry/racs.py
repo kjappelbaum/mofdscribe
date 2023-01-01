@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Revised autocorrelation functions (RACs) for MOFs."""
 from collections import OrderedDict, defaultdict
-from typing import Collection, List, Optional, Tuple, Union
+from typing import Collection, Dict, List, Optional, Set, Tuple, Union
 
 import numpy as np
 from element_coder import encode
@@ -10,22 +10,28 @@ from pymatgen.analysis.graphs import StructureGraph
 from pymatgen.core import IStructure, Structure
 
 from mofdscribe.featurizers.base import MOFBaseFeaturizer
+from mofdscribe.featurizers.chemistry._fragment import get_bb_indices
 from mofdscribe.featurizers.utils.aggregators import AGGREGATORS, ARRAY_AGGREGATORS
-from mofdscribe.featurizers.utils.extend import operates_on_istructure, operates_on_structure
+from mofdscribe.featurizers.utils.extend import (
+    operates_on_istructure,
+    operates_on_structure,
+    operates_on_structuregraph,
+)
 from mofdscribe.featurizers.utils.structure_graph import (
     get_connected_site_indices,
-    get_neighbors_at_distance,
+    get_neighbors_up_to_scope,
     get_structure_graph,
 )
+from mofdscribe.mof import MOF
+from mofdscribe.types import StructureIStructureType
 
-from ._fragment import get_bb_indices
-
-__all__ = ("RACS",)
+__all__ = ("RACS", "compute_racs")
 
 
-def _compute_racs(
+def compute_racs(
     start_indices: Collection[int],
     structure_graph: StructureGraph,
+    neighbors_at_distance: Dict[int, Dict[int, Set[int]]],
     properties: Tuple[str],
     scope: int,
     property_aggregations: Tuple[str],
@@ -33,6 +39,22 @@ def _compute_racs(
     part_name: str = "",
     nan_value: float = np.nan,
 ):
+    """Compute the RACs for a given set of properties and scope.
+
+    Args:
+        start_indices (Collection[int]): The indices of the sites to start from.
+        structure_graph (StructureGraph): The structure graph.
+        neighbors_at_distance (Dict[int, Dict[int, Set[int]]], optional): The neighbors at distance. Defaults to None.
+        properties (Tuple[str]): The properties that are correlated
+        scope (int): The scope of the RACs.
+        property_aggregations (Tuple[str]): The aggregations to perform on the properties.
+        corr_aggregations (Tuple[str]): The aggregations to perform on the correlations.
+        part_name (str): The name of the part. Defaults to "".
+        nan_value (float): The value to use for missing values. Defaults to np.nan.
+
+    Returns:
+        Dict[str, float]: The RACs.
+    """
     racs = defaultdict(lambda: defaultdict(list))
     if len(start_indices) == 0:
         logger.debug(f"No start indices for {part_name}")
@@ -41,7 +63,7 @@ def _compute_racs(
                 racs[prop][agg].append(nan_value)
     else:
         for start_atom in start_indices:
-            _, neighbors = get_neighbors_at_distance(structure_graph, start_atom, scope)
+            neighbors = neighbors_at_distance[start_atom][scope]
             num_neighbors = len(neighbors)
             # We only branch if there are actually neighbors scope many bonds away ...
 
@@ -76,7 +98,7 @@ def _compute_racs(
         for aggregation_name, aggregation_values in property_values.items():
             for corr_agg in corr_aggregations:
                 agg_func = ARRAY_AGGREGATORS[corr_agg]
-                name = f"racs_bb-{part_name}_prop-{property_name}_scope-{scope}_propagg-{aggregation_name}_corragg-{corr_agg}"  # noqa: E501
+                name = f"racs-{part_name}_prop-{property_name}_scope-{scope}_propagg-{aggregation_name}_corragg-{corr_agg}"  # noqa: E501
                 aggregated_racs[name] = agg_func(aggregation_values)
 
     return aggregated_racs
@@ -85,6 +107,7 @@ def _compute_racs(
 def _get_racs_for_bbs(
     bb_indices: Collection[int],
     structure_graph: StructureGraph,
+    neighbors_at_distance: Dict[int, Dict[int, Set[int]]],
     properties: Tuple[str],
     scopes: List[int],
     property_aggregations: Tuple[str],
@@ -99,9 +122,10 @@ def _get_racs_for_bbs(
         bb_indices = [[]]
     for start_indices in bb_indices:
         for scope in scopes:
-            racs = _compute_racs(
+            racs = compute_racs(
                 start_indices,
                 structure_graph,
+                neighbors_at_distance,
                 properties,
                 scope,
                 property_aggregations,
@@ -123,6 +147,7 @@ def _get_racs_for_bbs(
 
 @operates_on_istructure
 @operates_on_structure
+@operates_on_structuregraph
 class RACS(MOFBaseFeaturizer):
     r"""Modified version of the revised autocorrelation functions (RACs) for MOFs.
 
@@ -151,6 +176,8 @@ class RACS(MOFBaseFeaturizer):
     <https://github.com/hjkgrp/molSimplify>`_.
     """
 
+    _NAME = "RACS"
+
     def __init__(
         self,
         attributes: Tuple[Union[int, str]] = ("X", "mod_pettifor", "I", "T"),
@@ -166,7 +193,6 @@ class RACS(MOFBaseFeaturizer):
             "linker_scaffold",
             "nodes",
         ),
-        primitive: bool = True,
     ) -> None:
         """
         Initialize the RACS featurizer.
@@ -184,8 +210,6 @@ class RACS(MOFBaseFeaturizer):
             bond_heuristic (str): Method used to guess bonds. Defaults to "vesta".
             bbs (Tuple[str]): Building blocks to use. Defaults to ("linker_all",
                 "linker_connecting", "linker_functional", "linker_scaffold", "nodes").
-            primitive (bool): If True, the structure is reduced to its primitive
-                form before the descriptor is computed. Defaults to True.
         """
         self.attributes = attributes
         self.scopes = scopes
@@ -203,12 +227,25 @@ class RACS(MOFBaseFeaturizer):
                 "linker_scaffold",
                 "nodes",
             ]
-        super().__init__(primitive=primitive)
 
-    def _featurize(self, structure: Union[Structure, IStructure]) -> np.ndarray:
-        if isinstance(structure, Structure):
+    def featurize(self, mof: MOF) -> np.ndarray:
+        return self._featurize(mof.structure_graph)
+
+    def _featurize(self, structure: Union[StructureIStructureType, StructureGraph]) -> np.ndarray:
+        if isinstance(structure, (Structure, IStructure)):
             structure = IStructure.from_sites(structure)
-        sg = get_structure_graph(structure, self.bond_heuristic)
+            sg = get_structure_graph(structure, self.bond_heuristic)
+        elif isinstance(structure, StructureGraph):
+            sg = structure
+            structure = sg.structure
+        else:
+            raise TypeError(
+                f"Structure must be pymatgen Structure or StructureGraph, found {type(structure)}"
+            )
+
+        neighbors_at_distance = {
+            i: get_neighbors_up_to_scope(sg, i, max(self.scopes)) for i in range(len(structure))
+        }
 
         racs = {}
         # This finds all indices for a particular subset of atoms
@@ -219,6 +256,7 @@ class RACS(MOFBaseFeaturizer):
                 _get_racs_for_bbs(
                     bb_indices[bb],
                     sg,
+                    neighbors_at_distance,
                     self.attributes,
                     self.scopes,
                     self.prop_agg,
@@ -239,7 +277,7 @@ class RACS(MOFBaseFeaturizer):
                         for cor_agg in self.corr_agg:
                             for bb_agg in self.bb_agg:
                                 names.append(
-                                    f"racs_bb-{bb}_prop-{prop}_scope-{scope}_propagg-{property_agg}_corragg-{cor_agg}_bbagg-{bb_agg}"  # noqa: E501
+                                    f"{self._NAME}-{bb}_prop-{prop}_scope-{scope}_propagg-{property_agg}_corragg-{cor_agg}_bbagg-{bb_agg}"  # noqa: E501
                                 )
 
         names = sorted(names)

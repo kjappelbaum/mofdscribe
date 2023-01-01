@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 """Generalized average minimum distance (AMD) featurizer."""
-from typing import List, Tuple, Union
+from typing import List, Tuple
 
 import numpy as np
-from pymatgen.core import IStructure, Structure
 
 from mofdscribe.featurizers.base import MOFBaseFeaturizer
 from mofdscribe.featurizers.utils.extend import operates_on_istructure, operates_on_structure
 from mofdscribe.featurizers.utils.substructures import filter_element
+from mofdscribe.mof import MOF
+from mofdscribe.types import StructureIStructureType
 
 __all__ = ["AMD"]
 
@@ -43,7 +44,6 @@ class AMD(MOFBaseFeaturizer):
         ),
         compute_for_all_elements: bool = True,
         aggregations: Tuple[str] = ("mean",),
-        primitive: bool = True,
     ) -> None:
         """Initialize the AMD descriptor.
 
@@ -60,8 +60,6 @@ class AMD(MOFBaseFeaturizer):
                 the original structure with all elements. Defaults to True.
             aggregations (tuple): Aggregations of the AMD descriptor.
                 The 'mean' is equivalent to the original AMD. Defaults to ('mean',).
-            primitive (bool): If True, the structure is reduced to its primitive
-                form before the descriptor is computed. Defaults to True.
         """
         self.k = k
         atom_types = [] if atom_types is None else atom_types
@@ -71,7 +69,6 @@ class AMD(MOFBaseFeaturizer):
         )
         self.compute_for_all_elements = compute_for_all_elements
         self.aggregations = aggregations
-        super().__init__(primitive=primitive)
 
     def _get_feature_labels(self) -> List[str]:
         labels = []
@@ -85,21 +82,33 @@ class AMD(MOFBaseFeaturizer):
     def feature_labels(self) -> List[str]:
         return self._get_feature_labels()
 
-    def _featurize(self, structure: Union[Structure, IStructure]) -> np.ndarray:
+    def featurize(self, mof: MOF) -> np.ndarray:
+        return self._featurize(mof.structure)
+
+    def _featurize(self, structure: StructureIStructureType) -> np.ndarray:
         """Compute the AMD descriptor for a given structure.
 
         Args:
-            structure (Union[Structure, IStructure]): Structure to compute the descriptor for.
+            structure (StructureIStructureType): Structure to compute the descriptor for.
 
         Returns:
             A numpy array containing the AMD descriptor.
+
+        Raises:
+            ImportError: If the AMD package is not installed.
         """
-        from amd._nns import nearest_neighbours
-        from amd.calculate import _extract_motif_cell
-        from amd.periodicset import PeriodicSet
+        try:
+            from amd._nns import nearest_neighbours
+            from amd.calculate import _extract_motif_cell
+            from amd.periodicset import PeriodicSet
+        except ImportError:
+            raise ImportError(
+                "AMD featurizer requires the AMD package.\
+                See https://github.com/dwiddo/average-minimum-distance for installation instructions."
+            )
 
         def get_pdd(structure, k):
-            motif, cell, asymmetric_unit, multiplicities = _extract_motif_cell(
+            motif, cell, asymmetric_unit, _multiplicities = _extract_motif_cell(
                 PeriodicSet(structure.cart_coords, structure.lattice.matrix)
             )
             pdd, _, _ = nearest_neighbours(motif, cell, asymmetric_unit, k)

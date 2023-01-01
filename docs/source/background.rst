@@ -60,6 +60,17 @@ descriptor that only considers the local environment (of e.g., 3 atoms). For thi
     featurizers/global/*
 
 
+Graph featurizers
+--------------------
+
+Graph featurizers are a special class of featurizers that are based on the structure graph. The structure graph is a periodic graph in which the edges are bonds and the nodes are atoms.
+
+.. toctree::
+    :glob:
+    :maxdepth: 1
+
+    featurizers/graph/*
+
 
 BU-centered featurizers
 -----------------------------
@@ -75,11 +86,13 @@ mofdscribe can compute descriptors that are BU-centred, for instance, using RDKi
     from matminer.featurizers.structure import SiteStatsFingerprint
     from pymatgen.core import Structure
     from mofdscribe.featurizers.bu import BUFeaturizer
+    from mofdscribe.mof import MOF
+    from mofdscribe.featurizers.matmineradapter import MatminerAdapter
 
-    base_feat = SiteStatsFingerprint(SOAP.from_preset("formation_energy"))
-    base_feat.fit([hkust_structure])
+    base_feat = MatminerAdapter(SiteStatsFingerprint(SOAP.from_preset("formation_energy")))
+    base_feat.fit([MOF(hkust_structure)])
     featurizer = BUFeaturizer(base_feat, aggregations=("mean",))
-    features = featurizer.featurize(structure=hkust_structure)
+    features = featurizer.featurize(structure=MOF(hkust_structure))
 
 For this, you can either provide your building blocks that you extracted with any of the available tools, or use our integration with our `moffragmentor <https://github.com/kjappelbaum/moffragmentor>`_ package. In this case, we will fragment the MOF into its building blocks and then compute the features for each building block and let you choose how you want to aggregate them.
 
@@ -100,15 +113,15 @@ This featurizer will automatically extract the host and guest structures from th
 .. code-block:: python
 
     from matminer.featurizers.structure.sites import SiteStatsFingerprint
-
+    from mofdscribe.featurizers.matmineradapter import MatminerAdapter
     from mofdscribe.featurizers.hostguest import HostGuestFeaturizer
 
     featurizer = HostGuestFeaturizer(
-        featurizer=SiteStatsFingerprint.from_preset("SOAP_formation_energy"),
+        featurizer=MatminerAdapter(SiteStatsFingerprint.from_preset("SOAP_formation_energy")),
         aggregations=("mean",),
     )
-    featurizer.fit([structure])
-    features = featurizer.featurize(structure)
+    featurizer.fit([mof])
+    features = featurizer.featurize(mof)
     
 If you are interested in surface chemistry features, you might also find suitable featurizers in the `matminer <https://hackingmaterials.lbl.gov/matminer/>`_ package.
 

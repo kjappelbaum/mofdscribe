@@ -5,13 +5,14 @@ from glob import glob
 from typing import List, Union
 
 import numpy as np
-from pymatgen.core import IStructure, Structure
 
 from mofdscribe.featurizers.base import MOFBaseFeaturizer
 from mofdscribe.featurizers.utils.extend import operates_on_istructure, operates_on_structure
 from mofdscribe.featurizers.utils.raspa.base_parser import parse_base_output
 from mofdscribe.featurizers.utils.raspa.resize_uc import resize_unit_cell
 from mofdscribe.featurizers.utils.raspa.run_raspa import detect_raspa_dir, run_raspa
+from mofdscribe.mof import MOF
+from mofdscribe.types import StructureIStructureType
 
 __all__ = ["Henry"]
 
@@ -83,7 +84,6 @@ class Henry(MOFBaseFeaturizer):
         separate_interactions: bool = True,
         run_eqeq: bool = True,
         return_std: bool = False,
-        primitive: bool = False,
     ):
         """Initialize the featurizer.
 
@@ -118,8 +118,6 @@ class Henry(MOFBaseFeaturizer):
                 Defaults to True.
             return_std (bool): If true, return the standard deviations.
                 Defaults to False.
-            primitive (bool): If true, use the primitive unit cell.
-                Defaults to False.
 
         Raises:
             ValueError: If the `RASPA_DIR` environment variable is not set.
@@ -144,9 +142,11 @@ class Henry(MOFBaseFeaturizer):
         self.temperature = temperature
         self.run_eqeq = run_eqeq
         self.return_std = return_std
-        super().__init__(primitive=primitive)
 
-    def _featurize(self, s: Union[Structure, IStructure]) -> np.array:
+    def featurize(self, mof: MOF) -> np.ndarray:
+        return self._featurize(mof.structure)
+
+    def _featurize(self, s: StructureIStructureType) -> np.array:
         ff_molecules = {self.mol_name: self.mol_ff}
 
         parameters = {

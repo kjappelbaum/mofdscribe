@@ -9,12 +9,12 @@ from typing import List, Tuple, Union
 
 import numpy as np
 from element_coder import encode
-from pymatgen.core import IStructure, Structure
 
 from mofdscribe.featurizers.base import MOFBaseFeaturizer
-
-from ..utils.aggregators import AGGREGATORS
-from ..utils.extend import operates_on_istructure, operates_on_structure
+from mofdscribe.featurizers.utils.aggregators import AGGREGATORS
+from mofdscribe.featurizers.utils.extend import operates_on_istructure, operates_on_structure
+from mofdscribe.mof import MOF
+from mofdscribe.types import StructureIStructureType
 
 __all__ = ["APRDF"]
 
@@ -50,7 +50,6 @@ class APRDF(MOFBaseFeaturizer):
         properties: Tuple[str, int] = ("X", "electron_affinity"),
         aggregations: Tuple[str] = ("avg", "product", "diff"),
         normalize: bool = False,
-        primitive: bool = True,
     ):
         """Set up an atomic property (AP) weighted radial distribution function.
 
@@ -73,8 +72,6 @@ class APRDF(MOFBaseFeaturizer):
                 options. Defaults to ("avg", "product", "diff").
             normalize (bool): If True, the histogram is normalized by dividing
                 by the number of atoms. Defaults to False.
-            primitive (bool): If True, the structure is reduced to its primitive
-                form before the descriptor is computed. Defaults to True.
         """
         self.lower_lim = lower_lim
         self.cutoff = cutoff
@@ -84,7 +81,6 @@ class APRDF(MOFBaseFeaturizer):
 
         self.b_smear = b_smear
         self.aggregations = aggregations
-        super().__init__(primitive=primitive)
 
     def precheck(self):
         pass
@@ -106,7 +102,10 @@ class APRDF(MOFBaseFeaturizer):
 
         return list(aprdfs.flatten())
 
-    def _featurize(self, s: Union[Structure, IStructure]) -> np.array:
+    def featurize(self, mof: MOF) -> np.ndarray:
+        return self._featurize(mof.structure)
+
+    def _featurize(self, s: StructureIStructureType) -> np.array:
         bins = self._bins
         aprdfs = np.zeros((len(self.properties), len(self.aggregations), len(bins)))
 

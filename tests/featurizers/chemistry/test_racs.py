@@ -7,7 +7,11 @@ from pymatgen.core import IStructure
 
 from mofdscribe.featurizers.chemistry._fragment import get_bb_indices
 from mofdscribe.featurizers.chemistry.racs import RACS, _get_racs_for_bbs
-from mofdscribe.featurizers.utils.structure_graph import get_structure_graph
+from mofdscribe.featurizers.utils.structure_graph import (
+    get_neighbors_up_to_scope,
+    get_structure_graph,
+)
+from mofdscribe.mof import MOF
 
 from ..helpers import is_jsonable
 
@@ -16,14 +20,19 @@ def test_racs(hkust_structure, irmof_structure):
     """Make sure that the featurization works for typical MOFs and the number of features is as expected."""
     for structure in [hkust_structure, irmof_structure]:
         featurizer = RACS()
-        feats = featurizer.featurize(structure)
+        feats = featurizer.featurize(MOF(structure))
         sg = get_structure_graph(IStructure.from_sites(structure), featurizer.bond_heuristic)
         racs = {}
         bb_indices = get_bb_indices(sg)
+        neighbors_at_distance = {
+            i: get_neighbors_up_to_scope(sg, i, max(featurizer.scopes))
+            for i in range(len(structure))
+        }
         for bb in featurizer._bbs:
             v = _get_racs_for_bbs(
                 bb_indices[bb],
                 sg,
+                neighbors_at_distance,
                 featurizer.attributes,
                 featurizer.scopes,
                 featurizer.prop_agg,
@@ -39,7 +48,9 @@ def test_racs(hkust_structure, irmof_structure):
                 assert np.isnan(np.array(list(v.values()))).sum() == len(v)
         racs_ordered = OrderedDict(sorted(racs.items()))
 
-        assert list(racs_ordered.keys()) == featurizer.feature_labels()
+        assert list(map(lambda x: x.lower(), list(racs_ordered.keys()))) == list(
+            map(lambda x: x.lower(), featurizer.feature_labels())
+        )
 
     # assert len(featurizer.feature_labels()) == 120
     assert len(featurizer.citations()) == 2
@@ -50,16 +61,21 @@ def test_racs(hkust_structure, irmof_structure):
 def test_racs_functional(irmof_structure, abacuf_structure, floating_structure):
     # ABACUF doesn't have linkers with a core. It is simply HCOO
     for structure in [abacuf_structure]:
-        featurizer = RACS(primitive=False)  # because also the linker structure is not primitive
-        feats = featurizer.featurize(structure)
+        featurizer = RACS()
+        feats = featurizer.featurize(MOF(structure))
         # assert len(feats) == 4 * 3 * 8 * 5  # 4 properties, 3 scopes, 8 aggregations, 5 bb types
         sg = get_structure_graph(IStructure.from_sites(structure), featurizer.bond_heuristic)
+        neighbors_at_distance = {
+            i: get_neighbors_up_to_scope(sg, i, max(featurizer.scopes))
+            for i in range(len(structure))
+        }
         racs = {}
         bb_indices = get_bb_indices(sg)
         for bb in featurizer._bbs:
             v = _get_racs_for_bbs(
                 bb_indices[bb],
                 sg,
+                neighbors_at_distance,
                 featurizer.attributes,
                 featurizer.scopes,
                 featurizer.prop_agg,
@@ -71,14 +87,16 @@ def test_racs_functional(irmof_structure, abacuf_structure, floating_structure):
             # we classify the "O" as a functional group
             assert np.isnan(np.array(list(v.values()))).sum() == 0
         racs_ordered = OrderedDict(sorted(racs.items()))
-        assert list(racs_ordered.keys()) == featurizer.feature_labels()
+        assert list(map(lambda x: x.lower(), list(racs_ordered.keys()))) == list(
+            map(lambda x: x.lower(), featurizer.feature_labels())
+        )
 
     # assert len(featurizer.feature_labels()) == 120
     assert len(featurizer.citations()) == 2
     assert is_jsonable(dict(zip(featurizer.feature_labels(), feats)))
     assert feats.ndim == 1
 
-    floating_feats = featurizer.featurize(floating_structure)
-    irmof_feats = featurizer.featurize(irmof_structure)
+    floating_feats = featurizer.featurize(MOF(floating_structure))
+    irmof_feats = featurizer.featurize(MOF(irmof_structure))
 
     assert np.allclose(floating_feats, irmof_feats, rtol=0.05, equal_nan=True)

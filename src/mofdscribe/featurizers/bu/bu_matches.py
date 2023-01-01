@@ -10,7 +10,7 @@ from loguru import logger
 from matminer.featurizers.base import BaseFeaturizer
 from pymatgen.core import IMolecule, IStructure, Molecule, Structure
 
-from ..utils.aggregators import ARRAY_AGGREGATORS
+from mofdscribe.featurizers.utils.aggregators import ARRAY_AGGREGATORS
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 with open(os.path.join(THIS_DIR, "prototype_env.json"), "r") as handle:
@@ -173,6 +173,10 @@ class BUMatch(BaseFeaturizer):
         return self._get_feature_labels()
 
     def featurize(self, s: Union[Structure, IStructure, Molecule, IMolecule]) -> np.ndarray:
+        """Structure is here spanned by the connecting points of a BU."""
+        return self._featurize(s)
+
+    def _featurize(self, s: Union[Structure, IStructure, Molecule, IMolecule]) -> np.ndarray:
         """Structure is here spanned by the connecting points of a BU."""
         features = []
         for topo in self.topos:

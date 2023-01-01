@@ -19,6 +19,24 @@ def hkust_structure():
 
 
 @pytest.fixture(scope="session")
+def cof_1_structure():
+    """Return a pymatgen Structure for COF"""
+    return IStructure.from_file(os.path.join(THIS_DIR, "test_files", "COF-1.cif"))
+
+
+@pytest.fixture(scope="session")
+def mof74_structure():
+    """Return a pymatgen Structure for MOF74"""
+    return IStructure.from_file(os.path.join(THIS_DIR, "test_files", "Fe-MOF-74.cif"))
+
+
+@pytest.fixture(scope="session")
+def hkust_path():
+    """Return a path to a HKUST structure"""
+    return os.path.join(THIS_DIR, "test_files", "HKUST-1.cif")
+
+
+@pytest.fixture(scope="session")
 def hkust_la_structure():
     """Return a pymatgen Structure for HKUST"""
     return IStructure.from_file(os.path.join(THIS_DIR, "test_files", "HKUST-1-La.cif"))

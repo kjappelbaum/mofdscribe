@@ -1,14 +1,15 @@
 # -*- coding: utf-8 -*-
 """Featurizer that computes 3D voxelgrids."""
-from typing import List, Tuple, Union
+from typing import List, Tuple
 
 import numpy as np
 from element_coder import encode
-from pymatgen.core import Element, IStructure, Structure
+from pymatgen.core import Element
 
 from mofdscribe.featurizers.base import MOFBaseFeaturizer
-
-from ._voxelgrid import VoxelGrid as VGBase
+from mofdscribe.featurizers.pore._voxelgrid import VoxelGrid as VGBase
+from mofdscribe.mof import MOF
+from mofdscribe.types import StructureIStructureType
 
 
 def make_supercell(
@@ -114,7 +115,6 @@ class VoxelGrid(MOFBaseFeaturizer):
         properties: Tuple[str, int] = ("X", "electron_affinity"),
         flatten: bool = True,
         regular_bounding_box: bool = True,
-        primitive: bool = False,
     ):
         """Initialize a VoxelGrid featurizer.
 
@@ -141,8 +141,6 @@ class VoxelGrid(MOFBaseFeaturizer):
             regular_bounding_box (bool): If True, the bounding box of the point cloud will be adjusted
                 in order to have all the dimensions of equal length.
                 Defaults to True.
-            primitive (bool): If True, the structure is reduced to its primitive
-                form before the descriptor is computed. Defaults to True.
         """
         self.min_size = min_size
         self.n_x = n_x
@@ -153,9 +151,11 @@ class VoxelGrid(MOFBaseFeaturizer):
         self.geometry_aggregations = geometry_aggregations
         self.flatten = flatten
         self.regular_bounding_box = regular_bounding_box
-        super().__init__(primitive=primitive)
 
-    def _featurize(self, structure: Union[IStructure, Structure]) -> np.ndarray:
+    def featurize(self, mof: MOF) -> np.ndarray:
+        return self._featurize(mof.structure)
+
+    def _featurize(self, structure: StructureIStructureType) -> np.ndarray:
         coords, numbers = make_supercell(
             structure.cart_coords, structure.atomic_numbers, structure.lattice.matrix, self.min_size
         )

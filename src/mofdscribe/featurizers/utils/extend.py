@@ -3,6 +3,7 @@
 from functools import partial
 from typing import Type
 
+from pymatgen.analysis.graphs import MoleculeGraph, StructureGraph
 from pymatgen.core import IMolecule, IStructure, Molecule, Structure
 
 
@@ -35,3 +36,5 @@ operates_on_structure = partial(add_operates_on, type=Structure)
 operates_on_istructure = partial(add_operates_on, type=IStructure)
 operates_on_molecule = partial(add_operates_on, type=Molecule)
 operates_on_imolecule = partial(add_operates_on, type=IMolecule)
+operates_on_structuregraph = partial(add_operates_on, type=StructureGraph)
+operates_on_moleculegraph = partial(add_operates_on, type=MoleculeGraph)

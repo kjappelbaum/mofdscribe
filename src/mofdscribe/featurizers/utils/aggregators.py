@@ -48,6 +48,13 @@ def masked_trimean(values):
     return (q1 + 2 * q2 + q3) / 4
 
 
+def try_except_nan(func, *args, **kwargs):
+    try:
+        return func(*args, **kwargs)
+    except Exception:
+        return np.nan
+
+
 AGGREGATORS = {
     "sum": lambda x: x[0] + x[1],
     "avg": lambda x: (x[0] + x[1]) / 2,
@@ -62,36 +69,38 @@ AGGREGATORS = {
 
 
 ARRAY_AGGREGATORS = {
-    "sum": lambda x, **kwargs: np.sum(x, **kwargs),
-    "avg": lambda x, **kwargs: np.mean(x, **kwargs),
-    "max": lambda x, **kwargs: np.max(x, **kwargs),
-    "min": lambda x, **kwargs: np.min(x, **kwargs),
-    "std": lambda x, **kwargs: np.std(x, **kwargs),
-    "range": lambda x, **kwargs: np.max(x, **kwargs) - np.min(x, **kwargs),
-    "mean": lambda x, **kwargs: np.mean(x, **kwargs),
-    "median": lambda x, **kwargs: np.median(x, **kwargs),
-    "geomean": lambda x, **kwargs: gmean(x, **kwargs),
-    "harmean": lambda x, **kwargs: hmean(x, **kwargs),
-    "mad": lambda x, **kwargs: mad(x, **kwargs),
-    "trimean": lambda x, **kwargs: trimean(x, **kwargs),
-    "inf": lambda x, **kwargs: np.linalg.norm(x, ord=np.inf, **kwargs),
-    "manhattan": lambda x, **kwargs: np.linalg.norm(x, ord=1, **kwargs),
+    "sum": lambda x, **kwargs: try_except_nan(np.sum, x, **kwargs),
+    "avg": lambda x, **kwargs: try_except_nan(np.mean, x, **kwargs),
+    "max": lambda x, **kwargs: try_except_nan(np.max, x, **kwargs),
+    "min": lambda x, **kwargs: try_except_nan(np.min, x, **kwargs),
+    "std": lambda x, **kwargs: try_except_nan(np.std, x, **kwargs),
+    "range": lambda x, **kwargs: try_except_nan(np.max, x, **kwargs)
+    - try_except_nan(np.min, x, **kwargs),
+    "mean": lambda x, **kwargs: try_except_nan(np.mean, x, **kwargs),
+    "median": lambda x, **kwargs: try_except_nan(np.median, x, **kwargs),
+    "geomean": lambda x, **kwargs: try_except_nan(gmean, x, **kwargs),
+    "harmean": lambda x, **kwargs: try_except_nan(hmean, x, **kwargs),
+    "mad": lambda x, **kwargs: try_except_nan(mad, x, **kwargs),
+    "trimean": lambda x, **kwargs: try_except_nan(trimean, x, **kwargs),
+    "inf": lambda x, **kwargs: try_except_nan(np.linalg.norm, x, ord=np.inf, **kwargs),
+    "manhattan": lambda x, **kwargs: try_except_nan(np.linalg.norm, x, ord=1, **kwargs),
 }
 
 
 MA_ARRAY_AGGREGATORS = {
-    "sum": lambda x, **kwargs: np.ma.sum(x, **kwargs),
-    "avg": lambda x, **kwargs: np.ma.mean(x, **kwargs),
-    "max": lambda x, **kwargs: np.ma.max(x, **kwargs),
-    "min": lambda x, **kwargs: np.ma.min(x, **kwargs),
-    "std": lambda x, **kwargs: np.ma.std(x, **kwargs),
-    "range": lambda x, **kwargs: np.ma.max(x, **kwargs) - np.ma.min(x, **kwargs),
-    "mean": lambda x, **kwargs: np.ma.mean(x, **kwargs),
-    "median": lambda x, **kwargs: np.ma.median(x, **kwargs),
-    "geomean": lambda x, **kwargs: mstast_gmean(x, **kwargs),
-    "harmean": lambda x, **kwargs: mstast_hmean(x, **kwargs),
-    "mad": lambda x, **kwargs: masked_mad(x, **kwargs),
-    "trimean": lambda x, **kwargs: masked_trimean(x, **kwargs),
-    "inf": lambda x, **kwargs: np.linalg.norm(x, ord=np.inf, **kwargs),
-    "manhattan": lambda x, **kwargs: np.linalg.norm(x, ord=1, **kwargs),
+    "sum": lambda x, **kwargs: try_except_nan(np.ma.sum, x, **kwargs),
+    "avg": lambda x, **kwargs: try_except_nan(np.ma.mean, x, **kwargs),
+    "max": lambda x, **kwargs: try_except_nan(np.ma.max, x, **kwargs),
+    "min": lambda x, **kwargs: try_except_nan(np.ma.min, x, **kwargs),
+    "std": lambda x, **kwargs: try_except_nan(np.ma.std, x, **kwargs),
+    "range": lambda x, **kwargs: try_except_nan(np.ma.max, x, **kwargs)
+    - try_except_nan(np.ma.min, x, **kwargs),
+    "mean": lambda x, **kwargs: try_except_nan(np.ma.mean, x, **kwargs),
+    "median": lambda x, **kwargs: try_except_nan(np.ma.median, x, **kwargs),
+    "geomean": lambda x, **kwargs: try_except_nan(mstast_gmean, x, **kwargs),
+    "harmean": lambda x, **kwargs: try_except_nan(mstast_hmean, x, **kwargs),
+    "mad": lambda x, **kwargs: try_except_nan(masked_mad, x, **kwargs),
+    "trimean": lambda x, **kwargs: try_except_nan(masked_trimean, x, **kwargs),
+    "inf": lambda x, **kwargs: try_except_nan(np.linalg.norm, x, ord=np.inf, **kwargs),
+    "manhattan": lambda x, **kwargs: try_except_nan(np.linalg.norm, x, ord=1, **kwargs),
 }

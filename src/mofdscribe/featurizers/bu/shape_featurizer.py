@@ -13,7 +13,7 @@ from rdkit.Chem.Descriptors3D import InertialShapeFactor as InertialShapeFactor_
 from rdkit.Chem.Descriptors3D import RadiusOfGyration as RadiusOfGyration_RDKIT
 from rdkit.Chem.Descriptors3D import SpherocityIndex as SpherocityIndex_RDKIT
 
-from .rdkitadaptor import RDKitAdaptor
+from mofdscribe.featurizers.bu.rdkitadaptor import RDKitAdaptor
 
 
 def _rod_likeness(mol):

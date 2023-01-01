@@ -5,11 +5,12 @@ Extending and contributing to mofdscribe
 Implementing a new featurizer
 -----------------------------
 
-To implement a new featurizer, you typically need to create a new class that inherits from the :py:class:`~mofdscribe.featurizers.base.MOFBaseFeaturizer`. In this class, you need to implement three methods: 
-:py:meth:`~mofdscribe.featurizers.base.MOFBaseFeaturizer.featurize`, :py:meth:`~mofdscribe.featurizers.base.MOFBaseFeaturizer.feature_labels` and :py:meth:`~mofdscribe.featurizers.base.MOFBaseFeaturizer.citation`.
+To implement a new featurizer, you typically need to create a new class that inherits from the :py:class:`~mofdscribe.featurizers.base.MOFBaseFeaturizer`. In this class, you need to implement four methods: 
+:py:meth:`~mofdscribe.featurizers.base.MOFBaseFeaturizer.featurize`, :py:meth:`~mofdscribe.featurizers.base.MOFBaseFeaturizer._featurize`, :py:meth:`~mofdscribe.featurizers.base.MOFBaseFeaturizer.feature_labels` and :py:meth:`~mofdscribe.featurizers.base.MOFBaseFeaturizer.citation`.
 
-The main featurization logic happens in :py:meth:`~mofdscribe.featurizers.base.MOFBaseFeaturizer.featurize`.
-Your method should accept as input a :py:class:`~pymatgen.core.Structure` object and return a :py:class:`numpy.array`.
+The main featurization logic happens in :py:meth:`~mofdscribe.featurizers.base.MOFBaseFeaturizer._featurize`.
+Your method should accept as input a :py:class:`~pymatgen.core.Structure` (:py:class:`~pymatgen.core.IStructure`, :py:class:`~pymatgen.core.Molecule`, :py:class:`~pymatgen.core.StructureGraph`) object and return a :py:class:`numpy.array`. The   :py:meth:`~mofdscribe.featurizers.base.MOFBaseFeaturizer._featurize` is supposed to extract the relevant object from a :py:object:`~mofdscribe.mof.MOF` object. 
+
 The :py:meth:`mofdscribe.featurizers.base.MOFBaseFeaturizer.feature_labels` method should return a list of strings that describe the features returned by :py:meth:`~mofdscribe.featurizers.base.MOFBaseFeaturizer.featurize`. The number of feature names should match the number of features returned by :py:meth:`~mofdscribe.featurizers.base.MOFBaseFeaturizer.featurize` (i.e. the number of columns in the feature matrix). The :py:meth:`~mofdscribe.featurizers.base.MOFBaseFeaturizer.citation` method should return a list of strings of BibTeX citations for the featurizer.
 
 Generally, you also want to decorate your structure with the 

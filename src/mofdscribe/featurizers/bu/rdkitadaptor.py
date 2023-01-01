@@ -10,8 +10,8 @@ from pymatgen.analysis.graphs import MoleculeGraph
 from pymatgen.core import Molecule
 from structuregraph_helpers.create import get_local_env_method
 
-from .utils import create_rdkit_mol_from_mol_graph
-from ..utils.extend import operates_on_imolecule, operates_on_molecule
+from mofdscribe.featurizers.bu.utils import create_rdkit_mol_from_mol_graph
+from mofdscribe.featurizers.utils.extend import operates_on_imolecule, operates_on_molecule
 
 
 @operates_on_molecule
@@ -76,15 +76,34 @@ class RDKitAdaptor(BaseFeaturizer):
         Returns:
             A numpy array of features.
         """
+        return self._featurize(molecule)
+
+    def _featurize(self, molecule: Union[Molecule, MoleculeGraph]) -> np.ndarray:
+        """
+        Call the RDKit featurizer on the molecule.
+
+        If the input molecule is a Molecule, we convert it to a MoleculeGraph
+        using the local environment strategy specified in the constructor.
+
+        Args:
+            molecule: A pymatgen Molecule or MoleculeGraph object.
+
+        Returns:
+            A numpy array of features.
+        """
         if isinstance(molecule, MoleculeGraph):
             molecule_graph = molecule
         else:
             molecule_graph = MoleculeGraph.with_local_env_strategy(
                 molecule, get_local_env_method(self._local_env_strategy)
             )
-        rdkit_mol = create_rdkit_mol_from_mol_graph(
-            molecule_graph, force_sanitize=self._force_sanitize
-        )
+        try:
+            rdkit_mol = create_rdkit_mol_from_mol_graph(
+                molecule_graph, force_sanitize=self._force_sanitize
+            )
+        except Exception:
+            logger.warning("Could not create RDKit molecule from pymatgen molecule.")
+            return np.array([np.nan] * len(self._feature_labels))
         feats = self._featurizer(rdkit_mol)
         if isinstance(feats, (list, tuple, np.ndarray)):
             return np.asarray(feats)

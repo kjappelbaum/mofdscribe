@@ -2,6 +2,8 @@
 Revised autocorrelation functions (RACs)
 .............................................
 
+.. _RACS: 
+
 Revised autocorrelation functions have originally been proposed for
 metal-complexes [Janet2017]_. Autocorrelation functions have been widely used as
 compact, fixed-length descriptors and are defined as

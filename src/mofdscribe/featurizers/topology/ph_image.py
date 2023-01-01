@@ -7,17 +7,17 @@ import numpy as np
 from pymatgen.core import IMolecule, IStructure, Molecule, Structure
 
 from mofdscribe.featurizers.base import MOFBaseFeaturizer
+from mofdscribe.featurizers.topology._tda_helpers import (
+    get_persistence_image_limits_for_structure,
+    get_persistent_images_for_structure,
+)
 from mofdscribe.featurizers.utils.extend import (
     operates_on_imolecule,
     operates_on_istructure,
     operates_on_molecule,
     operates_on_structure,
 )
-
-from ._tda_helpers import (
-    get_persistence_image_limits_for_structure,
-    get_persistent_images_for_structure,
-)
+from mofdscribe.mof import MOF
 
 
 @operates_on_imolecule
@@ -72,7 +72,6 @@ class PHImage(MOFBaseFeaturizer):
         max_fit_tolerence: float = 0.1,
         periodic: bool = False,
         no_supercell: bool = False,
-        primitive: bool = False,
         alpha_weight: Optional[str] = None,
     ) -> None:
         """Construct a PHImage object.
@@ -112,8 +111,6 @@ class PHImage(MOFBaseFeaturizer):
                 in the analysis (experimental!). Defaults to False.
             no_supercell (bool): If true, then the supercell is not created.
                 Defaults to False.
-            primitive (bool): If True, the structure is reduced to its primitive
-                form before the descriptor is computed. Defaults to False.
             alpha_weight (Optional[str]): If specified, the use weighted alpha shapes,
                 i.e., replacing the points with balls of varying radii.
                 For instance `atomic_radius_calculated` or `van_der_waals_radius`.
@@ -161,8 +158,6 @@ class PHImage(MOFBaseFeaturizer):
         self.no_supercell = no_supercell
         self.alpha_weight = alpha_weight
 
-        super().__init__(primitive=primitive)
-
     def _get_feature_labels(self) -> List[str]:
         labels = []
         _elements = list(self.atom_types)
@@ -178,6 +173,9 @@ class PHImage(MOFBaseFeaturizer):
 
     def feature_labels(self) -> List[str]:
         return self._get_feature_labels()
+
+    def featurize(self, mof: MOF) -> np.ndarray:
+        return self._featurize(mof.structure)
 
     def _featurize(
         self, structure: Union[Structure, IStructure, Molecule, IMolecule]
@@ -205,6 +203,18 @@ class PHImage(MOFBaseFeaturizer):
 
                 features.append(np.array(results["image"][element][dim]).flatten())
         return np.concatenate(features)
+
+    def fit(self, mofs: List[MOF]) -> None:
+        """Use structures to estimate the settings for the featurizer.
+
+        Find the limits (maximum/minimum birth/death and persistence)
+        for all the structures in the dataset and store them in the object.
+
+        Args:
+            mofs (List[MOF]): List of MOFs to find the limits for.
+        """
+        structures = [mof.structure for mof in mofs]
+        self._fit(structures)
 
     def _fit(self, structures: List[Union[Structure, IStructure, Molecule, IMolecule]]) -> None:
         """Use structures to estimate the settings for the featurizer.

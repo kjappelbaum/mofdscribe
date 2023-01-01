@@ -95,3 +95,20 @@ Host Guest featurization
 
 .. automodule:: mofdscribe.featurizers.hostguest.host_guest_featurizer
     :members:
+
+
+Graph featurization
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. automodule:: mofdscribe.featurizers.graph.graph_featurizer
+    :members:
+
+.. automodule:: mofdscribe.featurizers.graph.dimensionality
+    :members:
+
+
+Matminer adapter 
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. automodule:: mofdscribe.featurizers.matmineradapter
+    :members:

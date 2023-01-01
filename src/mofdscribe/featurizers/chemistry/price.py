@@ -9,6 +9,9 @@ import numpy as np
 import pandas as pd
 
 from mofdscribe.featurizers.base import MOFBaseFeaturizer
+from mofdscribe.featurizers.utils.extend import operates_on_istructure, operates_on_structure
+from mofdscribe.mof import MOF
+from mofdscribe.types import StructureIStructureType
 
 _THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -75,6 +78,8 @@ def _price_per_atom(element_price_fractions_kg, structure):
     )
 
 
+@operates_on_istructure
+@operates_on_structure
 class PriceLowerBound(MOFBaseFeaturizer):
     """Compute a lower bound for the price based on the element prices.
 
@@ -101,23 +106,18 @@ class PriceLowerBound(MOFBaseFeaturizer):
         "per_atom": _price_per_atom,
     }
 
-    def __init__(
-        self, projections: Tuple[str] = ("gravimetric", "volumetric"), primitive: bool = False
-    ):
+    def __init__(self, projections: Tuple[str] = ("gravimetric", "volumetric")):
         """Initialize the PriceLowerBound featurizer.
 
         Args:
             projections (Tuple[str]): List of projections to use.
                 Possible values are "gravimetric" and "volumetric".
                 Default is ("gravimetric", "volumetric").
-            primitive (bool): If True, the structure is reduced to its primitive
-                form before the descriptor is computed. Defaults to False.
         """
         self.projections = projections
         self.element_masses = _get_element_abundance()
 
         self.projections = projections
-        super().__init__(primitive=primitive)
 
     def feature_labels(self) -> List[str]:
         labels = []
@@ -125,7 +125,10 @@ class PriceLowerBound(MOFBaseFeaturizer):
             labels.append(f"price_lower_bound_{projection}")
         return labels
 
-    def _featurize(self, structure) -> np.ndarray:
+    def featurize(self, mof: MOF) -> np.ndarray:
+        return self._featurize(mof.structure)
+
+    def _featurize(self, structure: StructureIStructureType) -> np.ndarray:
         element_masses = {}
 
         for site in structure.sites:

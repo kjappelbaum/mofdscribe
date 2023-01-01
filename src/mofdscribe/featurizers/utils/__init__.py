@@ -5,7 +5,7 @@ import sys
 from shutil import which
 
 import numpy as np
-from pymatgen.core import Molecule, Structure
+from pymatgen.core import Structure
 
 if sys.version_info.major == 3 and sys.version_info.minor >= 10:
     from collections.abc import MutableMapping
@@ -45,12 +45,6 @@ def flatten(d: dict, parent_key: str = "", sep: str = ".") -> dict:
 def set_operates_on(self, featurizer):
     try:
         _operates_on = featurizer.operates_on()
-        if (Structure in _operates_on) and (Molecule in _operates_on):
-            self._operates_on = "both"
-        elif Structure in _operates_on:
-            self._operates_on = "structure"
-        elif Molecule in _operates_on:
-            self._operates_on = "molecule"
-
+        self._operates_on = set(_operates_on)
     except AttributeError:
-        self._operates_on = "structure"
+        self._operates_on = {Structure}

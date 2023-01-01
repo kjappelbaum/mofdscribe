@@ -112,3 +112,7 @@ References
 .. [Trappe] `Potoff, J. J.; Siepmann, J. I. Vapor–Liquid Equilibria of Mixtures Containing Alkanes, Carbon Dioxide, and Nitrogen. AIChE Journal 2001, 47 (7), 1676–1682. <https://doi.org/10.1002/aic.690470719>`_
 
 .. [Varoquaux] `Varoquaux, G. Cross-Validation Failure: Small Sample Sizes Lead to Large Error Bars. NeuroImage 2018, 180, 68–77. <https://doi.org/10.1016/j.neuroimage.2017.06.061>`_
+
+.. [LarsenDimensionality] `Larsen, P. M.; Pandey, M.; Strange, M.; Jacobsen, K. W. Definition of a Scoring Parameter to Identify Low-Dimensional Materials Components. Phys. Rev. Materials 2019, 3 (3), 034003. <https://doi.org/10.1103/PhysRevMaterials.3.034003>`_
+
+.. [NewmanModularity] `Newman, M. E. J. Modularity and community structure in networks. Proceedings of the National Academy of Sciences 2006, 103 (23), 8577–8582. <https://doi.org/10.1073/pnas.0601602103>`_

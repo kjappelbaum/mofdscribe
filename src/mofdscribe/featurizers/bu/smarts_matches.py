@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Featurize a molecule using SMARTS matches."""
 from functools import partial
 from typing import Collection, List, Optional

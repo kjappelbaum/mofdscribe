@@ -11,3 +11,4 @@ API documentation
    api/metrics
    api/bench
    api/helpers
+   api/structures
