@@ -163,6 +163,21 @@ class PHImage(MOFBaseFeaturizer):
 
         super().__init__(primitive=primitive)
 
+    def get_birth_persistance_death_from_pixel(self, x, y):
+        """Get birth, persistence, and death from pixel coordinates.
+
+        Args:
+            x (int): x coordinate.
+            y (int): y coordinate.
+
+        Returns:
+            Tuple[float, float, float]: Birth, persistence, and death.
+        """
+        birth_values = np.linspace(0, self.max_b[0], self.image_size[0])
+        persistance_values = np.linspace(0, self.max_p[0], self.image_size[1])
+
+        return birth_values[x], persistance_values[y], birth_values[x] + persistance_values[y]
+
     def _get_feature_labels(self) -> List[str]:
         labels = []
         _elements = list(self.atom_types)
