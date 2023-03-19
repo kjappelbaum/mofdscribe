@@ -2,15 +2,17 @@
 """Describe MOF structures in natural language."""
 
 from collections import Counter
-from typing import Dict, Optional
+from typing import Dict, Optional, Union
 
 from moffragmentor import MOF as MOFFragmentorMOF
 from pymatgen.analysis.graphs import StructureGraph
-from pymatgen.core import Structure
+from pymatgen.core import Structure, IStructure
 from robocrys import StructureCondenser, StructureDescriber
 
 from mofdscribe.featurizers.base import BaseFeaturizer, MOFMultipleFeaturizer
 from mofdscribe.featurizers.pore import AccessibleVolume, PoreDiameters, SurfaceArea
+from mofdscribe.featurizers.utils.structure_graph import get_sg
+
 
 _pore_formatters = {
     "lis": lambda x: "largest included sphere {:.2f} A".format(x),
@@ -92,8 +94,8 @@ class MOFDescriber(BaseFeaturizer):
             description += " " + self._get_pore_description(structure)
         return description
 
-    def featurize(self, x):
-        return self._featurize(x)
+    def featurize(self, structure: Union[Structure, IStructure]):
+        return self._featurize(structure, get_sg(structure))
 
     def feature_labels(self):
         return ["description"]
