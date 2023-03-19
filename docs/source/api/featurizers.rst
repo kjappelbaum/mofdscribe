@@ -95,3 +95,10 @@ Host Guest featurization
 
 .. automodule:: mofdscribe.featurizers.hostguest.host_guest_featurizer
     :members:
+
+
+Text description
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. automodule:: mofdscribe.featurizers.text.mofdscriber
+    :members:

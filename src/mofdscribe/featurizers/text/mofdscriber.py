@@ -23,7 +23,7 @@ _pore_formatters = {
 class MOFDescriber(BaseFeaturizer):
     """Describe a metal-organic framework in natural language.
 
-    Uses robocrystallographer[Robocrys]_ as well as MOF-specific descriptions.
+    Uses robocrystallographer [Robocrys]_ as well as MOF-specific descriptions.
 
     References:
         .. [Robocrys] Ganose, A., & Jain, A. (2019).
