@@ -6,13 +6,12 @@ from typing import Dict, Optional, Union
 
 from moffragmentor import MOF as MOFFragmentorMOF
 from pymatgen.analysis.graphs import StructureGraph
-from pymatgen.core import Structure, IStructure
+from pymatgen.core import IStructure, Structure
 from robocrys import StructureCondenser, StructureDescriber
 
 from mofdscribe.featurizers.base import BaseFeaturizer, MOFMultipleFeaturizer
 from mofdscribe.featurizers.pore import AccessibleVolume, PoreDiameters, SurfaceArea
 from mofdscribe.featurizers.utils.structure_graph import get_sg
-
 
 _pore_formatters = {
     "lis": lambda x: "largest included sphere {:.2f} A".format(x),
