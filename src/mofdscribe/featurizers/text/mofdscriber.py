@@ -4,7 +4,7 @@
 from collections import Counter
 from typing import Dict, Optional, Union
 
-from moffragmentor import MOF as MOFFragmentorMOF
+from moffragmentor import MOF as MOFFragmentorMOF # noqa: N811
 from pymatgen.analysis.graphs import StructureGraph
 from pymatgen.core import IStructure, Structure
 from robocrys import StructureCondenser, StructureDescriber
@@ -38,7 +38,7 @@ class MOFDescriber(BaseFeaturizer):
         condenser_kwargs: Optional[Dict] = None,
         describer_kwargs: Optional[Dict] = None,
         incorporate_smiles: bool = True,
-        descibe_pores: bool = True,
+        describe_pores: bool = True,
     ) -> None:
         """Construct an instance of the MOFDescriber.
 
@@ -55,7 +55,7 @@ class MOFDescriber(BaseFeaturizer):
         self.condenser_kwargs = condenser_kwargs or {}
         self.describer_kwargs = {**describer_defaults, **(describer_kwargs or {})}
         self.incorporate_smiles = incorporate_smiles
-        self.descibe_pores = descibe_pores
+        self.describe_pores = describe_pores
 
     def _get_bb_description(self, structure: Structure, structure_graph: StructureGraph) -> str:
         moffragmentor_mof = MOFFragmentorMOF(structure, structure_graph)
@@ -89,7 +89,7 @@ class MOFDescriber(BaseFeaturizer):
         description = self._get_robocrys_description(structure)
         if self.incorporate_smiles:
             description += " " + self._get_bb_description(structure, structure_graph)
-        if self.descibe_pores:
+        if self.describe_pores:
             description += " " + self._get_pore_description(structure)
         return description
 
