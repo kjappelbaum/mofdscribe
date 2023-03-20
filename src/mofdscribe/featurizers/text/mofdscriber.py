@@ -4,7 +4,7 @@
 from collections import Counter
 from typing import Dict, Optional, Union
 
-from moffragmentor import MOF as MOFFragmentorMOF # noqa: N811
+from moffragmentor import MOF as MOFFragmentorMOF  # noqa: N811
 from pymatgen.analysis.graphs import StructureGraph
 from pymatgen.core import IStructure, Structure
 from robocrys import StructureCondenser, StructureDescriber
