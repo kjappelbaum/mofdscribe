@@ -20,15 +20,76 @@ def construct_pds_cached(coords, periodic=False, weights: Optional[Collection] =
     return construct_pds(coords, periodic=periodic, weights=weights)
 
 
+def make_supercell(
+    coords: np.ndarray,
+    lattice: List[np.array],
+    size: float,
+    elements: Optional[List[str]] = None,
+    min_size: float = -5,
+) -> np.ndarray:
+    """
+    Generate cubic supercell of a given size.
+    Args:
+        coords (np.ndarray): matrix of xyz coordinates of the system
+        lattice (Tuple[np.array]): lattice vectors of the system
+        elements (List[str]): list of elements in the system.
+            If None, will create a list of 'X' of the same length as coords
+        size (float): dimension size of cubic cell, e.g., 10x10x10
+        min_size (float): minimum axes size to keep negative xyz coordinates from the original cell
+    Returns:
+        new_cell: supercell array
+    """
+
+    # handle potential weights that we want to carry over but not change
+    a, b, c = lattice
+
+    xyz_periodic_copies = []
+    element_copies = []
+
+    # xyz_periodic_copies.append(coords)
+    # element_copies.append(np.array(elements).reshape(-1,1))
+    min_range = -3  # we aren't going in the minimum direction too much, so can make this small
+    max_range = 20  # make this large enough, but can modify if wanting an even larger cell
+
+    if elements is None:
+        elements = ["X"] * len(coords)
+
+    for x in range(-min_range, max_range):
+        for y in range(0, max_range):
+            for z in range(0, max_range):
+                if x == y == z == 0:
+                    continue
+                add_vector = x * a + y * b + z * c
+                xyz_periodic_copies.append(coords + add_vector)
+                assert len(elements) == len(
+                    coords
+                ), f"Elements and coordinates are not the same length. Found {len(coords)} coordinates and {len(elements)} elements."
+                element_copies.append(np.array(elements).reshape(-1, 1))
+
+    # Combine into one array
+    xyz_periodic_total = np.vstack(xyz_periodic_copies)
+
+    element_periodic_total = np.vstack(element_copies)
+    assert len(xyz_periodic_total) == len(
+        element_periodic_total
+    ), f"Elements and coordinates are not the same length. Found {len(xyz_periodic_total)} coordinates and {len(element_periodic_total)} elements."
+    # Filter out all atoms outside of the cubic box
+    filter_a = np.max(xyz_periodic_total, axis=1) < size
+    new_cell = xyz_periodic_total[filter_a]
+    filter_b = np.min(new_cell[:], axis=1) > min_size
+    new_cell = new_cell[filter_b]
+    new_elements = element_periodic_total[filter_a][filter_b]
+
+    return new_cell, new_elements.flatten()
+
+
 def _coords_for_structure(
     structure: Structure,
     min_size: int = 50,
     periodic: bool = False,
     no_supercell: bool = False,
     weighting: Optional[str] = None,
-) -> Tuple[np.ndarray, np.ndarray]:
-    from moleculetda.read_file import make_supercell
-
+) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     if no_supercell:
         if weighting is not None:
             weighting = encode_many([str(s.symbol) for s in structure.species], weighting)
@@ -36,9 +97,9 @@ def _coords_for_structure(
 
     else:
         if periodic:
-            transformed_s = CubicSupercellTransformation(min_size=min_size).apply_transformation(
-                structure
-            )
+            transformed_s = CubicSupercellTransformation(
+                min_length=min_size, force_90_degrees=True
+            ).apply_transformation(structure)
             if weighting is not None:
                 weighting = encode_many([str(s.symbol) for s in transformed_s.species], weighting)
             return transformed_s.cart_coords, weighting
@@ -48,16 +109,20 @@ def _coords_for_structure(
                     encode_many([str(s.symbol) for s in structure.species], weighting)
                 )
                 # we can add the weighing as additional column for the cooords
-                coords_w_weight = make_supercell(
+                coords_w_weight, elements = make_supercell(
                     np.hstack([structure.cart_coords, weighting_arr.reshape(-1, 1)]),
                     structure.lattice.matrix,
                     min_size,
                 )
-                return coords_w_weight[:, :-1], coords_w_weight[:, -1]
+                return coords_w_weight[:, :-1], coords_w_weight[:, -1], elements
             else:
+                sc, elements = make_supercell(
+                    structure.cart_coords, structure.lattice.matrix, min_size
+                )
                 return (
-                    make_supercell(structure.cart_coords, structure.lattice.matrix, min_size),
+                    sc,
                     None,
+                    elements,
                 )
 
 
@@ -73,6 +138,27 @@ def _pd_arrays_from_coords(
         pd = diagrams_to_arrays(pds)
 
     return pd
+
+
+def get_images(
+    pd,
+    spread: float = 0.2,
+    weighting: str = "identity",
+    pixels: List[int] = (50, 50),
+    specs: List[dict] = None,
+    dimensions: Collection[int] = (0, 1, 2),
+):
+    from moleculetda.vectorize_pds import pd_vectorization
+
+    images = []
+    for dim in dimensions:
+        dgm = pd[f"dim{dim}"]
+        images.append(
+            pd_vectorization(
+                dgm, spread=spread, weighting=weighting, pixels=pixels, specs=specs[dim]
+            )
+        )
+    return images
 
 
 # ToDo: only do this for selected elements
@@ -120,7 +206,6 @@ def get_persistent_images_for_structure(
         persistent_images (dict): dictionary of persistent images and their
             barcode representations
     """
-    from moleculetda.vectorize_pds import get_images
 
     element_images: Dict[dict] = defaultdict(dict)
     specs = []
@@ -129,7 +214,7 @@ def get_persistent_images_for_structure(
     for element in elements:
         try:
             filtered_structure = filter_element(structure, element)
-            coords, weights = _coords_for_structure(
+            coords, _weights, _elements = _coords_for_structure(
                 filtered_structure,
                 min_size=min_size,
                 periodic=periodic,
@@ -144,12 +229,16 @@ def get_persistent_images_for_structure(
                 weighting=weighting,
                 pixels=pixels,
                 specs=specs,
+                dimensions=(0, 1, 2),
             )
-        except ValueError:
+        except Exception:
             logger.exception(f"Error computing persistent images for {element}")
-            images = np.zeros((0, pixels[0], pixels[1]))
-            images[:] = np.nan
-            pd = np.zeros((0, max_p + 1))
+            images = {}
+            for dim in [0, 1, 2]:
+                im = np.zeros((pixels[0], pixels[1]))
+                im[:] = np.nan
+                images[dim] = im
+            pd = np.zeros((0, max(max_p) + 1))
             pd[:] = np.nan
 
         # ToDo: make sure that we have the correct length
@@ -157,18 +246,38 @@ def get_persistent_images_for_structure(
         element_images["array"][element] = pd
 
     if compute_for_all_elements:
-        coords, weights = _coords_for_structure(
-            structure,
-            min_size=min_size,
-            periodic=periodic,
-            no_supercell=no_supercell,
-            weighting=alpha_weighting,
-        )
-        pd = _pd_arrays_from_coords(coords, periodic=periodic)
+        try:
+            coords, weights, _elements = _coords_for_structure(
+                structure,
+                min_size=min_size,
+                periodic=periodic,
+                no_supercell=no_supercell,
+                weighting=alpha_weighting,
+            )
+            pd = _pd_arrays_from_coords(coords, periodic=periodic)
 
-        images = get_images(pd, spread=spread, weighting=weighting, pixels=pixels, specs=specs)
-        element_images["image"]["all"] = images
-        element_images["array"]["all"] = pd
+            images = get_images(
+                pd,
+                spread=spread,
+                weighting=weighting,
+                pixels=pixels,
+                specs=specs,
+                dimensions=(0, 1, 2),
+            )
+            element_images["image"]["all"] = images
+            element_images["array"]["all"] = pd
+        except Exception:
+            logger.exception(f"Error computing persistent images for all elements")
+            images = {}
+            for dim in [0, 1, 2]:
+                im = np.zeros((pixels[0], pixels[1]))
+                im[:] = np.nan
+                images[dim] = im
+            pd = np.zeros((0, max(max_p) + 1))
+            pd[:] = np.nan
+
+            element_images["image"]["all"] = images
+            element_images["array"]["all"] = pd
 
     return element_images
 
@@ -189,7 +298,6 @@ def diagrams_to_bd_arrays(dgms):
     """Convert persistence diagram objects to persistence diagram arrays."""
     dgm_arrays = {}
     for dim, dgm in enumerate(dgms):
-
         if dgm:
             arr = np.array(
                 [[np.sqrt(dgm[i].birth), np.sqrt(dgm[i].death)] for i in range(len(dgm))]
@@ -222,7 +330,7 @@ def get_diagrams_for_structure(
     for element in elements:
         try:
             filtered_structure = filter_element(structure, element)
-            coords, weights = _coords_for_structure(
+            coords, weights, _elements = _coords_for_structure(
                 filtered_structure,
                 min_size=min_size,
                 periodic=periodic,
@@ -242,7 +350,7 @@ def get_diagrams_for_structure(
         element_dias[element] = arrays
 
     if compute_for_all_elements:
-        coords, weights = _coords_for_structure(
+        coords, weights, _elements = _coords_for_structure(
             structure,
             min_size=min_size,
             periodic=periodic,
@@ -274,7 +382,7 @@ def get_persistence_image_limits_for_structure(
         try:
             filtered_structure = filter_element(structure, element)
 
-            coords, weights = _coords_for_structure(
+            coords, weights, _elements = _coords_for_structure(
                 filtered_structure,
                 min_size=min_size,
                 periodic=periodic,
@@ -289,7 +397,7 @@ def get_persistence_image_limits_for_structure(
             pass
 
     if compute_for_all_elements:
-        coords, weights = _coords_for_structure(
+        coords, weights, _elements = _coords_for_structure(
             structure,
             min_size=min_size,
             periodic=periodic,

@@ -18,6 +18,7 @@ from ._tda_helpers import (
     get_persistence_image_limits_for_structure,
     get_persistent_images_for_structure,
 )
+from loguru import logger
 
 
 @operates_on_imolecule
@@ -146,8 +147,8 @@ class PHImage(MOFBaseFeaturizer):
         else:
             max_p = [max_p] * len(dimensions)
 
-        max_p_ = [0, 0, 0, 0]
-        max_b_ = [0, 0, 0, 0]
+        max_p_ = [0, 0, 0]
+        max_b_ = [0, 0, 0]
 
         for i, dim in enumerate(dimensions):
             max_p_[dim] = max_p[i]
@@ -163,18 +164,19 @@ class PHImage(MOFBaseFeaturizer):
 
         super().__init__(primitive=primitive)
 
-    def get_birth_persistance_death_from_pixel(self, x, y):
+    def get_birth_persistance_death_from_pixel(self, dimension: int, x: int, y: int):
         """Get birth, persistence, and death from pixel coordinates.
 
         Args:
+            dimension (int): Dimension of the topological feature.
             x (int): x coordinate.
             y (int): y coordinate.
 
         Returns:
             Tuple[float, float, float]: Birth, persistence, and death.
         """
-        birth_values = np.linspace(0, self.max_b[0], self.image_size[0])
-        persistance_values = np.linspace(0, self.max_p[0], self.image_size[1])
+        birth_values = np.linspace(0, self.max_b[dimension], self.image_size[0])
+        persistance_values = np.linspace(0, self.max_p[dimension], self.image_size[1])
 
         return birth_values[x], persistance_values[y], birth_values[x] + persistance_values[y]
 
@@ -190,6 +192,68 @@ class PHImage(MOFBaseFeaturizer):
                         labels.append(f"phimage_{element}_{dim}_{pixel_a}_{pixel_b}")
 
         return labels
+
+    def find_relevant_persistance_diagram_point(
+        self,
+        structure: Structure,
+        dimension: int,
+        birth: float,
+        persistance: float,
+        elements: str = "all",
+    ):
+        """Find the point on the persistence diagram that is closest to the given birth and persistence values."""
+        from mofdscribe.featurizers.utils.substructures import filter_element
+        from mofdscribe.featurizers.topology._tda_helpers import (
+            _coords_for_structure,
+            _pd_arrays_from_coords,
+        )
+
+        if elements != "all":
+            structure = filter_element(structure, elements)
+        coords, _weights, _elements = _coords_for_structure(
+            structure,
+            min_size=self.min_size,
+            periodic=self.periodic,
+            no_supercell=self.no_supercell,
+            weighting=self.alpha_weight,
+        )
+        pd = _pd_arrays_from_coords(coords, periodic=self.periodic)
+        diagram = pd[f"dim{dimension}"]
+
+        birth = pd["dim1"]["birth"]
+        persistance = pd["dim1"]["death"] - pd["dim1"]["birth"]
+
+        if len(diagram) == 0:
+            return None
+
+        distances = np.sqrt((diagram["birth"] - birth) ** 2 + (diagram["death"] - persistance) ** 2)
+        index = np.argmin(distances)
+        return diagram[index]
+
+    def find_relevant_substructure(
+        self, structure: Structure, elements: str, dimension: int, birth, persistance
+    ):
+        """Find the substructure that matches a representative cycle for the point on the persistence diagram that is closest to the given birth and persistence values."""
+
+        from cyclonysus import Cycler
+        from mofdscribe.featurizers.utils.substructures import filter_element
+        from mofdscribe.featurizers.topology._tda_helpers import (
+            _coords_for_structure,
+            _pd_arrays_from_coords,
+        )
+
+        if elements != "all":
+            structure = filter_element(structure, elements)
+        coords, _weights, _elements = _coords_for_structure(
+            structure,
+            min_size=self.min_size,
+            periodic=self.periodic,
+            no_supercell=self.no_supercell,
+            weighting=self.alpha_weight,
+        )
+
+        cycler = Cycler(dimension)
+        cycler.fit(coords)
 
     def feature_labels(self) -> List[str]:
         return self._get_feature_labels()
@@ -217,8 +281,8 @@ class PHImage(MOFBaseFeaturizer):
             elements.append("all")
         for element in elements:
             for dim in self.dimensions:
-
                 features.append(np.array(results["image"][element][dim]).flatten())
+
         return np.concatenate(features)
 
     def _fit(self, structures: List[Union[Structure, IStructure, Molecule, IMolecule]]) -> None:
