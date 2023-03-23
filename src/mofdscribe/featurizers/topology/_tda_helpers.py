@@ -8,7 +8,9 @@ from element_coder import encode_many
 from loguru import logger
 from pymatgen.core import Structure
 from pymatgen.transformations.advanced_transformations import CubicSupercellTransformation
+from tqdm import tqdm
 
+from mofdscribe.featurizers.utils import flat
 from mofdscribe.featurizers.utils.aggregators import MA_ARRAY_AGGREGATORS
 from mofdscribe.featurizers.utils.substructures import filter_element
 
@@ -18,6 +20,37 @@ def construct_pds_cached(coords, periodic=False, weights: Optional[Collection] =
     from moleculetda.construct_pd import construct_pds
 
     return construct_pds(coords, periodic=periodic, weights=weights)
+
+
+def _get_homology_generators(
+    filtration, persistence: Optional["dionysus._dionysus.ReducedMatrix"] = None
+) -> dict:
+    import dionysus as d
+    from moleculetda.construct_pd import get_persistence
+
+    if persistence is None:
+        persistence = get_persistence(filtration)
+
+    homology_generators = defaultdict(lambda: defaultdict(list))
+
+    for i, c in tqdm(enumerate(persistence), total=len(persistence)):
+        try:
+            dim = len(list(filtration[i])) - 1
+
+            death = filtration[i].data
+            points_a = list(filtration[i])
+            points_b = [list(filtration[x.index]) for x in c]
+            data_b = [filtration[x.index].data for x in c]
+            birth = data_b[-1]
+
+            all_points = points_a + points_b
+            all_points = list(set(flat(all_points)))
+            if birth < death:
+                homology_generators[dim][(birth, death)].append(all_points)
+        except Exception as e:
+            pass
+
+    return homology_generators
 
 
 def make_supercell(

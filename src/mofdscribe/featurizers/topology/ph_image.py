@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
-"""Implements persistent homology images"""
+"""Implements persistent homology images."""
 from collections import defaultdict
 from typing import List, Optional, Tuple, Union
 
 import numpy as np
+from loguru import logger
 from pymatgen.core import IMolecule, IStructure, Molecule, Structure
 
 from mofdscribe.featurizers.base import MOFBaseFeaturizer
@@ -18,7 +19,6 @@ from ._tda_helpers import (
     get_persistence_image_limits_for_structure,
     get_persistent_images_for_structure,
 )
-from loguru import logger
 
 
 @operates_on_imolecule
@@ -200,13 +200,24 @@ class PHImage(MOFBaseFeaturizer):
         birth: float,
         persistance: float,
         elements: str = "all",
-    ):
-        """Find the point on the persistence diagram that is closest to the given birth and persistence values."""
-        from mofdscribe.featurizers.utils.substructures import filter_element
+    ) -> Tuple[float, float, float]:
+        """Find the point on the persistence diagram that is closest to the given birth and persistence values.
+
+        Args:
+            structure (Structure): Input structure.
+            dimension (int): Dimension of the topological feature.
+            birth (float): Birth time.
+            persistance (float): Persistence.
+            elements (str, optional): Element to compute the persistence diagram for. Defaults to "all".
+
+        Returns:
+            Tuple[float, float, float]: Birth, persistence, and death.
+        """
         from mofdscribe.featurizers.topology._tda_helpers import (
             _coords_for_structure,
             _pd_arrays_from_coords,
         )
+        from mofdscribe.featurizers.utils.substructures import filter_element
 
         if elements != "all":
             structure = filter_element(structure, elements)
@@ -227,24 +238,42 @@ class PHImage(MOFBaseFeaturizer):
             return None
 
         distances = np.sqrt((diagram["birth"] - birth) ** 2 + (diagram["death"] - persistance) ** 2)
-        index = np.argmin(distances)
-        return diagram[index]
+
+        min_index = np.argmin(distances)
+
+        logger.info(
+            f"Minimum distance: {np.min(distances)}. Expected birth: {birth}, persistance: {persistance}, found birth: {diagram[min_index]['birth']}, persistance: {diagram[min_index]['death'] - diagram[min_index]['birth']} "
+        )
+
+        return diagram[min_index]
 
     def find_relevant_substructure(
         self, structure: Structure, elements: str, dimension: int, birth, persistance
-    ):
-        """Find the substructure that matches a representative cycle for the point on the persistence diagram that is closest to the given birth and persistence values."""
+    ) -> List[Molecule]:
+        """Find the substructure that matches a homology generator for the point on the persistence diagram that is closest to the given birth and persistence values.
 
-        from cyclonysus import Cycler
-        from mofdscribe.featurizers.utils.substructures import filter_element
+        Args:
+            structure (Structure): Structure to find the substructure in.
+            elements (str): Element to find the substructure for.
+            dimension (int): Dimension of the homology generator.
+            birth (float): Birth of the homology generator.
+            persistance (float): Persistence of the homology generator.
+
+        Returns:
+            List[Molecule]: List of substructures that match the homology generator.
+        """
+        import dionysus as d
+        from moleculetda.construct_pd import get_alpha_shapes, get_persistence
+
         from mofdscribe.featurizers.topology._tda_helpers import (
             _coords_for_structure,
-            _pd_arrays_from_coords,
+            _get_homology_generators,
         )
+        from mofdscribe.featurizers.utils.substructures import filter_element
 
         if elements != "all":
             structure = filter_element(structure, elements)
-        coords, _weights, _elements = _coords_for_structure(
+        coords, _weights, species = _coords_for_structure(
             structure,
             min_size=self.min_size,
             periodic=self.periodic,
@@ -252,8 +281,33 @@ class PHImage(MOFBaseFeaturizer):
             weighting=self.alpha_weight,
         )
 
-        cycler = Cycler(dimension)
-        cycler.fit(coords)
+        f = get_alpha_shapes(coords, True, periodic=False)
+        f = d.Filtration(f)
+        m = get_persistence(f)
+
+        homology_generators = _get_homology_generators(f, m)
+
+        point = self.find_relevant_persistance_diagram_point(
+            structure=structure,
+            dimension=dimension,
+            birth=birth,
+            persistance=persistance,
+            elements=elements,
+        )
+
+        generators = homology_generators[dimension][(point["birth"], point["death"])]
+
+        molecules = []
+
+        for generator in generators:
+            molecules.append(
+                Molecule(
+                    species[generator],
+                    coords[generator],
+                )
+            )
+
+        return molecules
 
     def feature_labels(self) -> List[str]:
         return self._get_feature_labels()
