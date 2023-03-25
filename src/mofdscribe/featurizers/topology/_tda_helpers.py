@@ -4,6 +4,7 @@ from collections import defaultdict
 from typing import Collection, Dict, List, Optional, Tuple
 
 import numpy as np
+import pandas as pd
 from element_coder import encode_many
 from loguru import logger
 from pymatgen.core import Structure
@@ -22,35 +23,61 @@ def construct_pds_cached(coords, periodic=False, weights: Optional[Collection] =
     return construct_pds(coords, periodic=periodic, weights=weights)
 
 
-def _get_homology_generators(
-    filtration, persistence: Optional["dionysus._dionysus.ReducedMatrix"] = None
-) -> dict:
+# def _get_homology_generators(
+#     filtration, persistence: Optional["dionysus._dionysus.ReducedMatrix"] = None
+# ) -> dict:
+#     import dionysus as d
+#     from moleculetda.construct_pd import get_persistence
+
+#     if persistence is None:
+#         persistence = get_persistence(filtration)
+
+#     homology_generators = defaultdict(lambda: defaultdict(list))
+
+#     for i, c in tqdm(enumerate(persistence), total=len(persistence)):
+#         try:
+
+
+#             death = filtration[i].data
+#             points_a = list(filtration[i])
+#             points_b = [list(filtration[x.index]) for x in c]
+#             dim = len(points_b[-1]) - 1
+#             data_b = [filtration[x.index].data for x in c]
+#             birth = data_b[-1]
+
+#             all_points = points_a + points_b
+#             all_points = list(set(flat(all_points)))
+#             if birth < death:
+#                 homology_generators[dim][(birth, death)].append(all_points)
+#         except Exception as e:
+#             pass
+
+#     return homology_generators
+
+
+def _get_representative_cycles(filtration, persistence, dimension):
     import dionysus as d
-    from moleculetda.construct_pd import get_persistence
+    from moleculetda.vectorize_pds import diagrams_to_arrays
 
-    if persistence is None:
-        persistence = get_persistence(filtration)
+    def data_representation_of_cycle(filtration, cycle):
+        return np.array(flat([list(filtration[s.index]) for s in cycle]))
 
-    homology_generators = defaultdict(lambda: defaultdict(list))
+    diagrams = d.init_diagrams(persistence, filtration)
+    diagram = diagrams[dimension]
+    cycles = {}
 
-    for i, c in tqdm(enumerate(persistence), total=len(persistence)):
-        try:
-            dim = len(list(filtration[i])) - 1
+    intervals = sorted(diagram, key=lambda d: d.death - d.birth, reverse=True)
 
-            death = filtration[i].data
-            points_a = list(filtration[i])
-            points_b = [list(filtration[x.index]) for x in c]
-            data_b = [filtration[x.index].data for x in c]
-            birth = data_b[-1]
+    for interval in intervals:
+        if persistence.pair(interval.data) != persistence.unpaired:
+            cycle_raw = persistence[persistence.pair(interval.data)]
 
-            all_points = points_a + points_b
-            all_points = list(set(flat(all_points)))
-            if birth < death:
-                homology_generators[dim][(birth, death)].append(all_points)
-        except Exception as e:
-            pass
+            # Break dionysus iterator representation so it becomes a list
+            cycle = [s for s in cycle_raw]
+            cycle = data_representation_of_cycle(filtration, cycle)
+            cycles[interval.data] = cycle
 
-    return homology_generators
+    return cycles
 
 
 def make_supercell(
@@ -150,7 +177,10 @@ def _coords_for_structure(
                 return coords_w_weight[:, :-1], coords_w_weight[:, -1], elements
             else:
                 sc, elements = make_supercell(
-                    structure.cart_coords, structure.lattice.matrix, min_size
+                    structure.cart_coords,
+                    structure.lattice.matrix,
+                    min_size,
+                    elements=structure.species,
                 )
                 return (
                     sc,

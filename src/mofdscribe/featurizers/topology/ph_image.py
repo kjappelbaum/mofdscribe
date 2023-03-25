@@ -193,81 +193,28 @@ class PHImage(MOFBaseFeaturizer):
 
         return labels
 
-    def find_relevant_persistance_diagram_point(
-        self,
-        structure: Structure,
-        dimension: int,
-        birth: float,
-        persistance: float,
-        elements: str = "all",
-    ) -> Tuple[float, float, float]:
-        """Find the point on the persistence diagram that is closest to the given birth and persistence values.
-
-        Args:
-            structure (Structure): Input structure.
-            dimension (int): Dimension of the topological feature.
-            birth (float): Birth time.
-            persistance (float): Persistence.
-            elements (str, optional): Element to compute the persistence diagram for. Defaults to "all".
-
-        Returns:
-            Tuple[float, float, float]: Birth, persistence, and death.
-        """
-        from mofdscribe.featurizers.topology._tda_helpers import (
-            _coords_for_structure,
-            _pd_arrays_from_coords,
-        )
-        from mofdscribe.featurizers.utils.substructures import filter_element
-
-        if elements != "all":
-            structure = filter_element(structure, elements)
-        coords, _weights, _elements = _coords_for_structure(
-            structure,
-            min_size=self.min_size,
-            periodic=self.periodic,
-            no_supercell=self.no_supercell,
-            weighting=self.alpha_weight,
-        )
-        pd = _pd_arrays_from_coords(coords, periodic=self.periodic)
-        diagram = pd[f"dim{dimension}"]
-
-        birth = pd["dim1"]["birth"]
-        persistance = pd["dim1"]["death"] - pd["dim1"]["birth"]
-
-        if len(diagram) == 0:
-            return None
-
-        distances = np.sqrt((diagram["birth"] - birth) ** 2 + (diagram["death"] - persistance) ** 2)
-
-        min_index = np.argmin(distances)
-
-        logger.info(
-            f"Minimum distance: {np.min(distances)}. Expected birth: {birth}, persistance: {persistance}, found birth: {diagram[min_index]['birth']}, persistance: {diagram[min_index]['death'] - diagram[min_index]['birth']} "
-        )
-
-        return diagram[min_index]
-
     def find_relevant_substructure(
         self, structure: Structure, elements: str, dimension: int, birth, persistance
     ) -> List[Molecule]:
-        """Find the substructure that matches a homology generator for the point on the persistence diagram that is closest to the given birth and persistence values.
+        """Find the substructure that matches a representative cycle for the point on the persistence diagram that is closest to the given birth and persistence values.
 
         Args:
             structure (Structure): Structure to find the substructure in.
             elements (str): Element to find the substructure for.
             dimension (int): Dimension of the homology generator.
             birth (float): Birth of the homology generator.
-            persistance (float): Persistence of the homology generator.
+            persistance (float): Persistence of the representative cycle.
 
         Returns:
-            List[Molecule]: List of substructures that match the homology generator.
+            Molecule: Representative substructure.
         """
         import dionysus as d
         from moleculetda.construct_pd import get_alpha_shapes, get_persistence
+        from moleculetda.vectorize_pds import diagrams_to_arrays
 
         from mofdscribe.featurizers.topology._tda_helpers import (
             _coords_for_structure,
-            _get_homology_generators,
+            _get_representative_cycles,
         )
         from mofdscribe.featurizers.utils.substructures import filter_element
 
@@ -285,29 +232,23 @@ class PHImage(MOFBaseFeaturizer):
         f = d.Filtration(f)
         m = get_persistence(f)
 
-        homology_generators = _get_homology_generators(f, m)
+        cycles = _get_representative_cycles(f, m, dimension)
 
-        point = self.find_relevant_persistance_diagram_point(
-            structure=structure,
-            dimension=dimension,
-            birth=birth,
-            persistance=persistance,
-            elements=elements,
+        dgms = diagrams_to_arrays(d.init_diagrams(m, f))
+        diagram = dgms[f"dim{dimension}"]
+        distances = np.sqrt((diagram["birth"] - birth) ** 2 + (diagram["death"] - persistance) ** 2)
+
+        min_index = np.argmin(distances)
+        point = diagram[min_index]
+
+        cycle = cycles[point[-1]]
+
+        molecule = Molecule(
+            species[cycle],
+            coords[cycle],
         )
 
-        generators = homology_generators[dimension][(point["birth"], point["death"])]
-
-        molecules = []
-
-        for generator in generators:
-            molecules.append(
-                Molecule(
-                    species[generator],
-                    coords[generator],
-                )
-            )
-
-        return molecules
+        return molecule
 
     def feature_labels(self) -> List[str]:
         return self._get_feature_labels()
