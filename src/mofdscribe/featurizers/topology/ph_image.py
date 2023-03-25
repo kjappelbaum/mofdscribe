@@ -4,7 +4,6 @@ from collections import defaultdict
 from typing import List, Optional, Tuple, Union
 
 import numpy as np
-from loguru import logger
 from pymatgen.core import IMolecule, IStructure, Molecule, Structure
 
 from mofdscribe.featurizers.base import MOFBaseFeaturizer
@@ -196,7 +195,9 @@ class PHImage(MOFBaseFeaturizer):
     def find_relevant_substructure(
         self, structure: Structure, elements: str, dimension: int, birth, persistance
     ) -> List[Molecule]:
-        """Find the substructure that matches a representative cycle for the point on the persistence diagram that is closest to the given birth and persistence values.
+        """Find the substructure that matches a representative cycle
+        for the point on the persistence diagram
+        that is closest to the given birth and persistence values.
 
         Args:
             structure (Structure): Structure to find the substructure in.

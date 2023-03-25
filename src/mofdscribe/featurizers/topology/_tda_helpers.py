@@ -4,12 +4,10 @@ from collections import defaultdict
 from typing import Collection, Dict, List, Optional, Tuple
 
 import numpy as np
-import pandas as pd
 from element_coder import encode_many
 from loguru import logger
 from pymatgen.core import Structure
 from pymatgen.transformations.advanced_transformations import CubicSupercellTransformation
-from tqdm import tqdm
 
 from mofdscribe.featurizers.utils import flat
 from mofdscribe.featurizers.utils.aggregators import MA_ARRAY_AGGREGATORS
@@ -57,7 +55,6 @@ def construct_pds_cached(coords, periodic=False, weights: Optional[Collection] =
 
 def _get_representative_cycles(filtration, persistence, dimension):
     import dionysus as d
-    from moleculetda.vectorize_pds import diagrams_to_arrays
 
     def data_representation_of_cycle(filtration, cycle):
         return np.array(flat([list(filtration[s.index]) for s in cycle]))
@@ -89,6 +86,7 @@ def make_supercell(
 ) -> np.ndarray:
     """
     Generate cubic supercell of a given size.
+
     Args:
         coords (np.ndarray): matrix of xyz coordinates of the system
         lattice (Tuple[np.array]): lattice vectors of the system
@@ -96,10 +94,10 @@ def make_supercell(
             If None, will create a list of 'X' of the same length as coords
         size (float): dimension size of cubic cell, e.g., 10x10x10
         min_size (float): minimum axes size to keep negative xyz coordinates from the original cell
+
     Returns:
         new_cell: supercell array
     """
-
     # handle potential weights that we want to carry over but not change
     a, b, c = lattice
 
@@ -123,7 +121,8 @@ def make_supercell(
                 xyz_periodic_copies.append(coords + add_vector)
                 assert len(elements) == len(
                     coords
-                ), f"Elements and coordinates are not the same length. Found {len(coords)} coordinates and {len(elements)} elements."
+                ), f"Elements and coordinates are not the same length. \
+                    Found {len(coords)} coordinates and {len(elements)} elements."
                 element_copies.append(np.array(elements).reshape(-1, 1))
 
     # Combine into one array
@@ -132,7 +131,8 @@ def make_supercell(
     element_periodic_total = np.vstack(element_copies)
     assert len(xyz_periodic_total) == len(
         element_periodic_total
-    ), f"Elements and coordinates are not the same length. Found {len(xyz_periodic_total)} coordinates and {len(element_periodic_total)} elements."
+    ), f"Elements and coordinates are not the same length. \
+        Found {len(xyz_periodic_total)} coordinates and {len(element_periodic_total)} elements."
     # Filter out all atoms outside of the cubic box
     filter_a = np.max(xyz_periodic_total, axis=1) < size
     new_cell = xyz_periodic_total[filter_a]
@@ -269,7 +269,6 @@ def get_persistent_images_for_structure(
         persistent_images (dict): dictionary of persistent images and their
             barcode representations
     """
-
     element_images: Dict[dict] = defaultdict(dict)
     specs = []
     for mb, mp in zip(max_b, max_p):
@@ -284,10 +283,10 @@ def get_persistent_images_for_structure(
                 no_supercell=no_supercell,
                 weighting=alpha_weighting,
             )
-            pd = _pd_arrays_from_coords(coords, periodic=periodic)
+            persistent_dia = _pd_arrays_from_coords(coords, periodic=periodic)
 
             images = get_images(
-                pd,
+                persistent_dia,
                 spread=spread,
                 weighting=weighting,
                 pixels=pixels,
@@ -301,12 +300,12 @@ def get_persistent_images_for_structure(
                 im = np.zeros((pixels[0], pixels[1]))
                 im[:] = np.nan
                 images[dim] = im
-            pd = np.zeros((0, max(max_p) + 1))
-            pd[:] = np.nan
+            persistent_dia = np.zeros((0, max(max_p) + 1))
+            persistent_dia[:] = np.nan
 
         # ToDo: make sure that we have the correct length
         element_images["image"][element] = images
-        element_images["array"][element] = pd
+        element_images["array"][element] = persistent_dia
 
     if compute_for_all_elements:
         try:
@@ -317,10 +316,10 @@ def get_persistent_images_for_structure(
                 no_supercell=no_supercell,
                 weighting=alpha_weighting,
             )
-            pd = _pd_arrays_from_coords(coords, periodic=periodic)
+            persistent_dia = _pd_arrays_from_coords(coords, periodic=periodic)
 
             images = get_images(
-                pd,
+                persistent_dia,
                 spread=spread,
                 weighting=weighting,
                 pixels=pixels,
@@ -328,19 +327,19 @@ def get_persistent_images_for_structure(
                 dimensions=(0, 1, 2),
             )
             element_images["image"]["all"] = images
-            element_images["array"]["all"] = pd
+            element_images["array"]["all"] = persistent_dia
         except Exception:
-            logger.exception(f"Error computing persistent images for all elements")
+            logger.exception("Error computing persistent images for all elements")
             images = {}
             for dim in [0, 1, 2]:
                 im = np.zeros((pixels[0], pixels[1]))
                 im[:] = np.nan
                 images[dim] = im
-            pd = np.zeros((0, max(max_p) + 1))
-            pd[:] = np.nan
+            persistent_dia = np.zeros((0, max(max_p) + 1))
+            persistent_dia[:] = np.nan
 
             element_images["image"]["all"] = images
-            element_images["array"]["all"] = pd
+            element_images["array"]["all"] = persistent_dia
 
     return element_images
 

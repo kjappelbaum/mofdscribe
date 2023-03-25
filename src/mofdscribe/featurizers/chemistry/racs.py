@@ -49,7 +49,6 @@ def _compute_racs(
                 site = structure_graph.structure[start_atom]
 
                 for neighbor in neighbors:
-
                     n = structure_graph.structure[neighbor]
                     for prop in properties:
                         if prop in ("I", 1):

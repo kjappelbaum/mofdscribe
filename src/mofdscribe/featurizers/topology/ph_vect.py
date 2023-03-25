@@ -71,7 +71,6 @@ def _fit_transform_structures(
             if len(diagrams[element][dim]) == 0:
                 raise ValueError(f"{element} dimension {dim} has no diagrams")
             try:
-
                 results[element][dim] = _apply_and_fill(
                     transformer.fit_transform, diagrams[element][dim]
                 )
@@ -118,7 +117,6 @@ def _transform_structures(
 
     for element, element_transformers in transformers.items():
         for dim, transformer in element_transformers.items():
-
             results[element][dim] = _apply_and_fill(
                 transformer.fit_transform, diagrams[element][dim]
             )
