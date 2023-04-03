@@ -192,11 +192,21 @@ class PHImage(MOFBaseFeaturizer):
 
         return labels
 
-    def find_relevant_substructure(
+    def find_relevant_substructure(self, structure, feature_name):
+        parts = feature_name.split("_")
+        # 'phimage_C-H-N-O_1_19_0'
+        dim = int(parts[2])
+        birth, persistance, death = self.get_birth_persistance_death_from_pixel(
+            dim, int(parts[4]), int(parts[3])
+        )
+        return self._find_relevant_substructure(structure, parts[1], dim, birth, persistance)
+
+    def _find_relevant_substructure(
         self, structure: Structure, elements: str, dimension: int, birth, persistance
     ) -> List[Molecule]:
-        """Find the substructure that matches a representative cycle
-        for the point on the persistence diagram
+        """Find the substructure that matches a representative cycle.
+
+        Done for the point on the persistence diagram
         that is closest to the given birth and persistence values.
 
         Args:
@@ -211,7 +221,6 @@ class PHImage(MOFBaseFeaturizer):
         """
         import dionysus as d
         from moleculetda.construct_pd import get_alpha_shapes, get_persistence
-        from moleculetda.vectorize_pds import diagrams_to_arrays
 
         from mofdscribe.featurizers.topology._tda_helpers import (
             _coords_for_structure,
@@ -220,7 +229,7 @@ class PHImage(MOFBaseFeaturizer):
         from mofdscribe.featurizers.utils.substructures import filter_element
 
         if elements != "all":
-            structure = filter_element(structure, elements)
+            structure = filter_element(structure, elements.split("-"))
         coords, _weights, species = _coords_for_structure(
             structure,
             min_size=self.min_size,
@@ -235,14 +244,26 @@ class PHImage(MOFBaseFeaturizer):
 
         cycles = _get_representative_cycles(f, m, dimension)
 
-        dgms = diagrams_to_arrays(d.init_diagrams(m, f))
-        diagram = dgms[f"dim{dimension}"]
-        distances = np.sqrt((diagram["birth"] - birth) ** 2 + (diagram["death"] - persistance) ** 2)
+        dgms = d.init_diagrams(m, f)
+        diagram = dgms[dimension]
+
+        births, deaths, persistances, indices = [], [], [], []
+        for interval in diagram:
+            births.append(interval.birth)
+            deaths.append(interval.death)
+            indices.append(interval.data)
+            persistances.append(interval.death - interval.birth)
+        births = np.array(births)
+        deaths = np.array(deaths)
+        indices = np.array(indices)
+        persistances = np.array(persistances)
+
+        distances = np.sqrt((births - birth) ** 2 + (persistances - persistance) ** 2)
 
         min_index = np.argmin(distances)
-        point = diagram[min_index]
+        point = indices[min_index]
 
-        cycle = cycles[point[-1]]
+        cycle = cycles[point]
 
         molecule = Molecule(
             species[cycle],
