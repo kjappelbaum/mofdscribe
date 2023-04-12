@@ -13,6 +13,18 @@ else:
     from collections import MutableMapping
 
 
+def flat(my_list: list) -> list:
+    if not my_list:
+        return my_list
+    f = my_list[0]
+    try:
+        p = [i for i in f]
+    except TypeError:
+        # f is not iterable, so put it in a list.
+        p = [f]
+    return p + flat(my_list[1:])
+
+
 def nan_array(size):
     return np.full(size, np.nan)
 

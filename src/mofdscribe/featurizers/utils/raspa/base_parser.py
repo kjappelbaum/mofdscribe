@@ -173,7 +173,6 @@ def parse_base_output(output_abs_path, system_name, ncomponents):  # noqa: C901
     result_dict = {"exceeded_walltime": False}
 
     with open(output_abs_path, "r") as fobj:
-
         # 1st parsing part: input settings
         # --------------------------------
         # from: start of file

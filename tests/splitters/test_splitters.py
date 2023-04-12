@@ -51,7 +51,6 @@ def test_hash_splitter(sample_frac):
     hs = HashSplitter(ds, hash_type="undecorated_scaffold_hash", sample_frac=sample_frac)
 
     for train, test in hs.k_fold(k=5):
-
         assert set(train) & set(test) == set()
 
         if sample_frac < 1:
@@ -71,7 +70,6 @@ def test_time_splitter():
     ts = TimeSplitter(ds)
 
     for train, test in ts.k_fold(k=5):
-
         assert set(train) & set(test) == set()
         assert len(set(list(train) + list(test))) == len(ds)
 
@@ -149,7 +147,6 @@ def test_cluster_splitter():
 
     fps = ClusterSplitter(ds, feature_names=FEATURES, n_pca_components=50)
     for train, test in fps.k_fold(k=5):
-
         assert len(set(list(train) + list(test))) == len(ds)
         assert set(train) & set(test) == set()
 
@@ -168,7 +165,6 @@ def test_cluster_stratified_splitter():
 
     fps = ClusterStratifiedSplitter(ds, feature_names=FEATURES, n_clusters=2, n_pca_components=50)
     for train, test in fps.k_fold(k=5):
-
         assert len(set(list(train) + list(test))) == len(ds)
         assert set(train) & set(test) == set()
 
@@ -199,7 +195,6 @@ def test_locov():
 
     fps = LOCOCV(ds, feature_names=FEATURES, n_pca_components=100)
     for train, test in fps.k_fold(k=5):
-
         assert len(set(list(train) + list(test))) == len(ds)
         assert set(train) & set(test) == set()
         assert len(train) > len(test)

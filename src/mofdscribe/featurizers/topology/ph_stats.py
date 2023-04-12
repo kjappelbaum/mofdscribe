@@ -122,7 +122,6 @@ class PHStats(MOFBaseFeaturizer):
         flat_results = []
         for atom_type in self.atom_types:
             for dim in self.dimensions:
-
                 dimname = f"dim{dim}"
                 stats = persistent_diagram_stats(
                     res[atom_type][dimname], self.aggregation_functions

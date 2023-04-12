@@ -103,7 +103,6 @@ class BUFeaturizer(BaseFeaturizer):
                 nodes = [boxed_molecule(node.molecule) for node in fragments.nodes]
 
         if mofbbs is not None:
-
             linkers = list(mofbbs.linkers) if mofbbs.linkers is not None else []
             nodes = list(mofbbs.nodes) if mofbbs.nodes is not None else []
             types = [type(node) for node in nodes] + [type(linker) for linker in linkers]

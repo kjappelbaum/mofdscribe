@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Implements persistent homology images"""
+"""Implements persistent homology images."""
 from collections import defaultdict
 from typing import List, Optional, Tuple, Union
 
@@ -146,8 +146,8 @@ class PHImage(MOFBaseFeaturizer):
         else:
             max_p = [max_p] * len(dimensions)
 
-        max_p_ = [0, 0, 0, 0]
-        max_b_ = [0, 0, 0, 0]
+        max_p_ = [0, 0, 0]
+        max_b_ = [0, 0, 0]
 
         for i, dim in enumerate(dimensions):
             max_p_[dim] = max_p[i]
@@ -163,6 +163,22 @@ class PHImage(MOFBaseFeaturizer):
 
         super().__init__(primitive=primitive)
 
+    def get_birth_persistance_death_from_pixel(self, dimension: int, x: int, y: int):
+        """Get birth, persistence, and death from pixel coordinates.
+
+        Args:
+            dimension (int): Dimension of the topological feature.
+            x (int): x coordinate.
+            y (int): y coordinate.
+
+        Returns:
+            Tuple[float, float, float]: Birth, persistence, and death.
+        """
+        birth_values = np.linspace(0, self.max_b[dimension], self.image_size[0])
+        persistance_values = np.linspace(0, self.max_p[dimension], self.image_size[1])
+
+        return birth_values[x], persistance_values[y], birth_values[x] + persistance_values[y]
+
     def _get_feature_labels(self) -> List[str]:
         labels = []
         _elements = list(self.atom_types)
@@ -175,6 +191,86 @@ class PHImage(MOFBaseFeaturizer):
                         labels.append(f"phimage_{element}_{dim}_{pixel_a}_{pixel_b}")
 
         return labels
+
+    def find_relevant_substructure(self, structure, feature_name):
+        parts = feature_name.split("_")
+        # 'phimage_C-H-N-O_1_19_0'
+        dim = int(parts[2])
+        birth, persistance, death = self.get_birth_persistance_death_from_pixel(
+            dim, int(parts[4]), int(parts[3])
+        )
+        return self._find_relevant_substructure(structure, parts[1], dim, birth, persistance)
+
+    def _find_relevant_substructure(
+        self, structure: Structure, elements: str, dimension: int, birth, persistance
+    ) -> List[Molecule]:
+        """Find the substructure that matches a representative cycle.
+
+        Done for the point on the persistence diagram
+        that is closest to the given birth and persistence values.
+
+        Args:
+            structure (Structure): Structure to find the substructure in.
+            elements (str): Element to find the substructure for.
+            dimension (int): Dimension of the homology generator.
+            birth (float): Birth of the homology generator.
+            persistance (float): Persistence of the representative cycle.
+
+        Returns:
+            Molecule: Representative substructure.
+        """
+        import dionysus as d
+        from moleculetda.construct_pd import get_alpha_shapes, get_persistence
+
+        from mofdscribe.featurizers.topology._tda_helpers import (
+            _coords_for_structure,
+            _get_representative_cycles,
+        )
+        from mofdscribe.featurizers.utils.substructures import filter_element
+
+        if elements != "all":
+            structure = filter_element(structure, elements.split("-"))
+        coords, _weights, species = _coords_for_structure(
+            structure,
+            min_size=self.min_size,
+            periodic=self.periodic,
+            no_supercell=self.no_supercell,
+            weighting=self.alpha_weight,
+        )
+
+        f = get_alpha_shapes(coords, True, periodic=False)
+        f = d.Filtration(f)
+        m = get_persistence(f)
+
+        cycles = _get_representative_cycles(f, m, dimension)
+
+        dgms = d.init_diagrams(m, f)
+        diagram = dgms[dimension]
+
+        births, deaths, persistances, indices = [], [], [], []
+        for interval in diagram:
+            births.append(interval.birth)
+            deaths.append(interval.death)
+            indices.append(interval.data)
+            persistances.append(interval.death - interval.birth)
+        births = np.array(births)
+        deaths = np.array(deaths)
+        indices = np.array(indices)
+        persistances = np.array(persistances)
+
+        distances = np.sqrt((births - birth) ** 2 + (persistances - persistance) ** 2)
+
+        min_index = np.argmin(distances)
+        point = indices[min_index]
+
+        cycle = cycles[point]
+
+        molecule = Molecule(
+            species[cycle],
+            coords[cycle],
+        )
+
+        return molecule
 
     def feature_labels(self) -> List[str]:
         return self._get_feature_labels()
@@ -202,8 +298,8 @@ class PHImage(MOFBaseFeaturizer):
             elements.append("all")
         for element in elements:
             for dim in self.dimensions:
-
                 features.append(np.array(results["image"][element][dim]).flatten())
+
         return np.concatenate(features)
 
     def _fit(self, structures: List[Union[Structure, IStructure, Molecule, IMolecule]]) -> None:
