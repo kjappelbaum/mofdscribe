@@ -35,6 +35,7 @@ class Substructure:
     supercell: Structure
     indices: List[int]
     molecule: Molecule
+    original_structure_indices: List[int]
 
     def __repr__(self) -> str:
         """Return string representation."""
@@ -249,17 +250,21 @@ class PHImage(MOFBaseFeaturizer):
         )
         from mofdscribe.featurizers.utils.substructures import filter_element
 
+        structure_ = Structure.from_sites(structure)
         if elements != "all":
-            structure = filter_element(structure, elements.split("-"))
-        coords, _weights, species = _coords_for_structure(
-            structure,
+            structure_indices = filter_element(structure_, elements.split("-"), return_indices=True)
+            structure_ = Structure.from_sites([structure_[i] for i in structure_indices])
+        else:
+            structure_indices = list(range(len(structure_)))
+        coords = _coords_for_structure(
+            structure_,
             min_size=self.min_size,
             periodic=self.periodic,
             no_supercell=self.no_supercell,
             weighting=self.alpha_weight,
         )
 
-        f = get_alpha_shapes(coords, True, periodic=False)
+        f = get_alpha_shapes(coords.coords, True, periodic=False)
         f = d.Filtration(f)
         m = get_persistence(f)
 
@@ -287,11 +292,22 @@ class PHImage(MOFBaseFeaturizer):
         cycle = cycles[point]
 
         molecule = Molecule(
-            species[cycle],
-            coords[cycle],
+            coords.elements[cycle],
+            coords.coords[cycle],
         )
 
-        sub = Substructure(structure, cycle, molecule)
+        relevant_superstructure_indices = [int(coords.orginal_indices[cyc]) for cyc in cycle]
+
+        relevant_superstructure_indices = list(set(relevant_superstructure_indices))
+        # now use the indices to map back to the original structure
+        original_structure_indices = [structure_indices[i] for i in relevant_superstructure_indices]
+
+        sub = Substructure(
+            Structure(coords.lattice, coords.elements, coords.coords),
+            cycle,
+            molecule,
+            original_structure_indices,
+        )
 
         return sub
 
