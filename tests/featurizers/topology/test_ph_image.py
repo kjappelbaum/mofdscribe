@@ -3,7 +3,7 @@
 import pytest
 
 from mofdscribe.featurizers.topology.ph_image import PHImage
-
+from pymatgen.core import Molecule
 from ..helpers import is_jsonable
 
 
@@ -35,6 +35,10 @@ def test_phimage(hkust_structure, irmof_structure, cof_structure, hkust_la_struc
     image_la = phi.featurize(hkust_la_structure)
     assert image_cu.shape == image_la.shape
     assert image_cu == pytest.approx(image_la, rel=1e-2)
+
+    # try to get relative substructure
+    subs = phi.find_relevant_substructure(hkust_structure, phi.feature_labels()[0])
+    assert isinstance(subs.molecule, Molecule)
 
 
 def test_phimage_fit(hkust_structure, irmof_structure):

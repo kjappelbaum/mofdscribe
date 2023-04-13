@@ -19,6 +19,27 @@ from ._tda_helpers import (
     get_persistent_images_for_structure,
 )
 
+from dataclasses import dataclass
+
+
+@dataclass
+class Substructure:
+    """Substructure object.
+
+    Attributes:
+        supercell (Structure): Supercell that contains the substructure.
+        indices (List[int]): Indices of atoms in the substructure.
+        molecule (Molecule): Molecule object of the substructure.
+    """
+
+    supercell: Structure
+    indices: List[int]
+    molecule: Molecule
+
+    def __repr__(self) -> str:
+        """Return string representation."""
+        return f"Substructure(supercell={self.supercell}, indices={self.indices}, molecule={self.molecule})"
+
 
 @operates_on_imolecule
 @operates_on_molecule
@@ -63,13 +84,13 @@ class PHImage(MOFBaseFeaturizer):
         ),
         dimensions: Tuple[int] = (0, 1, 2),
         compute_for_all_elements: bool = True,
-        min_size: int = 20,
+        min_size: int = 50,
         image_size: Tuple[int] = (20, 20),
         spread: float = 0.2,
         weight: str = "identity",
         max_b: Union[int, List[int]] = 18,
         max_p: Union[int, List[int]] = 18,
-        max_fit_tolerence: float = 0.1,
+        max_fit_tolerance: float = 0.1,
         periodic: bool = False,
         no_supercell: bool = False,
         primitive: bool = False,
@@ -104,7 +125,7 @@ class PHImage(MOFBaseFeaturizer):
                 Defaults to 18.
             max_p (Union[int, List[int]]): Maximum
                 persistence. Defaults to 18.
-            max_fit_tolerence (float): If
+            max_fit_tolerance (float): If
                 `fit` method is used to find the limits of the persistent images,
                 one can appy a tolerance on the the found limits. The maximum
                 will then be max + max_fit_tolerance * max. Defaults to 0.1.
@@ -156,7 +177,7 @@ class PHImage(MOFBaseFeaturizer):
         self.max_b = max_b_
         self.max_p = max_p_
 
-        self.max_fit_tolerance = max_fit_tolerence
+        self.max_fit_tolerance = max_fit_tolerance
         self.periodic = periodic
         self.no_supercell = no_supercell
         self.alpha_weight = alpha_weight
@@ -192,7 +213,7 @@ class PHImage(MOFBaseFeaturizer):
 
         return labels
 
-    def find_relevant_substructure(self, structure, feature_name):
+    def find_relevant_substructure(self, structure: Structure, feature_name: str) -> Substructure:
         parts = feature_name.split("_")
         # 'phimage_C-H-N-O_1_19_0'
         dim = int(parts[2])
@@ -217,7 +238,7 @@ class PHImage(MOFBaseFeaturizer):
             persistance (float): Persistence of the representative cycle.
 
         Returns:
-            Molecule: Representative substructure.
+            Substructure: Representative substructure.
         """
         import dionysus as d
         from moleculetda.construct_pd import get_alpha_shapes, get_persistence
@@ -270,7 +291,9 @@ class PHImage(MOFBaseFeaturizer):
             coords[cycle],
         )
 
-        return molecule
+        sub = Substructure(structure, cycle, molecule)
+
+        return sub
 
     def feature_labels(self) -> List[str]:
         return self._get_feature_labels()
@@ -312,8 +335,9 @@ class PHImage(MOFBaseFeaturizer):
             structures (List[Union[Structure, IStructure, Molecule, IMolecule]]): List of structures
                 to find the limits for.
         """
-        limits = defaultdict(list)
 
+        limits = defaultdict(list)
+        structures = [Structure.from_sites(s.sites) for s in structures]
         for structure in structures:
             lim = get_persistence_image_limits_for_structure(
                 structure,
@@ -324,13 +348,14 @@ class PHImage(MOFBaseFeaturizer):
                 no_supercell=self.no_supercell,
                 alpha_weighting=self.alpha_weight,
             )
+            print("Limits", lim)
             for k, v in lim.items():
                 limits[k].extend(v)
 
         # birth min, max persistence min, max
         maxp = []
         maxb = []
-
+        print("Limits", limits)
         for _, v in limits.items():
             v = np.array(v)
             mb = np.max(v[:, 1])

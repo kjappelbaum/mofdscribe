@@ -104,19 +104,20 @@ def make_supercell(
     xyz_periodic_copies = []
     element_copies = []
 
-    # xyz_periodic_copies.append(coords)
-    # element_copies.append(np.array(elements).reshape(-1,1))
-    min_range = -3  # we aren't going in the minimum direction too much, so can make this small
-    max_range = 20  # make this large enough, but can modify if wanting an even larger cell
+    a_length = np.linalg.norm(a)
+    b_length = np.linalg.norm(b)
+    c_length = np.linalg.norm(c)
+
+    max_ranges = [int(size / a_length), int(size / b_length), int(size / c_length)]
+    # make sure we have at least one copy in each direction
+    max_ranges = [max(x, 1) for x in max_ranges]
 
     if elements is None:
         elements = ["X"] * len(coords)
 
-    for x in range(-min_range, max_range):
-        for y in range(0, max_range):
-            for z in range(0, max_range):
-                if x == y == z == 0:
-                    continue
+    for x in range(0, max_ranges[0]):
+        for y in range(0, max_ranges[1]):
+            for z in range(0, max_ranges[2]):
                 add_vector = x * a + y * b + z * c
                 xyz_periodic_copies.append(coords + add_vector)
                 assert len(elements) == len(
@@ -145,7 +146,7 @@ def make_supercell(
 
 def _coords_for_structure(
     structure: Structure,
-    min_size: int = 50,
+    min_size: int = 100,
     periodic: bool = False,
     no_supercell: bool = False,
     weighting: Optional[str] = None,
@@ -172,14 +173,14 @@ def _coords_for_structure(
                 coords_w_weight, elements = make_supercell(
                     np.hstack([structure.cart_coords, weighting_arr.reshape(-1, 1)]),
                     structure.lattice.matrix,
-                    min_size,
+                    size=min_size,
                 )
                 return coords_w_weight[:, :-1], coords_w_weight[:, -1], elements
             else:
                 sc, elements = make_supercell(
                     structure.cart_coords,
                     structure.lattice.matrix,
-                    min_size,
+                    size=min_size,
                     elements=structure.species,
                 )
                 return (
@@ -434,7 +435,7 @@ def get_persistence_image_limits_for_structure(
     structure: Structure,
     elements: List[List[str]],
     compute_for_all_elements: bool = True,
-    min_size: int = 20,
+    min_size: int = 100,
     periodic: bool = False,
     no_supercell: bool = False,
     alpha_weighting: Optional[str] = None,
@@ -443,7 +444,6 @@ def get_persistence_image_limits_for_structure(
     for element in elements:
         try:
             filtered_structure = filter_element(structure, element)
-
             coords, weights, _elements = _coords_for_structure(
                 filtered_structure,
                 min_size=min_size,
