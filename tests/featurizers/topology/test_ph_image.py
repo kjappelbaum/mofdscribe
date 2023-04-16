@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 """Test the PH image featurizer."""
 import pytest
+from pymatgen.core import Molecule
 
 from mofdscribe.featurizers.topology.ph_image import PHImage
-from pymatgen.core import Molecule
+
 from ..helpers import is_jsonable
 
 

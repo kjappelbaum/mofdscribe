@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """Implements persistent homology images."""
 from collections import defaultdict
+from dataclasses import dataclass
 from typing import List, Optional, Tuple, Union
 
 import numpy as np
@@ -18,8 +19,6 @@ from ._tda_helpers import (
     get_persistence_image_limits_for_structure,
     get_persistent_images_for_structure,
 )
-
-from dataclasses import dataclass
 
 
 @dataclass
@@ -291,13 +290,25 @@ class PHImage(MOFBaseFeaturizer):
 
         cycle = cycles[point]
 
+        coords_cycle = coords.coords[cycle]
+        elements_cycle = coords.elements[cycle]
+
+        already_seen_coords = set()
+        unique_coords = []
+        unique_elements = []
+
+        for i, coord in enumerate(coords_cycle):
+            if tuple(coord) not in already_seen_coords:
+                already_seen_coords.add(tuple(coord))
+                unique_coords.append(coord)
+                unique_elements.append(elements_cycle[i])
+
         molecule = Molecule(
-            coords.elements[cycle],
-            coords.coords[cycle],
+            unique_elements,
+            unique_coords,
         )
 
         relevant_superstructure_indices = [int(coords.orginal_indices[cyc]) for cyc in cycle]
-
         relevant_superstructure_indices = list(set(relevant_superstructure_indices))
         # now use the indices to map back to the original structure
         original_structure_indices = [structure_indices[i] for i in relevant_superstructure_indices]
@@ -351,7 +362,6 @@ class PHImage(MOFBaseFeaturizer):
             structures (List[Union[Structure, IStructure, Molecule, IMolecule]]): List of structures
                 to find the limits for.
         """
-
         limits = defaultdict(list)
         structures = [Structure.from_sites(s.sites) for s in structures]
         for structure in structures:
@@ -364,14 +374,12 @@ class PHImage(MOFBaseFeaturizer):
                 no_supercell=self.no_supercell,
                 alpha_weighting=self.alpha_weight,
             )
-            print("Limits", lim)
             for k, v in lim.items():
                 limits[k].extend(v)
 
         # birth min, max persistence min, max
         maxp = []
         maxb = []
-        print("Limits", limits)
         for _, v in limits.items():
             v = np.array(v)
             mb = np.max(v[:, 1])

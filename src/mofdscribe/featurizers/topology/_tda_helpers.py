@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """Utlities for working with persistence diagrams."""
 from collections import defaultdict
+from dataclasses import dataclass
 from typing import Collection, Dict, List, Optional, Tuple
 
 import numpy as np
@@ -12,7 +13,6 @@ from pymatgen.transformations.advanced_transformations import CubicSupercellTran
 from mofdscribe.featurizers.utils import flat
 from mofdscribe.featurizers.utils.aggregators import MA_ARRAY_AGGREGATORS
 from mofdscribe.featurizers.utils.substructures import filter_element
-from dataclasses import dataclass
 
 
 # @np_cache
@@ -133,7 +133,6 @@ def make_supercell(
     # Combine into one array
     xyz_periodic_total = np.vstack(xyz_periodic_copies)
     original_indices = np.vstack(original_indices)
-
     element_periodic_total = np.vstack(element_copies)
     assert len(xyz_periodic_total) == len(
         element_periodic_total
@@ -145,9 +144,10 @@ def make_supercell(
     filter_b = np.min(new_cell[:], axis=1) > min_size
     new_cell = new_cell[filter_b]
     new_elements = element_periodic_total[filter_a][filter_b]
+    original_indices = original_indices[filter_a][filter_b]
 
     new_matrix = np.array([a * max_ranges[0], b * max_ranges[1], c * max_ranges[2]])
-    return new_cell, new_elements.flatten(), new_matrix, original_indices
+    return new_cell, new_elements.flatten(), new_matrix, original_indices.flatten()
 
 
 @dataclass
