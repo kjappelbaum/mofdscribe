@@ -57,7 +57,7 @@ def read_ascii_grid(filename: Union[str, os.PathLike]) -> pd.DataFrame:
         names=["x", "y", "z", "energy", "deriv_x", "deriv_y", "deriv_z"],
         na_values="?",
     )
-    df = df.astype(np.float)
+    df = df.astype(float)
     return df
 
 

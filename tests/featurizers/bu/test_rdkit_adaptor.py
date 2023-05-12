@@ -12,7 +12,7 @@ def test_rdkit_adaptor(molecule_graph, molecule):
 
     features_a = adaptor.featurize(molecule)
     assert features_a.shape == (1,)
-    assert features_a.dtype == np.float
+    assert features_a.dtype == float
 
     features_b = adaptor.featurize(molecule_graph)
     assert all(features_a == features_b)
