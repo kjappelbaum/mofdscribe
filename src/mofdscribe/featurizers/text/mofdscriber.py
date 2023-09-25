@@ -75,6 +75,8 @@ class MOFDescriber(BaseFeaturizer):
         rcsr_code = fragments.net_embedding.rcsr_code
         if rcsr_code and len(rcsr_code) > 1:
             rcsr_string = "RCSR code: {}. ".format(rcsr_code)
+        else:
+            rcsr_string = ""
 
         output_string = ""
         if self.incorporate_smiles:
