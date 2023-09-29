@@ -7,7 +7,7 @@ Featurizing a MOF
 
 .. code-block:: python
 
-    from mofdscribe.chemistry.racs import RACS
+    from mofdscribe.featurizers.chemistry.racs import RACS
     from pymatgen.core import Structure
 
     s = Structure.from_file(<my_cif>)
@@ -30,8 +30,8 @@ It is also easy to combine multiple featurizers into a single pipeline:
 
 .. code-block:: python
 
-    from mofdscribe.chemistry.racs import RACS
-    from mofdscribe.pore.geometric_properties import PoreDiameters
+    from mofdscribe.featurizers.chemistry.racs import RACS
+    from mofdscribe.featurizers.pore.geometric_properties import PoreDiameters
     from pymatgen.core import Structure
     from mofdscribe.featurizers.base import MOFMultipleFeaturizer
 
@@ -54,7 +54,7 @@ And, clearly, you can also use the `mofdscribe` featurizers alongside ones from 
 .. code-block:: python
 
     from matminer.featurizers.structure import LocalStructuralOrderParams
-    from mofdscribe.chemistry.racs import RACS
+    from mofdscribe.featurizers.chemistry.racs import RACS
 
     featurizer = MOFMultipleFeaturizer([RACS(), LocalStructuralOrderParams()])
     features = featurizer.featurize_many([s, s2])
