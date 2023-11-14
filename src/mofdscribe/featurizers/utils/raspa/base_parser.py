@@ -316,6 +316,18 @@ def parse_base_output(output_abs_path, system_name, ncomponents):  # noqa: C901
                 res_per_component[icomponent]["loading_excess_average"] = float(line.split()[5])
                 res_per_component[icomponent]["loading_excess_dev"] = float(line.split()[7])
                 res_per_component[icomponent]["loading_excess_unit"] = "molecules/unit cell"
+            elif "Average loading absolute [mol/kg framework]" in line:
+                res_per_component[icomponent]["loading_molar_absolute_average"] = float(
+                    line.split()[5]
+                )
+                res_per_component[icomponent]["loading_molar_absolute_dev"] = float(line.split()[7])
+                res_per_component[icomponent]["loading_molar_absolute_unit"] = "mol/kg framework"
+            elif "Average loading excess [mol/kg framework]" in line:
+                res_per_component[icomponent]["loading_molar_excess_average"] = float(
+                    line.split()[5]
+                )
+                res_per_component[icomponent]["loading_molar_excess_dev"] = float(line.split()[7])
+                res_per_component[icomponent]["loading_molar_excess_unit"] = "mol/kg framework"
                 icomponent += 1
             if icomponent >= ncomponents:
                 break

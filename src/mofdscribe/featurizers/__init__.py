@@ -22,6 +22,7 @@ from .chemistry import APRDF  # noqa: F401
 from .chemistry import RACS  # noqa: F401
 from .chemistry import EnergyGridHistogram  # noqa: F401
 from .chemistry import Henry  # noqa: F401
+from .chemistry import Loading  # noqa: F401
 from .chemistry import PartialChargeHistogram  # noqa: F401
 from .chemistry import PartialChargeStats  # noqa: F401
 from .chemistry import PriceLowerBound  # noqa: F401
