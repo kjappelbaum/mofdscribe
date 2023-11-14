@@ -47,3 +47,21 @@ The Henry coefficient is strongly connected to the energy grid and might sometim
     :scalar: False
 
     We use the implementation in [Dubbeldam]_
+
+
+
+Loading calculation
+..................
+
+The loading is the pure component uptake on a MOF.
+
+.. featurizer::  Loading
+    :id: Loading
+    :considers_geometry: True
+    :considers_structure_graph: False
+    :encodes_chemistry: True
+    :scope: global
+    :scalar: True
+
+    We use the implementation in [Dubbeldam]_
+
