@@ -11,7 +11,7 @@ from pymatgen.transformations.advanced_transformations import CubicSupercellTran
 
 from mofdscribe.featurizers.utils import flat
 from mofdscribe.featurizers.utils.aggregators import MA_ARRAY_AGGREGATORS
-from mofdscribe.featurizers.utils.substructures import filter_element
+from mofdscribe.featurizers.utils.substructures import filter_element_for_ph
 
 
 # @np_cache
@@ -104,8 +104,8 @@ def make_supercell(
     xyz_periodic_copies = []
     element_copies = []
 
-    # xyz_periodic_copies.append(coords)
-    # element_copies.append(np.array(elements).reshape(-1,1))
+    xyz_periodic_copies.append(coords)
+    element_copies.append(np.array(elements).reshape(-1,1))
     min_range = -3  # we aren't going in the minimum direction too much, so can make this small
     max_range = 20  # make this large enough, but can modify if wanting an even larger cell
 
@@ -228,7 +228,7 @@ def get_images(
 # ToDo: only do this for all if we want
 def get_persistent_images_for_structure(
     structure: Structure,
-    elements: List[List[str]],
+    elements: List[str],
     compute_for_all_elements: bool = True,
     min_size: int = 20,
     spread: float = 0.2,
@@ -245,7 +245,7 @@ def get_persistent_images_for_structure(
 
     Args:
         structure (Structure): input structure
-        elements (List[List[str]]): list of elements to compute for
+        elements (List[str]): list of element groups to compute for
         compute_for_all_elements (bool): compute for all elements
         min_size (int): minimum size of the cell for construction of persistent images
         spread (float): spread of kernel for construction
@@ -273,9 +273,9 @@ def get_persistent_images_for_structure(
     specs = []
     for mb, mp in zip(max_b, max_p):
         specs.append({"minBD": 0, "maxB": mb, "maxP": mp})
-    for element in elements:
+    for elements_group in elements:
         try:
-            filtered_structure = filter_element(structure, element)
+            filtered_structure = filter_element_for_ph(structure, elements_group)
             coords, _weights, _elements = _coords_for_structure(
                 filtered_structure,
                 min_size=min_size,
@@ -294,7 +294,7 @@ def get_persistent_images_for_structure(
                 dimensions=(0, 1, 2),
             )
         except Exception:
-            logger.exception(f"Error computing persistent images for {element}")
+            logger.exception(f"Error computing persistent images for {elements_group}")
             images = {}
             for dim in [0, 1, 2]:
                 im = np.zeros((pixels[0], pixels[1]))
@@ -304,8 +304,8 @@ def get_persistent_images_for_structure(
             persistent_dia[:] = np.nan
 
         # ToDo: make sure that we have the correct length
-        element_images["image"][element] = images
-        element_images["array"][element] = persistent_dia
+        element_images["image"][elements_group] = images
+        element_images["array"][elements_group] = persistent_dia
 
     if compute_for_all_elements:
         try:
@@ -391,7 +391,7 @@ def get_diagrams_for_structure(
     nan_array[:] = np.nan
     for element in elements:
         try:
-            filtered_structure = filter_element(structure, element)
+            filtered_structure = filter_element_for_ph(structure, element)
             coords, weights, _elements = _coords_for_structure(
                 filtered_structure,
                 min_size=min_size,
@@ -442,7 +442,7 @@ def get_persistence_image_limits_for_structure(
     limits = defaultdict(list)
     for element in elements:
         try:
-            filtered_structure = filter_element(structure, element)
+            filtered_structure = filter_element_for_ph(structure, element)
 
             coords, weights, _elements = _coords_for_structure(
                 filtered_structure,

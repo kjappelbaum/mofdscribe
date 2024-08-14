@@ -35,6 +35,39 @@ def filter_element(
         return Structure.from_sites(keep_sites)
     else:  # input is molecule or IMolecule
         return Molecule.from_sites(keep_sites)
+    
+
+def filter_element_for_ph(
+    structure: Union[Structure, IStructure, Molecule, IMolecule], elements: str
+) -> Structure:
+    """Filter a structure by element.
+
+    Args:
+        structure (Union[Structure, IStructure, Molecule, IMolecule]): input structure
+        elements (str): element to filter
+
+    Returns:
+        filtered_structure (Structure): filtered structure
+    """
+    elements_ = []
+    elements_group = (elements,)
+    for atom_type in elements_group:
+        if "-" in atom_type:
+            elements_.extend(atom_type.split("-"))
+        else:
+            elements_.append(atom_type)
+    keep_sites = []
+    for site in structure.sites:
+        if site.specie.symbol in elements_:
+            keep_sites.append(site)
+    if len(keep_sites) == 0:
+        return None
+
+    input_is_structure = isinstance(structure, (Structure, IStructure))
+    if input_is_structure:
+        return Structure.from_sites(keep_sites)
+    else:  # input is molecule or IMolecule
+        return Molecule.from_sites(keep_sites)
 
 
 def elements_in_structure(structure: Structure) -> List[str]:

@@ -53,14 +53,14 @@ class PHImage(MOFBaseFeaturizer):
 
     def __init__(
         self,
-        atom_types: Optional[Tuple[str]] = (
+        atom_types: Optional[List[str]] = [
             "C-H-N-O",
             "F-Cl-Br-I",
             "Cu-Mn-Ni-Mo-Fe-Pt-Zn-Ca-Er-Au-Cd-Co-Gd-Na-Sm-Eu-Tb-V"
             "-Ag-Nd-U-Ba-Ce-K-Ga-Cr-Al-Li-Sc-Ru-In-Mg-Zr-Dy-W-Yb-Y-"
             "Ho-Re-Be-Rb-La-Sn-Cs-Pb-Pr-Bi-Tm-Sr-Ti-Hf-Ir-Nb-Pd-Hg-"
-            "Th-Np-Lu-Rh-Pu",
-        ),
+            "Th-Np-Lu-Rh-Pu"
+        ],
         dimensions: Tuple[int] = (0, 1, 2),
         compute_for_all_elements: bool = True,
         min_size: int = 20,
@@ -78,14 +78,14 @@ class PHImage(MOFBaseFeaturizer):
         """Construct a PHImage object.
 
         Args:
-            atom_types (Tuple[str], optional): Atoms that are used to create
+            atom_types (List[str], optional): Atoms that are used to create
                 substructures that are analysed using persistent homology.
                 If multiple atom types separated by hash are provided, e.g.
                 "C-H-N-O", then the substructure consists of all atoms of type
-                C, H, N, or O. Defaults to ( "C-H-N-O", "F-Cl-Br-I",
+                C, H, N, or O. Defaults to [ "C-H-N-O", "F-Cl-Br-I",
                 "Cu-Mn-Ni-Mo-Fe-Pt-Zn-Ca-Er-Au-Cd-Co-Gd-Na-Sm-Eu-Tb-V-Ag-Nd-U-Ba-
                 Ce-K-Ga-Cr-Al-Li-Sc-Ru-In-Mg-Zr-Dy-W-Yb-Y-Ho-Re-Be-Rb-La-Sn-Cs-Pb-
-                Pr-Bi-Tm-Sr-Ti-Hf-Ir-Nb-Pd-Hg-Th-Np-Lu-Rh-Pu").
+                Pr-Bi-Tm-Sr-Ti-Hf-Ir-Nb-Pd-Hg-Th-Np-Lu-Rh-Pu"].
             dimensions (Tuple[int]): Dimensions of topological
                 features to consider for persistence images. Defaults to (0, 1, 2).
             compute_for_all_elements (bool): If true, compute
@@ -181,14 +181,14 @@ class PHImage(MOFBaseFeaturizer):
 
     def _get_feature_labels(self) -> List[str]:
         labels = []
-        _elements = list(self.atom_types)
+        _elements = self.atom_types
         if self.compute_for_all_elements:
             _elements.append("all")
-        for element in _elements:
+        for elements_group in _elements:
             for dim in self.dimensions:
                 for pixel_a in range(self.image_size[0]):
                     for pixel_b in range(self.image_size[1]):
-                        labels.append(f"phimage_{element}_{dim}_{pixel_a}_{pixel_b}")
+                        labels.append(f"phimage_{elements_group}_{dim}_{pixel_a}_{pixel_b}")
 
         return labels
 
@@ -293,7 +293,7 @@ class PHImage(MOFBaseFeaturizer):
             alpha_weighting=self.alpha_weight,
         )
         features = []
-        elements = list(self.atom_types)
+        elements = self.atom_types
         if self.compute_for_all_elements:
             elements.append("all")
         for element in elements:
