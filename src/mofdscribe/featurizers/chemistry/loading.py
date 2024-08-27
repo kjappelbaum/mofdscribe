@@ -205,7 +205,7 @@ class Loading(MOFBaseFeaturizer):
         return feat
 
     def implementors(self) -> List[str]:
-        return ["Fergus Mcilwaine", "Kevin Maik Jablonka", "David Dubbeldam and RASPA authors"]
+        return ["Fergus Mcilwaine"]
 
     def citations(self) -> List[str]:
         return [
