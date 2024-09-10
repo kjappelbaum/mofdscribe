@@ -119,7 +119,7 @@ def test_accessible_volume(hkust_structure):
     expected_labels = [
         "uc_volume",
         "density",
-        "av_a2",
+        "av_a3",
         "av_volume_fraction",
         "av_cm3g",
         "nav_a3",
