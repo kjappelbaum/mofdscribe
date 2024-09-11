@@ -140,14 +140,14 @@ class PHVect(MOFBaseFeaturizer):
 
     def __init__(
         self,
-        atom_types: Tuple[str] = (
+        atom_types: List[str] = [
             "C-H-N-O",
             "F-Cl-Br-I",
             "Cu-Mn-Ni-Mo-Fe-Pt-Zn-Ca-Er-Au-Cd-Co-Gd-Na-Sm-Eu-Tb-V"
             "-Ag-Nd-U-Ba-Ce-K-Ga-Cr-Al-Li-Sc-Ru-In-Mg-Zr-Dy-W-Yb-Y-"
             "Ho-Re-Be-Rb-La-Sn-Cs-Pb-Pr-Bi-Tm-Sr-Ti-Hf-Ir-Nb-Pd-Hg-"
             "Th-Np-Lu-Rh-Pu",
-        ),
+        ],
         compute_for_all_elements: bool = True,
         dimensions: Tuple[int] = (1, 2),
         min_size: int = 20,
@@ -165,14 +165,14 @@ class PHVect(MOFBaseFeaturizer):
         """Construct a PHVect instance.
 
         Args:
-            atom_types (tuple): Atoms that are used to create substructures
+            atom_types (list): Atoms that are used to create substructures
                 that are analysed using persistent homology.
                 If multiple atom types separated by hash are provided,
                 e.g. "C-H-N-O", then the substructure consists of all atoms of type C, H, N, or O.
-                Defaults to ( "C-H-N-O", "F-Cl-Br-I",
+                Defaults to [ "C-H-N-O", "F-Cl-Br-I",
                 "Cu-Mn-Ni-Mo-Fe-Pt-Zn-Ca-Er-Au-Cd-Co-Gd-Na-Sm-Eu-Tb-V-Ag-Nd-U-Ba-Ce-K-Ga-
                 Cr-Al-Li-Sc-Ru-In-Mg-Zr-Dy-W-Yb-Y-Ho-Re-Be-Rb-La-Sn-Cs-Pb-Pr-Bi-Tm-Sr-Ti-
-                Hf-Ir-Nb-Pd-Hg-Th-Np-Lu-Rh-Pu", ).
+                Hf-Ir-Nb-Pd-Hg-Th-Np-Lu-Rh-Pu", ].
             compute_for_all_elements (bool): If true, compute persistence images
                 for full structure (i.e. with all elements). If false, it will only do it
                 for the substructures specified with `atom_types`. Defaults to True.
@@ -209,9 +209,10 @@ class PHVect(MOFBaseFeaturizer):
         """
         atom_types = [] if atom_types is None else atom_types
         self.elements = atom_types
-        self.atom_types = (
-            list(atom_types) + ["all"] if compute_for_all_elements else list(atom_types)
-        )
+        if compute_for_all_elements:
+            self.atom_types = atom_types + ["all"]
+        else:
+            self.atom_types = atom_types
         self.compute_for_all_elements = compute_for_all_elements
         self.min_size = min_size
         self.dimensions = dimensions

@@ -34,14 +34,14 @@ class PHStats(MOFBaseFeaturizer):
 
     def __init__(
         self,
-        atom_types: Tuple[str] = (
+        atom_types: List[str] = [
             "C-H-N-O",
             "F-Cl-Br-I",
             "Cu-Mn-Ni-Mo-Fe-Pt-Zn-Ca-Er-Au-Cd-Co-Gd-Na-Sm-Eu-Tb-V"
             "-Ag-Nd-U-Ba-Ce-K-Ga-Cr-Al-Li-Sc-Ru-In-Mg-Zr-Dy-W-Yb-Y-"
             "Ho-Re-Be-Rb-La-Sn-Cs-Pb-Pr-Bi-Tm-Sr-Ti-Hf-Ir-Nb-Pd-Hg-"
             "Th-Np-Lu-Rh-Pu",
-        ),
+        ],
         compute_for_all_elements: bool = True,
         dimensions: Tuple[int] = (1, 2),
         min_size: int = 20,
@@ -54,12 +54,12 @@ class PHStats(MOFBaseFeaturizer):
         """Initialize the PHStats object.
 
         Args:
-            atom_types (tuple): Atoms that are used to create substructures
+            atom_types (list): Atoms that are used to create substructures
                 for which the persistent homology statistics are computed.
-                Defaults to ( "C-H-N-O", "F-Cl-Br-I",
+                Defaults to [ "C-H-N-O", "F-Cl-Br-I",
                 "Cu-Mn-Ni-Mo-Fe-Pt-Zn-Ca-Er-Au-Cd-Co-Gd-Na-Sm-Eu-Tb-V-Ag-Nd-U-Ba-Ce-K-Ga-
                 Cr-Al-Li-Sc-Ru-In-Mg-Zr-Dy-W-Yb-Y-Ho-Re-Be-Rb-La-Sn-Cs-Pb-Pr-Bi-Tm-Sr-Ti-
-                Hf-Ir-Nb-Pd-Hg-Th-Np-Lu-Rh-Pu", ).
+                Hf-Ir-Nb-Pd-Hg-Th-Np-Lu-Rh-Pu", ].
             compute_for_all_elements (bool): Compute descriptor for original structure with all atoms.
                 Defaults to True.
             dimensions (Tuple[int]): Dimensions of topological features to consider.
@@ -81,9 +81,10 @@ class PHStats(MOFBaseFeaturizer):
         """
         atom_types = [] if atom_types is None else atom_types
         self.elements = atom_types
-        self.atom_types = (
-            list(atom_types) + ["all"] if compute_for_all_elements else list(atom_types)
-        )
+        if compute_for_all_elements:
+            self.atom_types = atom_types + ["all"]
+        else:
+            self.atom_types = atom_types
         self.compute_for_all_elements = compute_for_all_elements
         self.dimensions = dimensions
         self.min_size = min_size
