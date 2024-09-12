@@ -6,13 +6,16 @@ from pymatgen.core import IMolecule, IStructure, Molecule, Structure
 
 
 def filter_element(
-    structure: Union[Structure, IStructure, Molecule, IMolecule], elements: List[str]
+    structure: Union[Structure, IStructure, Molecule, IMolecule],
+    elements: List[str],
+    return_indices=False,
 ) -> Structure:
     """Filter a structure by element.
 
     Args:
         structure (Union[Structure, IStructure, Molecule, IMolecule]): input structure
         elements (str): element to filter
+        return_indices (bool): whether to return the indices of the filtered sites
 
     Returns:
         filtered_structure (Structure): filtered structure
@@ -24,12 +27,16 @@ def filter_element(
         else:
             elements_.append(atom_type)
     keep_sites = []
-    for site in structure.sites:
+    keep_indices = []
+    for i, site in enumerate(structure.sites):
         if site.specie.symbol in elements_:
             keep_sites.append(site)
+            keep_indices.append(i)
     if len(keep_sites) == 0:
         return None
 
+    if return_indices:
+        return keep_indices
     input_is_structure = isinstance(structure, (Structure, IStructure))
     if input_is_structure:
         return Structure.from_sites(keep_sites)
