@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 """Test the RDkitAdaptor."""
-import numpy as np
 from rdkit.Chem.Descriptors3D import Asphericity
 
 from mofdscribe.featurizers.bu.rdkitadaptor import RDKitAdaptor

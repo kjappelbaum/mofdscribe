@@ -178,10 +178,10 @@ class EnergyGridHistogram(MOFBaseFeaturizer):
         super().__init__(primitive=primitive)
 
     def fit_transform(self, structures: List[Union[Structure, IStructure]]):
-        ...
+        pass
 
     def fit(self, structure: Union[Structure, IStructure]):
-        ...
+        pass
 
     def _get_grid(self):
         return np.arange(self.min_energy_vdw, self.max_energy_vdw, self.bin_size_vdw)
